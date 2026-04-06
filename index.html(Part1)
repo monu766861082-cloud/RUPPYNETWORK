@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ruppy App</title>
+<style>
+body{margin:0;background:#000;color:#fff;font-family:Arial}
+.hdr{display:flex;align-items:center;padding:12px}
+.hdr img{width:48px;height:48px;border-radius:50%;margin-right:12px}
+.bal{border:1px solid #a87128;border-radius:14px;padding:14px;margin:12px}
+.bal h2{margin:6px 0;font-size:32px}.bal h2 span{color:#d4a017}
+.sub{color:#d4a017;font-size:13px}
+.tm{margin:20px auto;width:160px;height:160px;border:2px solid #a87128;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#d4a017;font-size:13px;text-align:center}
+.grd{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px}
+.cd{border:1px solid #333;border-radius:14px;padding:14px;text-align:center;font-size:13px;position:relative;cursor:pointer}
+.boost{border-color:#a87128}
+.boost i{width:56px;height:56px;background:#1a1a1a;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:28px}
+.boost b{color:#ff8c42}
+.gift{border-color:#8b5cf6;box-shadow:0 0 12px #8b5cf6}
+.gift i{width:64px;height:64px;background:#8b5cf6;border-radius:12px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:32px}
+.gift b{color:#a78bfa}
+.bdg{position:absolute;top:-8px;right:-8px;background:#facc15;color:#000;border-radius:50%;width:24px;height:24px;font-size:13px;display:flex;align-items:center;justify-content:center}
+.ic{width:56px;height:56px;border:1px solid #a87128;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center}
+.nav{position:fixed;bottom:0;left:0;width:100%;display:flex;background:#000;border-top:1px solid #222}
+.nv{flex:1;text-align:center;font-size:11px;padding:6px 0;color:#777;position:relative}
+.nv.active{color:#d4a017}
+.nv.active::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:40px;height:4px;background:#d4a017;border-radius:2px}
+</style>
+</head>
+<body>
+<div class="hdr"><img src="https://i.imgur.com/8Km9tLL.png" alt=""><div><small>Welcome back,</small><br><b>Akash Sharma</b></div></div>
+<div class="bal"><small>TOTAL BALANCE</small><h2><span id="tok">1,220</span> TOKEN</h2><div class="sub">≈ $1.02 USD • 1,200 = $1.00</div></div>
+<div class="tm" id="timer">Next in<br>03:47:50</div>
+<div style="text-align:center;color:#aaa;font-size:13px;margin-bottom:12px">Mines every 4 hours</div>
+<div class="grd">
+  <div class="cd boost" onclick="boost()"><i>📺</i><b>BOOST MINING</b><br><small>Watch ad → +5%</small></div>
+  <div class="cd gift" onclick="gift()"><div class="bdg" id="bdg">2</div><i>🎁</i><b>ULTRA GIFT</b><br><small>Watch ad → +10 TOKEN</small><div style="margin-top:6px;font-size:12px"><span id="op">2</span> opens left today</div></div>
+  <div class="cd"><span class="ic">👥</span>Team<br><b>12 Active</b></div>
+  <div class="cd"><span class="ic">💰</span>Wallet<br><b>Not Connected</b></div>
+</div>
+<div class="nav"><div class="nv active">Home</div><div class="nv">Tasks</div><div class="nv">Referral</div><div class="nv">Ranking</div><div class="nv">Settings</div></div>
+<script>
+let tokens=1220,bdg=2,opens=2;
+function boost(){tokens+=Math.floor(tokens*0.05);document.getElementById('tok').innerText=tokens.toLocaleString()}
+function gift(){if(opens>0){tokens+=10;opens--;bdg--;document.getElementById('tok').innerText=tokens.toLocaleString();document.getElementById('op').innerText=opens;document.getElementById('bdg').innerText=bdg}}
+let t=13670;
+setInterval(()=>{t--;let h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;document.getElementById('timer').innerHTML=`Next in<br>${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`},1000);
+</script>
+</body>
+</html>
