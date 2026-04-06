@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ruppy Referral</title>
+<style>
+body{margin:0;background:#000;color:#fff;font-family:Arial}
+.hdr{padding:20px;font-size:28px;font-weight:bold}
+.card{border:1px solid #a87128;border-radius:14px;padding:16px;margin:16px;box-shadow:0 0 10px #a87128}
+.card h3{margin:0 0 8px;color:#ccc}
+.card .amt{font-size:36px;font-weight:bold}.card .amt span{color:#d4a017}
+.tag{background:#093;display:inline-block;padding:4px 10px;border-radius:6px;margin-top:8px;color:#0f0}
+.inv{border:1px solid #444;border-radius:14px;padding:16px;margin:16px}
+.inv label{display:block;margin-bottom:8px;color:#ccc}.inpbx{display:flex;gap:8px}
+.inp{flex:1;border:1px solid #444;border-radius:10px;padding:12px;text-align:center;font-size:18px;font-weight:bold;color:#d4a017;background:#111}
+.cp{width:48px;height:48px;border:1px solid #a87128;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.bt{background:#d4a017;color:#000;font-weight:bold;border:none;border-radius:10px;padding:14px;width:100%;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.sts{display:flex;gap:12px;padding:0 16px;margin-bottom:12px}
+.bx{flex:1;border:1px solid #333;border-radius:10px;padding:16px;text-align:center}
+.bx .v{font-size:24px;font-weight:bold}.bx .l{display:block;margin-top:4px;color:#aaa}
+.team{padding:0 16px;font-size:18px;font-weight:bold;color:#d4a017}
+.nav{position:fixed;bottom:0;left:0;width:100%;display:flex;background:#000;border-top:1px solid #222}
+.nv{flex:1;text-align:center;font-size:11px;padding:6px 0;color:#777;position:relative}
+.nv.active{color:#d4a017}
+.nv.active::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:40px;height:4px;background:#d4a017;border-radius:2px}
+</style></head><body>
+<div class="hdr">Referral Program</div>
+<div class="card"><h3>Team Rewards</h3><div class="amt"><span>320</span> TOKEN</div><div class="tag">+8% per active friend</div></div>
+<div class="inv"><label>YOUR INVITE CODE</label><div class="inpbx"><div class="inp">RUPPY786</div><div class="cp" onclick="copy()">⧉</div></div><button class="bt" onclick="invite()">✨ INVITE FRIENDS</button></div>
+<div class="sts"><div class="bx"><span class="v">12</span><span class="l">TOTAL</span></div><div class="bx"><span class="v" style="color:#0f0">8</span><span class="l">ACTIVE</span></div><div class="bx"><span class="v" style="color:#f33">4</span><span class="l">INACTIVE</span></div></div>
+<div class="team">👥 My Team</div>
+<div class="nav"><div class="nv">Home</div><div class="nv">Tasks</div><div class="nv active">Referral</div><div class="nv">Ranking</div><div class="nv">Settings</div></div>
+<script>function copy(){navigator.clipboard.writeText('RUPPY786');alert('Copied')}function invite(){alert('Invite link sent!')}</script>
+</body></html>
