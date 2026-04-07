@@ -19,7 +19,10 @@ h1{color:#f9a825;margin:12px 0 4px}
 a{color:#aaa;text-decoration:none}
 </style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+  const supabase = createClient('https://fvvdurcxpslohndlsivpk.supabase.co','sb_publishable_gu6EROzroBcU5be4H33c0Q_K2ajxrpD')
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -41,8 +44,7 @@ By continuing, you agree to our Terms & Privacy Policy.
 </div>
 <script>
 function onSignIn(r){try{const p=JSON.parse(atob(r.credential.split('.')[1]));if(p.email) alert('Signed in: '+p.email);}catch(e){}}
-const sb = supabase.createClient('https://fvvdurcxpslohndlsivpk.supabase.co', 'sb_publishable_kns-4NcTIQTmvj50yziD3Q_TuaqHLOt');
-function fbLogin(){ sb.auth.signInWithOAuth({ provider: 'facebook' }); }
+function fbLogin(){ supabase.auth.signInWithOAuth({ provider: 'facebook' }); }
 </script>
 </body>
 </html>
