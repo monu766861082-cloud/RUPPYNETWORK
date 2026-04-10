@@ -79,8 +79,7 @@ By continuing, you agree to our Terms & Privacy Policy.
       const { error } = await supabase.auth.signInWithOtp({
         email: email,
         options: {
-          shouldCreateUser: true,
-          emailRedirectTo: undefined
+          shouldCreateUser: true
         }
       });
 
@@ -92,7 +91,7 @@ By continuing, you agree to our Terms & Privacy Policy.
       }else{
         alert("OTP Sent. Check your email inbox and spam folder");
         input.value = "";
-        input.placeholder = "Enter 8 Digit OTP";
+        input.placeholder = "Enter 6 Digit OTP";
         btn.innerText = "VERIFY OTP";
         step = "otp";
         window.savedEmail = email;
