@@ -79,7 +79,8 @@ By continuing, you agree to our Terms & Privacy Policy.
       const { error } = await supabase.auth.signInWithOtp({
         email: email,
         options: {
-          shouldCreateUser: true
+          shouldCreateUser: true,
+          emailRedirectTo: undefined
         }
       });
 
@@ -96,12 +97,10 @@ By continuing, you agree to our Terms & Privacy Policy.
         step = "otp";
         window.savedEmail = email;
       }
-
-    }else{
+    }else if(step === "otp"){
       const otp = input.value.trim();
-      
-      if(!otp){
-        alert("Enter OTP");
+      if(!otp || otp.length < 6){
+        alert("Enter valid OTP");
         return;
       }
 
@@ -120,12 +119,12 @@ By continuing, you agree to our Terms & Privacy Policy.
         btn.innerText = "VERIFY OTP";
         alert("Invalid OTP: " + error.message);
       }else{
-        alert("Login Successful");
-        window.location.href = '/dashboard.html';
+        alert("Login Successful!");
+        console.log("User:", data.user);
+        window.location.href = "/dashboard.html";
       }
     }
   }
 </script>
-
 </body>
 </html>
