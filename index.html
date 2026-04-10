@@ -54,12 +54,12 @@ window.supabase = createClient(
 LOGIN WITH FACEBOOK
 </button>
 
-<!-- ✅ SINGLE BOX MOBILE LOGIN (ADDED) -->
+<!-- ✅ EMAIL OTP LOGIN - FIXED -->
 <div style="margin-top:10px">
-  <input 
-    type="text" 
-    id="mobileInput" 
-    placeholder="Enter Mobile (+91...)" 
+  <input
+    type="email"
+    id="emailInput"
+    placeholder="Enter Email"
     style="padding:12px;width:80%;max-width:260px;border-radius:24px;border:none;text-align:center;margin-bottom:10px"
   >
 
@@ -69,8 +69,8 @@ LOGIN WITH FACEBOOK
 </div>
 
 <div class="ft">
-<a href="privacy.html">Privacy</a> • 
-<a href="services.html">Services</a> • 
+<a href="privacy.html">Privacy</a> •
+<a href="services.html">Services</a> •
 <a href="terms.html">Terms</a><br>
 By continuing, you agree to our Terms & Privacy Policy.
 </div>
@@ -84,51 +84,55 @@ function onSignIn(r){
   }catch(e){}
 }
 
-function fbLogin(){ 
-  supabase.auth.signInWithOAuth({ provider: 'facebook' }); 
+function fbLogin(){
+  supabase.auth.signInWithOAuth({ provider: 'facebook' });
 }
 
-/* ✅ SINGLE FLOW OTP LOGIN */
-let step = "number";
+/* ✅ EMAIL OTP FLOW - यही लगाना है */
+let step = "email";
 
 async function handleLogin(){
-  const input = document.getElementById("mobileInput").value;
+  const input = document.getElementById("emailInput").value;
 
-  if(step === "number"){
-    if(input.length < 10){
-      alert("Enter valid number with country code");
+  if(step === "email"){
+    if(!input.includes('@')){
+      alert("Sahi email daal");
       return;
     }
 
+    // 👇 यही वो लाइन है जो OTP भेजेगी
     const { error } = await supabase.auth.signInWithOtp({
-      phone: input
+      email: input
     });
 
     if(error){
       alert(error.message);
     }else{
-      alert("OTP Sent ✅");
+      alert("OTP Sent ✅ Mail चेक करो");
 
-      document.getElementById("mobileInput").value = "";
-      document.getElementById("mobileInput").placeholder = "Enter OTP";
+      document.getElementById("emailInput").value = "";
+      document.getElementById("emailInput").placeholder = "Enter 8 Digit OTP";
       document.getElementById("actionBtn").innerText = "VERIFY OTP";
 
       step = "otp";
-      window.savedPhone = input;
+      window.savedEmail = input;
     }
 
   }else{
 
+    // 👇 यही वो लाइन है जो OTP वेरिफाई करेगी
     const { error } = await supabase.auth.verifyOtp({
-      phone: window.savedPhone,
+      email: window.savedEmail,
       token: input,
-      type: 'sms'
+      type: 'email'
     });
 
     if(error){
-      alert("Invalid OTP ❌");
+      alert("Invalid OTP ❌ " + error.message);
     }else{
       alert("Login Successful ✅");
+      // यहां home page पे भेज दे
+      // window.location.href = '/dashboard.html'
     }
   }
 }
