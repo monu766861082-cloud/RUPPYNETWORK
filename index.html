@@ -72,22 +72,15 @@ By continuing, you agree to our Terms & Privacy Policy.
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const msg = document.getElementById("msg");
-  const authBox = document.getElementById("authBox");
 
-  // ये वाला Code Page खुलते ही Check करेगा
-  // अगर User पहले से Login है तो सीधा Dashboard भेज देगा
+  // Fix 1: Page खुलते ही Check कर, पर Box मत छुपा
   async function checkUser() {
-    authBox.style.display = "none"; // पहले Login Box छुपा दे
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
-      // User पहले से Login है, सीधा अंदर भेज
       window.location.href = "/dashboard.html";
-    } else {
-      // Login नहीं है तो Box दिखा दे
-      authBox.style.display = "block";
     }
   }
-  checkUser(); // Page Load होते ही चला दे
+  checkUser();
 
   async function handleSignup(){
     const email = document.getElementById("emailInput").value.trim();
@@ -112,7 +105,9 @@ By continuing, you agree to our Terms & Privacy Policy.
     if(error){
       msg.innerText = "Error: " + error.message;
     }else{
-      msg.innerText = "Account बन गया! अब Login करो";
+      // Fix 2: Signup के बाद सीधा अंदर भेज दे, क्योंकि User Auto-Login हो गया
+      msg.innerText = "Account बन गया! Redirecting...";
+      window.location.href = "/dashboard.html";
     }
   }
 
