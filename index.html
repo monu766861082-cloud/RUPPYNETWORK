@@ -46,10 +46,7 @@ window.supabase = createClient(
 <div class="card"><div class="ci">🛡️</div><div><b>Withdrawal</b><p>Secure withdrawals via Binance & more</p></div></div>
 
 <!-- GOOGLE LOGIN -->
-<div id="g_id_onload"
-data-client_id="791994103117-0qnp7laoeppcsf7h8c4h865u6e5ei3bc.apps.googleusercontent.com"
-data-callback="onSignIn"></div>
-
+<div id="g_id_onload" data-client_id="791994103117-0qnp7laoeppcsf7h8c4h865u6e5ei3bc.apps.googleusercontent.com" data-callback="onSignIn"></div>
 <div class="g_id_signin gb" data-type="standard"></div>
 
 <!-- FACEBOOK LOGIN -->
@@ -57,31 +54,18 @@ data-callback="onSignIn"></div>
 LOGIN WITH FACEBOOK
 </button>
 
-<!-- ✅ REAL MOBILE OTP LOGIN (ADDED INSIDE SAME FILE) -->
+<!-- ✅ SINGLE BOX MOBILE LOGIN (ADDED) -->
 <div style="margin-top:10px">
-
-  <input 
-    type="tel" 
-    id="mobileNumber" 
-    placeholder="Enter Mobile (+91...)" 
-    style="padding:12px;width:80%;max-width:260px;border-radius:24px;border:none;text-align:center;margin-bottom:8px"
-  >
-
-  <button onclick="sendOTP()" class="btn">
-    SEND OTP
-  </button>
-
   <input 
     type="text" 
-    id="otp" 
-    placeholder="Enter OTP" 
-    style="padding:12px;width:80%;max-width:260px;border-radius:24px;border:none;text-align:center;margin-top:8px"
+    id="mobileInput" 
+    placeholder="Enter Mobile (+91...)" 
+    style="padding:12px;width:80%;max-width:260px;border-radius:24px;border:none;text-align:center;margin-bottom:10px"
   >
 
-  <button onclick="verifyOTP()" class="btn">
-    VERIFY OTP
+  <button onclick="handleLogin()" class="btn" id="actionBtn">
+    SEND OTP
   </button>
-
 </div>
 
 <div class="ft">
@@ -90,7 +74,6 @@ LOGIN WITH FACEBOOK
 <a href="terms.html">Terms</a><br>
 By continuing, you agree to our Terms & Privacy Policy.
 </div>
-
 </div>
 
 <script>
@@ -105,41 +88,48 @@ function fbLogin(){
   supabase.auth.signInWithOAuth({ provider: 'facebook' }); 
 }
 
-/* ✅ SEND OTP */
-async function sendOTP(){
-  const phone = document.getElementById("mobileNumber").value;
+/* ✅ SINGLE FLOW OTP LOGIN */
+let step = "number";
 
-  if(phone.length < 10){
-    alert("Enter valid phone number with country code");
-    return;
-  }
+async function handleLogin(){
+  const input = document.getElementById("mobileInput").value;
 
-  const { error } = await supabase.auth.signInWithOtp({
-    phone: phone
-  });
+  if(step === "number"){
+    if(input.length < 10){
+      alert("Enter valid number with country code");
+      return;
+    }
 
-  if(error){
-    alert("Error: " + error.message);
+    const { error } = await supabase.auth.signInWithOtp({
+      phone: input
+    });
+
+    if(error){
+      alert(error.message);
+    }else{
+      alert("OTP Sent ✅");
+
+      document.getElementById("mobileInput").value = "";
+      document.getElementById("mobileInput").placeholder = "Enter OTP";
+      document.getElementById("actionBtn").innerText = "VERIFY OTP";
+
+      step = "otp";
+      window.savedPhone = input;
+    }
+
   }else{
-    alert("OTP Sent ✅");
-  }
-}
 
-/* ✅ VERIFY OTP */
-async function verifyOTP(){
-  const phone = document.getElementById("mobileNumber").value;
-  const otp = document.getElementById("otp").value;
+    const { error } = await supabase.auth.verifyOtp({
+      phone: window.savedPhone,
+      token: input,
+      type: 'sms'
+    });
 
-  const { error } = await supabase.auth.verifyOtp({
-    phone: phone,
-    token: otp,
-    type: 'sms'
-  });
-
-  if(error){
-    alert("Invalid OTP ❌");
-  }else{
-    alert("Login Successful ✅");
+    if(error){
+      alert("Invalid OTP ❌");
+    }else{
+      alert("Login Successful ✅");
+    }
   }
 }
 </script>
