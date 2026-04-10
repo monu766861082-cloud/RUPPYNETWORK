@@ -9,7 +9,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;text-align:center}
 .wrap{padding:22px}
 .pill{border:1px solid #c28840;color:#c28840;padding:4px 12px;border-radius:14px;display:inline-block;font-size:12px;margin-bottom:18px}
 .coin{width:170px;height:170px;margin:auto;border-radius:50%;background:#111;box-shadow:0 0 28px #f9a825;display:flex;align-items:center;justify-content:center;font-size:48px}
-.btn{margin:18px auto;padding:12px 24px;background:#f9a825;color:#000;border:none;border-radius:24px;font-weight:bold;width:80%;max-width:260px;cursor:pointer}
+.btn{margin:8px auto;padding:12px 24px;background:#f9a825;color:#000;border:none;border-radius:24px;font-weight:bold;width:80%;max-width:260px;cursor:pointer}
 h1{color:#f9a825;margin:12px 0 4px}
 .sub{color:#aaa;font-size:13px;margin-bottom:20px}
 .card{border:1px solid #333;border-radius:12px;padding:12px;margin:10px auto;max-width:300px;display:flex;gap:10px;text-align:left;align-items:flex-start}
@@ -33,7 +33,7 @@ a{color:#aaa;text-decoration:none}
 <div class="card"><div class="ci">👥</div><div><b>Referral</b><p>Earn 40 Rupee per referral + 8% bonus</p></div></div>
 <div class="card"><div class="ci">🛡️</div><div><b>Withdrawal</b><p>Secure withdrawals via Binance & more</p></div></div>
 
-<div style="margin-top:10px">
+<div style="margin-top:10px" id="authBox">
   <input
     type="email"
     id="emailInput"
@@ -41,9 +41,20 @@ a{color:#aaa;text-decoration:none}
     style="padding:12px;width:80%;max-width:260px;border-radius:24px;border:none;text-align:center;margin-bottom:10px"
   >
   <br>
-  <button onclick="handleLogin()" class="btn" id="actionBtn">
-    SEND OTP
+  <input
+    type="password"
+    id="passwordInput"
+    placeholder="Enter Password"
+    style="padding:12px;width:80%;max-width:260px;border-radius:24px;border:none;text-align:center;margin-bottom:10px"
+  >
+  <br>
+  <button onclick="handleLogin()" class="btn" id="loginBtn">
+    LOGIN
   </button>
+  <button onclick="handleSignup()" class="btn" id="signupBtn">
+    CREATE ACCOUNT
+  </button>
+  <p id="msg" style="color:#f9a825;font-size:13px;height:15px;"></p>
 </div>
 
 <div class="ft">
@@ -60,68 +71,72 @@ By continuing, you agree to our Terms & Privacy Policy.
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ2p1YnhmeGpha2dpY3VweXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzk4NTIsImV4cCI6MjA5MTIxNTg1Mn0.QST9mZ7uup-H-s9P6DznbOVO14kJTCgYIIZxyTP1T24';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  let step = "email";
+  const msg = document.getElementById("msg");
+  const authBox = document.getElementById("authBox");
+
+  // ये वाला Code Page खुलते ही Check करेगा
+  // अगर User पहले से Login है तो सीधा Dashboard भेज देगा
+  async function checkUser() {
+    authBox.style.display = "none"; // पहले Login Box छुपा दे
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      // User पहले से Login है, सीधा अंदर भेज
+      window.location.href = "/dashboard.html";
+    } else {
+      // Login नहीं है तो Box दिखा दे
+      authBox.style.display = "block";
+    }
+  }
+  checkUser(); // Page Load होते ही चला दे
+
+  async function handleSignup(){
+    const email = document.getElementById("emailInput").value.trim();
+    const password = document.getElementById("passwordInput").value.trim();
+    
+    if(!email || !password){
+      msg.innerText = "Email और Password दोनों डाल";
+      return;
+    }
+    if(password.length < 6){
+      msg.innerText = "Password कम से कम 6 का होना चाहिए";
+      return;
+    }
+    
+    msg.innerText = "Account बन रहा है...";
+    
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password
+    });
+    
+    if(error){
+      msg.innerText = "Error: " + error.message;
+    }else{
+      msg.innerText = "Account बन गया! अब Login करो";
+    }
+  }
 
   async function handleLogin(){
-    const btn = document.getElementById("actionBtn");
-    const input = document.getElementById("emailInput");
-    const email = input.value.trim();
-
-    if(step === "email"){
-      if(!email || !email.includes('@')){
-        alert("Enter valid email");
-        return;
-      }
-      
-      btn.innerText = "SENDING...";
-      btn.disabled = true;
-
-      const { error } = await supabase.auth.signInWithOtp({
-        email: email,
-        options: {
-          shouldCreateUser: true
-        }
-      });
-
-      btn.disabled = false;
-
-      if(error){
-        btn.innerText = "SEND OTP";
-        alert("Error: " + error.message);
-      }else{
-        alert("OTP Sent. Check your email inbox and spam folder");
-        input.value = "";
-        input.placeholder = "Enter 6 Digit OTP";
-        btn.innerText = "VERIFY OTP";
-        step = "otp";
-        window.savedEmail = email;
-      }
-    }else if(step === "otp"){
-      const otp = input.value.trim();
-      if(!otp || otp.length < 6){
-        alert("Enter valid OTP");
-        return;
-      }
-
-      btn.innerText = "VERIFYING...";
-      btn.disabled = true;
-
-      const { data, error } = await supabase.auth.verifyOtp({
-        email: window.savedEmail,
-        token: otp,
-        type: 'email'
-      });
-
-      btn.disabled = false;
-
-      if(error){
-        btn.innerText = "VERIFY OTP";
-        alert("Invalid OTP: " + error.message);
-      }else{
-        alert("Login Successful!");
-        console.log("User:", data.user);
-        window.location.href = "/dashboard.html";
-      }
+    const email = document.getElementById("emailInput").value.trim();
+    const password = document.getElementById("passwordInput").value.trim();
+    
+    if(!email || !password){
+      msg.innerText = "Email और Password दोनों डाल";
+      return;
+    }
+    
+    msg.innerText = "Login हो रहा है...";
+    
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+    
+    if(error){
+      msg.innerText = "गलत Email या Password";
+    }else{
+      msg.innerText = "Login Success!";
+      window.location.href = "/dashboard.html";
     }
   }
 </script>
