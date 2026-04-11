@@ -14,7 +14,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:70px}
 .ic{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:20px}
 .tg{background:#0088cc}.fb{background:#1877f2}.x{background:#fff;color:#000}
 .txt{flex:1}.txt b{display:block}.txt span{color:#d4a017}
-.bt{border:1px solid #d4a017;color:#d4a017;padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer}
+.bt{border:1px solid #d4a017;color:#d4a017;padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block}
 .nav{position:fixed;bottom:0;left:0;width:100%;display:flex;background:#000;border-top:1px solid #222}
 .nv{flex:1;text-align:center;font-size:11px;padding:6px 0;color:#777;position:relative;cursor:pointer}
 .nv.active{color:#d4a017}
@@ -28,19 +28,19 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:70px}
 <div class="card">
   <div class="ic tg">✈️</div>
   <div class="txt"><b>Join Telegram</b><span>+20 TOKEN</span></div>
-  <div class="bt" onclick="openTask('https://t.me/RUPPYfoundation', 20)">JOIN</div>
+  <a href="https://t.me/RUPPYfoundation" target="_blank" class="bt" onclick="addToken(20)">JOIN</a>
 </div>
 
 <div class="card">
   <div class="ic fb">f</div>
   <div class="txt"><b>Follow on Facebook</b><span>+20 TOKEN</span></div>
-  <div class="bt" onclick="openTask('https://www.facebook.com/share/1PjMyFivNF/?mibextid=wwXIfr', 20)">FOLLOW</div>
+  <a href="https://www.facebook.com/share/1PjMyFivNF/?mibextid=wwXIfr" target="_blank" class="bt" onclick="addToken(20)">FOLLOW</a>
 </div>
 
 <div class="card">
   <div class="ic x">X</div>
   <div class="txt"><b>Follow on X</b><span>+20 TOKEN</span></div>
-  <div class="bt" onclick="openTask('https://x.com/rupfoundation?s=21', 20)">FOLLOW</div>
+  <a href="https://x.com/rupfoundation?s=21" target="_blank" class="bt" onclick="addToken(20)">FOLLOW</a>
 </div>
 
 <div class="nav">
@@ -67,12 +67,14 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:70px}
 </div>
 
 <script>
-let tokens=1220;
+let tokens = localStorage.getItem('ruppyTokens') ? parseInt(localStorage.getItem('ruppyTokens')) : 1220;
 
-function openTask(link, reward){
-  window.open(link, '_blank');
+function addToken(reward){
   tokens += reward;
-  alert('Tokens: ' + tokens);
+  localStorage.setItem('ruppyTokens', tokens);
+  setTimeout(() => {
+    alert('Tokens: ' + tokens);
+  }, 300);
 }
 
 function goPage(page){
