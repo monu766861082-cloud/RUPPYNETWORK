@@ -64,8 +64,8 @@
     .nav-item .icon {font-size:20px;}
   </style>
   
-  <!-- Monetag MultiTag Script यहाँ आएगा Verify के बाद -->
-  <!-- AD_SCRIPT_PLACEHOLDER -->
+  <!-- Monetag MultiTag Script ✅ Added -->
+  <script src="https://quge5.com/88/tag.min.js" data-zone="228666" async data-cfasync="false"></script>
   
 </head>
 <body>
@@ -194,19 +194,23 @@
     localStorage.setItem('ruppy_user', JSON.stringify(userData));
   }
 
-  // ===== MONETAG AD FUNCTIONS - यहाँ MultiTag लगेगा =====
+  // ===== MONETAG AD FUNCTIONS - Updated ✅ =====
   function showMonetagAd(callback) {
-    // जब MultiTag Script मिल जाएगा तो ये Function Ad दिखाएगा
-    // अभी Testing के लिए Direct Callback चला रहे
-    console.log('Ad दिख रहा है...');
-    
-    // TODO: Monetag का असली Ad Code यहाँ आएगा
-    // Example: show_xxxxxxx().then(() => callback());
-    
-    // अभी के लिए 1 Sec बाद Reward दे दो
-    setTimeout(() => {
-      callback();
-    }, 500);
+    // Monetag Multitag Load होने के बाद _ZH Object मिलता है
+    if(typeof window._ZH !== 'undefined' && window._ZH.show){
+      // Popunder/Vignette Trigger
+      window._ZH.show().then(() => {
+        callback(); // Ad बंद होने के बाद Reward
+      }).catch(() => {
+        callback(); // Error आए तो भी Reward दे दे
+      });
+    } else {
+      // Script Load ना हुआ हो तो 1 Sec बाद Reward
+      console.log('Monetag loading...');
+      setTimeout(() => {
+        callback();
+      }, 1000);
+    }
   }
 
   // ===== AD WRAPPER FUNCTIONS - तेरे 4 Point =====
