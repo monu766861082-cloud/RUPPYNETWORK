@@ -114,10 +114,10 @@
   <div class="modal" id="boostModal">
     <div class="modal-content">
       <h3>🚀 BOOST MINING</h3>
-      <p>3 Ad देखो = 15% Extra RUPPY</p>
+      <p>Watch 3 Ads = 15% Extra RUPPY</p>
       <div class="boost-step">
         <h4>Step <span id="boostStep">1</span>/3</h4>
-        <p id="boostStepText">Ad देखो और 5% Claim करो</p>
+        <p id="boostStepText">Watch Ad and Claim 5%</p>
       </div>
       <button class="btn" id="boostBtn" onclick="watchBoostAd()">Watch Ad + Claim 5%</button>
       <button class="close-btn" onclick="closeBoostModal()">Close</button>
@@ -157,7 +157,7 @@
   </div>
 
 <script>
-  const MINING_REWARD = 40; // Base mining reward
+  const MINING_REWARD = 40;
   
   let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
     name: 'User',
@@ -166,13 +166,17 @@
     lastMine: 0,
     lastGift: 0,
     boostCount: 0,
-    boostResetTime: 0,
+    boostResetTime: Date.now(),
     team: [
       {name: 'Rahul Kumar', online: true},
       {name: 'Priya Singh', online: true},
       {name: 'Amit Sharma', online: false}
     ]
   };
+
+  // Fix NaN: Ensure boostCount is always a number
+  userData.boostCount = Number(userData.boostCount) || 0;
+  userData.boostResetTime = Number(userData.boostResetTime) || Date.now();
 
   function saveUser() {
     localStorage.setItem('ruppy_user', JSON.stringify(userData));
@@ -184,7 +188,6 @@
       document.getElementById('userDp').innerHTML = `<img src="${userData.dp}" alt="DP">`;
     }
     
-    // Reset boost if 3 hours passed
     if(Date.now() - userData.boostResetTime > 3*60*60*1000) {
       userData.boostCount = 0;
       userData.boostResetTime = Date.now();
@@ -242,14 +245,10 @@
     updateMiningCircle();
   }
 
-  // ============ BOOST MINING ============
   function updateBoost() {
-    const now = Date.now();
-    
-    // Reset after 3 hours
-    if(now - userData.boostResetTime > 3*60*60*1000) {
+    if(Date.now() - userData.boostResetTime > 3*60*60*1000) {
       userData.boostCount = 0;
-      userData.boostResetTime = now;
+      userData.boostResetTime = Date.now();
       saveUser();
     }
     
@@ -260,7 +259,6 @@
       document.getElementById('boostBar').style.width = '100%';
       document.getElementById('boostBadge').style.background = '#00ff00';
     } else {
-      const remaining = 3 - userData.boostCount;
       document.getElementById('boostTimer').innerText = `Watch Ad → +5%`;
       document.getElementById('boostBar').style.width = (userData.boostCount / 3 * 100) + '%';
       document.getElementById('boostBadge').style.background = '#FFA500';
@@ -269,7 +267,7 @@
 
   function openBoostModal() {
     if(userData.boostCount >= 3) {
-      alert('आप 3 बार Ad देख चुके हो। 3 घंटे बाद फिर Try करो।');
+      alert('You watched 3 Ads already. Try again after 3 hours.');
       return;
     }
     document.getElementById('boostStep').innerText = userData.boostCount + 1;
@@ -283,14 +281,9 @@
   function watchBoostAd() {
     if(userData.boostCount >= 3) return;
     
-    // 5% of MINING_REWARD
     const boostAmount = Math.floor(MINING_REWARD * 0.05);
     userData.balance += boostAmount;
     userData.boostCount++;
-    
-    if(userData.boostCount === 1) {
-      userData.boostResetTime = Date.now();
-    }
     
     saveUser();
     updateBalance();
@@ -310,11 +303,10 @@
     }
   }
 
-  // ============ ULTRA GIFT ============
   function updateGift() {
     const now = Date.now();
     const diff = now - userData.lastGift;
-    const cooldown = 2 * 60 * 60 * 1000; // हर 2 घंटे
+    const cooldown = 2 * 60 * 60 * 1000;
     
     if(diff >= cooldown || userData.lastGift === 0) {
       document.getElementById('giftTimer').innerText = 'Ready → +15 RUPPY';
@@ -337,7 +329,7 @@
 
   function openGift() {
     if(Date.now() - userData.lastGift < 2*60*60*1000 && userData.lastGift !== 0) {
-      alert('अभी Time बाकी है। 2 घंटे बाद फिर खोलो।');
+      alert('Please wait. Come back after 2 hours.');
       return;
     }
     
