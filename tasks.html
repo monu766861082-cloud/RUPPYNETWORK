@@ -19,11 +19,10 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:70px}
 .bt{border:1px solid #d4a017;color:#d4a017;padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;min-width:65px;text-align:center}
 .bt.claim{background:#d4a017;color:#000;font-weight:bold}
 .bt.done{background:#333;color:#666;border-color:#333;cursor:not-allowed}
-.nav{position:fixed;bottom:0;left:0;width:100%;display:flex;background:#000;border-top:1px solid #222}
-.nv{flex:1;text-align:center;font-size:11px;padding:6px 0;color:#777;position:relative;cursor:pointer}
+.nav{position:fixed;bottom:0;left:0;width:100%;display:flex;background:#000;border-top:1px solid #222;padding:4px 0}
+.nv{flex:1;text-align:center;font-size:11px;color:#777;cursor:pointer}
 .nv.active{color:#d4a017}
-.nv.active::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:40px;height:4px;background:#d4a017;border-radius:2px}
-.nv.icon{font-size:18px;display:block;margin-bottom:2px}
+.nv.icon{font-size:20px;display:block;margin-bottom:2px}
 </style>
 </head>
 <body>
@@ -73,11 +72,10 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:70px}
 </div>
 
 <script>
-// Get balance from localStorage
-let tokens = localStorage.getItem('ruppyTokens')? parseInt(localStorage.getItem('ruppyTokens')) : 0;
+// Sync with app.html - Must use same key 'ruppyTokens'
+let tokens = parseInt(localStorage.getItem('ruppyTokens')) || 0;
 let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
 
-// Display balance on page load
 document.getElementById('bal').innerText = tokens;
 updateButtons();
 
@@ -91,11 +89,10 @@ function taskClick(task){
 
 function claimReward(task){
   if(taskState[task] === 'joined'){
-    // Ad will be added here later
     tokens += 20;
     taskState[task] = 'claimed';
 
-    // Save to localStorage and update display
+    // This updates the same balance that app.html shows
     localStorage.setItem('ruppyTokens', tokens);
     localStorage.setItem('taskState', JSON.stringify(taskState));
     document.getElementById('bal').innerText = tokens;
