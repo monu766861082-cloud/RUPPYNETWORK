@@ -62,9 +62,12 @@
     .nav-item.active {color:#FFA500;}
     .nav-item.active::after {content:''; width:30px; height:2px; background:#FFA500; margin-top:2px;}
     .nav-item .icon {font-size:20px;}
+    
+    /* Hide Monetag Injected Text */
+    [id*="monetag"], [class*="monetag"], [class*="zh-"] {display:none !important;}
   </style>
   
-  <!-- Monetag MultiTag Script ✅ Vignette Zone: 10862356 -->
+  <!-- Monetag Vignette Zone: 10862356 -->
   <script src="https://quge5.com/88/tag.min.js" data-zone="10862356" async data-cfasync="false"></script>
   
 </head>
@@ -166,7 +169,7 @@
 
 <script>
   const MINING_REWARD = 40;
-  const TOKEN_RATE = 800; // 800 RUPPY = $1.00
+  const TOKEN_RATE = 800;
   
   let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
     name: 'User',
@@ -194,28 +197,33 @@
     localStorage.setItem('ruppy_user', JSON.stringify(userData));
   }
 
-  // ===== MONETAG AD FUNCTIONS - Vignette Format ✅ =====
+  // ===== MONETAG DEBUG VERSION =====
   function showMonetagAd(callback) {
+    console.log('Ad Request Started...');
     try {
       if(typeof window._ZH !== 'undefined' && window._ZH && window._ZH.show){
+        console.log('Monetag Loaded - Showing Ad');
         window._ZH.show().then(() => {
+          console.log('Ad Completed');
           callback();
-        }).catch(() => {
+        }).catch((err) => {
+          console.log('Ad Error:', err);
+          alert('Ad नहीं मिला। 1 Min बाद Try करें।');
           callback();
         });
       } else {
+        console.log('Monetag NOT Loaded Yet');
+        alert('Ad Loading में है। 5 Sec बाद Try करें।');
         setTimeout(() => {
           callback();
         }, 800);
       }
     } catch(e) {
+      console.log('Catch Error:', e);
       callback();
     }
   }
 
-  // ===== AD WRAPPER FUNCTIONS - तेरे 4 Point =====
-  
-  // 1. Mining Start से पहले Ad
   function handleMiningClick() {
     let now = Date.now();
     let lastMine = Number(userData.lastMine) || 0;
@@ -226,7 +234,6 @@
     });
   }
 
-  // 2. Boost Mining से पहले Ad
   function handleBoostClick() {
     if(userData.boostCount >= 3) {
       alert('You watched 3 Ads already. Try again after 3 hours.');
@@ -243,7 +250,6 @@
     });
   }
 
-  // 3. Gift Box से पहले Ad
   function handleGiftClick() {
     let now = Date.now();
     let lastGift = Number(userData.lastGift) || 0;
@@ -257,7 +263,6 @@
     });
   }
 
-  // 4. कोई भी Reward Claim Function - Future Use
   function claimRewardWithAd(rewardAmount) {
     showMonetagAd(() => {
       userData.balance += rewardAmount;
@@ -284,6 +289,15 @@
     updateBoost();
     updateGift();
     updateTeam();
+    
+    // Check Monetag Status
+    setTimeout(() => {
+      if(typeof window._ZH !== 'undefined'){
+        console.log('✅ Monetag Loaded Successfully');
+      } else {
+        console.log('❌ Monetag NOT Loaded - Check Script');
+      }
+    }, 3000);
     
     setInterval(function() {
       updateMiningCircle();
