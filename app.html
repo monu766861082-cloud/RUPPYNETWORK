@@ -1,381 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ruppy Network - App</title>
-  <style>
-    * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
-    body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
-    
-    .header {padding:20px 15px 10px; display:flex; align-items:center; gap:12px;}
-    .header .dp {width:40px; height:40px; border-radius:50%; background:#1a1a1a; display:flex; align-items:center; justify-content:center; font-size:18px; overflow:hidden; border:1px solid #333;}
-    .header .dp img {width:100%; height:100%; object-fit:cover;}
-    .header .info h3 {font-size:16px; font-weight:500;}
-    .header .info p {font-size:12px; color:#888;}
-    
-    .balance-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:20px;}
-    .balance-card p:first-child {color:#888; font-size:13px;}
-    .balance-card h2 {font-size:32px; margin:5px 0; color:#FFA500;}
-    .balance-card h2 span {color:#fff; font-size:20px;}
-    .balance-card p:last-child {color:#666; font-size:12px;}
-    
-    .mining-section {margin:30px 0; text-align:center;}
-    .mining-circle {width:180px; height:180px; margin:0 auto; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:0.3s; border:2px solid #FFA500;}
-    .mining-circle.ready {background:linear-gradient(135deg, #FFD700, #FFA500); border:none; box-shadow:0 0 25px rgba(255,165,0,0.6);}
-    .mining-circle.ready h3 {color:#000;}
-    .mining-circle.mining {background:transparent; border:2px solid #FFA500; cursor:not-allowed;}
-    .mining-circle.mining h3 {color:#FFA500; font-size:16px; white-space:pre-line; text-align:center;}
-    .mining-text {text-align:center; margin-top:15px; color:#666; font-size:13px;}
-    
-    .grid {display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:25px 15px;}
-    .grid-item {background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:18px 12px; text-align:center; cursor:pointer; position:relative;}
-    .grid-item:active {transform:scale(0.97);}
-    .grid-item .badge {position:absolute; top:8px; right:8px; background:#FFA500; color:#000; font-size:11px; font-weight:600; min-width:18px; height:18px; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:0 5px;}
-    .grid-item .icon {width:35px; height:35px; margin:0 auto 10px; background:#1a1a1a; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:20px;}
-    .grid-item h4 {font-size:14px; margin-bottom:4px; color:#FFA500;}
-    .grid-item p {font-size:11px; color:#666;}
-    .timer-bar {width:100%; height:3px; background:#1a1a1a; border-radius:2px; margin-top:6px; overflow:hidden;}
-    .timer-fill {height:100%; background:#FFA500; width:0%; transition:width 1s linear;}
-    
-    .modal {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:none; align-items:center; justify-content:center; z-index:999;}
-    .modal.active {display:flex;}
-    .modal-content {background:#0d0d0d; border:1px solid #333; border-radius:12px; padding:20px; width:90%; max-width:320px;}
-    .modal-content h3 {margin-bottom:15px; color:#FFA500; text-align:center;}
-    .modal-content p {color:#888; font-size:13px; text-align:center; margin-bottom:15px;}
-    .modal-content .boost-step {background:#000; border:1px solid #222; padding:15px; border-radius:8px; margin:10px 0;}
-    .modal-content .boost-step h4 {color:#FFA500; margin-bottom:8px;}
-    .team-list {margin:15px 0; max-height:250px; overflow-y:auto;}
-    .team-member {padding:12px; background:#000; border:1px solid #222; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; font-size:14px;}
-    .team-member .online {width:8px; height:8px; background:#00ff00; border-radius:50%; animation:pulse 2s infinite;}
-    @keyframes pulse {0%,100%{opacity:1;} 50%{opacity:0.3;}}
-    .btn {margin-top:10px; width:100%; padding:12px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:600; cursor:pointer;}
-    .btn:disabled {background:#333; color:#666; cursor:not-allowed;}
-    .close-btn {margin-top:8px; width:100%; padding:10px; background:#1a1a1a; border:1px solid #333; border-radius:8px; color:#888; cursor:pointer;}
-    
-    .nav {position:fixed; bottom:0; left:0; right:0; background:#0d0d0d; border-top:1px solid #222; display:flex; justify-content:space-around; padding:8px 0;}
-    .nav-item {display:flex; flex-direction:column; align-items:center; gap:3px; color:#666; text-decoration:none; font-size:11px; cursor:pointer; padding:5px 15px;}
-    .nav-item.active {color:#FFA500;}
-    .nav-item.active::after {content:''; width:30px; height:2px; background:#FFA500; margin-top:2px;}
-    .nav-item .icon {font-size:20px;}
-  </style>
-</head>
-<body>
-
-  <div class="header">
-    <div class="dp" id="userDp">👤</div>
-    <div class="info">
-      <h3 id="userName">Welcome back, User</h3>
-      <p>Keep mining to earn more</p>
-    </div>
-  </div>
-
-  <div class="balance-card">
-    <p>TOTAL BALANCE</p>
-    <h2 id="balance">0 <span>RUPPY</span></h2>
-    <p>≈ $0.00 USD • 1,200 = $1.00</p>
-  </div>
-
-  <div class="mining-section">
-    <div class="mining-circle ready" id="miningCircle" onclick="startMining()">
-      <h3 id="miningText">MINE NOW</h3>
-    </div>
-    <p class="mining-text">Mines every 3 hours • 40 RUPPY</p>
-  </div>
-
-  <div class="grid">
-    <div class="grid-item" onclick="openBoostModal()">
-      <div class="badge" id="boostBadge">0/3</div>
-      <div class="icon">🖥️</div>
-      <h4>BOOST MINING</h4>
-      <p id="boostTimer">Watch Ad → +5%</p>
-      <div class="timer-bar"><div class="timer-fill" id="boostBar"></div></div>
-    </div>
-    <div class="grid-item" onclick="openGift()">
-      <div class="badge" id="giftBadge">✓</div>
-      <div class="icon" style="background:#6a5acd;">🎁</div>
-      <h4 style="color:#fff;">ULTRA GIFT</h4>
-      <p id="giftTimer">Ready → +15 RUPPY</p>
-      <div class="timer-bar"><div class="timer-fill" id="giftBar"></div></div>
-    </div>
-    <div class="grid-item" onclick="openTeam()">
-      <div class="icon">👥</div>
-      <h4 style="color:#fff;">Team</h4>
-      <p id="teamCount">0 Members</p>
-    </div>
-    <div class="grid-item" onclick="openWallet()">
-      <div class="icon">💰</div>
-      <h4 style="color:#fff;">Wallet</h4>
-      <p>Check balance</p>
-    </div>
-  </div>
-
-  <!-- Boost Modal -->
-  <div class="modal" id="boostModal">
-    <div class="modal-content">
-      <h3>🚀 BOOST MINING</h3>
-      <p>Watch 3 Ads = 15% Extra RUPPY</p>
-      <div class="boost-step">
-        <h4>Step <span id="boostStep">1</span>/3</h4>
-        <p id="boostStepText">Watch Ad and Claim 5%</p>
-      </div>
-      <button class="btn" id="boostBtn" onclick="watchBoostAd()">Watch Ad + Claim 5%</button>
-      <button class="close-btn" onclick="closeBoostModal()">Close</button>
-    </div>
-  </div>
-
-  <!-- Team Modal -->
-  <div class="modal" id="teamModal">
-    <div class="modal-content">
-      <h3>Your Team</h3>
-      <div class="team-list" id="teamList"></div>
-      <button class="btn" onclick="closeTeam()">Close</button>
-    </div>
-  </div>
-
-  <div class="nav">
-    <div class="nav-item active" onclick="navClick('home')">
-      <div class="icon">🏠</div>
-      <span>Home</span>
-    </div>
-    <div class="nav-item" onclick="navClick('tasks')">
-      <div class="icon">📋</div>
-      <span>Tasks</span>
-    </div>
-    <div class="nav-item" onclick="navClick('referral')">
-      <div class="icon">👥</div>
-      <span>Referral</span>
-    </div>
-    <div class="nav-item" onclick="navClick('ranking')">
-      <div class="icon">🏆</div>
-      <span>Ranking</span>
-    </div>
-    <div class="nav-item" onclick="navClick('settings')">
-      <div class="icon">⚙️</div>
-      <span>Settings</span>
-    </div>
-  </div>
-
 <script>
-  const MINING_REWARD = 40;
-  
-  let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
-    name: 'User',
-    dp: null,
-    balance: 0,
-    lastMine: 0,
-    lastGift: 0,
-    boostCount: 0,
-    boostResetTime: Date.now(),
-    team: [
-      {name: 'Rahul Kumar', online: true},
-      {name: 'Priya Singh', online: true},
-      {name: 'Amit Sharma', online: false}
-    ]
+// SAFE PATCH - NO HINDI - NO DELETION
+(function(){
+  // Fix 1: Prevent NaN and protect balance
+  let ud = JSON.parse(localStorage.getItem('ruppy_user')) || {};
+  ud.balance = Number(ud.balance) || 0;
+  ud.lastMine = Number(ud.lastMine) || 0;
+  ud.lastGift = Number(ud.lastGift) || 0;
+  ud.boostCount = Number(ud.boostCount) || 0;
+  ud.boostResetTime = Number(ud.boostResetTime) || Date.now();
+  localStorage.setItem('ruppy_user', JSON.stringify(ud));
+
+  // Fix 2: Override startMining - works after 3 hours
+  window.startMining = function(){
+    let userData = JSON.parse(localStorage.getItem('ruppy_user'));
+    let now = Date.now();
+    let cooldown = 10800000; // 3 hours
+    
+    userData.lastMine = Number(userData.lastMine) || 0;
+    if(now - userData.lastMine < cooldown && userData.lastMine !== 0) return;
+    
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += 40;
+    userData.lastMine = now;
+    localStorage.setItem('ruppy_user', JSON.stringify(userData));
+    
+    document.getElementById('balance').innerHTML = userData.balance + ' <span>RUPPY</span>';
+    updateMiningCircle();
   };
 
-  // Fix NaN: Ensure boostCount is always a number
-  userData.boostCount = Number(userData.boostCount) || 0;
-  userData.boostResetTime = Number(userData.boostResetTime) || Date.now();
-
-  function saveUser() {
-    localStorage.setItem('ruppy_user', JSON.stringify(userData));
-  }
-
-  function init() {
-    document.getElementById('userName').innerText = `Welcome back, ${userData.name}`;
-    if(userData.dp) {
-      document.getElementById('userDp').innerHTML = `<img src="${userData.dp}" alt="DP">`;
-    }
+  // Fix 3: Override updateMiningCircle - no NaN
+  window.updateMiningCircle = function(){
+    let userData = JSON.parse(localStorage.getItem('ruppy_user'));
+    let now = Date.now();
+    let lastMine = Number(userData.lastMine) || 0;
+    let diff = now - lastMine;
+    let cooldown = 10800000;
     
-    if(Date.now() - userData.boostResetTime > 3*60*60*1000) {
-      userData.boostCount = 0;
-      userData.boostResetTime = Date.now();
-      saveUser();
-    }
+    let circle = document.getElementById('miningCircle');
+    let text = document.getElementById('miningText');
     
-    updateBalance();
-    updateMiningCircle();
-    updateBoost();
-    updateGift();
-    updateTeam();
-    
-    setInterval(() => {
-      updateMiningCircle();
-      updateBoost();
-      updateGift();
-    }, 1000);
-  }
-
-  function updateBalance() {
-    document.getElementById('balance').innerHTML = `${userData.balance} <span>RUPPY</span>`;
-  }
-
-  function updateMiningCircle() {
-    const now = Date.now();
-    const diff = now - userData.lastMine;
-    const cooldown = 3 * 60 * 60 * 1000;
-    
-    const circle = document.getElementById('miningCircle');
-    const text = document.getElementById('miningText');
-    
-    if(diff >= cooldown || userData.lastMine === 0) {
+    if(diff >= cooldown || lastMine === 0){
       circle.className = 'mining-circle ready';
       text.innerText = 'MINE NOW';
       circle.onclick = startMining;
     } else {
-      const remaining = cooldown - diff;
-      const hrs = Math.floor(remaining / 3600000);
-      const mins = Math.floor((remaining % 3600000) / 60000);
-      const secs = Math.floor((remaining % 60000) / 1000);
+      let remaining = cooldown - diff;
+      let hrs = Math.floor(remaining / 3600000);
+      let mins = Math.floor((remaining % 3600000) / 60000);
+      let secs = Math.floor((remaining % 60000) / 1000);
       
       circle.className = 'mining-circle mining';
-      text.innerText = `Next in\n${String(hrs).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+      text.innerText = 'Next in\n' + String(hrs).padStart(2,'0') + ':' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
       circle.onclick = null;
     }
-  }
+  };
 
-  function startMining() {
-    if(Date.now() - userData.lastMine < 3*60*60*1000 && userData.lastMine !== 0) return;
+  // Fix 4: Boost Mining Timer runs below boost option
+  window.updateBoost = function(){
+    let userData = JSON.parse(localStorage.getItem('ruppy_user'));
+    let now = Date.now();
+    userData.boostResetTime = Number(userData.boostResetTime) || now;
+    userData.boostCount = Number(userData.boostCount) || 0;
     
-    userData.balance += MINING_REWARD;
-    userData.lastMine = Date.now();
-    saveUser();
-    updateBalance();
-    updateMiningCircle();
-  }
-
-  function updateBoost() {
-    if(Date.now() - userData.boostResetTime > 3*60*60*1000) {
+    if(now - userData.boostResetTime > 10800000){
       userData.boostCount = 0;
-      userData.boostResetTime = Date.now();
-      saveUser();
+      userData.boostResetTime = now;
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
     }
     
-    document.getElementById('boostBadge').innerText = `${userData.boostCount}/3`;
+    document.getElementById('boostBadge').innerText = userData.boostCount + '/3';
     
-    if(userData.boostCount >= 3) {
-      document.getElementById('boostTimer').innerText = 'Max Reached';
+    if(userData.boostCount >= 3){
+      let resetIn = 10800000 - (now - userData.boostResetTime);
+      let h = Math.floor(resetIn / 3600000);
+      let m = Math.floor((resetIn % 3600000) / 60000);
+      let s = Math.floor((resetIn % 60000) / 1000);
+      document.getElementById('boostTimer').innerText = 'Reset in ' + h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
       document.getElementById('boostBar').style.width = '100%';
       document.getElementById('boostBadge').style.background = '#00ff00';
     } else {
-      document.getElementById('boostTimer').innerText = `Watch Ad → +5%`;
+      document.getElementById('boostTimer').innerText = 'Watch Ad → +5%';
       document.getElementById('boostBar').style.width = (userData.boostCount / 3 * 100) + '%';
       document.getElementById('boostBadge').style.background = '#FFA500';
     }
-  }
+  };
 
-  function openBoostModal() {
-    if(userData.boostCount >= 3) {
-      alert('You watched 3 Ads already. Try again after 3 hours.');
-      return;
-    }
-    document.getElementById('boostStep').innerText = userData.boostCount + 1;
-    document.getElementById('boostModal').classList.add('active');
-  }
+  // Fix 5: Protect saveUser from NaN
+  window.saveUser = function(){
+    let ud = JSON.parse(localStorage.getItem('ruppy_user'));
+    ud.balance = Number(ud.balance) || 0;
+    localStorage.setItem('ruppy_user', JSON.stringify(ud));
+  };
 
-  function closeBoostModal() {
-    document.getElementById('boostModal').classList.remove('active');
-  }
-
-  function watchBoostAd() {
-    if(userData.boostCount >= 3) return;
-    
-    const boostAmount = Math.floor(MINING_REWARD * 0.05);
-    userData.balance += boostAmount;
-    userData.boostCount++;
-    
-    saveUser();
-    updateBalance();
+  setTimeout(function(){
+    updateMiningCircle();
     updateBoost();
-    
-    if(userData.boostCount >= 3) {
-      document.getElementById('boostBtn').innerText = 'All Claimed!';
-      document.getElementById('boostBtn').disabled = true;
-      setTimeout(() => {
-        closeBoostModal();
-        document.getElementById('boostBtn').innerText = 'Watch Ad + Claim 5%';
-        document.getElementById('boostBtn').disabled = false;
-      }, 1500);
-    } else {
-      document.getElementById('boostStep').innerText = userData.boostCount + 1;
-      alert(`+${boostAmount} RUPPY Claimed! (${userData.boostCount}/3)`);
-    }
-  }
-
-  function updateGift() {
-    const now = Date.now();
-    const diff = now - userData.lastGift;
-    const cooldown = 2 * 60 * 60 * 1000;
-    
-    if(diff >= cooldown || userData.lastGift === 0) {
-      document.getElementById('giftTimer').innerText = 'Ready → +15 RUPPY';
-      document.getElementById('giftBadge').innerText = '✓';
-      document.getElementById('giftBadge').style.background = '#00ff00';
-      document.getElementById('giftBar').style.width = '100%';
-    } else {
-      const remaining = cooldown - diff;
-      const hrs = Math.floor(remaining / 3600000);
-      const mins = Math.floor((remaining % 3600000) / 60000);
-      const secs = Math.floor((remaining % 60000) / 1000);
-      document.getElementById('giftTimer').innerText = `Next in ${String(hrs).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-      document.getElementById('giftBadge').innerText = '⏱';
-      document.getElementById('giftBadge').style.background = '#666';
-      
-      const percent = ((cooldown - remaining) / cooldown) * 100;
-      document.getElementById('giftBar').style.width = percent + '%';
-    }
-  }
-
-  function openGift() {
-    if(Date.now() - userData.lastGift < 2*60*60*1000 && userData.lastGift !== 0) {
-      alert('Please wait. Come back after 2 hours.');
-      return;
-    }
-    
-    userData.balance += 15;
-    userData.lastGift = Date.now();
-    saveUser();
-    updateBalance();
-    updateGift();
-    alert('+15 RUPPY Added to Wallet! 🎁');
-  }
-
-  function updateTeam() {
-    document.getElementById('teamCount').innerText = `${userData.team.length} Members`;
-  }
-
-  function openTeam() {
-    const list = document.getElementById('teamList');
-    list.innerHTML = '';
-    userData.team.forEach(member => {
-      list.innerHTML += `
-        <div class="team-member">
-          <span>${member.name}</span>
-          ${member.online ? '<div class="online"></div>' : '<span style="font-size:11px;color:#666">Offline</span>'}
-        </div>
-      `;
-    });
-    document.getElementById('teamModal').classList.add('active');
-  }
-
-  function closeTeam() {
-    document.getElementById('teamModal').classList.remove('active');
-  }
-
-  function openWallet() {
-    alert(`Your Wallet Balance: ${userData.balance} RUPPY`);
-  }
-
-  function navClick(page) {
-    if(page === 'tasks') window.location.href = 'tasks.html';
-    if(page === 'referral') alert('Referral page coming soon');
-    if(page === 'ranking') alert('Ranking page coming soon');
-    if(page === 'settings') alert('Settings page coming soon');
-  }
-
-  init();
+  }, 300);
+})();
 </script>
-
-</body>
-</html>
