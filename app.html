@@ -11,7 +11,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial}
 .bal{border:1px solid #a87128;border-radius:14px;padding:14px;margin:12px}
 .bal h2{margin:6px 0;font-size:32px}.bal h2 span{color:#d4a017}
 .sub{color:#d4a017;font-size:13px}
-.tm{margin:20px auto;width:160px;height:160px;border:2px solid #a87128;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#d4a017;font-size:13px;text-align:center}
+.tm{margin:20px auto;width:160px;height:160px;border:2px solid #a87128;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#d4a017;font-size:13px;text-align:center;cursor:pointer}
 .grd{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px}
 .cd{border:1px solid #333;border-radius:14px;padding:14px;text-align:center;font-size:13px;position:relative;cursor:pointer}
 .boost{border-color:#a87128}
@@ -23,29 +23,95 @@ body{margin:0;background:#000;color:#fff;font-family:Arial}
 .bdg{position:absolute;top:-8px;right:-8px;background:#facc15;color:#000;border-radius:50%;width:24px;height:24px;font-size:13px;display:flex;align-items:center;justify-content:center}
 .ic{width:56px;height:56px;border:1px solid #a87128;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center}
 .nav{position:fixed;bottom:0;left:0;width:100%;display:flex;background:#000;border-top:1px solid #222}
-.nv{flex:1;text-align:center;font-size:11px;padding:6px 0;color:#777;position:relative}
+.nv{flex:1;text-align:center;font-size:11px;padding:6px 0;color:#777;position:relative;cursor:pointer}
 .nv.active{color:#d4a017}
 .nv.active::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:40px;height:4px;background:#d4a017;border-radius:2px}
+.nv i{display:block;font-size:18px;margin-bottom:2px}
 </style>
 </head>
 <body>
-<div class="hdr"><img src="https://i.imgur.com/8Km9tLL.png" alt=""><div><small>Welcome back,</small><br><b>Akash Sharma</b></div></div>
-<div class="bal"><small>TOTAL BALANCE</small><h2><span id="tok">1,220</span> TOKEN</h2><div class="sub">≈ $1.02 USD • 1,200 = $1.00</div></div>
-<div class="tm" id="timer">Next in<br>03:47:50</div>
-<div style="text-align:center;color:#aaa;font-size:13px;margin-bottom:12px">Mines every 4 hours</div>
+<div class="hdr"><img src="https://i.imgur.com/8Km9tLL.png" alt=""><div><small>Welcome back,</small><br><b id="userName">Loading...</b></div></div>
+<div class="bal"><small>TOTAL BALANCE</small><h2><span id="tok">0</span> TOKEN</h2><div class="sub">≈ $<span id="usd">0.00</span> USD • 1,200 = $1.00</div></div>
+<div class="tm" id="timer" onclick="mine()">MINE NOW<br>20 TOKEN</div>
+<div style="text-align:center;color:#aaa;font-size:13px;margin-bottom:12px">Mines every 3 hours</div>
 <div class="grd">
-  <div class="cd boost" onclick="boost()"><i>📺</i><b>BOOST MINING</b><br><small>Watch ad → +5%</small></div>
+  <div class="cd boost" onclick="boost()"><i>📺</i><b>BOOST MINING</b><br><small id="boostTxt">Ready to use</small></div>
   <div class="cd gift" onclick="gift()"><div class="bdg" id="bdg">2</div><i>🎁</i><b>ULTRA GIFT</b><br><small>Watch ad → +10 TOKEN</small><div style="margin-top:6px;font-size:12px"><span id="op">2</span> opens left today</div></div>
   <div class="cd"><span class="ic">👥</span>Team<br><b>12 Active</b></div>
   <div class="cd"><span class="ic">💰</span>Wallet<br><b>Not Connected</b></div>
 </div>
-<div class="nav"><div class="nv active">Home</div><div class="nv">Tasks</div><div class="nv">Referral</div><div class="nv">Ranking</div><div class="nv">Settings</div></div>
+<div class="nav">
+  <div class="nv active" onclick="navTo('app.html')"><i>🏠</i>Home</div>
+  <div class="nv" onclick="navTo('tasks.html')"><i>📋</i>Tasks</div>
+  <div class="nv" onclick="navTo('referral.html')"><i>👥</i>Referral</div>
+  <div class="nv" onclick="navTo('ieaderboard.html')"><i>🏆</i>Ranking</div>
+  <div class="nv" onclick="navTo('profile.html')"><i>⚙️</i>Settings</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-let tokens=1220,bdg=2,opens=2;
-function boost(){tokens+=Math.floor(tokens*0.05);document.getElementById('tok').innerText=tokens.toLocaleString()}
-function gift(){if(opens>0){tokens+=10;opens--;bdg--;document.getElementById('tok').innerText=tokens.toLocaleString();document.getElementById('op').innerText=opens;document.getElementById('bdg').innerText=bdg}}
-let t=13670;
-setInterval(()=>{t--;let h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;document.getElementById('timer').innerHTML=`Next in<br>${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`},1000);
+const supabase = window.supabase.createClient(
+  'https://scgjubxfxjakgicupyuo.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ2p1YnhmeGpha2dpY3VweXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzk4NTIsImV4cCI6MjA5MTIxNTg1Mn0.QST9mZ7uup-H-s9P6DznbOVO14kJTCgYIIZxyTP1T24'
+);
+
+let tokens = 0, boostRate = 0, giftOpens = 2, boostTimer = 0, mineTimer = 0;
+
+async function init(){
+  const { data: { user } } = await supabase.auth.getUser();
+  if(!user){ window.location.href = "/"; return; }
+  document.getElementById('userName').innerText = user.email.split('@')[0];
+  updateBalance();
+}
+
+function updateBalance(){
+  document.getElementById('tok').innerText = tokens.toLocaleString();
+  document.getElementById('usd').innerText = (tokens/1200).toFixed(2);
+  document.getElementById('bdg').innerText = giftOpens;
+  document.getElementById('op').innerText = giftOpens;
+}
+
+function mine(){
+  if(mineTimer > 0) return;
+  let reward = 20 + Math.floor(20 * boostRate / 100);
+  tokens += reward;
+  mineTimer = 3 * 60 * 60;
+  updateBalance();
+}
+
+function boost(){
+  if(boostTimer > 0){ alert("Next boost in " + formatTime(boostTimer)); return; }
+  boostRate += 5;
+  boostTimer = 2 * 60 * 60;
+  document.getElementById('boostTxt').innerText = "Next in 02:00:00";
+  alert("Boost Applied! Mining Speed +5%. Total: " + boostRate + "%");
+}
+
+function gift(){
+  if(giftOpens <= 0){ alert("Daily limit reached"); return; }
+  tokens += 10;
+  giftOpens--;
+  updateBalance();
+}
+
+function navTo(page){
+  window.location.href = "/" + page;
+}
+
+function formatTime(s){
+  let h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+setInterval(()=>{
+  if(mineTimer > 0) mineTimer--;
+  if(boostTimer > 0){
+    boostTimer--;
+    document.getElementById('boostTxt').innerText = boostTimer > 0? "Next in " + formatTime(boostTimer) : "Ready to use";
+  }
+  document.getElementById('timer').innerHTML = mineTimer > 0? `Next in<br>${formatTime(mineTimer)}` : `MINE NOW<br>20 TOKEN`;
+},1000);
+
+init();
 </script>
 </body>
 </html>
