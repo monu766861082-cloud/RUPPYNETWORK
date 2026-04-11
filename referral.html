@@ -1,7 +1,11 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ruppy Referral</title>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ruppy Referral</title>
 <style>
-body{margin:0;background:#000;color:#fff;font-family:Arial}
+body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .hdr{padding:20px;font-size:28px;font-weight:bold}
 .card{border:1px solid #a87128;border-radius:14px;padding:16px;margin:16px;box-shadow:0 0 10px #a87128}
 .card h3{margin:0 0 8px;color:#ccc}
@@ -16,16 +20,156 @@ body{margin:0;background:#000;color:#fff;font-family:Arial}
 .bx{flex:1;border:1px solid #333;border-radius:10px;padding:16px;text-align:center}
 .bx .v{font-size:24px;font-weight:bold}.bx .l{display:block;margin-top:4px;color:#aaa}
 .team{padding:0 16px;font-size:18px;font-weight:bold;color:#d4a017}
-.nav{position:fixed;bottom:0;left:0;width:100%;display:flex;background:#000;border-top:1px solid #222}
-.nv{flex:1;text-align:center;font-size:11px;padding:6px 0;color:#777;position:relative}
-.nv.active{color:#d4a017}
-.nv.active::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:40px;height:4px;background:#d4a017;border-radius:2px}
-</style></head><body>
+
+/* SAME NAV CSS FROM APP.HTML */
+.nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 15px}
+.nav-item.active{color:#FFA500}
+.nav-item.active::after{content:'';width:30px;height:2px;background:#FFA500;margin-top:2px}
+.nav-item.icon{font-size:20px}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999}
+</style>
+</head>
+<body>
 <div class="hdr">Referral Program</div>
-<div class="card"><h3>Team Rewards</h3><div class="amt"><span>320</span> TOKEN</div><div class="tag">+8% per active friend</div></div>
-<div class="inv"><label>YOUR INVITE CODE</label><div class="inpbx"><div class="inp">RUPPY786</div><div class="cp" onclick="copy()">⧉</div></div><button class="bt" onclick="invite()">✨ INVITE FRIENDS</button></div>
-<div class="sts"><div class="bx"><span class="v">12</span><span class="l">TOTAL</span></div><div class="bx"><span class="v" style="color:#0f0">8</span><span class="l">ACTIVE</span></div><div class="bx"><span class="v" style="color:#f33">4</span><span class="l">INACTIVE</span></div></div>
+
+<div class="card">
+  <h3>Team Rewards</h3>
+  <div class="amt"><span id="teamReward">0</span> RUPPY</div>
+  <div class="tag">+2% per referral mining</div>
+</div>
+
+<div class="inv">
+  <label>YOUR INVITE CODE</label>
+  <div class="inpbx">
+    <div class="inp" id="inviteCode">RUPPY786</div>
+    <div class="cp" onclick="copy()">⧉</div>
+  </div>
+  <button class="bt" onclick="invite()">✨ INVITE FRIENDS</button>
+</div>
+
+<div class="sts">
+  <div class="bx"><span class="v" id="totalCount">0</span><span class="l">TOTAL</span></div>
+  <div class="bx"><span class="v" id="activeCount" style="color:#0f0">0</span><span class="l">ACTIVE</span></div>
+  <div class="bx"><span class="v" id="inactiveCount" style="color:#f33">0</span><span class="l">INACTIVE</span></div>
+</div>
+
 <div class="team">👥 My Team</div>
-<div class="nav"><div class="nv">Home</div><div class="nv">Tasks</div><div class="nv active">Referral</div><div class="nv">Ranking</div><div class="nv">Settings</div></div>
-<script>function copy(){navigator.clipboard.writeText('RUPPY786');alert('Copied')}function invite(){alert('Invite link sent!')}</script>
-</body></html>
+
+<div class="nav">
+  <div class="nav-item" onclick="goPage('app.html')">
+    <div class="icon">🏠</div>
+    <span>Home</span>
+  </div>
+  <div class="nav-item" onclick="goPage('tasks.html')">
+    <div class="icon">📋</div>
+    <span>Tasks</span>
+  </div>
+  <div class="nav-item active">
+    <div class="icon">👥</div>
+    <span>Referral</span>
+  </div>
+  <div class="nav-item" onclick="goPage('ranking.html')">
+    <div class="icon">🏆</div>
+    <span>Ranking</span>
+  </div>
+  <div class="nav-item" onclick="goPage('settings.html')">
+    <div class="icon">⚙️</div>
+    <span>Settings</span>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied!</div>
+
+<script>
+let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
+  name: 'User',
+  balance: 0,
+  lastMine: 0,
+  lastGift: 0,
+  boostCount: 0,
+  boostResetTime: Date.now(),
+  team: [],
+  lastTeamRewardCheck: 0,
+  teamRewardEarned: 0
+};
+
+// 1. UNIQUE INVITE CODE GENERATE
+let inviteCode = 'RUPPY' + userData.name.substring(0,3).toUpperCase() + Math.floor(Math.random()*900+100);
+if(!localStorage.getItem('ruppy_inviteCode')){
+  localStorage.setItem('ruppy_inviteCode', inviteCode);
+} else {
+  inviteCode = localStorage.getItem('ruppy_inviteCode');
+}
+document.getElementById('inviteCode').innerText = inviteCode;
+
+// 2. TEAM STATS CALCULATE - 24 HOUR LOGIC
+let team = userData.team || [];
+let now = Date.now();
+let oneDay = 24*60*60*1000;
+
+let total = team.length;
+let active = team.filter(t => now - t.lastMine < oneDay).length;
+let inactive = total - active;
+
+// 3. TEAM REWARDS = 2% OF REFERRALS MINING IN LAST 24H
+let teamMining24h = team.reduce((sum, t) => {
+  if(now - t.lastMine < oneDay) return sum + (t.lastMinedAmount || 0);
+  return sum;
+}, 0);
+
+let newTeamReward = Math.floor(teamMining24h * 0.02);
+
+// Check if 24h passed since last reward check
+if(now - userData.lastTeamRewardCheck > oneDay){
+  userData.balance += newTeamReward;
+  userData.lastTeamRewardCheck = now;
+  userData.teamRewardEarned += newTeamReward;
+  localStorage.setItem('ruppy_user', JSON.stringify(userData));
+}
+
+// Display current pending + earned
+document.getElementById('teamReward').innerText = userData.teamRewardEarned || 0;
+document.getElementById('totalCount').innerText = total;
+document.getElementById('activeCount').innerText = active;
+document.getElementById('inactiveCount').innerText = inactive;
+
+function copy(){
+  navigator.clipboard.writeText(inviteCode);
+  showToast('Invite Code Copied!');
+}
+
+function invite(){
+  let text = `Join RUPPY Network & start mining! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app?ref=${inviteCode}`;
+  
+  if(navigator.share){
+    navigator.share({
+      title: 'Join RUPPY Network',
+      text: text,
+      url: `https://ruppynetwork.vercel.app?ref=${inviteCode}`
+    });
+  } else {
+    // Fallback: Copy with all platform names
+    navigator.clipboard.writeText(text + '\n\nShare on: WhatsApp, Facebook, Instagram, Telegram');
+    showToast('Invite Link Copied! Share on WhatsApp/Facebook/Instagram/Telegram');
+  }
+}
+
+function showToast(msg){
+  let t = document.getElementById('toast');
+  t.innerText = msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2500);
+}
+
+function goPage(page){
+  window.location.href = page;
+}
+
+// Sync with other tabs
+window.addEventListener('storage', function(e){
+  if(e.key === 'ruppy_user') location.reload();
+});
+</script>
+</body>
+</html>
