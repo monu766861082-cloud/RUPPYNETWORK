@@ -393,5 +393,33 @@
   init();
 </script>
 
+<script>
+// SAFE PATCH - NO DELETE - ONLY ADD
+window.addEventListener('load', function(){
+  // 1. NavClick Alert Fix - सब Page पे Alert बंद
+  window.navClick = function(page) {
+    if(page === 'home') return;
+    if(page === 'tasks') window.location.href = 'tasks.html';
+    if(page === 'referral') window.location.href = 'referral.html';
+    if(page === 'ranking') window.location.href = 'ranking.html';
+    if(page === 'settings') window.location.href = 'settings.html';
+  };
+
+  // 2. Extra Safety - localStorage NaN Fix
+  var ud = JSON.parse(localStorage.getItem('ruppy_user')) || {};
+  ud.balance = Number(ud.balance) || 0;
+  ud.lastMine = Number(ud.lastMine) || 0;
+  ud.lastGift = Number(ud.lastGift) || 0;
+  ud.boostCount = Number(ud.boostCount) || 0;
+  ud.boostResetTime = Number(ud.boostResetTime) || Date.now();
+  localStorage.setItem('ruppy_user', JSON.stringify(ud));
+  
+  // 3. Re-run updates to apply fixes
+  updateBalance();
+  updateMiningCircle();
+  updateBoost();
+  updateGift();
+});
+</script>
 </body>
 </html>
