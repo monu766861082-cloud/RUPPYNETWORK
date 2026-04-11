@@ -25,16 +25,19 @@
     .mining-circle.ready {background:linear-gradient(135deg, #FFD700, #FFA500); border:none; box-shadow:0 0 25px rgba(255,165,0,0.6);}
     .mining-circle.ready h3 {color:#000;}
     .mining-circle.mining {background:transparent; border:2px solid #FFA500; cursor:not-allowed;}
-    .mining-circle.mining h3 {color:#FFA500; font-size:16px;}
+    .mining-circle.mining h3 {color:#FFA500; font-size:16px; white-space:pre-line; text-align:center;}
     .mining-circle p {font-size:13px; color:#888; margin-top:5px;}
     .mining-text {text-align:center; margin-top:15px; color:#666; font-size:13px;}
     
     .grid {display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:25px 15px;}
     .grid-item {background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:18px 12px; text-align:center; cursor:pointer; position:relative;}
+    .grid-item:active {transform:scale(0.97);}
     .grid-item .badge {position:absolute; top:8px; right:8px; background:#FFA500; color:#000; font-size:11px; font-weight:600; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center;}
     .grid-item .icon {width:35px; height:35px; margin:0 auto 10px; background:#1a1a1a; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:20px;}
     .grid-item h4 {font-size:14px; margin-bottom:4px; color:#FFA500;}
     .grid-item p {font-size:11px; color:#666;}
+    .timer-bar {width:100%; height:3px; background:#1a1a1a; border-radius:2px; margin-top:6px; overflow:hidden;}
+    .timer-fill {height:100%; background:#FFA500; width:0%; transition:width 1s linear;}
     
     .modal {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:none; align-items:center; justify-content:center; z-index:999;}
     .modal.active {display:flex;}
@@ -82,12 +85,14 @@
       <div class="icon">🖥️</div>
       <h4>BOOST MINING</h4>
       <p id="boostTimer">Ready</p>
+      <div class="timer-bar"><div class="timer-fill" id="boostBar"></div></div>
     </div>
     <div class="grid-item" onclick="openGift()">
-      <div class="badge" id="giftBadge">4</div>
+      <div class="badge" id="giftBadge">✓</div>
       <div class="icon" style="background:#6a5acd;">🎁</div>
       <h4 style="color:#fff;">ULTRA GIFT</h4>
-      <p id="giftTimer">Watch ad → +10 TOKEN</p>
+      <p id="giftTimer">Ready → +15 TOKEN</p>
+      <div class="timer-bar"><div class="timer-fill" id="giftBar"></div></div>
     </div>
     <div class="grid-item" onclick="openTeam()">
       <div class="icon">👥</div>
@@ -140,8 +145,7 @@
     balance: 0,
     lastMine: 0,
     lastBoost: 0,
-    giftOpens: 0,
-    giftDate: new Date().toDateString(),
+    lastGift: 0,
     team: [
       {name: 'Rahul Kumar', online: true},
       {name: 'Priya Singh', online: true},
@@ -183,12 +187,10 @@
     
     const circle = document.getElementById('miningCircle');
     const text = document.getElementById('miningText');
-    const timer = document.getElementById('miningTimer');
     
     if(diff >= cooldown || userData.lastMine === 0) {
       circle.className = 'mining-circle ready';
       text.innerText = 'MINE NOW';
-      timer.innerText = '';
       circle.onclick = startMining;
     } else {
       const remaining = cooldown - diff;
@@ -198,7 +200,6 @@
       
       circle.className = 'mining-circle mining';
       text.innerText = `Next in\n${String(hrs).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-      timer.innerText = '';
       circle.onclick = null;
     }
   }
@@ -220,12 +221,16 @@
     
     if(diff >= cooldown || userData.lastBoost === 0) {
       document.getElementById('boostTimer').innerText = 'Ready';
+      document.getElementById('boostBar').style.width = '100%';
     } else {
       const remaining = cooldown - diff;
       const hrs = Math.floor(remaining / 3600000);
       const mins = Math.floor((remaining % 3600000) / 60000);
       const secs = Math.floor((remaining % 60000) / 1000);
       document.getElementById('boostTimer').innerText = `Next in ${String(hrs).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+      
+      const percent = ((cooldown - remaining) / cooldown) * 100;
+      document.getElementById('boostBar').style.width = percent + '%';
     }
   }
 
@@ -240,42 +245,34 @@
   }
 
   function updateGift() {
-    const today = new Date().toDateString();
-    if(userData.giftDate !== today) {
-      userData.giftDate = today;
-      userData.giftOpens = 0;
-      saveUser();
-    }
+    const now = Date.now();
+    const diff = now - userData.lastGift;
+    const cooldown = 2 * 60 * 60 * 1000; // हर 2 घंटे
     
-    const remaining = 4 - userData.giftOpens;
-    document.getElementById('giftBadge').innerText = remaining;
-    
-    const hour = new Date().getHours();
-    if(remaining > 0) {
-      let canOpen = false;
-      if((hour >= 8 && hour < 12) || (hour >= 13 && hour < 17) || (hour >= 18 && hour < 22) || (hour >= 23 || hour < 3)) {
-        canOpen = true;
-      }
-      document.getElementById('giftTimer').innerText = canOpen ? `Watch ad → +10 TOKEN` : `Next slot soon`;
+    if(diff >= cooldown || userData.lastGift === 0) {
+      document.getElementById('giftTimer').innerText = 'Ready → +15 TOKEN';
+      document.getElementById('giftBadge').innerText = '✓';
+      document.getElementById('giftBadge').style.background = '#00ff00';
+      document.getElementById('giftBar').style.width = '100%';
     } else {
-      document.getElementById('giftTimer').innerText = `0 opens left today`;
+      const remaining = cooldown - diff;
+      const hrs = Math.floor(remaining / 3600000);
+      const mins = Math.floor((remaining % 3600000) / 60000);
+      const secs = Math.floor((remaining % 60000) / 1000);
+      document.getElementById('giftTimer').innerText = `Next in ${String(hrs).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+      document.getElementById('giftBadge').innerText = '✕';
+      document.getElementById('giftBadge').style.background = '#666';
+      
+      const percent = ((cooldown - remaining) / cooldown) * 100;
+      document.getElementById('giftBar').style.width = percent + '%';
     }
   }
 
   function openGift() {
-    const remaining = 4 - userData.giftOpens;
-    if(remaining <= 0) return;
+    if(Date.now() - userData.lastGift < 2*60*60*1000 && userData.lastGift !== 0) return;
     
-    const hour = new Date().getHours();
-    let canOpen = false;
-    if((hour >= 8 && hour < 12) || (hour >= 13 && hour < 17) || (hour >= 18 && hour < 22) || (hour >= 23 || hour < 3)) {
-      canOpen = true;
-    }
-    
-    if(!canOpen) return;
-    
-    userData.balance += 10;
-    userData.giftOpens++;
+    userData.balance += 15;
+    userData.lastGift = Date.now();
     saveUser();
     updateBalance();
     updateGift();
