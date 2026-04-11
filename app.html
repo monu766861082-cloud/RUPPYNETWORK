@@ -200,9 +200,8 @@
   function showMonetagAd(callback) {
     console.log('Ad Request Started...');
     try {
-      if(typeof window._ZH !== 'undefined' && window._ZH && window._ZH.show){
-        console.log('Monetag Loaded - Showing Ad');
-        window._ZH.show().then(() => {
+      if (typeof window.monetag !== 'undefined' && typeof window.monetag.show === 'function') {
+        window.monetag.show().then(() => {
           console.log('Ad Completed');
           callback();
         }).catch((err) => {
@@ -211,9 +210,7 @@
         });
       } else {
         console.log('Monetag NOT Loaded Yet');
-        setTimeout(() => {
-          callback();
-        }, 800);
+        callback();
       }
     } catch(e) {
       console.log('Catch Error:', e);
@@ -288,7 +285,7 @@
     updateTeam();
     
     setTimeout(() => {
-      if(typeof window._ZH !== 'undefined'){
+      if(typeof window.monetag !== 'undefined'){
         console.log('Monetag Loaded Successfully');
       } else {
         console.log('Monetag NOT Loaded - Check Script');
