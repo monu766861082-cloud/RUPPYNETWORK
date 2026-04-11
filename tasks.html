@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ruppy Tasks</title>
+
+<!-- Monetag MultiTag Script ✅ Added -->
+<script src="https://quge5.com/88/tag.min.js" data-zone="228666" async data-cfasync="false"></script>
+
 <style>
 body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .hdr{padding:20px}
@@ -97,6 +101,21 @@ document.getElementById('userId').innerText = `ID: ${userData.name.toUpperCase()
 document.getElementById('bal').innerText = userData.balance;
 updateButtons();
 
+// ===== MONETAG AD FUNCTION ✅ Added =====
+function showMonetagAd(callback) {
+  if(typeof window._ZH!== 'undefined' && window._ZH.show){
+    window._ZH.show().then(() => {
+      callback();
+    }).catch(() => {
+      callback();
+    });
+  } else {
+    setTimeout(() => {
+      callback();
+    }, 1000);
+  }
+}
+
 document.addEventListener('visibilitychange', function() {
   if (!document.hidden && openedTask) {
     taskState[openedTask] = 'ready_to_claim';
@@ -114,15 +133,18 @@ function openLink(task, url) {
   updateButtons();
 }
 
+// ===== UPDATED: Ad लग गया Claim से पहले ✅ =====
 function claimReward(task) {
   if (taskState[task] === 'ready_to_claim') {
-    userData.balance += 20;
-    taskState[task] = 'claimed';
-    localStorage.setItem('ruppy_user', JSON.stringify(userData));
-    localStorage.setItem('taskState', JSON.stringify(taskState));
-    document.getElementById('bal').innerText = userData.balance;
-    updateButtons();
-    alert('+20 RUPPY Claimed!');
+    showMonetagAd(() => {
+      userData.balance += 20;
+      taskState[task] = 'claimed';
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
+      localStorage.setItem('taskState', JSON.stringify(taskState));
+      document.getElementById('bal').innerText = userData.balance;
+      updateButtons();
+      alert('+20 RUPPY Claimed!');
+    });
   }
 }
 
