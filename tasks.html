@@ -10,37 +10,43 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:70px}
 .hdr h1{margin:0;font-size:28px}
 .hdr p{margin:4px 0 0;color:#d4a017;font-weight:bold}
 .hdr small{color:#888}
+.tokenBal{background:#1a1a1a;border:1px solid #d4a017;border-radius:10px;padding:10px;margin:0 12px;text-align:center}
+.tokenBal b{color:#d4a017;font-size:20px}
 .card{border:1px solid #444;border-radius:14px;padding:14px;margin:12px;display:flex;align-items:center}
 .ic{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:20px}
 .tg{background:#0088cc}.fb{background:#1877f2}.x{background:#fff;color:#000}
-.txt{flex:1}.txt b{display:block}.txt span{color:#d4a017}
-.bt{border:1px solid #d4a017;color:#d4a017;padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block}
+.txt{flex:1}.txt b{display:block}.txt span{color:#d4a017;font-size:12px}
+.bt{border:1px solid #d4a017;color:#d4a017;padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;min-width:65px;text-align:center}
+.bt.claim{background:#d4a017;color:#000;font-weight:bold}
+.bt.done{background:#333;color:#666;border-color:#333;cursor:not-allowed}
 .nav{position:fixed;bottom:0;left:0;width:100%;display:flex;background:#000;border-top:1px solid #222}
 .nv{flex:1;text-align:center;font-size:11px;padding:6px 0;color:#777;position:relative;cursor:pointer}
 .nv.active{color:#d4a017}
 .nv.active::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:40px;height:4px;background:#d4a017;border-radius:2px}
-.nv .icon{font-size:18px;display:block;margin-bottom:2px}
+.nv.icon{font-size:18px;display:block;margin-bottom:2px}
 </style>
 </head>
 <body>
 <div class="hdr"><h1>DAILY TASKS</h1><p>EARN RUPPY TOKEN</p><small>ID: AKASH-8291</small></div>
 
+<div class="tokenBal">Your Balance: <b id="bal">0</b> RUPPY</div>
+
 <div class="card">
   <div class="ic tg">✈️</div>
-  <div class="txt"><b>Join Telegram</b><span>+20 TOKEN</span></div>
-  <a href="https://t.me/RUPPYfoundation" target="_blank" class="bt" onclick="addToken(20)">JOIN</a>
+  <div class="txt"><b>Join Telegram</b><span>Reward: +20 TOKEN</span></div>
+  <a href="https://t.me/RUPPYfoundation" target="_blank" class="bt" id="tgBtn" onclick="taskClick('tg')">JOIN</a>
 </div>
 
 <div class="card">
   <div class="ic fb">f</div>
-  <div class="txt"><b>Follow on Facebook</b><span>+20 TOKEN</span></div>
-  <a href="https://www.facebook.com/share/1PjMyFivNF/?mibextid=wwXIfr" target="_blank" class="bt" onclick="addToken(20)">FOLLOW</a>
+  <div class="txt"><b>Follow on Facebook</b><span>Reward: +20 TOKEN</span></div>
+  <a href="https://www.facebook.com/share/1PjMyFivNF/?mibextid=wwXIfr" target="_blank" class="bt" id="fbBtn" onclick="taskClick('fb')">FOLLOW</a>
 </div>
 
 <div class="card">
   <div class="ic x">X</div>
-  <div class="txt"><b>Follow on X</b><span>+20 TOKEN</span></div>
-  <a href="https://x.com/rupfoundation?s=21" target="_blank" class="bt" onclick="addToken(20)">FOLLOW</a>
+  <div class="txt"><b>Follow on X</b><span>Reward: +20 TOKEN</span></div>
+  <a href="https://x.com/rupfoundation?s=21" target="_blank" class="bt" id="xBtn" onclick="taskClick('x')">FOLLOW</a>
 </div>
 
 <div class="nav">
@@ -67,14 +73,50 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:70px}
 </div>
 
 <script>
-let tokens = localStorage.getItem('ruppyTokens') ? parseInt(localStorage.getItem('ruppyTokens')) : 1220;
+let tokens = localStorage.getItem('ruppyTokens')? parseInt(localStorage.getItem('ruppyTokens')) : 0;
+let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
 
-function addToken(reward){
-  tokens += reward;
-  localStorage.setItem('ruppyTokens', tokens);
-  setTimeout(() => {
-    alert('Tokens: ' + tokens);
-  }, 300);
+document.getElementById('bal').innerText = tokens;
+updateButtons();
+
+function taskClick(task){
+  if(!taskState[task]){
+    taskState[task] = 'joined';
+    localStorage.setItem('taskState', JSON.stringify(taskState));
+    updateButtons();
+  }
+}
+
+function claimReward(task){
+  if(taskState[task] === 'joined'){
+    // यहाँ बाद में 5-8 sec Ad लगेगा
+    tokens += 20;
+    taskState[task] = 'claimed';
+    localStorage.setItem('ruppyTokens', tokens);
+    localStorage.setItem('taskState', JSON.stringify(taskState));
+    document.getElementById('bal').innerText = tokens;
+    updateButtons();
+    alert('+20 RUPPY Claimed!');
+  }
+}
+
+function updateButtons(){
+  ['tg','fb','x'].forEach(task => {
+    let btn = document.getElementById(task+'Btn');
+    if(taskState[task] === 'joined'){
+      btn.innerText = 'CLAIM';
+      btn.className = 'bt claim';
+      btn.href = 'javascript:void(0)';
+      btn.onclick = () => claimReward(task);
+      btn.removeAttribute('target');
+    } else if(taskState[task] === 'claimed'){
+      btn.innerText = 'DONE';
+      btn.className = 'bt done';
+      btn.href = 'javascript:void(0)';
+      btn.onclick = null;
+      btn.removeAttribute('target');
+    }
+  });
 }
 
 function goPage(page){
