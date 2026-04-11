@@ -73,7 +73,7 @@
   <div class="balance-card">
     <p>TOTAL BALANCE</p>
     <h2 id="balance">0 <span>RUPPY</span></h2>
-    <p>≈ $0.00 USD • 1,200 = $1.00</p>
+    <p id="usdValue">≈ $0.00 USD • 800 = $1.00</p>
   </div>
 
   <div class="mining-section">
@@ -158,6 +158,7 @@
 
 <script>
   const MINING_REWARD = 40;
+  const TOKEN_RATE = 800; // 800 RUPPY = $1.00
   
   let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
     name: 'User',
@@ -213,6 +214,8 @@
 
   function updateBalance() {
     document.getElementById('balance').innerHTML = userData.balance + ' <span>RUPPY</span>';
+    var usd = (userData.balance / TOKEN_RATE).toFixed(2);
+    document.getElementById('usdValue').innerText = '≈ $' + usd + ' USD • 800 = $1.00';
   }
 
   function updateMiningCircle() {
