@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ruppy Tasks</title>
 <style>
-body{margin:0;background:#000;color:#fff;font-family:Arial}
+body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:70px}
 .hdr{padding:20px}
 .hdr h1{margin:0;font-size:28px}
 .hdr p{margin:4px 0 0;color:#d4a017;font-weight:bold}
@@ -16,19 +16,68 @@ body{margin:0;background:#000;color:#fff;font-family:Arial}
 .txt{flex:1}.txt b{display:block}.txt span{color:#d4a017}
 .bt{border:1px solid #d4a017;color:#d4a017;padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer}
 .nav{position:fixed;bottom:0;left:0;width:100%;display:flex;background:#000;border-top:1px solid #222}
-.nv{flex:1;text-align:center;font-size:11px;padding:6px 0;color:#777;position:relative}
+.nv{flex:1;text-align:center;font-size:11px;padding:6px 0;color:#777;position:relative;cursor:pointer}
 .nv.active{color:#d4a017}
 .nv.active::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:40px;height:4px;background:#d4a017;border-radius:2px}
+.nv .icon{font-size:18px;display:block;margin-bottom:2px}
 </style>
 </head>
 <body>
 <div class="hdr"><h1>DAILY TASKS</h1><p>EARN RUPPY TOKEN</p><small>ID: AKASH-8291</small></div>
-<div class="card"><div class="ic tg">✈️</div><div class="txt"><b>Join Telegram</b><span>+20 TOKEN</span></div><div class="bt" onclick="add(20)">JOIN</div></div>
-<div class="card"><div class="ic fb">f</div><div class="txt"><b>Follow on Facebook</b><span>+20 TOKEN</span></div><div class="bt" onclick="add(20)">FOLLOW</div></div>
-<div class="card"><div class="ic x">X</div><div class="txt"><b>Follow on X</b><span>+20 TOKEN</span></div><div class="bt" onclick="add(20)">FOLLOW</div></div>
-<div class="nav"><div class="nv">Home</div><div class="nv active">Tasks</div><div class="nv">Referral</div><div class="nv">Ranking</div><div class="nv">Settings</div></div>
+
+<div class="card">
+  <div class="ic tg">✈️</div>
+  <div class="txt"><b>Join Telegram</b><span>+20 TOKEN</span></div>
+  <div class="bt" onclick="openTask('https://t.me/RUPPYfoundation', 20)">JOIN</div>
+</div>
+
+<div class="card">
+  <div class="ic fb">f</div>
+  <div class="txt"><b>Follow on Facebook</b><span>+20 TOKEN</span></div>
+  <div class="bt" onclick="openTask('https://www.facebook.com/share/1PjMyFivNF/?mibextid=wwXIfr', 20)">FOLLOW</div>
+</div>
+
+<div class="card">
+  <div class="ic x">X</div>
+  <div class="txt"><b>Follow on X</b><span>+20 TOKEN</span></div>
+  <div class="bt" onclick="openTask('https://x.com/rupfoundation?s=21', 20)">FOLLOW</div>
+</div>
+
+<div class="nav">
+  <div class="nv" onclick="goPage('app.html')">
+    <span class="icon">🏠</span>
+    <span>Home</span>
+  </div>
+  <div class="nv active">
+    <span class="icon">📋</span>
+    <span>Tasks</span>
+  </div>
+  <div class="nv">
+    <span class="icon">👥</span>
+    <span>Referral</span>
+  </div>
+  <div class="nv">
+    <span class="icon">🏆</span>
+    <span>Ranking</span>
+  </div>
+  <div class="nv">
+    <span class="icon">⚙️</span>
+    <span>Settings</span>
+  </div>
+</div>
+
 <script>
-let tokens=1220;function add(n){tokens+=n;alert('Tokens: '+tokens)}
+let tokens=1220;
+
+function openTask(link, reward){
+  window.open(link, '_blank');
+  tokens += reward;
+  alert('Tokens: ' + tokens);
+}
+
+function goPage(page){
+  window.location.href = page;
+}
 </script>
 </body>
 </html>
