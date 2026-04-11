@@ -7,13 +7,14 @@
 <style>
 :root{--bg:#0B0B0C;--card:#161617;--border:#2A2A2C;--gold:#F3C774;--green:#24C464;--muted:#9CA3AF}
 *{box-sizing:border-box;margin:0;padding:0;font-family:Poppins,sans-serif}
-body{background:var(--bg);color:#fff;padding:22px}
+body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .avatar{width:96px;height:96px;margin:20px auto 14px;border-radius:50%;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,var(--gold)22%,transparent 22%);box-shadow:0 0 32px rgba(243,199,116,.35)}
 .avatar span{font-size:44px;font-weight:700;color:var(--gold)}
 .name{text-align:center;font-size:26px;font-weight:600}
 .bal{display:block;width:max-content;margin:12px auto;padding:6px 18px;border:1px solid var(--green);border-radius:999px;color:var(--green);font-weight:600;font-size:15px}
+.id-box{display:block;width:max-content;margin:8px auto;padding:4px 14px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font-size:13px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:24px;overflow:hidden;margin:26px 0}
-.row{display:flex;align-items:center;justify-content:space-between;padding:20px 18px;border-top:1px solid var(--border)}
+.row{display:flex;align-items:center;justify-content:space-between;padding:20px 18px;border-top:1px solid var(--border);cursor:pointer}
 .row:first-child{border:0}
 .l{display:flex;align-items:center}
 .icon{width:44px;height:44px;border-radius:12px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-right:16px;font-size:20px}
@@ -24,18 +25,22 @@ body{background:var(--bg);color:#fff;padding:22px}
 .wall{flex:1;border:1px solid var(--border);border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px}
 .dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}
 .mm{background:#E88C2B}.bn{background:#F2C029}
-nav{position:fixed;left:0;right:0;bottom:0;background:#0F0F10;border-top:1px solid #1F1F22;display:flex;justify-content:space-around;padding:12px 0}
-nav div{font-size:11px;text-align:center;color:#8B8B8F}
-nav div.active{color:var(--gold)}
-nav div.active::before{content:"";display:block;height:3px;background:var(--gold);margin-bottom:6px;border-radius:2px}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 15px}
+.nav-item.active{color:#FFA500}
+.nav-item.active::after{content:'';width:30px;height:2px;background:#FFA500;margin-top:2px}
+.nav-item.icon{font-size:20px}
 .sp{height:96px}
 </style>
 </head>
 <body>
-<div class="avatar"><span>R</span></div>
-<div class="name">Akash Sharma</div>
-<div class="bal">≈ ₹84 INR</div>
+<div class="avatar"><span id="avatarLetter">R</span></div>
+<div class="name" id="userName">Loading...</div>
+<div class="bal" id="userBalance">≈ 0 RUPPY</div>
+<div class="id-box" id="userId">ID: Loading...</div>
+
 <div class="card">
+<div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><div><span class="val" id="refCode">-</span>›</div></div>
 <div class="row"><div class="l"><div class="icon">👤</div><div class="txt">My Profile</div></div>›</div>
 <div class="row"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
 <div class="row"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div>›</div>
@@ -43,9 +48,54 @@ nav div.active::before{content:"";display:block;height:3px;background:var(--gold
 <div class="row"><div class="l"><div class="icon">❓</div><div class="txt">Help & Support</div></div>›</div>
 <div class="row"><div class="l"><div class="icon">📄</div><div class="txt">Privacy Policy</div></div>›</div>
 </div>
+
 <div class="sec">CONNECTED WALLETS</div>
 <div class="wallets"><div class="wall"><div class="dot mm">M</div>MetaMask</div><div class="wall"><div class="dot bn">B</div>Binance</div></div>
 <div class="sp"></div>
-<nav><div>Home</div><div>Tasks</div><div>Referral</div><div>Ranking</div><div class="active">Settings</div></nav>
+
+<div class="nav">
+  <div class="nav-item" onclick="goPage('app.html')">
+    <div class="icon">🏠</div>
+    <span>Home</span>
+  </div>
+  <div class="nav-item" onclick="goPage('tasks.html')">
+    <div class="icon">📋</div>
+    <span>Tasks</span>
+  </div>
+  <div class="nav-item" onclick="goPage('referral.html')">
+    <div class="icon">👥</div>
+    <span>Referral</span>
+  </div>
+  <div class="nav-item" onclick="goPage('ranking.html')">
+    <div class="icon">🏆</div>
+    <span>Ranking</span>
+  </div>
+  <div class="nav-item active">
+    <div class="icon">⚙️</div>
+    <span>Settings</span>
+  </div>
+</div>
+
+<script>
+let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
+  name: 'Guest',
+  id: 'RUPPY000000',
+  balance: 0
+};
+
+// Name पहला Letter
+document.getElementById('avatarLetter').innerText = userData.name.charAt(0).toUpperCase();
+document.getElementById('userName').innerText = userData.name;
+document.getElementById('userBalance').innerText = '≈ ' + userData.balance + ' RUPPY';
+document.getElementById('userId').innerText = 'ID: ' + userData.id;
+document.getElementById('refCode').innerText = userData.id;
+
+function copyRefCode(){
+  navigator.clipboard.writeText(userData.id);
+  alert('Referral Code Copied: ' + userData.id);
+}
+
+function goPage(page){ window.location.href = page; }
+</script>
 </body>
 </html>
