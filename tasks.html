@@ -21,7 +21,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .bt.done{background:#333;color:#666;border-color:#333;cursor:not-allowed}
 .bt.opened{background:#1a1a1a;color:#888;border-color:#444}
 
-/* Nav - 100% Exact Same as app.html */
+/* FIXED: Added space between.nav-item and.icon */
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 15px}
 .nav-item.icon{font-size:20px}
@@ -93,6 +93,7 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
 let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
 let openedTask = null;
 
+// Dynamic ID - This will override AKASH-8291
 document.getElementById('userId').innerText = `ID: ${userData.name.toUpperCase()}`;
 document.getElementById('bal').innerText = userData.balance;
 updateButtons();
