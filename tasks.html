@@ -73,11 +73,11 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:70px}
 </div>
 
 <script>
-// Balance localStorage से लेगा - जो भी असली Balance है वही दिखेगा
+// Get balance from localStorage
 let tokens = localStorage.getItem('ruppyTokens')? parseInt(localStorage.getItem('ruppyTokens')) : 0;
 let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
 
-// Page Load पे Balance दिखा दे
+// Display balance on page load
 document.getElementById('bal').innerText = tokens;
 updateButtons();
 
@@ -91,15 +91,15 @@ function taskClick(task){
 
 function claimReward(task){
   if(taskState[task] === 'joined'){
-    // यहाँ बाद में 5-8 sec Ad लगेगा
-    tokens += 20; // +20 Add कर दिया
+    // Ad will be added here later
+    tokens += 20;
     taskState[task] = 'claimed';
-    
-    // localStorage में Save + Screen पे Update
+
+    // Save to localStorage and update display
     localStorage.setItem('ruppyTokens', tokens);
     localStorage.setItem('taskState', JSON.stringify(taskState));
-    document.getElementById('bal').innerText = tokens; // तुरंत 1260 दिख जाएगा
-    
+    document.getElementById('bal').innerText = tokens;
+
     updateButtons();
     alert('+20 RUPPY Claimed!');
   }
