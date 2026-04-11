@@ -1,117 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ruppy App</title>
-<style>
-body{margin:0;background:#000;color:#fff;font-family:Arial}
-.hdr{display:flex;align-items:center;padding:12px}
-.hdr img{width:48px;height:48px;border-radius:50%;margin-right:12px}
-.bal{border:1px solid #a87128;border-radius:14px;padding:14px;margin:12px}
-.bal h2{margin:6px 0;font-size:32px}.bal h2 span{color:#d4a017}
-.sub{color:#d4a017;font-size:13px}
-.tm{margin:20px auto;width:160px;height:160px;border:2px solid #a87128;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#d4a017;font-size:13px;text-align:center;cursor:pointer}
-.grd{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px}
-.cd{border:1px solid #333;border-radius:14px;padding:14px;text-align:center;font-size:13px;position:relative;cursor:pointer}
-.boost{border-color:#a87128}
-.boost i{width:56px;height:56px;background:#1a1a1a;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:28px}
-.boost b{color:#ff8c42}
-.gift{border-color:#8b5cf6;box-shadow:0 0 12px #8b5cf6}
-.gift i{width:64px;height:64px;background:#8b5cf6;border-radius:12px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:32px}
-.gift b{color:#a78bfa}
-.bdg{position:absolute;top:-8px;right:-8px;background:#facc15;color:#000;border-radius:50%;width:24px;height:24px;font-size:13px;display:flex;align-items:center;justify-content:center}
-.ic{width:56px;height:56px;border:1px solid #a87128;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center}
-.nav{position:fixed;bottom:0;left:0;width:100%;display:flex;background:#000;border-top:1px solid #222}
-.nv{flex:1;text-align:center;font-size:11px;padding:6px 0;color:#777;position:relative;cursor:pointer}
-.nv.active{color:#d4a017}
-.nv.active::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:40px;height:4px;background:#d4a017;border-radius:2px}
-.nv i{display:block;font-size:18px;margin-bottom:2px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruppy Network - App</title>
+  <style>
+    * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
+    body {background:#0a0a1a; color:#fff; min-height:100vh; padding-bottom:80px;}
+    
+    .header {padding:20px; display:flex; align-items:center; gap:12px;}
+    .header .dp {width:45px; height:45px; border-radius:50%; background:#2a2a4a; display:flex; align-items:center; justify-content:center; font-size:20px; overflow:hidden;}
+    .header .dp img {width:100%; height:100%; object-fit:cover;}
+    .header .info h3 {font-size:18px; font-weight:600;}
+    .header .info p {font-size:13px; color:#8a8aa0;}
+    
+    .balance-card {margin:0 20px; background:linear-gradient(135deg, #2a2a4a, #1a1a3a); border-radius:16px; padding:20px; text-align:center; border:1px solid #3a3a5a;}
+    .balance-card h2 {font-size:32px; margin:8px 0;}
+    .balance-card p {color:#8a8aa0; font-size:14px;}
+    
+    .mining-section {margin:30px 20px; text-align:center;}
+    .mining-circle {width:200px; height:200px; margin:0 auto; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:0.3s; position:relative;}
+    .mining-circle.ready {background:linear-gradient(135deg, #FFD700, #FFA500); box-shadow:0 0 30px rgba(255,215,0,0.5);}
+    .mining-circle.mining {background:linear-gradient(135deg, #3a3a5a, #2a2a4a); box-shadow:0 0 20px rgba(58,58,90,0.3); cursor:not-allowed;}
+    .mining-circle h3 {font-size:24px; margin-bottom:5px;}
+    .mining-circle p {font-size:14px; opacity:0.8;}
+    
+    .grid {display:grid; grid-template-columns:1fr 1fr; gap:15px; margin:30px 20px;}
+    .grid-item {background:#1a1a3a; border:1px solid #3a3a5a; border-radius:12px; padding:20px 15px; text-align:center; cursor:pointer; transition:0.2s;}
+    .grid-item:active {transform:scale(0.95);}
+    .grid-item .icon {font-size:28px; margin-bottom:8px;}
+    .grid-item h4 {font-size:15px; margin-bottom:4px;}
+    .grid-item p {font-size:12px; color:#8a8aa0;}
+    
+    .modal {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; z-index:999;}
+    .modal.active {display:flex;}
+    .modal-content {background:#1a1a3a; border:1px solid #3a3a5a; border-radius:16px; padding:25px; width:90%; max-width:350px; text-align:center;}
+    .modal-content h3 {margin-bottom:15px;}
+    .team-list {text-align:left; margin:15px 0; max-height:200px; overflow-y:auto;}
+    .team-member {padding:10px; background:#0a0a1a; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;}
+    .team-member .online {width:8px; height:8px; background:#00ff00; border-radius:50%; animation:pulse 2s infinite;}
+    @keyframes pulse {0%,100%{opacity:1;} 50%{opacity:0.3;}}
+    .close-btn {margin-top:15px; padding:10px 25px; background:#3a3a5a; border:none; border-radius:8px; color:#fff; cursor:pointer;}
+    
+    .nav {position:fixed; bottom:0; left:0; right:0; background:#1a1a3a; border-top:1px solid #3a3a5a; display:flex; justify-content:space-around; padding:10px 0;}
+    .nav-item {display:flex; flex-direction:column; align-items:center; gap:4px; color:#8a8aa0; text-decoration:none; font-size:12px; cursor:pointer;}
+    .nav-item.active {color:#6a5acd;}
+    .nav-item .icon {font-size:22px;}
+  </style>
 </head>
 <body>
-<div class="hdr"><img src="https://i.imgur.com/8Km9tLL.png" alt=""><div><small>Welcome back,</small><br><b id="userName">Loading...</b></div></div>
-<div class="bal"><small>TOTAL BALANCE</small><h2><span id="tok">0</span> TOKEN</h2><div class="sub">≈ $<span id="usd">0.00</span> USD • 1,200 = $1.00</div></div>
-<div class="tm" id="timer" onclick="mine()">MINE NOW<br>20 TOKEN</div>
-<div style="text-align:center;color:#aaa;font-size:13px;margin-bottom:12px">Mines every 3 hours</div>
-<div class="grd">
-  <div class="cd boost" onclick="boost()"><i>📺</i><b>BOOST MINING</b><br><small id="boostTxt">Ready to use</small></div>
-  <div class="cd gift" onclick="gift()"><div class="bdg" id="bdg">2</div><i>🎁</i><b>ULTRA GIFT</b><br><small>Watch ad → +10 TOKEN</small><div style="margin-top:6px;font-size:12px"><span id="op">2</span> opens left today</div></div>
-  <div class="cd"><span class="ic">👥</span>Team<br><b>12 Active</b></div>
-  <div class="cd"><span class="ic">💰</span>Wallet<br><b>Not Connected</b></div>
-</div>
-<div class="nav">
-  <div class="nv active" onclick="navTo('app.html')"><i>🏠</i>Home</div>
-  <div class="nv" onclick="navTo('tasks.html')"><i>📋</i>Tasks</div>
-  <div class="nv" onclick="navTo('referral.html')"><i>👥</i>Referral</div>
-  <div class="nv" onclick="navTo('ieaderboard.html')"><i>🏆</i>Ranking</div>
-  <div class="nv" onclick="navTo('profile.html')"><i>⚙️</i>Settings</div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+
+  <div class="header">
+    <div class="dp" id="userDp">👤</div>
+    <div class="info">
+      <h3 id="userName">Welcome back, User</h3>
+      <p>Keep mining to earn more</p>
+    </div>
+  </div>
+
+  <div class="balance-card">
+    <p>Your Balance</p>
+    <h2 id="balance">0 TOKEN</h2>
+    <p>Mine every 3 hours to earn</p>
+  </div>
+
+  <div class="mining-section">
+    <div class="mining-circle ready" id="miningCircle" onclick="startMining()">
+      <h3 id="miningText">MINE NOW</h3>
+      <p id="miningTimer"></p>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="grid-item" onclick="startBoost()">
+      <div class="icon">🚀</div>
+      <h4>BOOST MINING</h4>
+      <p id="boostTimer">Ready</p>
+    </div>
+    <div class="grid-item" onclick="openGift()">
+      <div class="icon">🎁</div>
+      <h4>ULTRA GIFT</h4>
+      <p id="giftTimer">4 opens left today</p>
+    </div>
+    <div class="grid-item" onclick="openTeam()">
+      <div class="icon">👥</div>
+      <h4>Team</h4>
+      <p id="teamCount">0 Members</p>
+    </div>
+    <div class="grid-item" onclick="openWallet()">
+      <div class="icon">💰</div>
+      <h4>Wallet</h4>
+      <p>Check balance</p>
+    </div>
+  </div>
+
+  <!-- Team Modal -->
+  <div class="modal" id="teamModal">
+    <div class="modal-content">
+      <h3>Your Team</h3>
+      <div class="team-list" id="teamList"></div>
+      <button class="close-btn" onclick="closeTeam()">Close</button>
+    </div>
+  </div>
+
+  <div class="nav">
+    <div class="nav-item active" onclick="navClick('home')">
+      <div class="icon">🏠</div>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="navClick('tasks')">
+      <div class="icon">📋</div>
+      <span>Tasks</span>
+    </div>
+    <div class="nav-item" onclick="navClick('invite')">
+      <div class="icon">➕</div>
+      <span>Invite</span>
+    </div>
+    <div class="nav-item" onclick="navClick('profile')">
+      <div class="icon">👤</div>
+      <span>Profile</span>
+    </div>
+  </div>
+
 <script>
-const supabase = window.supabase.createClient(
-  'https://scgjubxfxjakgicupyuo.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ2p1YnhmeGpha2dpY3VweXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzk4NTIsImV4cCI6MjA5MTIxNTg1Mn0.QST9mZ7uup-H-s9P6DznbOVO14kJTCgYIIZxyTP1T24'
-);
+  // ============ USER DATA ============
+  let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
+    name: 'User',
+    dp: null,
+    balance: 0,
+    lastMine: 0,
+    lastBoost: 0,
+    giftOpens: 0,
+    giftDate: new Date().toDateString(),
+    team: [
+      {name: 'Rahul', online: true},
+      {name: 'Priya', online: true},
+      {name: 'Amit', online: false}
+    ]
+  };
 
-let tokens = 0, boostRate = 0, giftOpens = 2, boostTimer = 0, mineTimer = 0;
-
-async function init(){
-  const { data: { user } } = await supabase.auth.getUser();
-  if(!user){ window.location.href = "/"; return; }
-  document.getElementById('userName').innerText = user.email.split('@')[0];
-  updateBalance();
-}
-
-function updateBalance(){
-  document.getElementById('tok').innerText = tokens.toLocaleString();
-  document.getElementById('usd').innerText = (tokens/1200).toFixed(2);
-  document.getElementById('bdg').innerText = giftOpens;
-  document.getElementById('op').innerText = giftOpens;
-}
-
-function mine(){
-  if(mineTimer > 0) return;
-  let reward = 20 + Math.floor(20 * boostRate / 100);
-  tokens += reward;
-  mineTimer = 3 * 60 * 60;
-  updateBalance();
-}
-
-function boost(){
-  if(boostTimer > 0){ alert("Next boost in " + formatTime(boostTimer)); return; }
-  boostRate += 5;
-  boostTimer = 2 * 60 * 60;
-  document.getElementById('boostTxt').innerText = "Next in 02:00:00";
-  alert("Boost Applied! Mining Speed +5%. Total: " + boostRate + "%");
-}
-
-function gift(){
-  if(giftOpens <= 0){ alert("Daily limit reached"); return; }
-  tokens += 10;
-  giftOpens--;
-  updateBalance();
-}
-
-function navTo(page){
-  window.location.href = "/" + page;
-}
-
-function formatTime(s){
-  let h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
-  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-}
-
-setInterval(()=>{
-  if(mineTimer > 0) mineTimer--;
-  if(boostTimer > 0){
-    boostTimer--;
-    document.getElementById('boostTxt').innerText = boostTimer > 0? "Next in " + formatTime(boostTimer) : "Ready to use";
+  function saveUser() {
+    localStorage.setItem('ruppy_user', JSON.stringify(userData));
   }
-  document.getElementById('timer').innerHTML = mineTimer > 0? `Next in<br>${formatTime(mineTimer)}` : `MINE NOW<br>20 TOKEN`;
-},1000);
 
-init();
+  // ============ INIT ============
+  function init() {
+    // Set User Info
+    document.getElementById('userName').innerText = `Welcome back, ${userData.name}`;
+    if(userData.dp) {
+      document.getElementById('userDp').innerHTML = `<img src="${userData.dp}" alt="DP">`;
+    }
+    
+    updateBalance();
+    updateMiningCircle();
+    updateBoost();
+    updateGift();
+    updateTeam();
+    
+    setInterval(() => {
+      updateMiningCircle();
+      updateBoost();
+      updateGift();
+    }, 1000);
+  }
+
+  function updateBalance() {
+    document.getElementById('balance').innerText = `${userData.balance} TOKEN`;
+  }
+
+  // ============ MINING ============
+  function updateMiningCircle() {
+    const now = Date.now();
+    const diff = now - userData.lastMine;
+    const cooldown = 3 * 60 * 60 * 1000; // 3 hours
+    
+    const circle = document.getElementById('miningCircle');
+    const text = document.getElementById('miningText');
+    const timer = document.getElementById('miningTimer');
+    
+    if(diff >= cooldown || userData.lastMine === 0) {
+      circle.className = 'mining-circle ready';
+      text.innerText = 'MINE NOW';
+      timer.innerText = '';
+      circle.onclick = startMining;
+    } else {
+      const remaining = cooldown - diff;
+      const hrs = Math.floor(remaining / 3600000);
+      const mins = Math.floor((remaining % 3600000) / 60000);
+      const secs = Math.floor((remaining % 60000) / 1000);
+      
+      circle.className = 'mining-circle mining';
+      text.innerText = 'MINING...';
+      timer.innerText = `${String(hrs).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+      circle.onclick = null;
+    }
+  }
+
+  function startMining() {
+    if(Date.now() - userData.lastMine < 3*60*60*1000 && userData.lastMine !== 0) return;
+    
+    userData.balance += 10;
+    userData.lastMine = Date.now();
+    saveUser();
+    updateBalance();
+    updateMiningCircle();
+  }
+
+  // ============ BOOST ============
+  function updateBoost() {
+    const now = Date.now();
+    const diff = now - userData.lastBoost;
+    const cooldown = 2 * 60 * 60 * 1000; // 2 hours
+    
+    if(diff >= cooldown || userData.lastBoost === 0) {
+      document.getElementById('boostTimer').innerText = 'Ready';
+    } else {
+      const remaining = cooldown - diff;
+      const hrs = Math.floor(remaining / 3600000);
+      const mins = Math.floor((remaining % 3600000) / 60000);
+      const secs = Math.floor((remaining % 60000) / 1000);
+      document.getElementById('boostTimer').innerText = `Next in ${String(hrs).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+    }
+  }
+
+  function startBoost() {
+    if(Date.now() - userData.lastBoost < 2*60*60*1000 && userData.lastBoost !== 0) return;
+    
+    userData.balance += 5;
+    userData.lastBoost = Date.now();
+    saveUser();
+    updateBalance();
+    updateBoost();
+    // कोई Alert नहीं आएगा अब
+  }
+
+  // ============ ULTRA GIFT ============
+  function updateGift() {
+    const today = new Date().toDateString();
+    if(userData.giftDate !== today) {
+      userData.giftDate = today;
+      userData.giftOpens = 0;
+      saveUser();
+    }
+    
+    const hour = new Date().getHours();
+    const remaining = 4 - userData.giftOpens;
+    
+    if(remaining > 0) {
+      // दिन में ज्यादा Chance: सुबह 8-12, दोपहर 1-5, शाम 6-10, रात 11-3
+      let canOpen = false;
+      if((hour >= 8 && hour < 12) || (hour >= 13 && hour < 17) || (hour >= 18 && hour < 22) || (hour >= 23 || hour < 3)) {
+        canOpen = true;
+      }
+      document.getElementById('giftTimer').innerText = canOpen ? `${remaining} opens left` : `Next slot soon`;
+    } else {
+      document.getElementById('giftTimer').innerText = `0 opens left today`;
+    }
+  }
+
+  function openGift() {
+    const remaining = 4 - userData.giftOpens;
+    if(remaining <= 0) return;
+    
+    const hour = new Date().getHours();
+    let canOpen = false;
+    if((hour >= 8 && hour < 12) || (hour >= 13 && hour < 17) || (hour >= 18 && hour < 22) || (hour >= 23 || hour < 3)) {
+      canOpen = true;
+    }
+    
+    if(!canOpen) return;
+    
+    userData.balance += 20;
+    userData.giftOpens++;
+    saveUser();
+    updateBalance();
+    updateGift();
+  }
+
+  // ============ TEAM ============
+  function updateTeam() {
+    const onlineCount = userData.team.filter(m => m.online).length;
+    document.getElementById('teamCount').innerText = `${userData.team.length} Members`;
+  }
+
+  function openTeam() {
+    const list = document.getElementById('teamList');
+    list.innerHTML = '';
+    userData.team.forEach(member => {
+      list.innerHTML += `
+        <div class="team-member">
+          <span>${member.name}</span>
+          ${member.online ? '<div class="online"></div>' : '<span style="font-size:11px;color:#8a8aa0">Offline</span>'}
+        </div>
+      `;
+    });
+    document.getElementById('teamModal').classList.add('active');
+  }
+
+  function closeTeam() {
+    document.getElementById('teamModal').classList.remove('active');
+  }
+
+  // ============ WALLET ============
+  function openWallet() {
+    alert(`Your Wallet Balance: ${userData.balance} TOKEN`);
+  }
+
+  // ============ NAV ============
+  function navClick(page) {
+    if(page === 'tasks') window.location.href = 'tasks.html';
+    if(page === 'invite') alert('Invite page coming soon');
+    if(page === 'profile') alert('Profile page coming soon');
+  }
+
+  init();
 </script>
+
 </body>
 </html>
