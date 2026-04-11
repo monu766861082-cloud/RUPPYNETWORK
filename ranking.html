@@ -18,8 +18,6 @@ h1{font-size:28px;font-weight:700}
 .badge{width:56px;height:56px;border-radius:50%;border:2px solid var(--gold2);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:var(--gold2);margin-right:12px}
 .name{font-size:18px;font-weight:600;display:flex;align-items:center;gap:8px}
 .logo{width:20px;height:20px;border-radius:50%;object-fit:cover}
-.reward{font-size:13px;color:var(--muted)}
-.reward span{color:var(--gold)}
 .points div{font-size:13px;color:var(--muted)}
 .points strong{font-size:26px;color:var(--gold2)}
 .tag{display:inline-flex;align-items:center;gap:6px;color:var(--gold);font-size:12px;font-weight:700;letter-spacing:1px}
@@ -28,6 +26,8 @@ h3{font-size:22px;margin:8px 0 4px}
 h3 span{display:block;color:var(--gold)}
 .p{font-size:13px;color:var(--muted);line-height:1.4}
 .refer-btn{width:100%;background:var(--gold);color:#000;border:none;border-radius:999px;padding:12px 0;font-size:16px;font-weight:700;text-align:center;cursor:pointer;margin-top:12px}
+.reward-info{background:#17171A;border-radius:12px;padding:12px;margin-top:12px;font-size:12px;color:var(--muted);line-height:1.6}
+.reward-info strong{color:var(--gold)}
 .claim{border:1px solid #1DBF5E;color:#1DBF5E;border-radius:999px;padding:9px 14px;font-weight:700;font-size:14px;cursor:pointer}
 .claimed{border-color:#444;color:#666}
 .tbl{background:var(--card);border:1px solid #222;border-radius:18px;overflow:hidden;margin-top:8px}
@@ -41,7 +41,6 @@ h3 span{display:block;color:var(--gold)}
 .amt{color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:2px 12px;font-size:13px}
 .empty{text-align:center;padding:40px 20px;color:var(--muted)}
 .empty svg{width:60px;height:60px;margin-bottom:12px;opacity:0.3}
-
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 15px}
 .nav-item.active{color:#FFA500}
@@ -62,7 +61,7 @@ h3 span{display:block;color:var(--gold)}
 <div class="lf">
 <div class="badge" id="userRank">#0</div>
 <div>
-<div class="name"><img src="logo.png" class="logo"><span id="userName">You</span></div>
+<div class="name"><img src="logo.png" class="logo" onerror="this.style.display='none'"><span id="userName">You</span></div>
 </div>
 </div>
 <div class="points"><div>Points</div><strong id="userPoints">0</strong></div>
@@ -74,6 +73,14 @@ h3 span{display:block;color:var(--gold)}
 <h3>Refer More. Rank Higher.<span>Earn Bigger Rewards.</span></h3>
 <p class="p">Share your link anywhere. Top rank = biggest reward every week. Updates every 24 hours.</p>
 <button class="refer-btn" onclick="shareRefer()">REFER NOW</button>
+<div class="reward-info">
+<strong>Weekly Reward Structure:</strong><br>
+#1 → 1000 RUPPY TOKEN<br>
+#2 - #10 → 800 RUPPY TOKEN<br>
+#11 - #50 → 600 RUPPY TOKEN<br>
+#51 - #100 → 500 RUPPY TOKEN<br>
+#101 - #500 → 300 RUPPY TOKEN
+</div>
 </div>
 
 <div class="card" id="claimCard" style="display:none">
@@ -82,7 +89,7 @@ h3 span{display:block;color:var(--gold)}
 <div class="badge" id="claimBadge" style="border-color:#1DBF5E;color:#1DBF5E">✓</div>
 <div>
 <div class="name">WEEKLY CLAIM REWARD</div>
-<div class="reward" id="claimText">Claim your weekly rank reward!</div>
+<div class="reward" id="claimText" style="font-size:13px;color:var(--muted)">Claim your weekly rank reward!</div>
 </div>
 </div>
 <div class="claim" id="claimBtn" onclick="claimReward()">CLAIM</div>
@@ -120,6 +127,9 @@ h3 span{display:block;color:var(--gold)}
 <div class="toast" id="toast">Copied!</div>
 
 <script>
+// Clear पुराना Fake Data
+localStorage.removeItem('ruppy_all_users');
+
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   name: 'User',
   balance: 0,
@@ -129,7 +139,7 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
 
 let inviteCode = localStorage.getItem('ruppy_inviteCode') || 'RUPPY786';
 
-// AUTOMATIC REWARD SYSTEM
+// AUTOMATIC REWARD SYSTEM - तेरे हिसाब से
 function getReward(rank){
   if(rank === 1) return 1000;
   if(rank >= 2 && rank <= 10) return 800;
@@ -142,16 +152,18 @@ function getReward(rank){
 // REAL DATA ONLY - No Demo Data
 let allUsersData = JSON.parse(localStorage.getItem('ruppy_all_users')) || [];
 
-// Add current user to list if they have referrals
+// Current User को Add करो अगर Referrals हैं तो
 let userPoints = (userData.team || []).length * 10;
+let userName = userData.name || 'User';
+
 if(userPoints > 0){
-  let existingUser = allUsersData.find(u => u.name === userData.name);
+  let existingUser = allUsersData.find(u => u.name === userName);
   if(existingUser){
     existingUser.refs = (userData.team || []).length;
     existingUser.points = userPoints;
   } else {
     allUsersData.push({
-      name: userData.name || 'You',
+      name: userName,
       refs: (userData.team || []).length,
       points: userPoints,
       isUser: true
@@ -160,20 +172,20 @@ if(userPoints > 0){
   localStorage.setItem('ruppy_all_users', JSON.stringify(allUsersData));
 }
 
-// Sort by points - Auto Ranking
+// Auto Sort by Points - Ranking
 allUsersData.sort((a,b) => b.points - a.points);
 
-// Display User Position - Only if user has points
+// Display YOUR POSITION - सिर्फ तब जब Points > 0
 if(userPoints > 0){
   document.getElementById('pos').style.display = 'block';
   document.getElementById('claimCard').style.display = 'block';
   let userRank = allUsersData.findIndex(u => u.isUser) + 1;
   document.getElementById('userRank').innerText = '#' + userRank;
-  document.getElementById('userName').innerText = userData.name || 'You';
+  document.getElementById('userName').innerText = userName;
   document.getElementById('userPoints').innerText = userPoints;
 }
 
-// Display Leaderboard - Only Real Users
+// Display Leaderboard - Empty State अगर कोई User नहीं
 let listHTML = '';
 if(allUsersData.length === 0){
   listHTML = `<div class="empty">
@@ -182,7 +194,7 @@ if(allUsersData.length === 0){
     <div style="font-size:12px;margin-top:4px">Start referring to appear on leaderboard</div>
   </div>`;
 } else {
-  allUsersData.slice(0,50).forEach((u,i) => {
+  allUsersData.forEach((u,i) => {
     let rank = i + 1;
     let reward = getReward(rank);
     let crown = rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '#' + rank;
@@ -192,7 +204,7 @@ if(allUsersData.length === 0){
       <div class="lf">
         <div class="ic">${crown}</div>
         <div>
-          <div class="u-name" ${nameStyle}><img src="logo.png" class="logo">${u.name}</div>
+          <div class="u-name" ${nameStyle}><img src="logo.png" class="logo" onerror="this.style.display='none'">${u.name}</div>
           <div class="u-sub">${u.refs} refs</div>
         </div>
       </div>
@@ -205,7 +217,7 @@ if(allUsersData.length === 0){
 }
 document.getElementById('leaderboardList').innerHTML = listHTML;
 
-// Weekly Claim Logic - Only if user has rank
+// Weekly Claim Logic - 7 दिन में 1 बार
 let now = Date.now();
 let week = 7*24*60*60*1000;
 if(userPoints > 0 && now - userData.weeklyClaimed < week){
@@ -232,7 +244,7 @@ function claimReward(){
   setTimeout(() => location.reload(), 1000);
 }
 
-// Single Refer Button - Opens Share Sheet
+// Single Refer Button - WhatsApp/Instagram/Telegram हटाया
 function shareRefer(){
   let text = `Join RUPPY Network & earn RUPPY TOKEN! 💰\n\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app?ref=${inviteCode}`;
   if(navigator.share){
@@ -258,10 +270,11 @@ function goPage(page){
   window.location.href = page;
 }
 
-// Auto Update Every 24 Hours
+// 24 Hour Auto Update - Ranking Refresh
 let lastUpdate = localStorage.getItem('ruppy_leaderboard_update') || 0;
 if(now - lastUpdate > 24*60*60*1000){
   localStorage.setItem('ruppy_leaderboard_update', now);
+  // Real app में यहां Server से नया Data आएगा
   location.reload();
 }
 </script>
