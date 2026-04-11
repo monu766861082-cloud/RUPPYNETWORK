@@ -149,7 +149,6 @@ loadProfile();
 
 function copyRefCode(){
   navigator.clipboard.writeText(userData.id);
-  alert('Copied: ' + userData.id);
 }
 
 function openEditProfile(){
@@ -192,32 +191,16 @@ function logout(){
 
 function goPage(page){ window.location.href = page; }
 
-// Notification System with iOS Fallback
+// Notification System - No Alerts
 let notifEnabled = localStorage.getItem('notif_enabled') === 'true';
 
 function updateNotifStatus(){
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  const notifSupported = 'Notification' in window;
-
-  if(isIOS &&!notifSupported){
-    document.getElementById('notifStatus').innerText = 'Add to Home Screen';
-    document.getElementById('notifStatus').style.color = 'var(--gold)';
-  } else {
-    document.getElementById('notifStatus').innerText = notifEnabled? 'On' : 'Off';
-    document.getElementById('notifStatus').style.color = notifEnabled? 'var(--green)' : 'var(--muted)';
-  }
+  document.getElementById('notifStatus').innerText = notifEnabled? 'On' : 'Off';
+  document.getElementById('notifStatus').style.color = notifEnabled? 'var(--green)' : 'var(--muted)';
 }
 updateNotifStatus();
 
 async function toggleNotification(){
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  const notifSupported = 'Notification' in window;
-
-  if(isIOS &&!notifSupported){
-    alert('iPhone पर Notification के लिए:\n\n1. Safari में खोलो\n2. Share बटन दबाओ\n3. "Add to Home Screen" करो\n\nफिर App से Notification आएंगे');
-    return;
-  }
-
   if(!notifEnabled){
     if('Notification' in window){
       const permission = await Notification.requestPermission();
@@ -225,9 +208,6 @@ async function toggleNotification(){
         notifEnabled = true;
         localStorage.setItem('notif_enabled', 'true');
         updateNotifStatus();
-        showTestNotif();
-      } else {
-        alert('Notification blocked. Enable from Browser Settings > Site Settings');
       }
     }
   } else {
@@ -237,34 +217,15 @@ async function toggleNotification(){
   }
 }
 
-function showTestNotif(){
-  if(notifEnabled && Notification.permission === 'granted'){
-    new Notification('Notifications Enabled ✅', {
-      body: 'You will get mining alerts with sound',
-      icon: 'https://ruppynetwork.vercel.app/icon.png'
-    });
-    new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play();
-  }
-}
-
-// Global function - Mining Complete होने पे Call करना
+// Mining Complete होने पे Call करना app.html से
 window.sendMiningNotif = function(){
-  // iPhone पे Browser Alert + Sound
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-
   if(localStorage.getItem('notif_enabled') === 'true'){
     if('Notification' in window && Notification.permission === 'granted'){
-      new Notification('Mining Complete! ⛏️', {
+      new Notification('Mining Complete!', {
         body: 'Your RUPPY is ready. Claim now!',
-        icon: 'https://ruppynetwork.vercel.app/icon.png',
-        vibrate: [200, 100, 200]
+        icon: 'https://ruppynetwork.vercel.app/icon.png'
       });
       new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play();
-    } else {
-      // iPhone Fallback: Sound + Visual Alert
-      new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play();
-      if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
-      alert('⛏️ Mining Complete!\nYour RUPPY is ready. Claim now!');
     }
   }
 }
