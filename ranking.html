@@ -1,186 +1,234 @@
-<script>
-// Clear old data once
-if(!localStorage.getItem('fix_final_v2')){
-  localStorage.clear();
-  localStorage.setItem('fix_final_v2', 'done');
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Leaderboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0B0B0C;--card:#111113;--edge:#2A200E;--gold:#F3C774;--gold2:#EABF55;--muted:#9CA3AF}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Poppins,sans-serif}
+body{background:#0B0B0C;color:#fff;padding:18px;padding-bottom:90px}
+.top{display:flex;justify-content:space-between;align-items:flex-start}
+h1{font-size:28px;font-weight:700}
+.sub{font-size:13px;color:var(--muted);margin-top:2px}
+.trophy{width:44px;height:44px;border:1.5px solid var(--gold2);border-radius:12px;display:flex;align-items:center;justify-content:center}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:18px;padding:14px 16px;margin-top:18px}
+#pos h2{font-size:12px;color:var(--muted);letter-spacing:1px}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.badge{width:56px;height:56px;border-radius:50%;border:2px solid var(--gold2);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:var(--gold2);margin-right:12px}
+.name{font-size:18px;font-weight:600;display:flex;align-items:center;gap:8px}
+.logo{width:20px;height:20px;border-radius:50%;object-fit:cover}
+.reward{font-size:13px;color:var(--muted)}
+.reward span{color:var(--gold)}
+.points div{font-size:13px;color:var(--muted)}
+.points strong{font-size:26px;color:var(--gold2)}
+.tag{display:inline-flex;align-items:center;gap:6px;color:var(--gold);font-size:12px;font-weight:700;letter-spacing:1px}
+.tag svg{width:20px;height:20px}
+h3{font-size:22px;margin:8px 0 4px}
+h3 span{display:block;color:var(--gold)}
+.p{font-size:13px;color:var(--muted);line-height:1.4}
+.shares{display:flex;gap:10px;margin-top:12px}
+.btn{flex:1;border:1px solid;border-radius:999px;padding:9px 0;font-size:14px;font-weight:600;text-align:center;cursor:pointer}
+.wa{border-color:#1DBF5E;color:#1DBF5E}
+.ig{border-color:#E1306C;color:#E1306C}
+.tg{border-color:#27A3E1;color:#27A3E1}
+.claim{border:1px solid #1DBF5E;color:#1DBF5E;border-radius:999px;padding:9px 14px;font-weight:700;font-size:14px;cursor:pointer}
+.claimed{border-color:#444;color:#666}
+.tbl{background:var(--card);border:1px solid #222;border-radius:18px;overflow:hidden;margin-top:8px}
+.head{display:flex;justify-content:space-between;padding:12px 14px;background:#17171A;font-size:12px;color:var(--muted)}
+.user{display:flex;justify-content:space-between;padding:13px 14px;border-top:1px solid #1F1F22}
+.lf{display:flex;align-items:center}
+.ic{width:28px;margin-right:10px;display:flex;justify-content:center}
+.u-name{color:var(--gold);font-weight:600;display:flex;align-items:center;gap:6px}
+.u-sub{font-size:12px;color:var(--muted)}
+.pts{font-size:16px;font-weight:600}
+.amt{color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:2px 12px;font-size:13px}
 
+/* SAME NAV CSS */
+.nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 15px}
+.nav-item.active{color:#FFA500}
+.nav-item.active::after{content:'';width:30px;height:2px;background:#FFA500;margin-top:2px}
+.nav-item.icon{font-size:20px}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999}
+</style>
+</head>
+<body>
+<div class="top">
+<div><h1>Leaderboard</h1><div class="sub">Auto-updates every 24 hours • 1 referral = 10 pts</div></div>
+<div class="trophy"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="1.6"><path d="M8 21h8M12 17v4M7 4h10l-1 7H8L7 4z"/><path d="M17 4v2a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V4"/></svg></div>
+</div>
+
+<div class="card" id="pos">
+<h2>YOUR POSITION</h2>
+<div class="row">
+<div class="lf">
+<div class="badge" id="userRank">#0</div>
+<div>
+<div class="name"><img src="logo.png" class="logo"><span id="userName">You</span></div>
+<div class="reward">Reward: <span id="userReward">0 RUPPY TOKEN</span></div>
+</div>
+</div>
+<div class="points"><div>Points</div><strong id="userPoints">0</strong></div>
+</div>
+</div>
+
+<div class="card">
+<div class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 21h8M12 17v4M7 4h10l-1 7H8L7 4z"/><path d="M17 4v2a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V4"/></svg>WEEKLY CAMPAIGN</div>
+<h3>Refer More. Rank Higher.<span>Earn Bigger Rewards.</span></h3>
+<p class="p">Share on WhatsApp, Instagram & Telegram. Top rank = biggest reward every week. Updates every 24 hours.</p>
+<div class="shares">
+<div class="btn wa" onclick="share('wa')">WhatsApp</div>
+<div class="btn ig" onclick="share('ig')">Instagram</div>
+<div class="btn tg" onclick="share('tg')">Telegram</div>
+</div>
+</div>
+
+<div class="card">
+<div class="row">
+<div class="lf">
+<div class="badge" id="claimBadge" style="border-color:#1DBF5E;color:#1DBF5E">✓</div>
+<div>
+<div class="name">WEEKLY CLAIM REWARD</div>
+<div class="reward" id="claimText">Claim your weekly rank reward!</div>
+</div>
+</div>
+<div class="claim" id="claimBtn" onclick="claimReward()">CLAIM</div>
+</div>
+</div>
+
+<div class="tbl">
+<div class="head"><div>RANK NAME</div><div style="display:flex;gap:36px"><span>POINTS</span><span>REWARD</span></div></div>
+<div id="leaderboardList"></div>
+</div>
+
+<div class="nav">
+  <div class="nav-item" onclick="goPage('app.html')">
+    <div class="icon">🏠</div>
+    <span>Home</span>
+  </div>
+  <div class="nav-item" onclick="goPage('tasks.html')">
+    <div class="icon">📋</div>
+    <span>Tasks</span>
+  </div>
+  <div class="nav-item" onclick="goPage('referral.html')">
+    <div class="icon">👥</div>
+    <span>Referral</span>
+  </div>
+  <div class="nav-item active">
+    <div class="icon">🏆</div>
+    <span>Ranking</span>
+  </div>
+  <div class="nav-item" onclick="goPage('settings.html')">
+    <div class="icon">⚙️</div>
+    <span>Settings</span>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied!</div>
+
+<script>
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
-  name: '',
+  name: 'User',
   balance: 0,
   team: [],
-  lastClaimWeek: 0
+  weeklyClaimed: 0
 };
 
-// Ask name only once if empty
-if(!userData.name || userData.name.trim() === ''){
-  let n = prompt('Enter your name:');
-  userData.name = n && n.trim() ? n.trim() : 'Guest';
-  localStorage.setItem('ruppy_user', JSON.stringify(userData));
-}
-
 let inviteCode = localStorage.getItem('ruppy_inviteCode') || 'RUPPY786';
-let userName = userData.name;
 
-function getReward(rank){
-  if(rank === 1) return 1000;
-  if(rank >= 2 && rank <= 10) return 800;
-  if(rank >= 11 && rank <= 50) return 600;
-  if(rank >= 51 && rank <= 100) return 500;
-  if(rank >= 101 && rank <= 500) return 300;
-  return 0;
-}
+// Demo Leaderboard Data - Real में ये Server से आएगा
+let leaderboard = [
+  {name:'Rahul S***', refs:145, points:1450, reward:1000},
+  {name:'Priya K***', refs:98, points:980, reward:700},
+  {name:'Amit P***', refs:76, points:760, reward:500},
+  {name:'Sneha M***', refs:52, points:520, reward:300},
+  {name:'Vikas R***', refs:45, points:450, reward:200}
+];
 
-function getWeekNumber(){
-  let d = new Date();
-  d.setHours(0,0,0,0);
-  d.setDate(d.getDate() + 4 - (d.getDay()||7));
-  let yearStart = new Date(d.getFullYear(),0,1);
-  return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
-}
-
-let allUsersData = JSON.parse(localStorage.getItem('ruppy_all_users')) || [];
+// User के Points = Team Size * 10
 let userPoints = (userData.team || []).length * 10;
-let currentWeek = getWeekNumber();
+let allUsers = [...leaderboard, {name: userData.name || 'You', refs: (userData.team || []).length, points: userPoints, reward: 0, isUser: true}];
+allUsers.sort((a,b) => b.points - a.points);
 
-// Add to leaderboard only if user has points
-if(userPoints > 0){
-  let existingUser = allUsersData.find(u => u.name === userName);
-  if(existingUser){
-    existingUser.refs = userData.team.length;
-    existingUser.points = userPoints;
-  } else {
-    allUsersData.push({
-      name: userName,
-      refs: userData.team.length,
-      points: userPoints,
-      isUser: true
-    });
-  }
-  localStorage.setItem('ruppy_all_users', JSON.stringify(allUsersData));
-}
+// User का Rank निकाल
+let userRank = allUsers.findIndex(u => u.isUser) + 1;
+let userReward = userRank === 1 ? 1000 : userRank === 2 ? 700 : userRank === 3 ? 500 : userRank <= 5 ? 200 : 50;
 
-allUsersData.sort((a,b) => b.points - a.points);
+// Display User Position
+document.getElementById('userRank').innerText = '#' + userRank;
+document.getElementById('userName').innerText = userData.name || 'You';
+document.getElementById('userPoints').innerText = userPoints;
+document.getElementById('userReward').innerText = userReward + ' RUPPY TOKEN';
 
-// Safe Code - Null Check Added
-let userRank = 0;
-let posEl = document.getElementById('pos');
-let claimCardEl = document.getElementById('claimCard');
-
-if(userPoints > 0 && posEl){
-  posEl.style.display = 'block';
-  userRank = allUsersData.findIndex(u => u.isUser) + 1;
-  let userRankEl = document.getElementById('userRank');
-  let userNameEl = document.getElementById('userName');
-  let userPointsEl = document.getElementById('userPoints');
-  if(userRankEl) userRankEl.innerText = '#' + userRank;
-  if(userNameEl) userNameEl.innerText = userName;
-  if(userPointsEl) userPointsEl.innerText = userPoints;
-  
-  let userReward = getReward(userRank);
-  if(userReward > 0 && claimCardEl){
-    claimCardEl.style.display = 'block';
-    let claimTextEl = document.getElementById('claimText');
-    let claimBtnEl = document.getElementById('claimBtn');
-    if(claimTextEl) claimTextEl.innerHTML = `Rank #${userRank} Reward: <span style="color:var(--gold)">${userReward} RUPPY TOKEN</span>`;
-    if(userData.lastClaimWeek === currentWeek && claimBtnEl){
-      claimBtnEl.innerText = 'CLAIMED ✓';
-      claimBtnEl.classList.add('claimed');
-    }
-  }
-}
-
-// Leaderboard list
+// Display Leaderboard Top 5
 let listHTML = '';
-if(allUsersData.length === 0){
-  listHTML = `<div class="empty">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 21h8M12 17v4M7 4h10l-1 7H8L7 4z"/><path d="M17 4v2a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V4"/></svg>
-    <div>No users yet</div>
-    <div style="font-size:12px;margin-top:4px">Start referring to appear on leaderboard</div>
+allUsers.slice(0,5).forEach((u,i) => {
+  let crown = i === 0 ? '👑' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i+1);
+  let nameStyle = u.isUser ? 'style="color:#1DBF5E"' : '';
+  listHTML += `
+  <div class="user">
+    <div class="lf">
+      <div class="ic">${crown}</div>
+      <div>
+        <div class="u-name" ${nameStyle}><img src="logo.png" class="logo">${u.name}</div>
+        <div class="u-sub">${u.refs} refs</div>
+      </div>
+    </div>
+    <div class="lf" style="gap:28px">
+      <div class="pts">${u.points}</div>
+      <div class="amt">${u.reward}</div>
+    </div>
   </div>`;
-} else {
-  allUsersData.forEach((u,i) => {
-    let rank = i + 1;
-    let reward = getReward(rank);
-    let crown = rank === 1? '👑' : rank === 2? '🥈' : rank === 3? '🥉' : '#' + rank;
-    let nameStyle = u.isUser? 'style="color:#1DBF5E"' : '';
-    listHTML += `
-    <div class="user">
-      <div class="lf">
-        <div class="ic">${crown}</div>
-        <div>
-          <div class="u-name" ${nameStyle}><img src="logo.png" class="logo" onerror="this.style.display='none'">${u.name}</div>
-          <div class="u-sub">${u.refs} refs</div>
-        </div>
-      </div>
-      <div class="lf" style="gap:28px">
-        <div class="pts">${u.points}</div>
-        <div class="amt">${reward}</div>
-      </div>
-    </div>`;
-  });
-}
+});
+document.getElementById('leaderboardList').innerHTML = listHTML;
 
-// Safe Code - Null Check Added
-let leaderboardEl = document.getElementById('leaderboardList');
-if(leaderboardEl) leaderboardEl.innerHTML = listHTML;
+// Weekly Claim Logic - 7 दिन में 1 बार
+let now = Date.now();
+let week = 7*24*60*60*1000;
+if(now - userData.weeklyClaimed < week){
+  document.getElementById('claimBtn').innerText = 'CLAIMED ✓';
+  document.getElementById('claimBtn').classList.add('claimed');
+  document.getElementById('claimText').innerText = 'Claimed this week — check back next week!';
+}
 
 function claimReward(){
-  if(userPoints === 0){
-    showToast('Refer first to get rank');
+  if(now - userData.weeklyClaimed < week){
+    showToast('Already claimed! Next week claim karna');
     return;
   }
-  if(userData.lastClaimWeek === currentWeek){
-    showToast('Already claimed this week');
-    return;
-  }
-  let userReward = getReward(userRank);
-  if(userReward === 0){
-    showToast('Not in Top 500 yet');
-    return;
-  }
-  
   userData.balance += userReward;
-  userData.lastClaimWeek = currentWeek;
+  userData.weeklyClaimed = now;
   localStorage.setItem('ruppy_user', JSON.stringify(userData));
   showToast(userReward + ' RUPPY TOKEN Claimed!');
   setTimeout(() => location.reload(), 1000);
 }
 
-function shareRefer(){
-  let url = `https://ruppynetwork.vercel.app?ref=${inviteCode}`;
-  let msg = `Join RUPPY Network & earn RUPPY TOKEN! Use my code: ${inviteCode}`;
-  
-  if (navigator.share) {
-    navigator.share({
-      title: 'RUPPY Network',
-      text: msg,
-      url: url
-    }).catch(() => {
-      navigator.clipboard.writeText(msg + '\n\n' + url);
-      showToast('Link Copied!');
-    });
+function share(platform){
+  let text = `Join RUPPY Network & climb the Leaderboard! 💰\nMy Rank: #${userRank}\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app?ref=${inviteCode}`;
+  if(navigator.share){
+    navigator.share({title: 'RUPPY Leaderboard', text: text, url: `https://ruppynetwork.vercel.app?ref=${inviteCode}`});
   } else {
-    navigator.clipboard.writeText(msg + '\n\n' + url);
-    showToast('Link Copied!');
+    navigator.clipboard.writeText(text);
+    showToast('Link Copied! Share on ' + platform);
   }
 }
 
-// Safe Code - Null Check Added
 function showToast(msg){
   let t = document.getElementById('toast');
-  if(t){
-    t.innerText = msg;
-    t.style.display = 'block';
-    setTimeout(() => t.style.display = 'none', 2500);
-  }
+  t.innerText = msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2500);
 }
 
-function goPage(page){ window.location.href = page; }
+function goPage(page){
+  window.location.href = page;
+}
 
-let lastUpdate = localStorage.getItem('ruppy_leaderboard_update') || 0;
-if(Date.now() - lastUpdate > 24*60*60*1000){
-  localStorage.setItem('ruppy_leaderboard_update', Date.now());
+// 24 Hour Auto Update - Page reload पे Data Refresh
+setInterval(() => {
   location.reload();
-}
+}, 24*60*60*1000);
 </script>
+</body>
+</html>
