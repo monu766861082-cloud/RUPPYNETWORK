@@ -8,21 +8,23 @@
 body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:70px}
 .hdr{padding:20px}
 .hdr h1{margin:0;font-size:28px}
-.hdr p{margin:4px 0 0;color:#d4a017;font-weight:bold}
+.hdr p{margin:4px 0 0;color:#FFA500;font-weight:bold}
 .hdr small{color:#888}
-.tokenBal{background:#1a1a1a;border:1px solid #d4a017;border-radius:10px;padding:10px;margin:0 12px;text-align:center;font-size:14px}
-.tokenBal b{color:#d4a017;font-size:22px}
-.card{border:1px solid #444;border-radius:14px;padding:14px;margin:12px;display:flex;align-items:center}
-.ic{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:20px}
+.tokenBal{background:#0d0d0d;border:1px solid #FFA500;border-radius:12px;padding:15px;margin:0 15px;text-align:center;font-size:14px}
+.tokenBal b{color:#FFA500;font-size:24px}
+.card{border:1px solid #333;border-radius:12px;padding:14px;margin:12px 15px;display:flex;align-items:center;background:#0d0d0d}
+.ic{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:20px}
 .tg{background:#0088cc}.fb{background:#1877f2}.x{background:#fff;color:#000}
-.txt{flex:1}.txt b{display:block}.txt span{color:#d4a017;font-size:12px}
-.bt{border:1px solid #d4a017;color:#d4a017;padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;min-width:65px;text-align:center}
-.bt.claim{background:#d4a017;color:#000;font-weight:bold}
+.txt{flex:1}.txt b{display:block;font-size:15px}.txt span{color:#FFA500;font-size:12px}
+.bt{border:1px solid #FFA500;color:#FFA500;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;min-width:70px;text-align:center;font-weight:600}
+.bt.claim{background:#FFA500;color:#000}
 .bt.done{background:#333;color:#666;border-color:#333;cursor:not-allowed}
-.nav{position:fixed;bottom:0;left:0;width:100%;display:flex;background:#000;border-top:1px solid #222;padding:4px 0}
-.nv{flex:1;text-align:center;font-size:11px;color:#777;cursor:pointer}
-.nv.active{color:#d4a017}
-.nv.icon{font-size:20px;display:block;margin-bottom:2px}
+.bt.opened{background:#1a1a1a;color:#888;border-color:#444}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 15px}
+.nav-item.active{color:#FFA500}
+.nav-item.active::after{content:'';width:30px;height:2px;background:#FFA500;margin-top:2px}
+.nav-item.icon{font-size:20px}
 </style>
 </head>
 <body>
@@ -33,103 +35,133 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:70px}
 <div class="card">
   <div class="ic tg">✈️</div>
   <div class="txt"><b>Join Telegram</b><span>Reward: +20 TOKEN</span></div>
-  <a href="https://t.me/RUPPYfoundation" target="_blank" class="bt" id="tgBtn" onclick="taskClick('tg')">JOIN</a>
+  <a class="bt" id="tgBtn">JOIN</a>
 </div>
 
 <div class="card">
   <div class="ic fb">f</div>
   <div class="txt"><b>Follow on Facebook</b><span>Reward: +20 TOKEN</span></div>
-  <a href="https://www.facebook.com/share/1PjMyFivNF/?mibextid=wwXIfr" target="_blank" class="bt" id="fbBtn" onclick="taskClick('fb')">FOLLOW</a>
+  <a class="bt" id="fbBtn">FOLLOW</a>
 </div>
 
 <div class="card">
   <div class="ic x">X</div>
   <div class="txt"><b>Follow on X</b><span>Reward: +20 TOKEN</span></div>
-  <a href="https://x.com/rupfoundation?s=21" target="_blank" class="bt" id="xBtn" onclick="taskClick('x')">FOLLOW</a>
+  <a class="bt" id="xBtn">FOLLOW</a>
 </div>
 
 <div class="nav">
-  <div class="nv" onclick="goPage('app.html')">
-    <span class="icon">🏠</span>
+  <div class="nav-item" onclick="goPage('app.html')">
+    <div class="icon">🏠</div>
     <span>Home</span>
   </div>
-  <div class="nv active">
-    <span class="icon">📋</span>
+  <div class="nav-item active">
+    <div class="icon">📋</div>
     <span>Tasks</span>
   </div>
-  <div class="nv">
-    <span class="icon">👥</span>
+  <div class="nav-item" onclick="goPage('referral.html')">
+    <div class="icon">👥</div>
     <span>Referral</span>
   </div>
-  <div class="nv">
-    <span class="icon">🏆</span>
+  <div class="nav-item" onclick="goPage('ranking.html')">
+    <div class="icon">🏆</div>
     <span>Ranking</span>
   </div>
-  <div class="nv">
-    <span class="icon">⚙️</span>
+  <div class="nav-item" onclick="goPage('settings.html')">
+    <div class="icon">⚙️</div>
     <span>Settings</span>
   </div>
 </div>
 
 <script>
-// Global balance sync with app.html using 'ruppyTokens'
-let tokens = parseInt(localStorage.getItem('ruppyTokens')) || 0;
-let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
+// Use same localStorage key as app.html: 'ruppy_user'
+let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
+  name: 'User',
+  balance: 0,
+  lastMine: 0,
+  lastGift: 0,
+  boostCount: 0,
+  boostResetTime: Date.now(),
+  team: []
+};
 
-document.getElementById('bal').innerText = tokens;
+let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
+let openedTask = null;
+
+document.getElementById('bal').innerText = userData.balance;
 updateButtons();
 
-function taskClick(task){
-  if(!taskState[task]){
-    taskState[task] = 'joined';
+// Detect when user returns from Telegram/FB/X
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden && openedTask) {
+    taskState[openedTask] = 'ready_to_claim';
     localStorage.setItem('taskState', JSON.stringify(taskState));
+    openedTask = null;
     updateButtons();
   }
+});
+
+function openLink(task, url) {
+  window.open(url, '_blank');
+  openedTask = task;
+  taskState[task] = 'opened';
+  localStorage.setItem('taskState', JSON.stringify(taskState));
+  updateButtons();
 }
 
-function claimReward(task){
-  if(taskState[task] === 'joined'){
-    tokens += 20;
+function claimReward(task) {
+  if (taskState[task] === 'ready_to_claim') {
+    userData.balance += 20;
     taskState[task] = 'claimed';
 
-    // Update global balance - app.html will also show this updated value
-    localStorage.setItem('ruppyTokens', tokens);
+    // Save to same key as app.html
+    localStorage.setItem('ruppy_user', JSON.stringify(userData));
     localStorage.setItem('taskState', JSON.stringify(taskState));
-    document.getElementById('bal').innerText = tokens;
+    document.getElementById('bal').innerText = userData.balance;
 
     updateButtons();
     alert('+20 RUPPY Claimed!');
   }
 }
 
-function updateButtons(){
-  ['tg','fb','x'].forEach(task => {
-    let btn = document.getElementById(task+'Btn');
-    if(taskState[task] === 'joined'){
+function updateButtons() {
+  const tasks = [
+    {id: 'tg', url: 'https://t.me/RUPPYfoundation', text: 'JOIN'},
+    {id: 'fb', url: 'https://www.facebook.com/share/1PjMyFivNF/?mibextid=wwXIfr', text: 'FOLLOW'},
+    {id: 'x', url: 'https://x.com/rupfoundation?s=21', text: 'FOLLOW'}
+  ];
+
+  tasks.forEach(t => {
+    let btn = document.getElementById(t.id + 'Btn');
+    if (taskState[t.id] === 'opened') {
+      btn.innerText = 'OPENED';
+      btn.className = 'bt opened';
+      btn.onclick = null;
+    } else if (taskState[t.id] === 'ready_to_claim') {
       btn.innerText = 'CLAIM';
       btn.className = 'bt claim';
-      btn.href = 'javascript:void(0)';
-      btn.onclick = () => claimReward(task);
-      btn.removeAttribute('target');
-    } else if(taskState[task] === 'claimed'){
+      btn.onclick = () => claimReward(t.id);
+    } else if (taskState[t.id] === 'claimed') {
       btn.innerText = 'DONE';
       btn.className = 'bt done';
-      btn.href = 'javascript:void(0)';
       btn.onclick = null;
-      btn.removeAttribute('target');
+    } else {
+      btn.innerText = t.text;
+      btn.className = 'bt';
+      btn.onclick = () => openLink(t.id, t.url);
     }
   });
 }
 
-function goPage(page){
+function goPage(page) {
   window.location.href = page;
 }
 
-// Auto sync if balance changes in other tab
+// Live sync if balance changes in app.html
 window.addEventListener('storage', function(e) {
-  if(e.key === 'ruppyTokens'){
-    tokens = parseInt(e.newValue) || 0;
-    document.getElementById('bal').innerText = tokens;
+  if (e.key === 'ruppy_user') {
+    userData = JSON.parse(e.newValue);
+    document.getElementById('bal').innerText = userData.balance;
   }
 });
 </script>
