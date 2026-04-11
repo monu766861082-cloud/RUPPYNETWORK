@@ -41,19 +41,8 @@ a{color:#aaa;text-decoration:none}
     style="padding:12px;width:80%;max-width:260px;border-radius:24px;border:none;text-align:center;margin-bottom:10px"
   >
   <br>
-  <input
-    type="password"
-    id="passwordInput"
-    placeholder="Enter Password"
-    style="padding:12px;width:80%;max-width:260px;border-radius:24px;border:none;text-align:center;margin-bottom:10px"
-  >
-  <br>
   <button onclick="handleLogin()" class="btn" id="actionBtn">
-    LOGIN
-  </button>
-  <br>
-  <button onclick="handleSignup()" class="btn" style="background:#333;color:#f9a825;margin-top:10px;">
-    CREATE ACCOUNT
+    SEND OTP
   </button>
 </div>
 
@@ -71,49 +60,68 @@ By continuing, you agree to our Terms & Privacy Policy.
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ2p1YnhmeGpha2dpY3VweXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzk4NTIsImV4cCI6MjA5MTIxNTg1Mn0.QST9mZ7uup-H-s9P6DznbOVO14kJTCgYIIZxyTP1T24';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  async function handleSignup(){
-    const email = document.getElementById("emailInput").value.trim();
-    const password = document.getElementById("passwordInput").value.trim();
-    
-    if(!email || !password){
-      alert("Email और Password दोनों डाल");
-      return;
-    }
-    if(password.length < 6){
-      alert("Password कम से कम 6 का होना चाहिए");
-      return;
-    }
-    
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password
-    });
-    
-    if(error){
-      alert("Error: " + error.message);
-    }else{
-      alert("Account बन गया! अब Login करो");
-    }
-  }
+  let step = "email";
 
   async function handleLogin(){
-    const email = document.getElementById("emailInput").value.trim();
-    const password = document.getElementById("passwordInput").value.trim();
-    
-    if(!email || !password){
-      alert("Email और Password दोनों डाल");
-      return;
-    }
-    
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
-    
-    if(error){
-      alert("गलत Email या Password");
-    }else{
-      alert("Login Successful! Welcome " + data.user.email);
+    const btn = document.getElementById("actionBtn");
+    const input = document.getElementById("emailInput");
+    const email = input.value.trim();
+
+    if(step === "email"){
+      if(!email || !email.includes('@')){
+        alert("Enter valid email");
+        return;
+      }
+      
+      btn.innerText = "SENDING...";
+      btn.disabled = true;
+
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email,
+        options: {
+          shouldCreateUser: true
+        }
+      });
+
+      btn.disabled = false;
+
+      if(error){
+        btn.innerText = "SEND OTP";
+        alert("Error: " + error.message);
+      }else{
+        alert("OTP Sent. Check your email inbox and spam folder");
+        input.value = "";
+        input.placeholder = "Enter 6 Digit OTP";
+        btn.innerText = "VERIFY OTP";
+        step = "otp";
+        window.savedEmail = email;
+      }
+    }else if(step === "otp"){
+      const otp = input.value.trim();
+      if(!otp || otp.length < 6){
+        alert("Enter valid OTP");
+        return;
+      }
+
+      btn.innerText = "VERIFYING...";
+      btn.disabled = true;
+
+      const { data, error } = await supabase.auth.verifyOtp({
+        email: window.savedEmail,
+        token: otp,
+        type: 'email'
+      });
+
+      btn.disabled = false;
+
+      if(error){
+        btn.innerText = "VERIFY OTP";
+        alert("Invalid OTP: " + error.message);
+      }else{
+        alert("Login Successful!");
+        console.log("User:", data.user);
+        window.location.href = "/dashboard.html";
+      }
     }
   }
 </script>
