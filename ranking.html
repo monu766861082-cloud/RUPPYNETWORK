@@ -35,11 +35,15 @@ h3 span{display:block;color:var(--gold)}
 .head{display:flex;justify-content:space-between;padding:12px 14px;background:#17171A;font-size:12px;color:var(--muted)}
 .user{display:flex;justify-content:space-between;padding:13px 14px;border-top:1px solid #1F1F22}
 .lf{display:flex;align-items:center}
-.ic{width:28px;margin-right:10px;display:flex;justify-content:center}
+.ranknum{width:32px;text-align:center;font-size:14px;font-weight:700;color:var(--gold2)}
+.ic{width:28px;margin-right:8px;display:flex;justify-content:center}
 .u-name{color:var(--gold);font-weight:600;display:flex;align-items:center;gap:6px}
 .u-sub{font-size:12px;color:var(--muted)}
 .pts{font-size:16px;font-weight:600}
 .amt{color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:2px 12px;font-size:13px}
+.timer-box{background:var(--card);border:1px solid var(--gold);border-radius:12px;padding:12px;text-align:center;margin-top:12px}
+.timer-box h4{font-size:11px;color:var(--muted);letter-spacing:1px}
+.timer-box p{font-size:20px;font-weight:700;color:var(--gold2);margin-top:4px}
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 15px}
 .nav-item.active{color:#FFA500}
@@ -68,11 +72,16 @@ h3 span{display:block;color:var(--gold)}
 </div>
 </div>
 
+<div class="timer-box">
+<h4>WEEKLY CAMPAIGN ENDS IN</h4>
+<p id="weekTimer">Loading...</p>
+</div>
+
 <div class="card">
 <div class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 21h8M12 17v4M7 4h10l-1 7H8L7 4z"/><path d="M17 4v2a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V4"/></svg>WEEKLY CAMPAIGN</div>
 <h3>Refer More. Rank Higher.<span>Earn Bigger Rewards.</span></h3>
-<p class="p">Share with friends. Top rank = biggest reward every week. Updates every 24 hours.</p>
-<div class="referral-btn" onclick="shareRefer()">REFERRAL</div>
+<p class="p">Share with friends. Top rank = biggest reward every week. Claim after week ends.</p>
+<div class="referral-btn" onclick="shareRefer()">SHARE REFERRAL</div>
 </div>
 
 <div class="card" id="claimCard" style="display:none">
@@ -89,7 +98,7 @@ h3 span{display:block;color:var(--gold)}
 </div>
 
 <div class="tbl">
-<div class="head"><div>RANK NAME</div><div style="display:flex;gap:36px"><span>POINTS</span><span>REWARD</span></div></div>
+<div class="head"><div style="display:flex;gap:32px"><span>#</span><span>RANK NAME</span></div><div style="display:flex;gap:36px"><span>POINTS</span><span>REWARD</span></div></div>
 <div id="leaderboardList"></div>
 </div>
 
@@ -119,10 +128,9 @@ h3 span{display:block;color:var(--gold)}
 <div class="toast" id="toast">Copied!</div>
 
 <script>
-// Clear old data once
-if(!localStorage.getItem('fix_v4')){
+if(!localStorage.getItem('fix_v5')){
   localStorage.clear();
-  localStorage.setItem('fix_v4', 'done');
+  localStorage.setItem('fix_v5', 'done');
 }
 
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
@@ -132,7 +140,6 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   lastClaimWeek: 0
 };
 
-// Ask name only once if empty
 if(!userData.name || userData.name.trim() === ''){
   let n = prompt('Enter your name:');
   userData.name = n && n.trim() ? n.trim() : 'Guest';
@@ -159,36 +166,68 @@ function getWeekNumber(){
   return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
 }
 
-// Demo Leaderboard Data
+function getWeekStart(){
+  let d = new Date();
+  let day = d.getDay();
+  let diff = d.getDate() - day + (day === 0? -6 : 1);
+  let monday = new Date(d.setDate(diff));
+  monday.setHours(0,0,0,0);
+  return monday.getTime();
+}
+
+function isWeekEnded(){
+  let weekStart = Number(localStorage.getItem('ruppy_week_start')) || getWeekStart();
+  localStorage.setItem('ruppy_week_start', weekStart);
+  let weekEnd = weekStart + 604800000;
+  return Date.now() >= weekEnd;
+}
+
+function updateWeekTimer(){
+  let weekStart = Number(localStorage.getItem('ruppy_week_start')) || getWeekStart();
+  localStorage.setItem('ruppy_week_start', weekStart);
+  let weekEnd = weekStart + 604800000;
+  let diff = weekEnd - Date.now();
+
+  if(diff <= 0){
+    document.getElementById('weekTimer').innerText = 'WEEK ENDED - CLAIM NOW';
+    document.getElementById('weekTimer').style.color = '#00D632';
+    return true;
+  }
+
+  let d = Math.floor(diff / 86400000);
+  let h = Math.floor((diff % 86400000) / 3600000);
+  let m = Math.floor((diff % 3600000) / 60000);
+  document.getElementById('weekTimer').innerText = d + 'D ' + h + 'H ' + m + 'M';
+  return false;
+}
+
 let leaderboard = [
-  {name:'Rahul S***', refs:145, points:1450, reward:1000},
-  {name:'Priya K***', refs:98, points:980, reward:700},
-  {name:'Amit P***', refs:76, points:760, reward:500},
-  {name:'Sneha M***', refs:52, points:520, reward:300},
-  {name:'Vikas R***', refs:45, points:450, reward:200}
+  {name:'Rahul S***', refs:145, points:1450},
+  {name:'Priya K***', refs:98, points:980},
+  {name:'Amit P***', refs:76, points:760},
+  {name:'Sneha M***', refs:52, points:520},
+  {name:'Vikas R***', refs:45, points:450}
 ];
 
 let userPoints = (userData.team || []).length * 10;
 let currentWeek = getWeekNumber();
 let allUsers = [...leaderboard];
 
-// Add user only if has points
 if(userPoints > 0){
   allUsers.push({
     name: userName, 
     refs: (userData.team || []).length, 
     points: userPoints, 
-    reward: 0, 
     isUser: true
   });
 }
 
 allUsers.sort((a,b) => b.points - a.points);
 
-// Show position only if user has points
 let userRank = 0;
 let posEl = document.getElementById('pos');
 let claimCardEl = document.getElementById('claimCard');
+let weekEnded = isWeekEnded();
 
 if(userPoints > 0 && posEl){
   posEl.style.display = 'block';
@@ -203,15 +242,18 @@ if(userPoints > 0 && posEl){
   if(userReward > 0 && claimCardEl){
     claimCardEl.style.display = 'block';
     document.getElementById('claimText').innerHTML = `Rank #${userRank} Reward: <span style="color:var(--gold)">${userReward} RUPPY TOKEN</span>`;
+    
+    let claimBtnEl = document.getElementById('claimBtn');
     if(userData.lastClaimWeek === currentWeek){
-      let claimBtnEl = document.getElementById('claimBtn');
       claimBtnEl.innerText = 'CLAIMED ✓';
+      claimBtnEl.classList.add('claimed');
+    } else if(!weekEnded){
+      claimBtnEl.innerText = 'WAIT';
       claimBtnEl.classList.add('claimed');
     }
   }
 }
 
-// Leaderboard list
 let listHTML = '';
 if(allUsers.length === 0){
   listHTML = `<div style="padding:30px;text-align:center;color:#666">
@@ -222,11 +264,12 @@ if(allUsers.length === 0){
   allUsers.slice(0,100).forEach((u,i) => {
     let rank = i + 1;
     let reward = getReward(rank);
-    let crown = rank === 1? '👑' : rank === 2? '🥈' : rank === 3? '🥉' : '#' + rank;
+    let crown = rank === 1? '👑' : rank === 2? '🥈' : rank === 3? '🥉' : '';
     let nameStyle = u.isUser? 'style="color:#1DBF5E"' : '';
     listHTML += `
     <div class="user">
       <div class="lf">
+        <div class="ranknum">${rank}</div>
         <div class="ic">${crown}</div>
         <div>
           <div class="u-name" ${nameStyle}><img src="logo.png" class="logo" onerror="this.style.display='none'">${u.name}</div>
@@ -243,6 +286,10 @@ if(allUsers.length === 0){
 document.getElementById('leaderboardList').innerHTML = listHTML;
 
 function claimReward(){
+  if(!isWeekEnded()){
+    showToast('Week अभी खत्म नहीं हुआ। Sunday 12AM के बाद Claim करो');
+    return;
+  }
   if(userPoints === 0){
     showToast('Refer first to get rank');
     return;
@@ -274,12 +321,10 @@ function shareRefer(){
       text: text,
       url: url
     }).catch(() => {
-      navigator.clipboard.writeText(text + '\n\n' + url);
-      showToast('Link Copied!');
+      showToast('Share cancelled');
     });
   } else {
-    navigator.clipboard.writeText(text + '\n\n' + url);
-    showToast('Link Copied!');
+    showToast('Share not supported on this device');
   }
 }
 
@@ -294,12 +339,23 @@ function showToast(msg){
 
 function goPage(page){ window.location.href = page; }
 
-// Auto update every 24 hours
 let lastUpdate = localStorage.getItem('ruppy_update') || 0;
 if(Date.now() - lastUpdate > 24*60*60*1000){
   localStorage.setItem('ruppy_update', Date.now());
   location.reload();
 }
+
+let weekStart = Number(localStorage.getItem('ruppy_week_start')) || getWeekStart();
+let weekEnd = weekStart + 604800000;
+if(Date.now() >= weekEnd){
+  let users = JSON.parse(localStorage.getItem('ruppy_all_users')) || [];
+  users.forEach(u => { u.claimed = false; });
+  localStorage.setItem('ruppy_all_users', JSON.stringify(users));
+  localStorage.setItem('ruppy_week_start', Date.now());
+}
+
+updateWeekTimer();
+setInterval(updateWeekTimer, 60000);
 </script>
 </body>
 </html>
