@@ -72,7 +72,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:70px}
 </div>
 
 <script>
-// Sync with app.html - Must use same key 'ruppyTokens'
+// Global balance sync with app.html using 'ruppyTokens'
 let tokens = parseInt(localStorage.getItem('ruppyTokens')) || 0;
 let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
 
@@ -92,7 +92,7 @@ function claimReward(task){
     tokens += 20;
     taskState[task] = 'claimed';
 
-    // This updates the same balance that app.html shows
+    // Update global balance - app.html will also show this updated value
     localStorage.setItem('ruppyTokens', tokens);
     localStorage.setItem('taskState', JSON.stringify(taskState));
     document.getElementById('bal').innerText = tokens;
@@ -124,6 +124,14 @@ function updateButtons(){
 function goPage(page){
   window.location.href = page;
 }
+
+// Auto sync if balance changes in other tab
+window.addEventListener('storage', function(e) {
+  if(e.key === 'ruppyTokens'){
+    tokens = parseInt(e.newValue) || 0;
+    document.getElementById('bal').innerText = tokens;
+  }
+});
 </script>
 </body>
 </html>
