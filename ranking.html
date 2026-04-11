@@ -44,6 +44,12 @@ h3 span{display:block;color:var(--gold)}
 .timer-box{background:var(--card);border:1px solid var(--gold);border-radius:12px;padding:12px;text-align:center;margin-top:12px}
 .timer-box h4{font-size:11px;color:var(--muted);letter-spacing:1px}
 .timer-box p{font-size:20px;font-weight:700;color:var(--gold2);margin-top:4px}
+.token-chart{background:var(--card);border:1px solid var(--gold);border-radius:12px;padding:14px;margin-top:12px}
+.token-chart h4{font-size:13px;color:var(--gold);margin-bottom:10px;text-align:center}
+.token-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #222}
+.token-row:last-child{border-bottom:none}
+.token-row span{font-size:13px}
+.token-row strong{color:var(--gold2);font-size:13px}
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 15px}
 .nav-item.active{color:#FFA500}
@@ -66,10 +72,20 @@ h3 span{display:block;color:var(--gold)}
 <div>
 <div class="name"><img src="logo.png" class="logo" onerror="this.style.display='none'"><span id="userName">You</span></div>
 <div class="reward">Reward: <span id="userReward">0 RUPPY TOKEN</span></div>
+<div class="u-sub" id="userId">ID: Loading...</div>
 </div>
 </div>
 <div class="points"><div>Points</div><strong id="userPoints">0</strong></div>
 </div>
+</div>
+
+<div class="token-chart">
+<h4>🏆 RANKING REWARDS</h4>
+<div class="token-row"><span>Rank 1</span><strong>1000 TOKEN</strong></div>
+<div class="token-row"><span>Rank 2 - 10</span><strong>800 TOKEN</strong></div>
+<div class="token-row"><span>Rank 11 - 50</span><strong>600 TOKEN</strong></div>
+<div class="token-row"><span>Rank 51 - 100</span><strong>500 TOKEN</strong></div>
+<div class="token-row"><span>Rank 101 - 500</span><strong>300 TOKEN</strong></div>
 </div>
 
 <div class="timer-box">
@@ -128,13 +144,14 @@ h3 span{display:block;color:var(--gold)}
 <div class="toast" id="toast">Copied!</div>
 
 <script>
-if(!localStorage.getItem('fix_v5')){
+if(!localStorage.getItem('fix_v8')){
   localStorage.clear();
-  localStorage.setItem('fix_v5', 'done');
+  localStorage.setItem('fix_v8', 'done');
 }
 
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   name: '',
+  id: 'RUPPY' + Math.floor(100000 + Math.random() * 900000),
   balance: 0,
   team: [],
   lastClaimWeek: 0
@@ -146,7 +163,13 @@ if(!userData.name || userData.name.trim() === ''){
   localStorage.setItem('ruppy_user', JSON.stringify(userData));
 }
 
-let inviteCode = localStorage.getItem('ruppy_inviteCode') || 'RUPPY786';
+if(!userData.id) {
+  userData.id = 'RUPPY' + Math.floor(100000 + Math.random() * 900000);
+  localStorage.setItem('ruppy_user', JSON.stringify(userData));
+}
+
+let inviteCode = userData.id;
+localStorage.setItem('ruppy_inviteCode', inviteCode);
 let userName = userData.name;
 
 function getReward(rank){
@@ -201,13 +224,26 @@ function updateWeekTimer(){
   return false;
 }
 
-let leaderboard = [
-  {name:'Rahul S***', refs:145, points:1450},
-  {name:'Priya K***', refs:98, points:980},
-  {name:'Amit P***', refs:76, points:760},
-  {name:'Sneha M***', refs:52, points:520},
-  {name:'Vikas R***', refs:45, points:450}
-];
+function checkReferralJoin(){
+  let params = new URLSearchParams(window.location.search);
+  let refCode = params.get('ref');
+  if(refCode && refCode !== userData.id){
+    let referrer = JSON.parse(localStorage.getItem('ruppy_user_' + refCode)) || null;
+    if(referrer){
+      if(!referrer.team) referrer.team = [];
+      if(!referrer.team.includes(userData.id)){
+        referrer.team.push(userData.id);
+        localStorage.setItem('ruppy_user_' + refCode, JSON.stringify(referrer));
+        showToast('Joined via ' + refCode + '!');
+      }
+    }
+  }
+  localStorage.setItem('ruppy_user_' + userData.id, JSON.stringify(userData));
+}
+
+checkReferralJoin();
+
+let leaderboard = [];
 
 let userPoints = (userData.team || []).length * 10;
 let currentWeek = getWeekNumber();
@@ -216,6 +252,7 @@ let allUsers = [...leaderboard];
 if(userPoints > 0){
   allUsers.push({
     name: userName, 
+    id: userData.id,
     refs: (userData.team || []).length, 
     points: userPoints, 
     isUser: true
@@ -236,6 +273,7 @@ if(userPoints > 0 && posEl){
   
   document.getElementById('userRank').innerText = '#' + userRank;
   document.getElementById('userName').innerText = userName;
+  document.getElementById('userId').innerText = 'ID: ' + userData.id;
   document.getElementById('userPoints').innerText = userPoints;
   document.getElementById('userReward').innerText = userReward + ' RUPPY TOKEN';
   
@@ -273,7 +311,7 @@ if(allUsers.length === 0){
         <div class="ic">${crown}</div>
         <div>
           <div class="u-name" ${nameStyle}><img src="logo.png" class="logo" onerror="this.style.display='none'">${u.name}</div>
-          <div class="u-sub">${u.refs} refs</div>
+          <div class="u-sub">${u.refs} refs • ID: ${u.id}</div>
         </div>
       </div>
       <div class="lf" style="gap:28px">
@@ -307,6 +345,7 @@ function claimReward(){
   userData.balance += userReward;
   userData.lastClaimWeek = currentWeek;
   localStorage.setItem('ruppy_user', JSON.stringify(userData));
+  localStorage.setItem('ruppy_user_' + userData.id, JSON.stringify(userData));
   showToast(userReward + ' RUPPY TOKEN Claimed!');
   setTimeout(() => location.reload(), 1000);
 }
