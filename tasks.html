@@ -20,11 +20,13 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .bt.claim{background:#FFA500;color:#000}
 .bt.done{background:#333;color:#666;border-color:#333;cursor:not-allowed}
 .bt.opened{background:#1a1a1a;color:#888;border-color:#444}
+
+/* Nav - 100% Same as app.html */
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 15px}
+.nav-item.icon{font-size:20px}
 .nav-item.active{color:#FFA500}
 .nav-item.active::after{content:'';width:30px;height:2px;background:#FFA500;margin-top:2px}
-.nav-item.icon{font-size:20px}
 </style>
 </head>
 <body>
@@ -91,7 +93,7 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
 let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
 let openedTask = null;
 
-// Set user ID/Name dynamically from login
+// Auto ID from login - same as app.html
 document.getElementById('userId').innerText = `ID: ${userData.name.toUpperCase()}`;
 document.getElementById('bal').innerText = userData.balance;
 updateButtons();
