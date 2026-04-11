@@ -6,46 +6,51 @@
   <title>Ruppy Network - App</title>
   <style>
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
-    body {background:#0a0a1a; color:#fff; min-height:100vh; padding-bottom:80px;}
+    body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
     
-    .header {padding:20px; display:flex; align-items:center; gap:12px;}
-    .header .dp {width:45px; height:45px; border-radius:50%; background:#2a2a4a; display:flex; align-items:center; justify-content:center; font-size:20px; overflow:hidden;}
+    .header {padding:20px 15px 10px; display:flex; align-items:center; gap:12px;}
+    .header .dp {width:40px; height:40px; border-radius:50%; background:#1a1a1a; display:flex; align-items:center; justify-content:center; font-size:18px; overflow:hidden; border:1px solid #333;}
     .header .dp img {width:100%; height:100%; object-fit:cover;}
-    .header .info h3 {font-size:18px; font-weight:600;}
-    .header .info p {font-size:13px; color:#8a8aa0;}
+    .header .info h3 {font-size:16px; font-weight:500;}
+    .header .info p {font-size:12px; color:#888;}
     
-    .balance-card {margin:0 20px; background:linear-gradient(135deg, #2a2a4a, #1a1a3a); border-radius:16px; padding:20px; text-align:center; border:1px solid #3a3a5a;}
-    .balance-card h2 {font-size:32px; margin:8px 0;}
-    .balance-card p {color:#8a8aa0; font-size:14px;}
+    .balance-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:20px;}
+    .balance-card p:first-child {color:#888; font-size:13px;}
+    .balance-card h2 {font-size:32px; margin:5px 0; color:#FFA500;}
+    .balance-card h2 span {color:#fff; font-size:20px;}
+    .balance-card p:last-child {color:#666; font-size:12px;}
     
-    .mining-section {margin:30px 20px; text-align:center;}
-    .mining-circle {width:200px; height:200px; margin:0 auto; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:0.3s; position:relative;}
-    .mining-circle.ready {background:linear-gradient(135deg, #FFD700, #FFA500); box-shadow:0 0 30px rgba(255,215,0,0.5);}
-    .mining-circle.mining {background:linear-gradient(135deg, #3a3a5a, #2a2a4a); box-shadow:0 0 20px rgba(58,58,90,0.3); cursor:not-allowed;}
-    .mining-circle h3 {font-size:24px; margin-bottom:5px;}
-    .mining-circle p {font-size:14px; opacity:0.8;}
+    .mining-section {margin:30px 0; text-align:center;}
+    .mining-circle {width:180px; height:180px; margin:0 auto; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:0.3s; border:2px solid #FFA500;}
+    .mining-circle.ready {background:linear-gradient(135deg, #FFD700, #FFA500); border:none; box-shadow:0 0 25px rgba(255,165,0,0.6);}
+    .mining-circle.ready h3 {color:#000;}
+    .mining-circle.mining {background:transparent; border:2px solid #FFA500; cursor:not-allowed;}
+    .mining-circle.mining h3 {color:#FFA500; font-size:16px;}
+    .mining-circle p {font-size:13px; color:#888; margin-top:5px;}
+    .mining-text {text-align:center; margin-top:15px; color:#666; font-size:13px;}
     
-    .grid {display:grid; grid-template-columns:1fr 1fr; gap:15px; margin:30px 20px;}
-    .grid-item {background:#1a1a3a; border:1px solid #3a3a5a; border-radius:12px; padding:20px 15px; text-align:center; cursor:pointer; transition:0.2s;}
-    .grid-item:active {transform:scale(0.95);}
-    .grid-item .icon {font-size:28px; margin-bottom:8px;}
-    .grid-item h4 {font-size:15px; margin-bottom:4px;}
-    .grid-item p {font-size:12px; color:#8a8aa0;}
+    .grid {display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:25px 15px;}
+    .grid-item {background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:18px 12px; text-align:center; cursor:pointer; position:relative;}
+    .grid-item .badge {position:absolute; top:8px; right:8px; background:#FFA500; color:#000; font-size:11px; font-weight:600; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center;}
+    .grid-item .icon {width:35px; height:35px; margin:0 auto 10px; background:#1a1a1a; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:20px;}
+    .grid-item h4 {font-size:14px; margin-bottom:4px; color:#FFA500;}
+    .grid-item p {font-size:11px; color:#666;}
     
-    .modal {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; z-index:999;}
+    .modal {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:none; align-items:center; justify-content:center; z-index:999;}
     .modal.active {display:flex;}
-    .modal-content {background:#1a1a3a; border:1px solid #3a3a5a; border-radius:16px; padding:25px; width:90%; max-width:350px; text-align:center;}
-    .modal-content h3 {margin-bottom:15px;}
-    .team-list {text-align:left; margin:15px 0; max-height:200px; overflow-y:auto;}
-    .team-member {padding:10px; background:#0a0a1a; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;}
+    .modal-content {background:#0d0d0d; border:1px solid #333; border-radius:12px; padding:20px; width:90%; max-width:320px;}
+    .modal-content h3 {margin-bottom:15px; color:#FFA500;}
+    .team-list {margin:15px 0; max-height:250px; overflow-y:auto;}
+    .team-member {padding:12px; background:#000; border:1px solid #222; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; font-size:14px;}
     .team-member .online {width:8px; height:8px; background:#00ff00; border-radius:50%; animation:pulse 2s infinite;}
     @keyframes pulse {0%,100%{opacity:1;} 50%{opacity:0.3;}}
-    .close-btn {margin-top:15px; padding:10px 25px; background:#3a3a5a; border:none; border-radius:8px; color:#fff; cursor:pointer;}
+    .close-btn {margin-top:10px; width:100%; padding:12px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:600; cursor:pointer;}
     
-    .nav {position:fixed; bottom:0; left:0; right:0; background:#1a1a3a; border-top:1px solid #3a3a5a; display:flex; justify-content:space-around; padding:10px 0;}
-    .nav-item {display:flex; flex-direction:column; align-items:center; gap:4px; color:#8a8aa0; text-decoration:none; font-size:12px; cursor:pointer;}
-    .nav-item.active {color:#6a5acd;}
-    .nav-item .icon {font-size:22px;}
+    .nav {position:fixed; bottom:0; left:0; right:0; background:#0d0d0d; border-top:1px solid #222; display:flex; justify-content:space-around; padding:8px 0;}
+    .nav-item {display:flex; flex-direction:column; align-items:center; gap:3px; color:#666; text-decoration:none; font-size:11px; cursor:pointer; padding:5px 15px;}
+    .nav-item.active {color:#FFA500;}
+    .nav-item.active::after {content:''; width:30px; height:2px; background:#FFA500; margin-top:2px;}
+    .nav-item .icon {font-size:20px;}
   </style>
 </head>
 <body>
@@ -59,9 +64,9 @@
   </div>
 
   <div class="balance-card">
-    <p>Your Balance</p>
-    <h2 id="balance">0 TOKEN</h2>
-    <p>Mine every 3 hours to earn</p>
+    <p>TOTAL BALANCE</p>
+    <h2 id="balance">0 <span>TOKEN</span></h2>
+    <p>≈ $0.00 USD • 1,200 = $1.00</p>
   </div>
 
   <div class="mining-section">
@@ -69,27 +74,29 @@
       <h3 id="miningText">MINE NOW</h3>
       <p id="miningTimer"></p>
     </div>
+    <p class="mining-text">Mines every 3 hours</p>
   </div>
 
   <div class="grid">
     <div class="grid-item" onclick="startBoost()">
-      <div class="icon">🚀</div>
+      <div class="icon">🖥️</div>
       <h4>BOOST MINING</h4>
       <p id="boostTimer">Ready</p>
     </div>
     <div class="grid-item" onclick="openGift()">
-      <div class="icon">🎁</div>
-      <h4>ULTRA GIFT</h4>
-      <p id="giftTimer">4 opens left today</p>
+      <div class="badge" id="giftBadge">4</div>
+      <div class="icon" style="background:#6a5acd;">🎁</div>
+      <h4 style="color:#fff;">ULTRA GIFT</h4>
+      <p id="giftTimer">Watch ad → +10 TOKEN</p>
     </div>
     <div class="grid-item" onclick="openTeam()">
       <div class="icon">👥</div>
-      <h4>Team</h4>
+      <h4 style="color:#fff;">Team</h4>
       <p id="teamCount">0 Members</p>
     </div>
     <div class="grid-item" onclick="openWallet()">
       <div class="icon">💰</div>
-      <h4>Wallet</h4>
+      <h4 style="color:#fff;">Wallet</h4>
       <p>Check balance</p>
     </div>
   </div>
@@ -112,18 +119,21 @@
       <div class="icon">📋</div>
       <span>Tasks</span>
     </div>
-    <div class="nav-item" onclick="navClick('invite')">
-      <div class="icon">➕</div>
-      <span>Invite</span>
+    <div class="nav-item" onclick="navClick('referral')">
+      <div class="icon">👥</div>
+      <span>Referral</span>
     </div>
-    <div class="nav-item" onclick="navClick('profile')">
-      <div class="icon">👤</div>
-      <span>Profile</span>
+    <div class="nav-item" onclick="navClick('ranking')">
+      <div class="icon">🏆</div>
+      <span>Ranking</span>
+    </div>
+    <div class="nav-item" onclick="navClick('settings')">
+      <div class="icon">⚙️</div>
+      <span>Settings</span>
     </div>
   </div>
 
 <script>
-  // ============ USER DATA ============
   let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
     name: 'User',
     dp: null,
@@ -133,9 +143,9 @@
     giftOpens: 0,
     giftDate: new Date().toDateString(),
     team: [
-      {name: 'Rahul', online: true},
-      {name: 'Priya', online: true},
-      {name: 'Amit', online: false}
+      {name: 'Rahul Kumar', online: true},
+      {name: 'Priya Singh', online: true},
+      {name: 'Amit Sharma', online: false}
     ]
   };
 
@@ -143,9 +153,7 @@
     localStorage.setItem('ruppy_user', JSON.stringify(userData));
   }
 
-  // ============ INIT ============
   function init() {
-    // Set User Info
     document.getElementById('userName').innerText = `Welcome back, ${userData.name}`;
     if(userData.dp) {
       document.getElementById('userDp').innerHTML = `<img src="${userData.dp}" alt="DP">`;
@@ -165,14 +173,13 @@
   }
 
   function updateBalance() {
-    document.getElementById('balance').innerText = `${userData.balance} TOKEN`;
+    document.getElementById('balance').innerHTML = `${userData.balance} <span>TOKEN</span>`;
   }
 
-  // ============ MINING ============
   function updateMiningCircle() {
     const now = Date.now();
     const diff = now - userData.lastMine;
-    const cooldown = 3 * 60 * 60 * 1000; // 3 hours
+    const cooldown = 3 * 60 * 60 * 1000;
     
     const circle = document.getElementById('miningCircle');
     const text = document.getElementById('miningText');
@@ -190,8 +197,8 @@
       const secs = Math.floor((remaining % 60000) / 1000);
       
       circle.className = 'mining-circle mining';
-      text.innerText = 'MINING...';
-      timer.innerText = `${String(hrs).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+      text.innerText = `Next in\n${String(hrs).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+      timer.innerText = '';
       circle.onclick = null;
     }
   }
@@ -206,11 +213,10 @@
     updateMiningCircle();
   }
 
-  // ============ BOOST ============
   function updateBoost() {
     const now = Date.now();
     const diff = now - userData.lastBoost;
-    const cooldown = 2 * 60 * 60 * 1000; // 2 hours
+    const cooldown = 2 * 60 * 60 * 1000;
     
     if(diff >= cooldown || userData.lastBoost === 0) {
       document.getElementById('boostTimer').innerText = 'Ready';
@@ -231,10 +237,8 @@
     saveUser();
     updateBalance();
     updateBoost();
-    // कोई Alert नहीं आएगा अब
   }
 
-  // ============ ULTRA GIFT ============
   function updateGift() {
     const today = new Date().toDateString();
     if(userData.giftDate !== today) {
@@ -243,16 +247,16 @@
       saveUser();
     }
     
-    const hour = new Date().getHours();
     const remaining = 4 - userData.giftOpens;
+    document.getElementById('giftBadge').innerText = remaining;
     
+    const hour = new Date().getHours();
     if(remaining > 0) {
-      // दिन में ज्यादा Chance: सुबह 8-12, दोपहर 1-5, शाम 6-10, रात 11-3
       let canOpen = false;
       if((hour >= 8 && hour < 12) || (hour >= 13 && hour < 17) || (hour >= 18 && hour < 22) || (hour >= 23 || hour < 3)) {
         canOpen = true;
       }
-      document.getElementById('giftTimer').innerText = canOpen ? `${remaining} opens left` : `Next slot soon`;
+      document.getElementById('giftTimer').innerText = canOpen ? `Watch ad → +10 TOKEN` : `Next slot soon`;
     } else {
       document.getElementById('giftTimer').innerText = `0 opens left today`;
     }
@@ -270,16 +274,14 @@
     
     if(!canOpen) return;
     
-    userData.balance += 20;
+    userData.balance += 10;
     userData.giftOpens++;
     saveUser();
     updateBalance();
     updateGift();
   }
 
-  // ============ TEAM ============
   function updateTeam() {
-    const onlineCount = userData.team.filter(m => m.online).length;
     document.getElementById('teamCount').innerText = `${userData.team.length} Members`;
   }
 
@@ -290,7 +292,7 @@
       list.innerHTML += `
         <div class="team-member">
           <span>${member.name}</span>
-          ${member.online ? '<div class="online"></div>' : '<span style="font-size:11px;color:#8a8aa0">Offline</span>'}
+          ${member.online ? '<div class="online"></div>' : '<span style="font-size:11px;color:#666">Offline</span>'}
         </div>
       `;
     });
@@ -301,16 +303,15 @@
     document.getElementById('teamModal').classList.remove('active');
   }
 
-  // ============ WALLET ============
   function openWallet() {
     alert(`Your Wallet Balance: ${userData.balance} TOKEN`);
   }
 
-  // ============ NAV ============
   function navClick(page) {
     if(page === 'tasks') window.location.href = 'tasks.html';
-    if(page === 'invite') alert('Invite page coming soon');
-    if(page === 'profile') alert('Profile page coming soon');
+    if(page === 'referral') alert('Referral page coming soon');
+    if(page === 'ranking') alert('Ranking page coming soon');
+    if(page === 'settings') alert('Settings page coming soon');
   }
 
   init();
