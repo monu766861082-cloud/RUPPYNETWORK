@@ -2,12 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Profile</title>
+<title>Settings</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0B0B0C;--card:#161617;--border:#2A2A2C;--gold:#F3C774;--green:#24C464;--red:#E53E3E;--muted:#9CA3AF}
 *{box-sizing:border-box;margin:0;padding:0;font-family:Poppins,sans-serif}
 body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.back{font-size:24px;cursor:pointer}
+.title{font-size:22px;font-weight:600}
 .avatar{width:96px;height:96px;margin:20px auto 14px;border-radius:50%;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,var(--gold)22%,transparent 22%);box-shadow:0 0 32px rgba(243,199,116,.35);overflow:hidden}
 .avatar img{width:100%;height:100%;object-fit:cover}
 .avatar span{font-size:44px;font-weight:700;color:var(--gold)}
@@ -32,7 +35,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .nav-item.icon{font-size:20px;line-height:1}
 .nav-item.active{color:#FFA500}
 .nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;align-items:center;justify-content:center}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
 .modal-content{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:24px;width:90%;max-width:400px}
 .modal-title{font-size:20px;font-weight:600;margin-bottom:20px}
 .input-group{margin-bottom:16px}
@@ -48,6 +51,11 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 </style>
 </head>
 <body>
+<div class="header">
+  <div class="back" onclick="history.back()">←</div>
+  <div class="title">Settings</div>
+</div>
+
 <div class="avatar" id="avatarBox"><span id="avatarLetter">R</span></div>
 <div class="name" id="userName">Loading...</div>
 <div class="bal" id="userBalance">0 RUPPY</div>
@@ -129,7 +137,7 @@ function loadProfile(){
   if(userData.photo){
     document.getElementById('avatarBox').innerHTML = `<img src="${userData.photo}" alt="Profile">`;
   } else {
-    document.getElementById('avatarBox').innerHTML = `<span id="avatarLetter">${userData.name.charAt(0).toUpperCase()}</span>`;
+    document.getElementById('avatarBox').innerHTML = `<span>${userData.name.charAt(0).toUpperCase()}</span>`;
   }
   document.getElementById('userName').innerText = userData.name;
   document.getElementById('userBalance').innerText = userData.balance + ' RUPPY';
