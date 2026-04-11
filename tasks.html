@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ruppy Tasks</title>
 <style>
-body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:70px}
+body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .hdr{padding:20px}
 .hdr h1{margin:0;font-size:28px}
 .hdr p{margin:4px 0 0;color:#FFA500;font-weight:bold}
@@ -28,7 +28,11 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:70px}
 </style>
 </head>
 <body>
-<div class="hdr"><h1>DAILY TASKS</h1><p>EARN RUPPY TOKEN</p><small>ID: AKASH-8291</small></div>
+<div class="hdr">
+  <h1>DAILY TASKS</h1>
+  <p>EARN RUPPY TOKEN</p>
+  <small id="userId">ID: Loading...</small>
+</div>
 
 <div class="tokenBal">Your Balance: <b id="bal">0</b> RUPPY</div>
 
@@ -74,7 +78,6 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:70px}
 </div>
 
 <script>
-// Use same localStorage key as app.html: 'ruppy_user'
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   name: 'User',
   balance: 0,
@@ -88,10 +91,11 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
 let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
 let openedTask = null;
 
+// Set user ID/Name dynamically from login
+document.getElementById('userId').innerText = `ID: ${userData.name.toUpperCase()}`;
 document.getElementById('bal').innerText = userData.balance;
 updateButtons();
 
-// Detect when user returns from Telegram/FB/X
 document.addEventListener('visibilitychange', function() {
   if (!document.hidden && openedTask) {
     taskState[openedTask] = 'ready_to_claim';
@@ -113,12 +117,9 @@ function claimReward(task) {
   if (taskState[task] === 'ready_to_claim') {
     userData.balance += 20;
     taskState[task] = 'claimed';
-
-    // Save to same key as app.html
     localStorage.setItem('ruppy_user', JSON.stringify(userData));
     localStorage.setItem('taskState', JSON.stringify(taskState));
     document.getElementById('bal').innerText = userData.balance;
-
     updateButtons();
     alert('+20 RUPPY Claimed!');
   }
@@ -157,11 +158,11 @@ function goPage(page) {
   window.location.href = page;
 }
 
-// Live sync if balance changes in app.html
 window.addEventListener('storage', function(e) {
   if (e.key === 'ruppy_user') {
     userData = JSON.parse(e.newValue);
     document.getElementById('bal').innerText = userData.balance;
+    document.getElementById('userId').innerText = `ID: ${userData.name.toUpperCase()}`;
   }
 });
 </script>
