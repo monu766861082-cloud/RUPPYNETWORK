@@ -1,8 +1,8 @@
 <script>
 // Clear old data once
-if(!localStorage.getItem('fix_final_v1')){
+if(!localStorage.getItem('fix_final_v2')){
   localStorage.clear();
-  localStorage.setItem('fix_final_v1', 'done');
+  localStorage.setItem('fix_final_v2', 'done');
 }
 
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
@@ -62,24 +62,30 @@ if(userPoints > 0){
 
 allUsersData.sort((a,b) => b.points - a.points);
 
-// Show position only if user has points
+// Safe Code - Null Check Added
 let userRank = 0;
-if(userPoints > 0){
-  document.getElementById('pos').style.display = 'block';
+let posEl = document.getElementById('pos');
+let claimCardEl = document.getElementById('claimCard');
+
+if(userPoints > 0 && posEl){
+  posEl.style.display = 'block';
   userRank = allUsersData.findIndex(u => u.isUser) + 1;
-  document.getElementById('userRank').innerText = '#' + userRank;
-  document.getElementById('userName').innerText = userName;
-  document.getElementById('userPoints').innerText = userPoints;
+  let userRankEl = document.getElementById('userRank');
+  let userNameEl = document.getElementById('userName');
+  let userPointsEl = document.getElementById('userPoints');
+  if(userRankEl) userRankEl.innerText = '#' + userRank;
+  if(userNameEl) userNameEl.innerText = userName;
+  if(userPointsEl) userPointsEl.innerText = userPoints;
   
-  // Show claim card only for ranked users
   let userReward = getReward(userRank);
-  if(userReward > 0){
-    document.getElementById('claimCard').style.display = 'block';
-    document.getElementById('claimText').innerHTML = `Rank #${userRank} Reward: <span style="color:var(--gold)">${userReward} RUPPY TOKEN</span>`;
-    
-    if(userData.lastClaimWeek === currentWeek){
-      document.getElementById('claimBtn').innerText = 'CLAIMED ✓';
-      document.getElementById('claimBtn').classList.add('claimed');
+  if(userReward > 0 && claimCardEl){
+    claimCardEl.style.display = 'block';
+    let claimTextEl = document.getElementById('claimText');
+    let claimBtnEl = document.getElementById('claimBtn');
+    if(claimTextEl) claimTextEl.innerHTML = `Rank #${userRank} Reward: <span style="color:var(--gold)">${userReward} RUPPY TOKEN</span>`;
+    if(userData.lastClaimWeek === currentWeek && claimBtnEl){
+      claimBtnEl.innerText = 'CLAIMED ✓';
+      claimBtnEl.classList.add('claimed');
     }
   }
 }
@@ -114,7 +120,10 @@ if(allUsersData.length === 0){
     </div>`;
   });
 }
-document.getElementById('leaderboardList').innerHTML = listHTML;
+
+// Safe Code - Null Check Added
+let leaderboardEl = document.getElementById('leaderboardList');
+if(leaderboardEl) leaderboardEl.innerHTML = listHTML;
 
 function claimReward(){
   if(userPoints === 0){
@@ -157,11 +166,14 @@ function shareRefer(){
   }
 }
 
+// Safe Code - Null Check Added
 function showToast(msg){
   let t = document.getElementById('toast');
-  t.innerText = msg;
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 2500);
+  if(t){
+    t.innerText = msg;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 2500);
+  }
 }
 
 function goPage(page){ window.location.href = page; }
