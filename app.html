@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruppy Network - App</title>
   
-  <!-- Monetag Verification Meta Tag ✅ -->
+  <!-- Monetag Verification Meta Tag -->
   <meta name="monetag" content="21dbbe26571c9c62250f84692bff67fc">
   
   <style>
@@ -197,7 +197,6 @@
     localStorage.setItem('ruppy_user', JSON.stringify(userData));
   }
 
-  // ===== MONETAG DEBUG VERSION =====
   function showMonetagAd(callback) {
     console.log('Ad Request Started...');
     try {
@@ -208,12 +207,10 @@
           callback();
         }).catch((err) => {
           console.log('Ad Error:', err);
-          alert('Ad नहीं मिला। 1 Min बाद Try करें।');
           callback();
         });
       } else {
         console.log('Monetag NOT Loaded Yet');
-        alert('Ad Loading में है। 5 Sec बाद Try करें।');
         setTimeout(() => {
           callback();
         }, 800);
@@ -290,12 +287,11 @@
     updateGift();
     updateTeam();
     
-    // Check Monetag Status
     setTimeout(() => {
       if(typeof window._ZH !== 'undefined'){
-        console.log('✅ Monetag Loaded Successfully');
+        console.log('Monetag Loaded Successfully');
       } else {
-        console.log('❌ Monetag NOT Loaded - Check Script');
+        console.log('Monetag NOT Loaded - Check Script');
       }
     }, 3000);
     
@@ -456,7 +452,7 @@
     saveUser();
     updateBalance();
     updateGift();
-    alert('+15 RUPPY Added to Wallet! 🎁');
+    alert('+15 RUPPY Added to Wallet!');
   }
 
   function updateTeam() {
