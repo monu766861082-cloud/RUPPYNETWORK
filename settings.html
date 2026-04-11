@@ -5,10 +5,11 @@
 <title>Profile</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0B0B0C;--card:#161617;--border:#2A2A2C;--gold:#F3C774;--green:#24C464;--muted:#9CA3AF}
+:root{--bg:#0B0B0C;--card:#161617;--border:#2A2A2C;--gold:#F3C774;--green:#24C464;--red:#E53E3E;--muted:#9CA3AF}
 *{box-sizing:border-box;margin:0;padding:0;font-family:Poppins,sans-serif}
 body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
-.avatar{width:96px;height:96px;margin:20px auto 14px;border-radius:50%;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,var(--gold)22%,transparent 22%);box-shadow:0 0 32px rgba(243,199,116,.35)}
+.avatar{width:96px;height:96px;margin:20px auto 14px;border-radius:50%;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,var(--gold)22%,transparent 22%);box-shadow:0 0 32px rgba(243,199,116,.35);overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
 .avatar span{font-size:44px;font-weight:700;color:var(--gold)}
 .name{text-align:center;font-size:26px;font-weight:600}
 .bal{display:block;width:max-content;margin:12px auto;padding:6px 18px;border:1px solid var(--green);border-radius:999px;color:var(--green);font-weight:600;font-size:15px}
@@ -25,33 +26,72 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .wall{flex:1;border:1px solid var(--border);border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px}
 .dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}
 .mm{background:#E88C2B}.bn{background:#F2C029}
-.nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 15px}
+.logout{width:100%;padding:16px;border:1px solid var(--red);border-radius:16px;background:transparent;color:var(--red);font-size:16px;font-weight:600;margin-top:24px;cursor:pointer}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0;z-index:999}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:20%;position:relative}
+.nav-item.icon{font-size:20px;line-height:1}
 .nav-item.active{color:#FFA500}
-.nav-item.active::after{content:'';width:30px;height:2px;background:#FFA500;margin-top:2px}
-.nav-item.icon{font-size:20px}
+.nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;align-items:center;justify-content:center}
+.modal-content{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:24px;width:90%;max-width:400px}
+.modal-title{font-size:20px;font-weight:600;margin-bottom:20px}
+.input-group{margin-bottom:16px}
+.input-group label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
+.input-group input{width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:#fff;font-size:15px}
+.file-input{display:none}
+.file-label{display:block;padding:12px;border:1px solid var(--border);border-radius:12px;text-align:center;cursor:pointer}
+.btn-group{display:flex;gap:12px;margin-top:20px}
+.btn{flex:1;padding:12px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer}
+.btn-cancel{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-save{background:var(--gold);border:none;color:#000}
 .sp{height:96px}
 </style>
 </head>
 <body>
-<div class="avatar"><span id="avatarLetter">R</span></div>
+<div class="avatar" id="avatarBox"><span id="avatarLetter">R</span></div>
 <div class="name" id="userName">Loading...</div>
-<div class="bal" id="userBalance">≈ 0 RUPPY</div>
+<div class="bal" id="userBalance">0 RUPPY</div>
 <div class="id-box" id="userId">ID: Loading...</div>
 
 <div class="card">
 <div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><div><span class="val" id="refCode">-</span>›</div></div>
-<div class="row"><div class="l"><div class="icon">👤</div><div class="txt">My Profile</div></div>›</div>
+<div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
 <div class="row"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
 <div class="row"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div>›</div>
 <div class="row"><div class="l"><div class="icon">🌐</div><div class="txt">Language</div></div><div><span class="val">English</span>›</div></div>
 <div class="row"><div class="l"><div class="icon">❓</div><div class="txt">Help & Support</div></div>›</div>
-<div class="row"><div class="l"><div class="icon">📄</div><div class="txt">Privacy Policy</div></div>›</div>
+<div class="row" onclick="goPage('privacy.html')"><div class="l"><div class="icon">📄</div><div class="txt">Privacy Policy</div></div>›</div>
+<div class="row" onclick="goPage('terms.html')"><div class="l"><div class="icon">📋</div><div class="txt">Terms & Conditions</div></div>›</div>
 </div>
 
 <div class="sec">CONNECTED WALLETS</div>
 <div class="wallets"><div class="wall"><div class="dot mm">M</div>MetaMask</div><div class="wall"><div class="dot bn">B</div>Binance</div></div>
+
+<button class="logout" onclick="logout()">Logout</button>
 <div class="sp"></div>
+
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <div class="modal-title">Edit Profile</div>
+    <div class="input-group">
+      <label>Name</label>
+      <input type="text" id="editName" placeholder="Enter Name">
+    </div>
+    <div class="input-group">
+      <label>Birthday</label>
+      <input type="date" id="editBirthday">
+    </div>
+    <div class="input-group">
+      <label>Profile Photo</label>
+      <input type="file" id="editPhoto" class="file-input" accept="image/*">
+      <label for="editPhoto" class="file-label">Choose Photo</label>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-cancel" onclick="closeEditProfile()">Cancel</button>
+      <button class="btn btn-save" onclick="saveProfile()">Save</button>
+    </div>
+  </div>
+</div>
 
 <div class="nav">
   <div class="nav-item" onclick="goPage('app.html')">
@@ -80,19 +120,65 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   name: 'Guest',
   id: 'RUPPY000000',
-  balance: 0
+  balance: 0,
+  birthday: '',
+  photo: ''
 };
 
-// Name पहला Letter
-document.getElementById('avatarLetter').innerText = userData.name.charAt(0).toUpperCase();
-document.getElementById('userName').innerText = userData.name;
-document.getElementById('userBalance').innerText = '≈ ' + userData.balance + ' RUPPY';
-document.getElementById('userId').innerText = 'ID: ' + userData.id;
-document.getElementById('refCode').innerText = userData.id;
+function loadProfile(){
+  if(userData.photo){
+    document.getElementById('avatarBox').innerHTML = `<img src="${userData.photo}" alt="Profile">`;
+  } else {
+    document.getElementById('avatarBox').innerHTML = `<span id="avatarLetter">${userData.name.charAt(0).toUpperCase()}</span>`;
+  }
+  document.getElementById('userName').innerText = userData.name;
+  document.getElementById('userBalance').innerText = userData.balance + ' RUPPY';
+  document.getElementById('userId').innerText = 'ID: ' + userData.id;
+  document.getElementById('refCode').innerText = userData.id;
+}
+
+loadProfile();
 
 function copyRefCode(){
   navigator.clipboard.writeText(userData.id);
-  alert('Referral Code Copied: ' + userData.id);
+  alert('Copied: ' + userData.id);
+}
+
+function openEditProfile(){
+  document.getElementById('editName').value = userData.name;
+  document.getElementById('editBirthday').value = userData.birthday || '';
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditProfile(){
+  document.getElementById('editModal').style.display = 'none';
+}
+
+function saveProfile(){
+  userData.name = document.getElementById('editName').value || 'Guest';
+  userData.birthday = document.getElementById('editBirthday').value;
+  const file = document.getElementById('editPhoto').files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      userData.photo = e.target.result;
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
+      loadProfile();
+      closeEditProfile();
+    }
+    reader.readAsDataURL(file);
+  } else {
+    localStorage.setItem('ruppy_user', JSON.stringify(userData));
+    loadProfile();
+    closeEditProfile();
+  }
+}
+
+function logout(){
+  if(confirm('Are you sure you want to logout?')){
+    localStorage.removeItem('ruppy_user');
+    window.location.href = 'login.html';
+  }
 }
 
 function goPage(page){ window.location.href = page; }
