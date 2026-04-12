@@ -37,7 +37,6 @@ a{color:#aaa;text-decoration:none}
 <div class="coin"><img src="cropped_circle_image.png" alt="Ruppy Logo"></div>
 <h1>RUPPY NETWORK</h1>
 
-<!-- GOOGLE BUTTON SABSE UPAR 👇 -->
 <button class="btn btn-google" onclick="handleGoogleLogin()" id="googleBtn">
   <img src="https://www.google.com/favicon.ico" alt="Google">
   Continue with Google
@@ -86,39 +85,36 @@ By continuing, you agree to our Terms & Privacy Policy.
 </div>
 </div>
 
-<!-- FIREBASE + GOOGLE LOGIN CODE 👇 -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
   import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
 
   const firebaseConfig = {
-    apiKey: "AIzaSyDNonk4PSsktmWS_33Vo5X3V1pHq15jK3A",
+    apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
     authDomain: "ruppynetwork-50362.firebaseapp.com",
+    databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
     projectId: "ruppynetwork-50362",
-    storageBucket: "ruppynetwork-50362.appspot.com",
-    messagingSenderId: "456789123",
-    appId: "1:456789123:web:abc123"
+    storageBucket: "ruppynetwork-50362.firebasestorage.app",
+    messagingSenderId: "132064610854",
+    appId: "1:132064610854:web:3c217eaf3618007f5934e7"
   };
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const googleProvider = new GoogleAuthProvider();
 
-  // Referral पकड़ो
   (function() {
     const urlParams = new URLSearchParams(window.location.search);
     const refCode = urlParams.get('ref');
     if(refCode) localStorage.setItem('ruppy_referredBy', refCode);
   })();
 
-  // REDIRECT से वापस आने पे Result Check कर 👇
   getRedirectResult(auth).catch((error) => {
     showError('errorMsg', 'Google login failed. Try again');
     document.getElementById('googleBtn').innerHTML = '<img src="https://www.google.com/favicon.ico" alt="Google"> Continue with Google';
     document.getElementById('googleBtn').disabled = false;
   });
 
-  // User Login है तो App पे भेजो
   onAuthStateChanged(auth, (user) => {
     if (user) {
       let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
@@ -137,7 +133,6 @@ By continuing, you agree to our Terms & Privacy Policy.
     }
   });
 
-  // GOOGLE LOGIN - MOBILE FIX 👇
   window.handleGoogleLogin = async function() {
     const btn = document.getElementById('googleBtn');
     btn.innerText = 'Redirecting...';
