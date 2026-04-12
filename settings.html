@@ -36,25 +36,9 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .nav-item.active{color:#FFA500}
 .nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:1000;flex-direction:column;backdrop-filter:blur(4px)}
-.modal.active{display:flex}
+.modal.active{display:flex;align-items:center;justify-content:center}
 .modal-content{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:24px;width:90%;max-width:400px}
-.modal-header{padding:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--card)}
-.modal-title{font-size:20px;font-weight:600}
-.close-btn{color:#666;font-size:28px;cursor:pointer;line-height:1;padding:0 8px}
-.search-box{padding:12px 16px;background:var(--card);border-bottom:1px solid var(--border)}
-.search-input{width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:#fff;font-size:15px}
-.search-input::placeholder{color:#666}
-.search-input:focus{outline:none;border-color:var(--gold)}
-.language-list{flex:1;overflow-y:auto;background:var(--bg)}
-.language-option{padding:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer}
-.language-option:active{background:var(--card)}
-.language-option.selected{color:var(--gold);background:var(--card)}
-.lang-info{display:flex;flex-direction:column;gap:2px}
-.lang-name{font-size:15px}
-.lang-native{font-size:12px;color:var(--muted)}
-.check{display:none;color:var(--gold);font-size:18px}
-.language-option.selected.check{display:block}
-.no-results{padding:40px 20px;text-align:center;color:var(--muted)}
+.modal-title{font-size:20px;font-weight:600;margin-bottom:20px;text-align:center}
 .input-group{margin-bottom:16px}
 .input-group label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
 .input-group input{width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:#fff;font-size:15px}
@@ -72,20 +56,19 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <body>
 <div class="header">
   <div class="back" onclick="history.back()">←</div>
-  <div class="title notranslate">Settings</div>
+  <div class="title">Settings</div>
 </div>
 
 <div class="avatar" id="avatarBox"><span id="avatarLetter">R</span></div>
-<div class="name notranslate" id="userName">Loading...</div>
-<div class="bal notranslate" id="userBalance">0 RUPPY</div>
-<div class="id-box notranslate" id="userId">ID: Loading...</div>
+<div class="name" id="userName">Loading...</div>
+<div class="bal" id="userBalance">0 RUPPY</div>
+<div class="id-box" id="userId">ID: Loading...</div>
 
 <div class="card">
-<div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><div><span class="val notranslate" id="refCode">-</span>›</div></div>
+<div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><div><span class="val" id="refCode">-</span>›</div></div>
 <div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
 <div class="row"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
-<div class="row" onclick="toggleNotification()"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div><div><span class="val notranslate" id="notifStatus">Off</span>›</div></div>
-<div class="row" onclick="openLanguageModal()"><div class="l"><div class="icon">🌐</div><div class="txt">Language</div></div><div><span class="val notranslate" id="currentLang">English</span>›</div></div>
+<div class="row" onclick="toggleNotification()"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div><div><span class="val" id="notifStatus">Off</span>›</div></div>
 <div class="row"><div class="l"><div class="icon">❓</div><div class="txt">Help & Support</div></div>›</div>
 <div class="row" onclick="goPage('privacy.html')"><div class="l"><div class="icon">📄</div><div class="txt">Privacy Policy</div></div>›</div>
 <div class="row" onclick="goPage('terms.html')"><div class="l"><div class="icon">📋</div><div class="txt">Terms & Conditions</div></div>›</div>
@@ -126,18 +109,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   </div>
 </div>
 
-<!-- Language Modal -->
-<div class="modal" id="languageModal">
-  <div class="modal-header">
-    <div class="modal-title">Select Language</div>
-    <span class="close-btn" onclick="closeLanguageModal()">×</span>
-  </div>
-  <div class="search-box">
-    <input type="text" class="search-input" id="searchInput" placeholder="Search language..." oninput="filterLanguages()">
-  </div>
-  <div class="language-list" id="languageList"></div>
-</div>
-
 <div class="nav">
   <div class="nav-item" onclick="goPage('app.html')">
     <div class="icon">🏠</div>
@@ -161,30 +132,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   </div>
 </div>
 
-<!-- Google Translate - World Language Support -->
-<div id="google_translate_element" style="display:none;"></div>
-<script>
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({
-    pageLanguage: 'en',
-    includedLanguages: 'hi,ar,es,fr,de,zh-CN,pt,ru,ja,ko,it,tr,nl,pl,sv,vi,th,id,ms,ur,bn,ta,te,mr,gu,kn,ml,pa,uk,ro,cs,el,he,fa,sw,fi,da,no,hu,bg,sr,hr,sk,sl,lt,lv,et,is,ga,af,tl',
-    autoDisplay: false
-  }, 'google_translate_element');
-
-  const savedCode = localStorage.getItem('ruppy_language_code');
-  if(savedCode && savedCode!== 'en') {
-    setTimeout(() => {
-      const select = document.querySelector('.goog-te-combo');
-      if(select) {
-        select.value = savedCode;
-        select.dispatchEvent(new Event('change'));
-      }
-    }, 1000);
-  }
-}
-</script>
-<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
 <script>
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   name: 'Guest',
@@ -193,63 +140,6 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   birthday: '',
   photo: ''
 };
-
-const languages = [
-  {code: 'en', name: 'English', native: 'English'},
-  {code: 'hi', name: 'Hindi', native: 'हिंदी'},
-  {code: 'es', name: 'Spanish', native: 'Español'},
-  {code: 'fr', name: 'French', native: 'Français'},
-  {code: 'de', name: 'German', native: 'Deutsch'},
-  {code: 'zh-CN', name: 'Chinese', native: '中文'},
-  {code: 'ar', name: 'Arabic', native: 'العربية'},
-  {code: 'pt', name: 'Portuguese', native: 'Português'},
-  {code: 'ru', name: 'Russian', native: 'Русский'},
-  {code: 'ja', name: 'Japanese', native: '日本語'},
-  {code: 'ko', name: 'Korean', native: '한국어'},
-  {code: 'it', name: 'Italian', native: 'Italiano'},
-  {code: 'tr', name: 'Turkish', native: 'Türkçe'},
-  {code: 'nl', name: 'Dutch', native: 'Nederlands'},
-  {code: 'pl', name: 'Polish', native: 'Polski'},
-  {code: 'sv', name: 'Swedish', native: 'Svenska'},
-  {code: 'vi', name: 'Vietnamese', native: 'Tiếng Việt'},
-  {code: 'th', name: 'Thai', native: 'ไทย'},
-  {code: 'id', name: 'Indonesian', native: 'Bahasa Indonesia'},
-  {code: 'ms', name: 'Malay', native: 'Bahasa Melayu'},
-  {code: 'ur', name: 'Urdu', native: 'اردو'},
-  {code: 'bn', name: 'Bengali', native: 'বাংলা'},
-  {code: 'ta', name: 'Tamil', native: 'தமிழ்'},
-  {code: 'te', name: 'Telugu', native: 'తెలుగు'},
-  {code: 'mr', name: 'Marathi', native: 'मराठी'},
-  {code: 'gu', name: 'Gujarati', native: 'ગુજરાતી'},
-  {code: 'kn', name: 'Kannada', native: 'ಕನ್ನಡ'},
-  {code: 'ml', name: 'Malayalam', native: 'മലയാളം'},
-  {code: 'pa', name: 'Punjabi', native: 'ਪੰਜਾਬੀ'},
-  {code: 'uk', name: 'Ukrainian', native: 'Українська'},
-  {code: 'ro', name: 'Romanian', native: 'Română'},
-  {code: 'cs', name: 'Czech', native: 'Čeština'},
-  {code: 'el', name: 'Greek', native: 'Ελληνικά'},
-  {code: 'he', name: 'Hebrew', native: 'עברית'},
-  {code: 'fa', name: 'Persian', native: 'فارسی'},
-  {code: 'sw', name: 'Swahili', native: 'Kiswahili'},
-  {code: 'fi', name: 'Finnish', native: 'Suomi'},
-  {code: 'da', name: 'Danish', native: 'Dansk'},
-  {code: 'no', name: 'Norwegian', native: 'Norsk'},
-  {code: 'hu', name: 'Hungarian', native: 'Magyar'},
-  {code: 'bg', name: 'Bulgarian', native: 'Български'},
-  {code: 'sr', name: 'Serbian', native: 'Српски'},
-  {code: 'hr', name: 'Croatian', native: 'Hrvatski'},
-  {code: 'sk', name: 'Slovak', native: 'Slovenčina'},
-  {code: 'sl', name: 'Slovenian', native: 'Slovenščina'},
-  {code: 'lt', name: 'Lithuanian', native: 'Lietuvių'},
-  {code: 'lv', name: 'Latvian', native: 'Latviešu'},
-  {code: 'et', name: 'Estonian', native: 'Eesti'},
-  {code: 'is', name: 'Icelandic', native: 'Íslenska'},
-  {code: 'ga', name: 'Irish', native: 'Gaeilge'},
-  {code: 'af', name: 'Afrikaans', native: 'Afrikaans'},
-  {code: 'tl', name: 'Filipino', native: 'Filipino'},
-];
-
-let currentLanguage = localStorage.getItem('ruppy_language') || 'English';
 
 function loadProfile(){
   if(userData.photo){
@@ -261,13 +151,13 @@ function loadProfile(){
   document.getElementById('userBalance').innerText = userData.balance + ' RUPPY';
   document.getElementById('userId').innerText = 'ID: ' + userData.id;
   document.getElementById('refCode').innerText = userData.id;
-  document.getElementById('currentLang').innerText = currentLanguage;
 }
 
 loadProfile();
 
 function copyRefCode(){
   navigator.clipboard.writeText(userData.id);
+  alert('Referral Code Copied!');
 }
 
 function openEditProfile(){
@@ -298,61 +188,6 @@ function saveProfile(){
     loadProfile();
     closeEditProfile();
   }
-}
-
-function openLanguageModal() {
-  document.getElementById('languageModal').classList.add('active');
-  renderLanguages(languages);
-  document.getElementById('searchInput').value = '';
-  document.getElementById('searchInput').focus();
-}
-
-function closeLanguageModal() {
-  document.getElementById('languageModal').classList.remove('active');
-}
-
-function renderLanguages(langList) {
-  const listEl = document.getElementById('languageList');
-
-  if (langList.length === 0) {
-    listEl.innerHTML = '<div class="no-results">No languages found</div>';
-    return;
-  }
-
-  listEl.innerHTML = langList.map(lang => `
-    <div class="language-option ${lang.name === currentLanguage? 'selected' : ''}" onclick="selectLanguage('${lang.name}', '${lang.code}')">
-      <div class="lang-info">
-        <div class="lang-name">${lang.name}</div>
-        <div class="lang-native">${lang.native}</div>
-      </div>
-      <span class="check">✓</span>
-    </div>
-  `).join('');
-}
-
-function filterLanguages() {
-  const query = document.getElementById('searchInput').value.toLowerCase();
-  const filtered = languages.filter(lang =>
-    lang.name.toLowerCase().includes(query) ||
-    lang.native.toLowerCase().includes(query)
-  );
-  renderLanguages(filtered);
-}
-
-function selectLanguage(langName, langCode) {
-  currentLanguage = langName;
-  localStorage.setItem('ruppy_language', langName);
-  localStorage.setItem('ruppy_language_code', langCode);
-  document.getElementById('currentLang').innerText = langName;
-  closeLanguageModal();
-
-  setTimeout(() => {
-    const select = document.querySelector('.goog-te-combo');
-    if(select) {
-      select.value = langCode;
-      select.dispatchEvent(new Event('change'));
-    }
-  }, 300);
 }
 
 function logout(){
@@ -403,7 +238,7 @@ window.sendMiningNotif = function(){
 }
 </script>
 
-<!-- RUPPY TRANSLATE BAR KILLER -->
-<script src="translate-fix.js"></script>
+<!-- Monetag Multitag Script -->
+<script src="https://quge5.com/88/tag.min.js" data-zone="228902" async data-cfasync="false"></script>
 </body>
 </html>
