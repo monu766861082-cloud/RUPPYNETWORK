@@ -1,396 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Leaderboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#0B0B0C;--card:#111113;--edge:#2A200E;--gold:#F3C774;--gold2:#EABF55;--muted:#9CA3AF}
-*{box-sizing:border-box;margin:0;padding:0;font-family:Poppins,sans-serif}
-body{background:#0B0B0C;color:#fff;padding:18px;padding-bottom:90px}
-.top{display:flex;justify-content:space-between;align-items:flex-start}
-h1{font-size:28px;font-weight:700}
-.sub{font-size:13px;color:var(--muted);margin-top:2px}
-.trophy{width:44px;height:44px;border:1.5px solid var(--gold2);border-radius:12px;display:flex;align-items:center;justify-content:center}
-.card{background:var(--card);border:1px solid var(--edge);border-radius:18px;padding:14px 16px;margin-top:18px}
-#pos h2{font-size:12px;color:var(--muted);letter-spacing:1px}
-.row{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
-.badge{width:56px;height:56px;border-radius:50%;border:2px solid var(--gold2);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:var(--gold2);margin-right:12px}
-.name{font-size:18px;font-weight:600;display:flex;align-items:center;gap:8px}
-.logo{width:20px;height:20px;border-radius:50%;object-fit:cover}
-.reward{font-size:13px;color:var(--muted)}
-.reward span{color:var(--gold)}
-.points div{font-size:13px;color:var(--muted)}
-.points strong{font-size:26px;color:var(--gold2)}
-.tag{display:inline-flex;align-items:center;gap:6px;color:var(--gold);font-size:12px;font-weight:700;letter-spacing:1px}
-.tag svg{width:20px;height:20px}
-h3{font-size:22px;margin:8px 0 4px}
-h3 span{display:block;color:var(--gold)}
-.p{font-size:13px;color:var(--muted);line-height:1.4}
-.referral-btn{width:100%;padding:14px;background:linear-gradient(135deg,#1DBF5E,#16A34A);color:#000;border:none;border-radius:12px;font-size:16px;font-weight:700;margin-top:12px;cursor:pointer;text-align:center;transition:transform 0.2s}
-.referral-btn:active{transform:scale(0.98)}
-.claim{border:1px solid #1DBF5E;color:#1DBF5E;border-radius:999px;padding:9px 14px;font-weight:700;font-size:14px;cursor:pointer}
-.claimed{border-color:#444;color:#666}
-.tbl{background:var(--card);border:1px solid #222;border-radius:18px;overflow:hidden;margin-top:8px}
-.head{display:flex;justify-content:space-between;padding:12px 14px;background:#17171A;font-size:12px;color:var(--muted)}
-.user{display:flex;justify-content:space-between;padding:13px 14px;border-top:1px solid #1F1F22}
-.lf{display:flex;align-items:center}
-.ranknum{width:32px;text-align:center;font-size:14px;font-weight:700;color:var(--gold2)}
-.ic{width:28px;margin-right:8px;display:flex;justify-content:center}
-.u-name{color:var(--gold);font-weight:600;display:flex;align-items:center;gap:6px}
-.u-sub{font-size:12px;color:var(--muted)}
-.pts{font-size:16px;font-weight:600}
-.amt{color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:2px 12px;font-size:13px}
-.timer-box{background:var(--card);border:1px solid var(--gold);border-radius:12px;padding:12px;text-align:center;margin-top:12px}
-.timer-box h4{font-size:11px;color:var(--muted);letter-spacing:1px}
-.timer-box p{font-size:20px;font-weight:700;color:var(--gold2);margin-top:4px}
-.token-chart{background:var(--card);border:1px solid var(--gold);border-radius:12px;padding:14px;margin-top:12px}
-.token-chart h4{font-size:13px;color:var(--gold);margin-bottom:10px;text-align:center}
-.token-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #222}
-.token-row:last-child{border-bottom:none}
-.token-row span{font-size:13px}
-.token-row strong{color:var(--gold2);font-size:13px}
-.nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 15px}
-.nav-item.active{color:#FFA500}
-.nav-item.active::after{content:'';width:30px;height:2px;background:#FFA500;margin-top:2px}
-.nav-item.icon{font-size:20px}
-.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruppy Network - Leaderboard</title>
+  
+  <style>
+    * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
+    body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
+    
+    .header {padding:20px 15px 10px; display:flex; align-items:center; justify-content:space-between;}
+    .header .title h3 {font-size:18px; font-weight:600;}
+    .header .title p {font-size:12px; color:#888; margin-top:2px;}
+    .header .back-btn {width:36px; height:36px; border:1px solid #333; border-radius:8px; background:#0d0d0d; display:flex; align-items:center; justify-content:center; cursor:pointer;}
+    
+    .position-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+    .position-card p:first-child {color:#888; font-size:11px; letter-spacing:0.5px; margin-bottom:10px;}
+    .position-row {display:flex; justify-content:space-between; align-items:center;}
+    .position-left {display:flex; align-items:center; gap:12px;}
+    .position-rank {width:36px; height:36px; border:2px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#FFA500;}
+    .position-name {font-size:15px; font-weight:600;}
+    .position-right {text-align:right;}
+    .position-right .label {color:#888; font-size:11px;}
+    .position-right .points {color:#FFA500; font-weight:700; font-size:20px;}
+    
+    .campaign-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:18px;}
+    .campaign-card .tag {color:#888; font-size:11px; display:flex; align-items:center; gap:5px; margin-bottom:10px;}
+    .campaign-card h2 {font-size:20px; font-weight:700; line-height:1.3;}
+    .campaign-card h2 span {color:#FFA500;}
+    .campaign-card p {color:#666; font-size:12px; margin:10px 0 15px; line-height:1.5;}
+    .btn-refer {width:100%; padding:14px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:700; font-size:14px; cursor:pointer;}
+    .btn-refer:active {transform:scale(0.98);}
+    
+    .reward-structure {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+    .reward-structure h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
+    .reward-row {display:flex; justify-content:space-between; padding:8px 0; font-size:13px; border-bottom:1px solid #1a1a1a;}
+    .reward-row:last-child {border-bottom:none;}
+    .reward-row .rank {color:#888;}
+    .reward-row .token {color:#fff; font-weight:600;}
+    
+    .nav {position:fixed; bottom:0; left:0; right:0; background:#0d0d0d; border-top:1px solid #222; display:flex; justify-content:space-around; padding:8px 0;}
+    .nav-item {display:flex; flex-direction:column; align-items:center; gap:3px; color:#666; text-decoration:none; font-size:11px; cursor:pointer; padding:5px 15px;}
+    .nav-item.active {color:#FFA500;}
+    .nav-item.active::after {content:''; width:30px; height:2px; background:#FFA500; margin-top:2px;}
+    .nav-item .icon {font-size:20px;}
+  </style>
+  
 </head>
 <body>
-<div class="top">
-<div><h1>Leaderboard</h1><div class="sub">Auto-updates every 24 hours • 1 referral = 10 pts</div></div>
-<div class="trophy"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="1.6"><path d="M8 21h8M12 17v4M7 4h10l-1 7H8L7 4z"/><path d="M17 4v2a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V4"/></svg></div>
-</div>
 
-<div class="card" id="pos" style="display:none">
-<h2>YOUR POSITION</h2>
-<div class="row">
-<div class="lf">
-<div class="badge" id="userRank">#0</div>
-<div>
-<div class="name"><img src="logo.png" class="logo" onerror="this.style.display='none'"><span id="userName">You</span></div>
-<div class="reward">Reward: <span id="userReward">0 RUPPY</span></div>
-<div class="u-sub" id="userId">ID: Loading...</div>
-</div>
-<div class="points"><div>Points</div><strong id="userPoints">0</strong></div>
-</div>
-
-<div class="token-chart">
-<h4>🏆 RANKING REWARDS</h4>
-<div class="token-row"><span>Rank 1</span><strong>1000 RUPPY</strong></div>
-<div class="token-row"><span>Rank 2 - 10</span><strong>800 RUPPY</strong></div>
-<div class="token-row"><span>Rank 11 - 50</span><strong>600 RUPPY</strong></div>
-<div class="token-row"><span>Rank 51 - 100</span><strong>500 RUPPY</strong></div>
-<div class="token-row"><span>Rank 101 - 500</span><strong>300 RUPPY</strong></div>
-</div>
-
-<div class="timer-box">
-<h4>WEEKLY CAMPAIGN ENDS IN</h4>
-<p id="weekTimer">Loading...</p>
-</div>
-
-<div class="card">
-<div class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 21h8M12 17v4M7 4h10l-1 7H8L7 4z"/><path d="M17 4v2a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V4"/></svg>WEEKLY CAMPAIGN</div>
-<h3>Refer More. Rank Higher.<span>Earn Bigger Rewards.</span></h3>
-<p class="p">Share with friends. Top rank = biggest reward every week. Claim after week ends.</p>
-<div class="referral-btn" onclick="shareRefer()">SHARE REFERRAL</div>
-</div>
-
-<div class="card" id="claimCard" style="display:none">
-<div class="row">
-<div class="lf">
-<div class="badge" id="claimBadge" style="border-color:#1DBF5E;color:#1DBF5E">✓</div>
-<div>
-<div class="name">WEEKLY CLAIM REWARD</div>
-<div class="reward" id="claimText">Claim your weekly rank reward!</div>
-</div>
-<div class="claim" id="claimBtn" onclick="claimReward()">CLAIM</div>
-</div>
-
-<div class="tbl">
-<div class="head"><div style="display:flex;gap:32px"><span>#</span><span>RANK NAME</span></div><div style="display:flex;gap:36px"><span>POINTS</span><span>REWARD</span></div></div>
-<div id="leaderboardList"></div>
-</div>
-
-<div class="nav">
-  <div class="nav-item" onclick="goPage('app.html')">
-    <div class="icon">🏠</div>
-    <span>Home</span>
+  <div class="header">
+    <div class="title">
+      <h3>Leaderboard</h3>
+      <p>Auto-updates every 24 hours • 1 referral = 10 pts</p>
+    </div>
+    <div class="back-btn" onclick="window.location.href='app.html'">←</div>
   </div>
-  <div class="nav-item" onclick="goPage('tasks.html')">
-    <div class="icon">📋</div>
-    <span>Tasks</span>
-  </div>
-  <div class="nav-item" onclick="goPage('referral.html')">
-    <div class="icon">👥</div>
-    <span>Referral</span>
-  </div>
-  <div class="nav-item active">
-    <div class="icon">🏆</div>
-    <span>Ranking</span>
-  </div>
-  <div class="nav-item" onclick="goPage('settings.html')">
-    <div class="icon">⚙️</div>
-    <span>Settings</span>
-  </div>
-</div>
 
-<div class="toast" id="toast">Copied!</div>
+  <div class="position-card">
+    <p>YOUR POSITION</p>
+    <div class="position-row">
+      <div class="position-left">
+        <div class="position-rank" id="userRank">#-</div>
+        <div class="position-name" id="userName">User</div>
+      </div>
+      <div class="position-right">
+        <div class="label">Points</div>
+        <div class="points" id="userPoints">0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="campaign-card">
+    <div class="tag">📊 WEEKLY CAMPAIGN</div>
+    <h2>Refer More. Rank Higher.<br><span>Earn Bigger Rewards.</span></h2>
+    <p>Share your link anywhere. Top rank = biggest reward every week. Updates every 24 hours.</p>
+    <button class="btn-refer" onclick="handleReferNow()">REFER NOW</button>
+  </div>
+
+  <div class="reward-structure">
+    <h4>Weekly Reward Structure:</h4>
+    <div class="reward-row">
+      <div class="rank">#1</div>
+      <div class="token">1000 RUPPY TOKEN</div>
+    </div>
+    <div class="reward-row">
+      <div class="rank">#2 - #10</div>
+      <div class="token">800 RUPPY TOKEN</div>
+    </div>
+    <div class="reward-row">
+      <div class="rank">#11 - #50</div>
+      <div class="token">600 RUPPY TOKEN</div>
+    </div>
+    <div class="reward-row">
+      <div class="rank">#51 - #100</div>
+      <div class="token">500 RUPPY TOKEN</div>
+    </div>
+    <div class="reward-row">
+      <div class="rank">#101 - #500</div>
+      <div class="token">300 RUPPY TOKEN</div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <div class="nav-item" onclick="navClick('home')">
+      <div class="icon">🏠</div>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="navClick('tasks')">
+      <div class="icon">📋</div>
+      <span>Tasks</span>
+    </div>
+    <div class="nav-item" onclick="navClick('referral')">
+      <div class="icon">👥</div>
+      <span>Referral</span>
+    </div>
+    <div class="nav-item active" onclick="navClick('ranking')">
+      <div class="icon">🏆</div>
+      <span>Ranking</span>
+    </div>
+    <div class="nav-item" onclick="navClick('settings')">
+      <div class="icon">⚙️</div>
+      <span>Settings</span>
+    </div>
+  </div>
 
 <script>
-if(!localStorage.getItem('fix_v8')){
-  localStorage.clear();
-  localStorage.setItem('fix_v8', 'done');
-}
-
-let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
-  name: '',
-  id: 'RUPPY' + Math.floor(100000 + Math.random() * 900000),
-  balance: 0,
-  team: [],
-  lastClaimWeek: 0
-};
-
-if(!userData.name || userData.name.trim() === ''){
-  let n = prompt('Enter your name:');
-  userData.name = n && n.trim() ? n.trim() : 'Guest';
-  localStorage.setItem('ruppy_user', JSON.stringify(userData));
-}
-
-if(!userData.id) {
-  userData.id = 'RUPPY' + Math.floor(100000 + Math.random() * 900000);
-  localStorage.setItem('ruppy_user', JSON.stringify(userData));
-}
-
-let inviteCode = userData.id;
-localStorage.setItem('ruppy_inviteCode', inviteCode);
-let userName = userData.name;
-
-function getReward(rank){
-  if(rank === 1) return 1000;
-  if(rank >= 2 && rank <= 10) return 800;
-  if(rank >= 11 && rank <= 50) return 600;
-  if(rank >= 51 && rank <= 100) return 500;
-  if(rank >= 101 && rank <= 500) return 300;
-  return 0;
-}
-
-function getWeekNumber(){
-  let d = new Date();
-  d.setHours(0,0,0,0);
-  d.setDate(d.getDate() + 4 - (d.getDay()||7));
-  let yearStart = new Date(d.getFullYear(),0,1);
-  return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
-}
-
-function getWeekStart(){
-  let d = new Date();
-  let day = d.getDay();
-  let diff = d.getDate() - day + (day === 0? -6 : 1);
-  let monday = new Date(d.setDate(diff));
-  monday.setHours(0,0,0,0);
-  return monday.getTime();
-}
-
-function isWeekEnded(){
-  let weekStart = Number(localStorage.getItem('ruppy_week_start')) || getWeekStart();
-  localStorage.setItem('ruppy_week_start', weekStart);
-  let weekEnd = weekStart + 604800000;
-  return Date.now() >= weekEnd;
-}
-
-function updateWeekTimer(){
-  let weekStart = Number(localStorage.getItem('ruppy_week_start')) || getWeekStart();
-  localStorage.setItem('ruppy_week_start', weekStart);
-  let weekEnd = weekStart + 604800000;
-  let diff = weekEnd - Date.now();
-
-  if(diff <= 0){
-    document.getElementById('weekTimer').innerText = 'WEEK ENDED - CLAIM NOW';
-    document.getElementById('weekTimer').style.color = '#00D632';
-    return true;
-  }
-
-  let d = Math.floor(diff / 86400000);
-  let h = Math.floor((diff % 86400000) / 3600000);
-  let m = Math.floor((diff % 3600000) / 60000);
-  document.getElementById('weekTimer').innerText = d + 'D ' + h + 'H ' + m + 'M';
-  return false;
-}
-
-function checkReferralJoin(){
-  let params = new URLSearchParams(window.location.search);
-  let refCode = params.get('ref');
-  if(refCode && refCode !== userData.id){
-    let referrer = JSON.parse(localStorage.getItem('ruppy_user_' + refCode)) || null;
-    if(referrer){
-      if(!referrer.team) referrer.team = [];
-      if(!referrer.team.includes(userData.id)){
-        referrer.team.push(userData.id);
-        localStorage.setItem('ruppy_user_' + refCode, JSON.stringify(referrer));
-        showToast('Joined via ' + refCode + '!');
-      }
-    }
-  }
-  localStorage.setItem('ruppy_user_' + userData.id, JSON.stringify(userData));
-}
-
-checkReferralJoin();
-
-let leaderboard = [];
-
-let userPoints = (userData.team || []).length * 10;
-let currentWeek = getWeekNumber();
-let allUsers = [...leaderboard];
-
-if(userPoints > 0){
-  allUsers.push({
-    name: userName, 
-    id: userData.id,
-    refs: (userData.team || []).length, 
-    points: userPoints, 
-    isUser: true
-  });
-}
-
-allUsers.sort((a,b) => b.points - a.points);
-
-let userRank = 0;
-let posEl = document.getElementById('pos');
-let claimCardEl = document.getElementById('claimCard');
-let weekEnded = isWeekEnded();
-
-if(userPoints > 0 && posEl){
-  posEl.style.display = 'block';
-  userRank = allUsers.findIndex(u => u.isUser) + 1;
-  let userReward = getReward(userRank);
-  
-  document.getElementById('userRank').innerText = '#' + userRank;
-  document.getElementById('userName').innerText = userName;
-  document.getElementById('userId').innerText = 'ID: ' + userData.id;
-  document.getElementById('userPoints').innerText = userPoints;
-  document.getElementById('userReward').innerText = userReward + ' RUPPY';
-  
-  if(userReward > 0 && claimCardEl){
-    claimCardEl.style.display = 'block';
-    document.getElementById('claimText').innerHTML = `Rank #${userRank} Reward: <span style="color:var(--gold)">${userReward} RUPPY</span>`;
+  function loadUserPosition() {
+    let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {name: 'User', referralCount: 0};
     
-    let claimBtnEl = document.getElementById('claimBtn');
-    if(userData.lastClaimWeek === currentWeek){
-      claimBtnEl.innerText = 'CLAIMED ✓';
-      claimBtnEl.classList.add('claimed');
-    } else if(!weekEnded){
-      claimBtnEl.innerText = 'WAIT';
-      claimBtnEl.classList.add('claimed');
-    }
+    let points = (userData.referralCount || 0) * 10;
+    let rank = userData.referralCount > 0 ? '#1' : '#-';
+    
+    document.getElementById('userName').innerText = userData.name;
+    document.getElementById('userPoints').innerText = points;
+    document.getElementById('userRank').innerText = rank;
   }
-}
 
-let listHTML = '';
-if(allUsers.length === 0){
-  listHTML = `<div style="padding:30px;text-align:center;color:#666">
-    <div>No users yet</div>
-    <div style="font-size:12px;margin-top:4px">Start referring to appear on leaderboard</div>
-  </div>`;
-} else {
-  allUsers.slice(0,100).forEach((u,i) => {
-    let rank = i + 1;
-    let reward = getReward(rank);
-    let crown = rank === 1? '👑' : rank === 2? '🥈' : rank === 3? '🥉' : '';
-    let nameStyle = u.isUser? 'style="color:#1DBF5E"' : '';
-    listHTML += `
-    <div class="user">
-      <div class="lf">
-        <div class="ranknum">${rank}</div>
-        <div class="ic">${crown}</div>
-        <div>
-          <div class="u-name" ${nameStyle}><img src="logo.png" class="logo" onerror="this.style.display='none'">${u.name}</div>
-          <div class="u-sub">${u.refs} refs • ID: ${u.id}</div>
-        </div>
-      </div>
-      <div class="lf" style="gap:28px">
-        <div class="pts">${u.points}</div>
-        <div class="amt">${reward}</div>
-      </div>
-    </div>`;
-  });
-}
-document.getElementById('leaderboardList').innerHTML = listHTML;
-
-function claimReward(){
-  if(!isWeekEnded()){
-    showToast('Week अभी खत्म नहीं हुआ। Sunday 12AM के बाद Claim करो');
-    return;
+  function handleReferNow() {
+    let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {name: 'User', referralCount: 0, balance: 0};
+    
+    userData.referralCount = (userData.referralCount || 0) + 1;
+    userData.balance = (userData.balance || 0) + 50;
+    
+    localStorage.setItem('ruppy_user', JSON.stringify(userData));
+    
+    alert('Link Shared! +50 RUPPY Bonus Added. +10 Leaderboard Points');
+    loadUserPosition();
   }
-  if(userPoints === 0){
-    showToast('Refer first to get rank');
-    return;
+
+  function navClick(page) {
+    if(page === 'home') window.location.href = 'app.html';
+    if(page === 'tasks') window.location.href = 'tasks.html';
+    if(page === 'referral') window.location.href = 'referral.html';
+    if(page === 'ranking') window.location.href = 'ranking.html';
+    if(page === 'settings') window.location.href = 'settings.html';
   }
-  if(userData.lastClaimWeek === currentWeek){
-    showToast('Already claimed this week');
-    return;
-  }
-  let userReward = getReward(userRank);
-  if(userReward === 0){
-    showToast('Not in Top 500 yet');
-    return;
-  }
-  
-  userData.balance += userReward;
-  userData.lastClaimWeek = currentWeek;
-  localStorage.setItem('ruppy_user', JSON.stringify(userData));
-  localStorage.setItem('ruppy_user_' + userData.id, JSON.stringify(userData));
-  showToast(userReward + ' RUPPY Claimed!');
-  setTimeout(() => location.reload(), 1000);
-}
 
-function shareRefer(){
-  let text = `Join RUPPY Network & start playing! 💰\nUse my code: ${inviteCode}`;
-  let url = `https://ruppynetwork.vercel.app?ref=${inviteCode}`;
-  
-  if(navigator.share){
-    navigator.share({
-      title: 'RUPPY Network',
-      text: text,
-      url: url
-    }).catch(() => {
-      showToast('Share cancelled');
-    });
-  } else {
-    showToast('Share not supported on this device');
-  }
-}
-
-function showToast(msg){
-  let t = document.getElementById('toast');
-  if(t){
-    t.innerText = msg;
-    t.style.display = 'block';
-    setTimeout(() => t.style.display = 'none', 2500);
-  }
-}
-
-function goPage(page){ window.location.href = page; }
-
-let lastUpdate = localStorage.getItem('ruppy_update') || 0;
-if(Date.now() - lastUpdate > 24*60*60*1000){
-  localStorage.setItem('ruppy_update', Date.now());
-  location.reload();
-}
-
-let weekStart = Number(localStorage.getItem('ruppy_week_start')) || getWeekStart();
-let weekEnd = weekStart + 604800000;
-if(Date.now() >= weekEnd){
-  let users = JSON.parse(localStorage.getItem('ruppy_all_users')) || [];
-  users.forEach(u => { u.claimed = false; });
-  localStorage.setItem('ruppy_all_users', JSON.stringify(users));
-  localStorage.setItem('ruppy_week_start', Date.now());
-}
-
-updateWeekTimer();
-setInterval(updateWeekTimer, 60000);
+  loadUserPosition();
 </script>
+
 </body>
 </html>
