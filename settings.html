@@ -67,25 +67,27 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .sp{height:96px}
 .ft-links{font-size:11px;color:#666;text-align:center;margin-top:30px;padding-bottom:20px}
 .ft-links a{color:#aaa;text-decoration:none}
+.goog-te-banner-frame{display:none!important}
+body{top:0!important}
 </style>
 </head>
 <body>
 <div class="header">
   <div class="back" onclick="history.back()">←</div>
-  <div class="title">Settings</div>
+  <div class="title notranslate">Settings</div>
 </div>
 
 <div class="avatar" id="avatarBox"><span id="avatarLetter">R</span></div>
-<div class="name" id="userName">Loading...</div>
-<div class="bal" id="userBalance">0 RUPPY</div>
-<div class="id-box" id="userId">ID: Loading...</div>
+<div class="name notranslate" id="userName">Loading...</div>
+<div class="bal notranslate" id="userBalance">0 RUPPY</div>
+<div class="id-box notranslate" id="userId">ID: Loading...</div>
 
 <div class="card">
-<div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><div><span class="val" id="refCode">-</span>›</div></div>
+<div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><div><span class="val notranslate" id="refCode">-</span>›</div></div>
 <div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
 <div class="row"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
-<div class="row" onclick="toggleNotification()"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div><div><span class="val" id="notifStatus">Off</span>›</div></div>
-<div class="row" onclick="openLanguageModal()"><div class="l"><div class="icon">🌐</div><div class="txt">Language</div></div><div><span class="val" id="currentLang">English</span>›</div></div>
+<div class="row" onclick="toggleNotification()"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div><div><span class="val notranslate" id="notifStatus">Off</span>›</div></div>
+<div class="row" onclick="openLanguageModal()"><div class="l"><div class="icon">🌐</div><div class="txt">Language</div></div><div><span class="val notranslate" id="currentLang">English</span>›</div></div>
 <div class="row"><div class="l"><div class="icon">❓</div><div class="txt">Help & Support</div></div>›</div>
 <div class="row" onclick="goPage('privacy.html')"><div class="l"><div class="icon">📄</div><div class="txt">Privacy Policy</div></div>›</div>
 <div class="row" onclick="goPage('terms.html')"><div class="l"><div class="icon">📋</div><div class="txt">Terms & Conditions</div></div>›</div>
@@ -161,6 +163,9 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   </div>
 </div>
 
+<!-- Google Translate Hidden Element -->
+<div id="google_translate_element" style="display:none;"></div>
+
 <script>
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   name: 'Guest',
@@ -177,7 +182,7 @@ const languages = [
   {code: 'es', name: 'Spanish', native: 'Español'},
   {code: 'fr', name: 'French', native: 'Français'},
   {code: 'de', name: 'German', native: 'Deutsch'},
-  {code: 'zh', name: 'Chinese', native: '中文'},
+  {code: 'zh-CN', name: 'Chinese', native: '中文'},
   {code: 'ar', name: 'Arabic', native: 'العربية'},
   {code: 'pt', name: 'Portuguese', native: 'Português'},
   {code: 'ru', name: 'Russian', native: 'Русский'},
@@ -223,7 +228,7 @@ const languages = [
   {code: 'is', name: 'Icelandic', native: 'Íslenska'},
   {code: 'ga', name: 'Irish', native: 'Gaeilge'},
   {code: 'af', name: 'Afrikaans', native: 'Afrikaans'},
-  {code: 'fil', name: 'Filipino', native: 'Filipino'},
+  {code: 'tl', name: 'Filipino', native: 'Filipino'},
 ];
 
 let currentLanguage = localStorage.getItem('ruppy_language') || 'English';
@@ -291,14 +296,14 @@ function closeLanguageModal() {
 
 function renderLanguages(langList) {
   const listEl = document.getElementById('languageList');
-  
+
   if (langList.length === 0) {
     listEl.innerHTML = '<div class="no-results">No languages found</div>';
     return;
   }
-  
+
   listEl.innerHTML = langList.map(lang => `
-    <div class="language-option ${lang.name === currentLanguage? 'selected' : ''}" onclick="selectLanguage('${lang.name}')">
+    <div class="language-option ${lang.name === currentLanguage? 'selected' : ''}" onclick="selectLanguage('${lang.name}', '${lang.code}')">
       <div class="lang-info">
         <div class="lang-name">${lang.name}</div>
         <div class="lang-native">${lang.native}</div>
@@ -310,18 +315,28 @@ function renderLanguages(langList) {
 
 function filterLanguages() {
   const query = document.getElementById('searchInput').value.toLowerCase();
-  const filtered = languages.filter(lang => 
-    lang.name.toLowerCase().includes(query) || 
+  const filtered = languages.filter(lang =>
+    lang.name.toLowerCase().includes(query) ||
     lang.native.toLowerCase().includes(query)
   );
   renderLanguages(filtered);
 }
 
-function selectLanguage(lang) {
-  currentLanguage = lang;
-  localStorage.setItem('ruppy_language', lang);
-  document.getElementById('currentLang').innerText = lang;
+function selectLanguage(langName, langCode) {
+  currentLanguage = langName;
+  localStorage.setItem('ruppy_language', langName);
+  localStorage.setItem('ruppy_language_code', langCode);
+  document.getElementById('currentLang').innerText = langName;
   closeLanguageModal();
+
+  // Google Translate Trigger
+  setTimeout(() => {
+    const select = document.querySelector('.goog-te-combo');
+    if(select) {
+      select.value = langCode;
+      select.dispatchEvent(new Event('change'));
+    }
+  }, 300);
 }
 
 function logout(){
@@ -371,7 +386,31 @@ window.sendMiningNotif = function(){
     }
   }
 }
+
+// Google Translate Init
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    includedLanguages: languages.map(l => l.code).join(','),
+    autoDisplay: false
+  }, 'google_translate_element');
+
+  // Auto apply saved language
+  const savedCode = localStorage.getItem('ruppy_language_code');
+  if(savedCode && savedCode!== 'en') {
+    setTimeout(() => {
+      const select = document.querySelector('.goog-te-combo');
+      if(select) {
+        select.value = savedCode;
+        select.dispatchEvent(new Event('change'));
+      }
+    }, 1000);
+  }
+}
 </script>
+
+<!-- Google Translate Script ✅ -->
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 <!-- Monetag Multitag Script ✅ -->
 <script src="https://quge5.com/88/tag.min.js" data-zone="228902" async data-cfasync="false"></script>
