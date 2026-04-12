@@ -3,23 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ruppy Network</title>
-
-<!-- Google AdSense Code - Replace XXXXXXXXXXXXXXXX with your Publisher ID -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
-     crossorigin="anonymous"></script>
-
+<title>Ruppy Network - Login</title>
 <style>
-body{margin:0;background:#000;color:#fff;font-family:Arial;text-align:center}
-.wrap{padding:22px}
+body{margin:0;background:#000;color:#fff;font-family:Arial;display:flex;align-items:center;justify-content:center;min-height:100vh}
+.wrap{padding:22px;width:100%;max-width:360px;text-align:center}
 .pill{border:1px solid #c28840;color:#c28840;padding:4px 12px;border-radius:14px;display:inline-block;font-size:12px;margin-bottom:18px}
-.coin{width:170px;height:170px;margin:auto;border-radius:50%;background:#111;box-shadow:0 0 28px #f9a825;display:flex;align-items:center;justify-content:center;font-size:48px}
-.btn{margin:18px auto;padding:12px 24px;background:#f9a825;color:#000;border:none;border-radius:24px;font-weight:bold;width:80%;max-width:260px;cursor:pointer}
+.coin{width:170px;height:170px;margin:20px auto;border-radius:50%;background:#111;box-shadow:0 0 28px #f9a825;display:flex;align-items:center;justify-content:center;font-size:48px}
 h1{color:#f9a825;margin:12px 0 20px}
-.card{border:1px solid #333;border-radius:12px;padding:12px;margin:10px auto;max-width:300px;display:flex;gap:10px;text-align:left;align-items:flex-start}
-.ci{width:38px;height:38px;background:#1e1e1e;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:20px}
-.ft{font-size:11px;color:#666;margin-top:20px}
+.input-box{margin:12px 0;text-align:left}
+.input-box label{color:#aaa;font-size:13px;display:block;margin-bottom:6px}
+.input-box input{width:100%;padding:12px;border:1px solid #333;border-radius:10px;background:#111;color:#fff;font-size:15px;box-sizing:border-box}
+.input-box input:focus{outline:none;border-color:#f9a825}
+.btn{margin:18px auto;padding:12px 24px;background:#f9a825;color:#000;border:none;border-radius:24px;font-weight:bold;width:100%;cursor:pointer;font-size:15px}
+.btn:disabled{background:#333;color:#666;cursor:not-allowed}
+.btn-secondary{background:#1a1a1a;color:#f9a825;border:1px solid #f9a825}
+.toggle{color:#aaa;font-size:13px;margin-top:15px;cursor:pointer}
+.toggle span{color:#f9a825;text-decoration:underline}
+.ft{font-size:11px;color:#666;margin-top:25px}
 a{color:#aaa;text-decoration:none}
+.error{color:#f33;font-size:13px;margin-top:10px;display:none}
 </style>
 </head>
 <body>
@@ -27,26 +29,38 @@ a{color:#aaa;text-decoration:none}
 <div class="wrap">
 <div class="pill">VIP PREMIUM</div>
 <div class="coin"><span>R</span></div>
-
-<button class="btn" onclick="window.location.href='app.html'">START PLAYING</button>
-
 <h1>RUPPY NETWORK</h1>
 
-<div class="card"><div class="ci">🎁</div><div><b>Collect Rewards</b><p>Collect 40 RUPPY every 3 hours</p></div></div>
-<div class="card"><div class="ci">👥</div><div><b>Invite Friends</b><p>Get 40 RUPPY bonus for each friend</p></div></div>
-<div class="card"><div class="ci">🎮</div><div><b>Daily Bonus</b><p>Login daily to collect bonus RUPPY</p></div></div>
+<div id="loginForm">
+  <div class="input-box">
+    <label>Email</label>
+    <input type="email" id="email" placeholder="Enter your email">
+  </div>
+  <div class="input-box">
+    <label>Password</label>
+    <input type="password" id="password" placeholder="Enter password">
+  </div>
+  <div class="error" id="errorMsg"></div>
+  <button class="btn" onclick="handleLogin()" id="loginBtn">LOGIN</button>
+  <div class="toggle">New user? <span onclick="showRegister()">Create Account</span></div>
+</div>
 
-<div style="margin-top:10px">
-  <input
-    type="email"
-    id="emailInput"
-    placeholder="Enter Email"
-    style="padding:12px;width:80%;max-width:260px;border-radius:24px;border:none;text-align:center;margin-bottom:10px"
-  >
-  <br>
-  <button onclick="handleLogin()" class="btn" id="actionBtn">
-    SEND OTP
-  </button>
+<div id="registerForm" style="display:none">
+  <div class="input-box">
+    <label>Email</label>
+    <input type="email" id="regEmail" placeholder="Enter your email">
+  </div>
+  <div class="input-box">
+    <label>Password</label>
+    <input type="password" id="regPassword" placeholder="Min 6 characters">
+  </div>
+  <div class="input-box">
+    <label>Confirm Password</label>
+    <input type="password" id="regConfirmPassword" placeholder="Re-enter password">
+  </div>
+  <div class="error" id="regErrorMsg"></div>
+  <button class="btn" onclick="handleRegister()" id="registerBtn">CREATE ACCOUNT</button>
+  <div class="toggle">Already have account? <span onclick="showLogin()">Login</span></div>
 </div>
 
 <div class="ft">
@@ -64,69 +78,135 @@ By continuing, you agree to our Terms & Privacy Policy.
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ2p1YnhmeGpha2dpY3VweXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzk4NTIsImV4cCI6MjA5MTIxNTg1Mn0.QST9mZ7uup-H-s9P6DznbOVO14kJTCgYIIZxyTP1T24';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  let step = "email";
+  // Check if already logged in
+  checkUser();
 
-  async function handleLogin(){
-    const btn = document.getElementById("actionBtn");
-    const input = document.getElementById("emailInput");
-    const email = input.value.trim();
-
-    if(step === "email"){
-      if(!email || !email.includes('@')){
-        alert("Enter valid email");
-        return;
-      }
-      
-      btn.innerText = "SENDING...";
-      btn.disabled = true;
-
-      const { error } = await supabase.auth.signInWithOtp({
-        email: email,
-        options: {
-          shouldCreateUser: true
-        }
-      });
-
-      btn.disabled = false;
-
-      if(error){
-        btn.innerText = "SEND OTP";
-        alert("Error: " + error.message);
-      }else{
-        alert("OTP Sent. Check your email inbox and spam folder");
-        input.value = "";
-        input.placeholder = "Enter 6 Digit OTP";
-        btn.innerText = "VERIFY OTP";
-        step = "otp";
-        window.savedEmail = email;
-      }
-    }else if(step === "otp"){
-      const otp = input.value.trim();
-      if(!otp || otp.length < 6){
-        alert("Enter valid OTP");
-        return;
-      }
-
-      btn.innerText = "VERIFYING...";
-      btn.disabled = true;
-
-      const { data, error } = await supabase.auth.verifyOtp({
-        email: window.savedEmail,
-        token: otp,
-        type: 'email'
-      });
-
-      btn.disabled = false;
-
-      if(error){
-        btn.innerText = "VERIFY OTP";
-        alert("Invalid OTP: " + error.message);
-      }else{
-        alert("Login Successful!");
-        console.log("User:", data.user);
-        window.location.href = "/app.html";
-      }
+  async function checkUser() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      // Already logged in - redirect to app
+      let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
+        name: session.user.email.split('@')[0],
+        balance: 0,
+        lastMine: 0,
+        lastGift: 0,
+        boostCount: 0,
+        boostResetTime: Date.now(),
+        team: [],
+        firstRewardTime: 0,
+        ultraRewardTime: 0
+      };
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
+      window.location.href = 'app.html';
     }
+  }
+
+  function showRegister() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+    document.getElementById('errorMsg').style.display = 'none';
+  }
+
+  function showLogin() {
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('regErrorMsg').style.display = 'none';
+  }
+
+  async function handleRegister() {
+    const email = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const confirmPassword = document.getElementById('regConfirmPassword').value;
+    const btn = document.getElementById('registerBtn');
+    const errorEl = document.getElementById('regErrorMsg');
+
+    errorEl.style.display = 'none';
+
+    if (!email ||!email.includes('@')) {
+      showError('regErrorMsg', 'Enter valid email');
+      return;
+    }
+    if (password.length < 6) {
+      showError('regErrorMsg', 'Password must be at least 6 characters');
+      return;
+    }
+    if (password!== confirmPassword) {
+      showError('regErrorMsg', 'Passwords do not match');
+      return;
+    }
+
+    btn.innerText = 'CREATING...';
+    btn.disabled = true;
+
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password
+    });
+
+    btn.disabled = false;
+    btn.innerText = 'CREATE ACCOUNT';
+
+    if (error) {
+      showError('regErrorMsg', error.message);
+    } else {
+      alert('Account Created! You can now login.');
+      showLogin();
+      document.getElementById('email').value = email;
+    }
+  }
+
+  async function handleLogin() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn = document.getElementById('loginBtn');
+    const errorEl = document.getElementById('errorMsg');
+
+    errorEl.style.display = 'none';
+
+    if (!email ||!email.includes('@')) {
+      showError('errorMsg', 'Enter valid email');
+      return;
+    }
+    if (!password) {
+      showError('errorMsg', 'Enter password');
+      return;
+    }
+
+    btn.innerText = 'LOGGING IN...';
+    btn.disabled = true;
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    btn.disabled = false;
+    btn.innerText = 'LOGIN';
+
+    if (error) {
+      showError('errorMsg', 'Invalid email or password');
+    } else {
+      // Save user data
+      let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
+        name: email.split('@')[0],
+        balance: 0,
+        lastMine: 0,
+        lastGift: 0,
+        boostCount: 0,
+        boostResetTime: Date.now(),
+        team: [],
+        firstRewardTime: 0,
+        ultraRewardTime: 0
+      };
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
+      window.location.href = 'app.html';
+    }
+  }
+
+  function showError(id, msg) {
+    const el = document.getElementById(id);
+    el.innerText = msg;
+    el.style.display = 'block';
   }
 </script>
 </body>
