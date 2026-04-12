@@ -33,7 +33,36 @@ p{color:#aaa;font-size:14px;margin-bottom:15px}
 <a href="index.html" class="btn">Back to Home</a>
 </div>
 
+<!-- Google Translate Hidden Element -->
+<div id="google_translate_element" style="display:none"></div>
+
 <!-- Monetag Multitag Script -->
 <script src="https://quge5.com/88/tag.min.js" data-zone="228902" async data-cfasync="false"></script>
+
+<!-- Google Translate Script -->
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    includedLanguages: 'hi,ar,es,fr,ur,de,id,pt,ru,tr,bn',
+    autoDisplay: false
+  }, 'google_translate_element');
+  
+  setTimeout(() => {
+    const savedLang = localStorage.getItem('ruppy_language_code');
+    if(savedLang && savedLang !== 'en') {
+      const select = document.querySelector('.goog-te-combo');
+      if(select) {
+        select.value = savedLang;
+        select.dispatchEvent(new Event('change'));
+      }
+    }
+  }, 1000);
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<!-- RUPPY TRANSLATE BAR KILLER -->
+<script src="translate-fix.js"></script>
 </body>
 </html>
