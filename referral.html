@@ -30,6 +30,11 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .nav-item.active::after{content:'';width:30px;height:2px;background:#FFA500;margin-top:2px}
 .nav-item.icon{font-size:20px}
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999}
+
+/* Google Translate Bar Hide ✅ */
+.goog-te-banner-frame{display:none!important}
+.goog-logo-link{display:none!important}
+body{top:0!important}
 </style>
 </head>
 <body>
@@ -39,7 +44,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   <h3>Team Rewards</h3>
   <div class="amt">
     <img src="logo.png" class="logo" alt="RUPPY">
-    <span id="teamReward">0</span> RUPPY
+    <span id="teamReward" class="notranslate">0</span> <span class="notranslate">RUPPY</span>
   </div>
   <div class="tag">+2% bonus from team</div>
 </div>
@@ -47,16 +52,16 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 <div class="inv">
   <label>YOUR INVITE CODE</label>
   <div class="inpbx">
-    <div class="inp" id="inviteCode">RUPPY786</div>
+    <div class="inp notranslate" id="inviteCode">RUPPY786</div>
     <div class="cp" onclick="copy()">⧉</div>
   </div>
   <button class="bt" onclick="invite()">✨ INVITE FRIENDS</button>
 </div>
 
 <div class="sts">
-  <div class="bx"><span class="v" id="totalCount">0</span><span class="l">TOTAL</span></div>
-  <div class="bx"><span class="v" id="activeCount" style="color:#0f0">0</span><span class="l">ACTIVE</span></div>
-  <div class="bx"><span class="v" id="inactiveCount" style="color:#f33">0</span><span class="l">INACTIVE</span></div>
+  <div class="bx"><span class="v notranslate" id="totalCount">0</span><span class="l">TOTAL</span></div>
+  <div class="bx"><span class="v notranslate" id="activeCount" style="color:#0f0">0</span><span class="l">ACTIVE</span></div>
+  <div class="bx"><span class="v notranslate" id="inactiveCount" style="color:#f33">0</span><span class="l">INACTIVE</span></div>
 </div>
 
 <div class="team">👥 My Team</div>
@@ -85,6 +90,30 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 </div>
 
 <div class="toast" id="toast">Copied!</div>
+
+<!-- Google Translate - World Language Support ✅ -->
+<div id="google_translate_element" style="display:none;"></div>
+<script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    autoDisplay: false
+  }, 'google_translate_element');
+
+  // Saved Language Auto Apply कर
+  const savedCode = localStorage.getItem('ruppy_language_code');
+  if(savedCode && savedCode !== 'en') {
+    setTimeout(() => {
+      const select = document.querySelector('.goog-te-combo');
+      if(select) {
+        select.value = savedCode;
+        select.dispatchEvent(new Event('change'));
+      }
+    }, 1000);
+  }
+}
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 <script>
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
