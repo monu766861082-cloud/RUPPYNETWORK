@@ -22,8 +22,11 @@
     if(refCode) localStorage.setItem('ruppy_referredBy', refCode);
   })();
 
+  let isProcessing = false;
+
   getRedirectResult(auth).then((result) => {
-    if (result && result.user) {
+    if (result && result.user &&!isProcessing) {
+      isProcessing = true;
       let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
         name: result.user.displayName || result.user.email.split('@')[0],
         balance: 0,
@@ -45,7 +48,8 @@
   });
 
   onAuthStateChanged(auth, (user) => {
-    if (user) {
+    if (user &&!isProcessing &&!window.location.href.includes('app.html')) {
+      isProcessing = true;
       window.location.href = 'app.html';
     }
   });
