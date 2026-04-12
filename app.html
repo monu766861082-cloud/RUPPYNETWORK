@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruppy Network - App</title>
   
-  <!-- Google AdSense - Replace ca-pub-XXXXXXXXXXXXXXXX with your Publisher ID -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
-  
   <style>
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
     body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
@@ -48,10 +45,6 @@
     .modal-content p {color:#888; font-size:13px; text-align:center; margin-bottom:15px;}
     .modal-content .boost-step {background:#000; border:1px solid #222; padding:15px; border-radius:8px; margin:10px 0;}
     .modal-content .boost-step h4 {color:#FFA500; margin-bottom:8px;}
-    .team-list {margin:15px 0; max-height:250px; overflow-y:auto;}
-    .team-member {padding:12px; background:#000; border:1px solid #222; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; font-size:14px;}
-    .team-member .online {width:8px; height:8px; background:#00ff00; border-radius:50%; animation:pulse 2s infinite;}
-    @keyframes pulse {0%,100%{opacity:1;} 50%{opacity:0.3;}}
     .btn {margin-top:10px; width:100%; padding:12px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:600; cursor:pointer;}
     .btn:disabled {background:#333; color:#666; cursor:not-allowed;}
     .close-btn {margin-top:8px; width:100%; padding:10px; background:#1a1a1a; border:1px solid #333; border-radius:8px; color:#888; cursor:pointer;}
@@ -101,15 +94,19 @@
       <p id="giftTimer">Ready → +15 RUPPY</p>
       <div class="timer-bar"><div class="timer-fill" id="giftBar"></div></div>
     </div>
-    <div class="grid-item" onclick="openTeam()">
-      <div class="icon">👥</div>
-      <h4 style="color:#fff;">Team</h4>
-      <p id="teamCount">0 Members</p>
+    <div class="grid-item" onclick="claimFirstReward()">
+      <div class="badge" id="firstRewardBadge" style="display:none;background:#00ff00;">READY</div>
+      <div class="icon">🎁</div>
+      <h4 style="color:#fff;">FIRST REWARD</h4>
+      <p id="firstRewardTimer">Next in 01:00:00</p>
+      <div class="timer-bar"><div class="timer-fill" id="firstRewardBar"></div></div>
     </div>
-    <div class="grid-item" onclick="openRewards()">
-      <div class="icon">💰</div>
-      <h4 style="color:#fff;">Rewards</h4>
-      <p>Check balance</p>
+    <div class="grid-item" onclick="claimUltraReward()">
+      <div class="badge" id="ultraRewardBadge" style="display:none;background:#00ff00;">READY</div>
+      <div class="icon">💎</div>
+      <h4 style="color:#fff;">ULTRA REWARD</h4>
+      <p id="ultraRewardTimer">Next in 01:00:00</p>
+      <div class="timer-bar"><div class="timer-fill" id="ultraRewardBar"></div></div>
     </div>
   </div>
 
@@ -124,15 +121,6 @@
       </div>
       <button class="btn" id="boostBtn" onclick="watchBoostAd()">Watch Ad for Bonus</button>
       <button class="close-btn" onclick="closeBoostModal()">Close</button>
-    </div>
-  </div>
-
-  <!-- Team Modal -->
-  <div class="modal" id="teamModal">
-    <div class="modal-content">
-      <h3>Your Team</h3>
-      <div class="team-list" id="teamList"></div>
-      <button class="btn" onclick="closeTeam()">Close</button>
     </div>
   </div>
 
@@ -170,11 +158,8 @@
     lastGift: 0,
     boostCount: 0,
     boostResetTime: Date.now(),
-    team: [
-      {name: 'Rahul Kumar', online: true},
-      {name: 'Priya Singh', online: true},
-      {name: 'Amit Sharma', online: false}
-    ]
+    firstRewardTime: 0,
+    ultraRewardTime: 0
   };
 
   userData.balance = Number(userData.balance) || 0;
@@ -182,6 +167,8 @@
   userData.lastGift = Number(userData.lastGift) || 0;
   userData.boostCount = Number(userData.boostCount) || 0;
   userData.boostResetTime = Number(userData.boostResetTime) || Date.now();
+  userData.firstRewardTime = Number(userData.firstRewardTime) || 0;
+  userData.ultraRewardTime = Number(userData.ultraRewardTime) || 0;
 
   function saveUser() {
     userData.balance = Number(userData.balance) || 0;
@@ -229,12 +216,15 @@
     updateMiningCircle();
     updateBoost();
     updateGift();
-    updateTeam();
+    updateFirstReward();
+    updateUltraReward();
     
     setInterval(function() {
       updateMiningCircle();
       updateBoost();
       updateGift();
+      updateFirstReward();
+      updateUltraReward();
     }, 1000);
   }
 
@@ -389,25 +379,66 @@
     alert('+15 RUPPY Added!');
   }
 
-  function updateTeam() {
-    document.getElementById('teamCount').innerText = userData.team.length + ' Members';
+  function updateFirstReward() {
+    let now = Date.now();
+    let diff = userData.firstRewardTime - now;
+    
+    if(diff <= 0 || userData.firstRewardTime === 0){
+      document.getElementById('firstRewardTimer').innerText = 'Claim 20 RUPPY';
+      document.getElementById('firstRewardBadge').style.display = 'block';
+      document.getElementById('firstRewardBar').style.width = '100%';
+    } else {
+      let h = Math.floor(diff/3600000);
+      let m = Math.floor((diff%3600000)/60000);
+      let s = Math.floor((diff%60000)/1000);
+      document.getElementById('firstRewardTimer').innerText = 'Next in ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      document.getElementById('firstRewardBadge').style.display = 'none';
+      let progress = ((3600000 - diff) / 3600000) * 100;
+      document.getElementById('firstRewardBar').style.width = progress + '%';
+    }
   }
 
-  function openTeam() {
-    let list = document.getElementById('teamList');
-    list.innerHTML = '';
-    userData.team.forEach(function(member) {
-      list.innerHTML += '<div class="team-member"><span>' + member.name + '</span>' + (member.online ? '<div class="online"></div>' : '<span style="font-size:11px;color:#666">Offline</span>') + '</div>';
-    });
-    document.getElementById('teamModal').classList.add('active');
+  function claimFirstReward(){
+    if(Date.now() >= userData.firstRewardTime || userData.firstRewardTime === 0){
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += 20;
+      userData.firstRewardTime = Date.now() + 3600000;
+      saveUser();
+      updateBalance();
+      updateFirstReward();
+      alert('You earned 20 RUPPY!');
+    }
   }
 
-  function closeTeam() {
-    document.getElementById('teamModal').classList.remove('active');
+  function updateUltraReward() {
+    let now = Date.now();
+    let diff = userData.ultraRewardTime - now;
+    
+    if(diff <= 0 || userData.ultraRewardTime === 0){
+      document.getElementById('ultraRewardTimer').innerText = 'Claim 50 RUPPY';
+      document.getElementById('ultraRewardBadge').style.display = 'block';
+      document.getElementById('ultraRewardBar').style.width = '100%';
+    } else {
+      let h = Math.floor(diff/3600000);
+      let m = Math.floor((diff%3600000)/60000);
+      let s = Math.floor((diff%60000)/1000);
+      document.getElementById('ultraRewardTimer').innerText = 'Next in ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      document.getElementById('ultraRewardBadge').style.display = 'none';
+      let progress = ((3600000 - diff) / 3600000) * 100;
+      document.getElementById('ultraRewardBar').style.width = progress + '%';
+    }
   }
 
-  function openRewards() {
-    alert('Your Rewards Balance: ' + userData.balance + ' RUPPY');
+  function claimUltraReward(){
+    if(Date.now() >= userData.ultraRewardTime || userData.ultraRewardTime === 0){
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += 50;
+      userData.ultraRewardTime = Date.now() + 3600000;
+      saveUser();
+      updateBalance();
+      updateUltraReward();
+      alert('You earned 50 RUPPY!');
+    }
   }
 
   function navClick(page) {
