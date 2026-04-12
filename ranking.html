@@ -71,21 +71,19 @@ h3 span{display:block;color:var(--gold)}
 <div class="badge" id="userRank">#0</div>
 <div>
 <div class="name"><img src="logo.png" class="logo" onerror="this.style.display='none'"><span id="userName">You</span></div>
-<div class="reward">Reward: <span id="userReward">0 RUPPY TOKEN</span></div>
+<div class="reward">Reward: <span id="userReward">0 RUPPY</span></div>
 <div class="u-sub" id="userId">ID: Loading...</div>
 </div>
-</div>
 <div class="points"><div>Points</div><strong id="userPoints">0</strong></div>
-</div>
 </div>
 
 <div class="token-chart">
 <h4>🏆 RANKING REWARDS</h4>
-<div class="token-row"><span>Rank 1</span><strong>1000 TOKEN</strong></div>
-<div class="token-row"><span>Rank 2 - 10</span><strong>800 TOKEN</strong></div>
-<div class="token-row"><span>Rank 11 - 50</span><strong>600 TOKEN</strong></div>
-<div class="token-row"><span>Rank 51 - 100</span><strong>500 TOKEN</strong></div>
-<div class="token-row"><span>Rank 101 - 500</span><strong>300 TOKEN</strong></div>
+<div class="token-row"><span>Rank 1</span><strong>1000 RUPPY</strong></div>
+<div class="token-row"><span>Rank 2 - 10</span><strong>800 RUPPY</strong></div>
+<div class="token-row"><span>Rank 11 - 50</span><strong>600 RUPPY</strong></div>
+<div class="token-row"><span>Rank 51 - 100</span><strong>500 RUPPY</strong></div>
+<div class="token-row"><span>Rank 101 - 500</span><strong>300 RUPPY</strong></div>
 </div>
 
 <div class="timer-box">
@@ -108,9 +106,7 @@ h3 span{display:block;color:var(--gold)}
 <div class="name">WEEKLY CLAIM REWARD</div>
 <div class="reward" id="claimText">Claim your weekly rank reward!</div>
 </div>
-</div>
 <div class="claim" id="claimBtn" onclick="claimReward()">CLAIM</div>
-</div>
 </div>
 
 <div class="tbl">
@@ -275,11 +271,11 @@ if(userPoints > 0 && posEl){
   document.getElementById('userName').innerText = userName;
   document.getElementById('userId').innerText = 'ID: ' + userData.id;
   document.getElementById('userPoints').innerText = userPoints;
-  document.getElementById('userReward').innerText = userReward + ' RUPPY TOKEN';
+  document.getElementById('userReward').innerText = userReward + ' RUPPY';
   
   if(userReward > 0 && claimCardEl){
     claimCardEl.style.display = 'block';
-    document.getElementById('claimText').innerHTML = `Rank #${userRank} Reward: <span style="color:var(--gold)">${userReward} RUPPY TOKEN</span>`;
+    document.getElementById('claimText').innerHTML = `Rank #${userRank} Reward: <span style="color:var(--gold)">${userReward} RUPPY</span>`;
     
     let claimBtnEl = document.getElementById('claimBtn');
     if(userData.lastClaimWeek === currentWeek){
@@ -346,12 +342,12 @@ function claimReward(){
   userData.lastClaimWeek = currentWeek;
   localStorage.setItem('ruppy_user', JSON.stringify(userData));
   localStorage.setItem('ruppy_user_' + userData.id, JSON.stringify(userData));
-  showToast(userReward + ' RUPPY TOKEN Claimed!');
+  showToast(userReward + ' RUPPY Claimed!');
   setTimeout(() => location.reload(), 1000);
 }
 
 function shareRefer(){
-  let text = `Join RUPPY Network & earn RUPPY TOKEN! Use my code: ${inviteCode}`;
+  let text = `Join RUPPY Network & start playing! 💰\nUse my code: ${inviteCode}`;
   let url = `https://ruppynetwork.vercel.app?ref=${inviteCode}`;
   
   if(navigator.share){
