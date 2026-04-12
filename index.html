@@ -87,7 +87,7 @@ By continuing, you agree to our Terms & Privacy Policy.
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
-  import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
+  import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
 
   const firebaseConfig = {
     apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
@@ -109,10 +109,12 @@ By continuing, you agree to our Terms & Privacy Policy.
     if(refCode) localStorage.setItem('ruppy_referredBy', refCode);
   })();
 
-  getRedirectResult(auth).then((result) => {
-    if (result && result.user) {
+  let redirected = false;
+  onAuthStateChanged(auth, (user) => {
+    if (user &&!redirected) {
+      redirected = true;
       let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
-        name: result.user.displayName || result.user.email.split('@')[0],
+        name: user.displayName || user.email.split('@')[0],
         balance: 0,
         lastMine: 0,
         lastGift: 0,
@@ -125,17 +127,19 @@ By continuing, you agree to our Terms & Privacy Policy.
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
       window.location.replace('app.html');
     }
-  }).catch((error) => {
-    console.log(error);
-    document.getElementById('googleBtn').innerHTML = '<img src="https://www.google.com/favicon.ico" alt="Google"> Continue with Google';
-    document.getElementById('googleBtn').disabled = false;
   });
 
   window.handleGoogleLogin = async function() {
     const btn = document.getElementById('googleBtn');
-    btn.innerText = 'Redirecting...';
+    btn.innerText = 'Opening Google...';
     btn.disabled = true;
-    signInWithRedirect(auth, googleProvider);
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (error) {
+      showError('errorMsg', 'Google login failed');
+      btn.innerHTML = '<img src="https://www.google.com/favicon.ico" alt="Google"> Continue with Google';
+      btn.disabled = false;
+    }
   }
 
   window.showRegister = function() {
@@ -165,7 +169,6 @@ By continuing, you agree to our Terms & Privacy Policy.
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      window.location.replace('app.html');
     } catch (error) {
       showError('regErrorMsg', error.message);
       btn.disabled = false;
@@ -186,7 +189,6 @@ By continuing, you agree to our Terms & Privacy Policy.
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      window.location.replace('app.html');
     } catch (error) {
       showError('errorMsg', 'Invalid email or password');
       btn.disabled = false;
