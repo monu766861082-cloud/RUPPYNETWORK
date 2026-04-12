@@ -20,17 +20,22 @@ h1{color:#f9a825;margin:12px 0 20px}
 .ci{width:38px;height:38px;background:#1e1e1e;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:20px}
 .ft{font-size:11px;color:#666;margin-top:20px}
 a{color:#aaa;text-decoration:none}
+
+/* Google Translate Bar Hide ✅ */
+.goog-te-banner-frame{display:none!important}
+.goog-logo-link{display:none!important}
+body{top:0!important}
 </style>
 </head>
 <body>
 
 <div class="wrap">
-<div class="pill">VIP PREMIUM</div>
-<div class="coin"><span>R</span></div>
+<div class="pill notranslate">VIP PREMIUM</div>
+<div class="coin"><span class="notranslate">R</span></div>
 
 <button class="btn" onclick="window.location.href='app.html'">START PLAYING</button>
 
-<h1>RUPPY NETWORK</h1>
+<h1 class="notranslate">RUPPY NETWORK</h1>
 
 <div class="card"><div class="ci">🎁</div><div><b>Collect Rewards</b><p>Collect 40 RUPPY every 3 hours</p></div></div>
 <div class="card"><div class="ci">👥</div><div><b>Invite Friends</b><p>Get 40 RUPPY bonus for each friend</p></div></div>
@@ -57,6 +62,30 @@ a{color:#aaa;text-decoration:none}
 By continuing, you agree to our Terms & Privacy Policy.
 </div>
 </div>
+
+<!-- Google Translate - World Language Support ✅ -->
+<div id="google_translate_element" style="display:none;"></div>
+<script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    autoDisplay: false
+  }, 'google_translate_element');
+
+  // Saved Language Auto Apply कर
+  const savedCode = localStorage.getItem('ruppy_language_code');
+  if(savedCode && savedCode !== 'en') {
+    setTimeout(() => {
+      const select = document.querySelector('.goog-te-combo');
+      if(select) {
+        select.value = savedCode;
+        select.dispatchEvent(new Event('change'));
+      }
+    }, 1000);
+  }
+}
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
