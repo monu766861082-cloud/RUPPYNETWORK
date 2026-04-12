@@ -58,11 +58,6 @@
     .nav-item.active {color:#FFA500;}
     .nav-item.active::after {content:''; width:30px; height:2px; background:#FFA500; margin-top:2px;}
     .nav-item .icon {font-size:20px;}
-
-    /* Google Translate Bar Hide ✅ */
-    .goog-te-banner-frame{display:none!important}
-    .goog-logo-link{display:none!important}
-    body{top:0!important}
   </style>
   
 </head>
@@ -162,10 +157,10 @@
 function googleTranslateElementInit() {
   new google.translate.TranslateElement({
     pageLanguage: 'en',
+    includedLanguages: 'hi,ar,es,fr,ur,de,id,pt,ru,tr,bn',
     autoDisplay: false
   }, 'google_translate_element');
 
-  // Saved Language Auto Apply कर
   const savedCode = localStorage.getItem('ruppy_language_code');
   if(savedCode && savedCode !== 'en') {
     setTimeout(() => {
@@ -484,5 +479,7 @@ function googleTranslateElementInit() {
   init();
 </script>
 
+<!-- RUPPY TRANSLATE BAR KILLER ✅ -->
+<script src="translate-fix.js"></script>
 </body>
 </html>
