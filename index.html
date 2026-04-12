@@ -17,12 +17,6 @@ h1{color:#f9a825;margin:12px 0 20px;font-size:28px}
 .input-box input:focus{outline:none;border-color:#f9a825}
 .btn{margin:18px auto;padding:12px 24px;background:#f9a825;color:#000;border:none;border-radius:24px;font-weight:bold;width:100%;cursor:pointer;font-size:15px}
 .btn:disabled{background:#333;color:#666;cursor:not-allowed}
-.btn-google{background:#fff;color:#000;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:0}
-.btn-google img{width:20px;height:20px}
-.divider{color:#666;font-size:12px;margin:20px 0;position:relative}
-.divider::before,.divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:#333}
-.divider::before{left:0}
-.divider::after{right:0}
 .toggle{color:#aaa;font-size:13px;margin-top:15px;cursor:pointer}
 .toggle span{color:#f9a825;text-decoration:underline}
 .ft{font-size:11px;color:#666;margin-top:25px}
@@ -36,13 +30,6 @@ a{color:#aaa;text-decoration:none}
 <div class="pill">VIP PREMIUM</div>
 <div class="coin"><img src="cropped_circle_image.png" alt="Ruppy Logo"></div>
 <h1>RUPPY NETWORK</h1>
-
-<button class="btn btn-google" onclick="handleGoogleLogin()" id="googleBtn">
-  <img src="https://www.google.com/favicon.ico" alt="Google">
-  Continue with Google
-</button>
-
-<div class="divider">OR</div>
 
 <div id="loginForm">
   <div class="input-box">
@@ -87,7 +74,7 @@ By continuing, you agree to our Terms & Privacy Policy.
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
-  import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
 
   const firebaseConfig = {
     apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
@@ -101,46 +88,12 @@ By continuing, you agree to our Terms & Privacy Policy.
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const googleProvider = new GoogleAuthProvider();
 
   (function() {
     const urlParams = new URLSearchParams(window.location.search);
     const refCode = urlParams.get('ref');
     if(refCode) localStorage.setItem('ruppy_referredBy', refCode);
   })();
-
-  let redirected = false;
-  onAuthStateChanged(auth, (user) => {
-    if (user &&!redirected) {
-      redirected = true;
-      let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
-        name: user.displayName || user.email.split('@')[0],
-        balance: 0,
-        lastMine: 0,
-        lastGift: 0,
-        boostCount: 0,
-        boostResetTime: Date.now(),
-        team: [],
-        firstRewardTime: 0,
-        ultraRewardTime: 0
-      };
-      localStorage.setItem('ruppy_user', JSON.stringify(userData));
-      window.location.replace('app.html');
-    }
-  });
-
-  window.handleGoogleLogin = async function() {
-    const btn = document.getElementById('googleBtn');
-    btn.innerText = 'Opening Google...';
-    btn.disabled = true;
-    try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (error) {
-      showError('errorMsg', 'Google login failed');
-      btn.innerHTML = '<img src="https://www.google.com/favicon.ico" alt="Google"> Continue with Google';
-      btn.disabled = false;
-    }
-  }
 
   window.showRegister = function() {
     document.getElementById('loginForm').style.display = 'none';
@@ -169,6 +122,19 @@ By continuing, you agree to our Terms & Privacy Policy.
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
+      let userData = {
+        name: email.split('@')[0],
+        balance: 0,
+        lastMine: 0,
+        lastGift: 0,
+        boostCount: 0,
+        boostResetTime: Date.now(),
+        team: [],
+        firstRewardTime: 0,
+        ultraRewardTime: 0
+      };
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
+      window.location.replace('app.html');
     } catch (error) {
       showError('regErrorMsg', error.message);
       btn.disabled = false;
@@ -189,6 +155,19 @@ By continuing, you agree to our Terms & Privacy Policy.
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
+        name: email.split('@')[0],
+        balance: 0,
+        lastMine: 0,
+        lastGift: 0,
+        boostCount: 0,
+        boostResetTime: Date.now(),
+        team: [],
+        firstRewardTime: 0,
+        ultraRewardTime: 0
+      };
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
+      window.location.replace('app.html');
     } catch (error) {
       showError('errorMsg', 'Invalid email or password');
       btn.disabled = false;
