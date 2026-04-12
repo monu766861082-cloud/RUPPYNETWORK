@@ -23,18 +23,12 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .bx .v{font-size:24px;font-weight:bold}.bx .l{display:block;margin-top:4px;color:#aaa}
 .team{padding:0 16px;font-size:18px;font-weight:bold;color:#d4a017}
 
-/* SAME NAV CSS FROM APP.HTML */
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 15px}
 .nav-item.active{color:#FFA500}
 .nav-item.active::after{content:'';width:30px;height:2px;background:#FFA500;margin-top:2px}
 .nav-item.icon{font-size:20px}
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999}
-
-/* Google Translate Bar Hide ✅ */
-.goog-te-banner-frame{display:none!important}
-.goog-logo-link{display:none!important}
-body{top:0!important}
 </style>
 </head>
 <body>
@@ -91,16 +85,16 @@ body{top:0!important}
 
 <div class="toast" id="toast">Copied!</div>
 
-<!-- Google Translate - World Language Support ✅ -->
+<!-- Google Translate - World Language Support -->
 <div id="google_translate_element" style="display:none;"></div>
 <script>
 function googleTranslateElementInit() {
   new google.translate.TranslateElement({
     pageLanguage: 'en',
+    includedLanguages: 'hi,ar,es,fr,ur,de,id,pt,ru,tr,bn',
     autoDisplay: false
   }, 'google_translate_element');
 
-  // Saved Language Auto Apply कर
   const savedCode = localStorage.getItem('ruppy_language_code');
   if(savedCode && savedCode !== 'en') {
     setTimeout(() => {
@@ -128,7 +122,6 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   teamRewardEarned: 0
 };
 
-// 1. UNIQUE INVITE CODE GENERATE
 let inviteCode = 'RUPPY' + userData.name.substring(0,3).toUpperCase() + Math.floor(Math.random()*900+100);
 if(!localStorage.getItem('ruppy_inviteCode')){
   localStorage.setItem('ruppy_inviteCode', inviteCode);
@@ -137,7 +130,6 @@ if(!localStorage.getItem('ruppy_inviteCode')){
 }
 document.getElementById('inviteCode').innerText = inviteCode;
 
-// 2. TEAM STATS CALCULATE - 24 HOUR LOGIC
 let team = userData.team || [];
 let now = Date.now();
 let oneDay = 24*60*60*1000;
@@ -146,7 +138,6 @@ let total = team.length;
 let active = team.filter(t => now - t.lastMine < oneDay).length;
 let inactive = total - active;
 
-// 3. TEAM REWARDS = 2% OF REFERRALS COLLECTION IN LAST 24H
 let teamCollected24h = team.reduce((sum, t) => {
   if(now - t.lastMine < oneDay) return sum + (t.lastMinedAmount || 0);
   return sum;
@@ -154,7 +145,6 @@ let teamCollected24h = team.reduce((sum, t) => {
 
 let newTeamReward = Math.floor(teamCollected24h * 0.02);
 
-// Check if 24h passed since last reward check
 if(now - userData.lastTeamRewardCheck > oneDay){
   userData.balance += newTeamReward;
   userData.lastTeamRewardCheck = now;
@@ -162,7 +152,6 @@ if(now - userData.lastTeamRewardCheck > oneDay){
   localStorage.setItem('ruppy_user', JSON.stringify(userData));
 }
 
-// Display current pending + earned
 document.getElementById('teamReward').innerText = userData.teamRewardEarned || 0;
 document.getElementById('totalCount').innerText = total;
 document.getElementById('activeCount').innerText = active;
@@ -203,5 +192,8 @@ window.addEventListener('storage', function(e){
   if(e.key === 'ruppy_user') location.reload();
 });
 </script>
+
+<!-- RUPPY TRANSLATE BAR KILLER -->
+<script src="translate-fix.js"></script>
 </body>
 </html>
