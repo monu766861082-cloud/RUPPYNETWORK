@@ -165,7 +165,10 @@
     ultraRewardTime: 0
   };
 
-  userData.balance = Number(userData.balance) || 0;
+  // Safe conversion - अगर NaN है तो 0 कर दो, वरना रहने दो
+  userData.balance = Number(userData.balance);
+  if (isNaN(userData.balance)) userData.balance = 0;
+  
   userData.lastMine = Number(userData.lastMine) || 0;
   userData.lastGift = Number(userData.lastGift) || 0;
   userData.boostCount = Number(userData.boostCount) || 0;
@@ -173,8 +176,10 @@
   userData.firstRewardTime = Number(userData.firstRewardTime) || 0;
   userData.ultraRewardTime = Number(userData.ultraRewardTime) || 0;
 
-  // FIXED: अब Balance नहीं उड़ेगा
+  // FIXED: अब Balance नहीं उड़ेगा + Button भी चलेंगे
   function saveUser() {
+    userData.balance = Number(userData.balance);
+    if (isNaN(userData.balance)) userData.balance = 0;
     localStorage.setItem('ruppy_user', JSON.stringify(userData));
   }
 
@@ -420,4 +425,38 @@
     if(diff <= 0 || userData.ultraRewardTime === 0){
       document.getElementById('ultraRewardTimer').innerText = 'Claim 50 RUPPY';
       document.getElementById('ultraRewardBadge').style.display = 'block';
-      document.getElementById('ultraRewardBar').style.width =
+      document.getElementById('ultraRewardBar').style.width = '100%';
+    } else {
+      let h = Math.floor(diff/3600000);
+      let m = Math.floor((diff%3600000)/60000);
+      let s = Math.floor((diff%60000)/1000);
+      document.getElementById('ultraRewardTimer').innerText = 'Next in ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      document.getElementById('ultraRewardBadge').style.display = 'none';
+      let progress = ((3600000 - diff) / 3600000) * 100;
+      document.getElementById('ultraRewardBar').style.width = progress + '%';
+    }
+  }
+
+  function claimUltraReward(){
+    if(Date.now() >= userData.ultraRewardTime || userData.ultraRewardTime === 0){
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += 50;
+      userData.ultraRewardTime = Date.now() + 3600000;
+      saveUser();
+      updateBalance();
+      updateUltraReward();
+      alert('You earned 50 RUPPY!');
+    }
+  }
+
+  function navClick(page) {
+    if(page === 'tasks') window.location.href = 'tasks.html';
+    if(page === 'referral') window.location.href = 'referral.html';
+    if(page === 'ranking') window.location.href = 'ranking.html';
+    if(page === 'settings') window.location.href = 'settings.html';
+  }
+
+  init();
+</script>
+</body>
+</html>
