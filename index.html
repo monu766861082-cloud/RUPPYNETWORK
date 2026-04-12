@@ -89,7 +89,7 @@ By continuing, you agree to our Terms & Privacy Policy.
 <!-- FIREBASE + GOOGLE LOGIN CODE 👇 -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
-  import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
+  import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
 
   const firebaseConfig = {
     apiKey: "AIzaSyDNonk4PSsktmWS_33Vo5X3V1pHq15jK3A",
@@ -111,6 +111,13 @@ By continuing, you agree to our Terms & Privacy Policy.
     if(refCode) localStorage.setItem('ruppy_referredBy', refCode);
   })();
 
+  // REDIRECT से वापस आने पे Result Check कर 👇
+  getRedirectResult(auth).catch((error) => {
+    showError('errorMsg', 'Google login failed. Try again');
+    document.getElementById('googleBtn').innerHTML = '<img src="https://www.google.com/favicon.ico" alt="Google"> Continue with Google';
+    document.getElementById('googleBtn').disabled = false;
+  });
+
   // User Login है तो App पे भेजो
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -130,20 +137,12 @@ By continuing, you agree to our Terms & Privacy Policy.
     }
   });
 
-  // GOOGLE LOGIN - YAHI WALA SYSTEM CHAHIYE TUJHE 👇
+  // GOOGLE LOGIN - MOBILE FIX 👇
   window.handleGoogleLogin = async function() {
     const btn = document.getElementById('googleBtn');
-    btn.innerText = 'Opening Google...';
+    btn.innerText = 'Redirecting...';
     btn.disabled = true;
-
-    try {
-      await signInWithPopup(auth, googleProvider);
-      // Login Success = Auto Redirect ho jayega upar wale onAuthStateChanged से
-    } catch (error) {
-      showError('errorMsg', 'Google login failed. Try again');
-      btn.innerHTML = '<img src="https://www.google.com/favicon.ico" alt="Google"> Continue with Google';
-      btn.disabled = false;
-    }
+    signInWithRedirect(auth, googleProvider);
   }
 
   window.showRegister = function() {
