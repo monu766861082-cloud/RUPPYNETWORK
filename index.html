@@ -25,12 +25,12 @@ a{color:#aaa;text-decoration:none}
 <body>
 
 <div class="wrap">
-<div class="pill notranslate">VIP PREMIUM</div>
-<div class="coin"><span class="notranslate">R</span></div>
+<div class="pill">VIP PREMIUM</div>
+<div class="coin"><span>R</span></div>
 
 <button class="btn" onclick="window.location.href='app.html'">START PLAYING</button>
 
-<h1 class="notranslate">RUPPY NETWORK</h1>
+<h1>RUPPY NETWORK</h1>
 
 <div class="card"><div class="ci">🎁</div><div><b>Collect Rewards</b><p>Collect 40 RUPPY every 3 hours</p></div></div>
 <div class="card"><div class="ci">👥</div><div><b>Invite Friends</b><p>Get 40 RUPPY bonus for each friend</p></div></div>
@@ -57,30 +57,6 @@ a{color:#aaa;text-decoration:none}
 By continuing, you agree to our Terms & Privacy Policy.
 </div>
 </div>
-
-<!-- Google Translate - World Language Support -->
-<div id="google_translate_element" style="display:none;"></div>
-<script>
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({
-    pageLanguage: 'en',
-    includedLanguages: 'hi,ar,es,fr,ur,de,id,pt,ru,tr,bn',
-    autoDisplay: false
-  }, 'google_translate_element');
-
-  const savedCode = localStorage.getItem('ruppy_language_code');
-  if(savedCode && savedCode !== 'en') {
-    setTimeout(() => {
-      const select = document.querySelector('.goog-te-combo');
-      if(select) {
-        select.value = savedCode;
-        select.dispatchEvent(new Event('change'));
-      }
-    }, 1000);
-  }
-}
-</script>
-<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
@@ -153,8 +129,5 @@ function googleTranslateElementInit() {
     }
   }
 </script>
-
-<!-- RUPPY TRANSLATE BAR KILLER -->
-<script src="translate-fix.js"></script>
 </body>
 </html>
