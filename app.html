@@ -45,6 +45,10 @@
     .modal-content p {color:#888; font-size:13px; text-align:center; margin-bottom:15px;}
     .modal-content .boost-step {background:#000; border:1px solid #222; padding:15px; border-radius:8px; margin:10px 0;}
     .modal-content .boost-step h4 {color:#FFA500; margin-bottom:8px;}
+    .team-list {margin:15px 0; max-height:250px; overflow-y:auto;}
+    .team-member {padding:12px; background:#000; border:1px solid #222; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; font-size:14px;}
+    .team-member .online {width:8px; height:8px; background:#00ff00; border-radius:50%; animation:pulse 2s infinite;}
+    @keyframes pulse {0%,100%{opacity:1;} 50%{opacity:0.3;}}
     .btn {margin-top:10px; width:100%; padding:12px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:600; cursor:pointer;}
     .btn:disabled {background:#333; color:#666; cursor:not-allowed;}
     .close-btn {margin-top:8px; width:100%; padding:10px; background:#1a1a1a; border:1px solid #333; border-radius:8px; color:#888; cursor:pointer;}
@@ -345,4 +349,111 @@
     
     if(diff >= cooldown || lastGift === 0) {
       document.getElementById('giftTimer').innerText = 'Ready → +15 RUPPY';
-      document.getElementBy
+      document.getElementById('giftBadge').innerText = '✓';
+      document.getElementById('giftBadge').style.background = '#00ff00';
+      document.getElementById('giftBar').style.width = '100%';
+    } else {
+      let remaining = cooldown - diff;
+      let hrs = Math.floor(remaining / 3600000);
+      let mins = Math.floor((remaining % 3600000) / 60000);
+      let secs = Math.floor((remaining % 60000) / 1000);
+      document.getElementById('giftTimer').innerText = 'Next in ' + String(hrs).padStart(2,'0') + ':' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
+      document.getElementById('giftBadge').innerText = '⏱';
+      document.getElementById('giftBadge').style.background = '#666';
+      
+      let percent = ((cooldown - remaining) / cooldown) * 100;
+      document.getElementById('giftBar').style.width = percent + '%';
+    }
+  }
+
+  function openGift() {
+    let now = Date.now();
+    let lastGift = Number(userData.lastGift) || 0;
+    if(now - lastGift < 7200000 && lastGift !== 0) {
+      alert('Please wait. Come back after 2 hours.');
+      return;
+    }
+    
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += 15;
+    userData.lastGift = now;
+    saveUser();
+    updateBalance();
+    updateGift();
+    alert('+15 RUPPY Added!');
+  }
+
+  function updateFirstReward() {
+    let now = Date.now();
+    let diff = userData.firstRewardTime - now;
+    
+    if(diff <= 0 || userData.firstRewardTime === 0){
+      document.getElementById('firstRewardTimer').innerText = 'Claim 20 RUPPY';
+      document.getElementById('firstRewardBadge').style.display = 'block';
+      document.getElementById('firstRewardBar').style.width = '100%';
+    } else {
+      let h = Math.floor(diff/3600000);
+      let m = Math.floor((diff%3600000)/60000);
+      let s = Math.floor((diff%60000)/1000);
+      document.getElementById('firstRewardTimer').innerText = 'Next in ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      document.getElementById('firstRewardBadge').style.display = 'none';
+      let progress = ((3600000 - diff) / 3600000) * 100;
+      document.getElementById('firstRewardBar').style.width = progress + '%';
+    }
+  }
+
+  function claimFirstReward(){
+    if(Date.now() >= userData.firstRewardTime || userData.firstRewardTime === 0){
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += 20;
+      userData.firstRewardTime = Date.now() + 3600000;
+      saveUser();
+      updateBalance();
+      updateFirstReward();
+      alert('You earned 20 RUPPY!');
+    }
+  }
+
+  function updateUltraReward() {
+    let now = Date.now();
+    let diff = userData.ultraRewardTime - now;
+    
+    if(diff <= 0 || userData.ultraRewardTime === 0){
+      document.getElementById('ultraRewardTimer').innerText = 'Claim 50 RUPPY';
+      document.getElementById('ultraRewardBadge').style.display = 'block';
+      document.getElementById('ultraRewardBar').style.width = '100%';
+    } else {
+      let h = Math.floor(diff/3600000);
+      let m = Math.floor((diff%3600000)/60000);
+      let s = Math.floor((diff%60000)/1000);
+      document.getElementById('ultraRewardTimer').innerText = 'Next in ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      document.getElementById('ultraRewardBadge').style.display = 'none';
+      let progress = ((3600000 - diff) / 3600000) * 100;
+      document.getElementById('ultraRewardBar').style.width = progress + '%';
+    }
+  }
+
+  function claimUltraReward(){
+    if(Date.now() >= userData.ultraRewardTime || userData.ultraRewardTime === 0){
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += 50;
+      userData.ultraRewardTime = Date.now() + 3600000;
+      saveUser();
+      updateBalance();
+      updateUltraReward();
+      alert('You earned 50 RUPPY!');
+    }
+  }
+
+  function navClick(page) {
+    if(page === 'tasks') window.location.href = 'tasks.html';
+    if(page === 'referral') window.location.href = 'referral.html';
+    if(page === 'ranking') window.location.href = 'ranking.html';
+    if(page === 'settings') window.location.href = 'settings.html';
+  }
+
+  init();
+</script>
+
+</body>
+</html>
