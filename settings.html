@@ -132,7 +132,13 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   </div>
 </div>
 
+<!-- Supabase Script Added -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
+  const SUPABASE_URL = 'https://scgjubxfxjakgicupyuo.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ2p1YnhmeGpha2dpY3VweXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzk4NTIsImV4cCI6MjA5MTIxNTg1Mn0.QST9mZ7uup-H-s9P6DznbOVO14kJTCgYIIZxyTP1T24';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   name: 'Guest',
   id: 'RUPPY000000',
@@ -190,11 +196,18 @@ function saveProfile(){
   }
 }
 
-function logout(){
+// LOGOUT FUNCTION FIXED - अब Main Screen पे जाएगा
+async function logout(){
   if(confirm('Are you sure you want to logout?')){
+    // 1. Supabase Session Clear करो
+    await supabase.auth.signOut();
+
+    // 2. LocalStorage Clear करो
     localStorage.removeItem('ruppy_user');
     localStorage.removeItem('notif_enabled');
-    window.location.href = 'login.html';
+
+    // 3. Main Screen पे भेज दो - / यूज़ करो, index.html नहीं
+    window.location.href = '/';
   }
 }
 
