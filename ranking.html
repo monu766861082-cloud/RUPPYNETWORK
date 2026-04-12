@@ -31,6 +31,7 @@
     .campaign-card p {color:#666; font-size:12px; margin:10px 0 15px; line-height:1.5;}
     .btn-refer {width:100%; padding:14px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:700; font-size:14px; cursor:pointer;}
     .btn-refer:active {transform:scale(0.98);}
+    .btn-refer:disabled {opacity:0.6;}
     
     .reward-structure {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
     .reward-structure h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
@@ -137,16 +138,52 @@
     document.getElementById('userRank').innerText = rank;
   }
 
-  function handleReferNow() {
+  async function handleReferNow() {
+    const btn = document.querySelector('.btn-refer');
+    btn.disabled = true;
+    
     let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {name: 'User', referralCount: 0, balance: 0};
     
-    userData.referralCount = (userData.referralCount || 0) + 1;
-    userData.balance = (userData.balance || 0) + 50;
-    
-    localStorage.setItem('ruppy_user', JSON.stringify(userData));
-    
-    alert('Link Shared! +50 RUPPY Bonus Added. +10 Leaderboard Points');
-    loadUserPosition();
+    const shareData = {
+      title: 'Ruppy Network',
+      text: 'Join Ruppy Network and earn free RUPPY tokens! Use my referral link:',
+      url: 'https://ruppynetwork.vercel.app?ref=' + userData.name.replace(/\s+/g, '')
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        
+        userData.referralCount = (userData.referralCount || 0) + 1;
+        userData.balance = (userData.balance || 0) + 50;
+        localStorage.setItem('ruppy_user', JSON.stringify(userData));
+        
+        loadUserPosition();
+        
+        btn.innerText = 'SUCCESS! +50 RUPPY';
+        setTimeout(() => { 
+          btn.innerText = 'REFER NOW';
+          btn.disabled = false;
+        }, 2000);
+        
+      } else {
+        await navigator.clipboard.writeText(shareData.url);
+        
+        userData.referralCount = (userData.referralCount || 0) + 1;
+        userData.balance = (userData.balance || 0) + 50;
+        localStorage.setItem('ruppy_user', JSON.stringify(userData));
+        
+        loadUserPosition();
+        
+        btn.innerText = 'LINK COPIED! +50 RUPPY';
+        setTimeout(() => { 
+          btn.innerText = 'REFER NOW';
+          btn.disabled = false;
+        }, 2000);
+      }
+    } catch (err) {
+      btn.disabled = false;
+    }
   }
 
   function navClick(page) {
