@@ -79,6 +79,17 @@ By continuing, you agree to our Terms & Privacy Policy.
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ2p1YnhmeGpha2dpY3VweXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzk4NTIsImV4cCI6MjA5MTIxNTg1Mn0.QST9mZ7uup-H-s9P6DznbOVO14kJTCgYIIZxyTP1T24';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+  // REFERRAL CODE START - Page Load पे URL से ref पकड़ो
+  (function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const refCode = urlParams.get('ref');
+    if(refCode) {
+      localStorage.setItem('ruppy_referredBy', refCode);
+      console.log('Referred by:', refCode);
+    }
+  })();
+  // REFERRAL CODE END
+
   checkUser();
 
   async function checkUser() {
@@ -111,6 +122,47 @@ By continuing, you agree to our Terms & Privacy Policy.
     document.getElementById('loginForm').style.display = 'block';
     document.getElementById('regErrorMsg').style.display = 'none';
   }
+
+  // REFERRAL FUNCTION START - Signup के बाद Team में Add करने का
+  async function handleReferral(email) {
+    let referredBy = localStorage.getItem('ruppy_referredBy');
+    if(!referredBy || referredBy === 'null') return;
+
+    try {
+      // सभी Users लाओ LocalStorage से
+      let allUsers = JSON.parse(localStorage.getItem('ruppy_allUsers')) || {};
+
+      // Refer करने वाले को ढूंढो inviteCode से
+      for(let userKey in allUsers) {
+        let referrerData = allUsers[userKey];
+        let referrerCode = 'RUPPY' + referrerData.name.substring(0,3).toUpperCase();
+
+        if(referredBy.includes(referrerCode)) {
+          if(!referrerData.team) referrerData.team = [];
+
+          let newMemberName = email.split('@')[0];
+          let alreadyExists = referrerData.team.some(t => t.name === newMemberName);
+
+          if(!alreadyExists) {
+            referrerData.team.push({
+              name: newMemberName,
+              joinDate: Date.now(),
+              lastMine: 0,
+              lastMinedAmount: 0
+            });
+            allUsers[userKey] = referrerData;
+            localStorage.setItem('ruppy_allUsers', JSON.stringify(allUsers));
+            console.log('Added to team:', referrerData.name);
+          }
+          break;
+        }
+      }
+      localStorage.removeItem('ruppy_referredBy');
+    } catch(e) {
+      console.log('Referral error:', e);
+    }
+  }
+  // REFERRAL FUNCTION END
 
   async function handleRegister() {
     const email = document.getElementById('regEmail').value.trim();
@@ -148,6 +200,10 @@ By continuing, you agree to our Terms & Privacy Policy.
     if (error) {
       showError('regErrorMsg', error.message);
     } else {
+      // REFERRAL CODE START - Signup Success के बाद Call
+      await handleReferral(email);
+      // REFERRAL CODE END
+
       alert('Account Created! You can now login.');
       showLogin();
       document.getElementById('email').value = email;
@@ -197,6 +253,11 @@ By continuing, you agree to our Terms & Privacy Policy.
         ultraRewardTime: 0
       };
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
+
+      // REFERRAL CODE START - Login पे भी Check कर लो
+      await handleReferral(email);
+      // REFERRAL CODE END
+
       window.location.href = 'app.html';
     }
   }
