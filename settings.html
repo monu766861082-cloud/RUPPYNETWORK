@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Settings</title>
+
+<!-- Monetag Verification Meta Tag ✅ -->
+<meta name="monetag" content="21dbbe26571c9c62250f84692bff67fc">
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0B0B0C;--card:#161617;--border:#2A2A2C;--gold:#F3C774;--green:#24C464;--red:#E53E3E;--muted:#9CA3AF}
@@ -48,6 +52,8 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .btn-cancel{background:transparent;border:1px solid var(--border);color:var(--muted)}
 .btn-save{background:var(--gold);border:none;color:#000}
 .sp{height:96px}
+.ft-links{font-size:11px;color:#666;text-align:center;margin-top:30px;padding-bottom:20px}
+.ft-links a{color:#aaa;text-decoration:none}
 </style>
 </head>
 <body>
@@ -76,6 +82,15 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <div class="wallets"><div class="wall"><div class="dot mm">M</div>MetaMask</div><div class="wall"><div class="dot bn">B</div>Binance</div></div>
 
 <button class="logout" onclick="logout()">Logout</button>
+
+<!-- Footer Links Added ✅ -->
+<div class="ft-links">
+  <a href="about.html">About</a> •
+  <a href="contact.html">Contact</a> •
+  <a href="privacy.html">Privacy</a> •
+  <a href="terms.html">Terms</a>
+</div>
+
 <div class="sp"></div>
 
 <div class="modal" id="editModal">
@@ -230,5 +245,8 @@ window.sendMiningNotif = function(){
   }
 }
 </script>
+
+<!-- Monetag Multitag Script ✅ -->
+<script src="https://quge5.com/88/tag.min.js" data-zone="228902" async data-cfasync="false"></script>
 </body>
 </html>
