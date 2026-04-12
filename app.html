@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ruppy Network - App</title>
+  <title>Rupay Network - App</title>
   
   <!-- Google AdSense - Replace ca-pub-XXXXXXXXXXXXXXXX with your Publisher ID -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
@@ -77,15 +77,15 @@
 
   <div class="balance-card">
     <p>TOTAL BALANCE</p>
-    <h2 id="balance">0 <span>POINTS</span></h2>
-    <p id="tokenInfo">Game points have no monetary value</p>
+    <h2 id="balance">0 <span>RUPAY COIN</span></h2>
+    <p id="tokenInfo">RUPAY Coins are game points with no monetary value</p>
   </div>
 
   <div class="mining-section">
     <div class="mining-circle ready" id="miningCircle" onclick="handleMiningClick()">
       <h3 id="miningText">WATCH AD FOR BONUS</h3>
     </div>
-    <p class="mining-text">Watch ad to collect 40 game points • Available every 3 hours</p>
+    <p class="mining-text">Watch ad to collect 40 RUPAY COIN • Available every 3 hours</p>
   </div>
 
   <div class="grid">
@@ -100,7 +100,7 @@
       <div class="badge" id="giftBadge">✓</div>
       <div class="icon" style="background:#6a5acd;">🎁</div>
       <h4 style="color:#fff;">ULTRA GIFT</h4>
-      <p id="giftTimer">Ready → +15 Points</p>
+      <p id="giftTimer">Ready → +15 RUPAY</p>
       <div class="timer-bar"><div class="timer-fill" id="giftBar"></div></div>
     </div>
     <div class="grid-item" onclick="openTeam()">
@@ -119,10 +119,10 @@
   <div class="modal" id="boostModal">
     <div class="modal-content">
       <h3>🚀 COLLECT BONUS</h3>
-      <p>Watch ads to collect extra game points</p>
+      <p>Watch ads to collect extra RUPAY COIN</p>
       <div class="boost-step">
         <h4>Step <span id="boostStep">1</span>/3</h4>
-        <p id="boostStepText">Watch ad for 5% bonus points</p>
+        <p id="boostStepText">Watch ad for 5% bonus</p>
       </div>
       <button class="btn" id="boostBtn" onclick="watchBoostAd()">Watch Ad for Bonus</button>
       <button class="close-btn" onclick="closeBoostModal()">Close</button>
@@ -164,7 +164,7 @@
 <script>
   const MINING_REWARD = 40;
   
-  let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
+  let userData = JSON.parse(localStorage.getItem('rupay_user')) || {
     name: 'User',
     dp: null,
     balance: 0,
@@ -187,7 +187,7 @@
 
   function saveUser() {
     userData.balance = Number(userData.balance) || 0;
-    localStorage.setItem('ruppy_user', JSON.stringify(userData));
+    localStorage.setItem('rupay_user', JSON.stringify(userData));
   }
 
   function handleMiningClick() {
@@ -241,7 +241,7 @@
   }
 
   function updateBalance() {
-    document.getElementById('balance').innerHTML = userData.balance + ' <span>POINTS</span>';
+    document.getElementById('balance').innerHTML = userData.balance + ' <span>RUPAY COIN</span>';
   }
 
   function updateMiningCircle() {
@@ -345,7 +345,7 @@
       }, 1500);
     } else {
       document.getElementById('boostStep').innerText = userData.boostCount + 1;
-      alert('+' + boostAmount + ' Points Claimed! (' + userData.boostCount + '/3)');
+      alert('+' + boostAmount + ' RUPAY Claimed! (' + userData.boostCount + '/3)');
     }
   }
 
@@ -356,7 +356,7 @@
     let cooldown = 7200000;
     
     if(diff >= cooldown || lastGift === 0) {
-      document.getElementById('giftTimer').innerText = 'Ready → +15 Points';
+      document.getElementById('giftTimer').innerText = 'Ready → +15 RUPAY';
       document.getElementById('giftBadge').innerText = '✓';
       document.getElementById('giftBadge').style.background = '#00ff00';
       document.getElementById('giftBar').style.width = '100%';
@@ -388,7 +388,7 @@
     saveUser();
     updateBalance();
     updateGift();
-    alert('+15 Points Added!');
+    alert('+15 RUPAY Added!');
   }
 
   function updateTeam() {
@@ -409,7 +409,7 @@
   }
 
   function openWallet() {
-    alert('Your Wallet Balance: ' + userData.balance + ' Game Points');
+    alert('Your Wallet Balance: ' + userData.balance + ' RUPAY COIN');
   }
 
   function navClick(page) {
