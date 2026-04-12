@@ -1,3 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ruppy Network - Login</title>
+<style>
+body{margin:0;background:#000;color:#fff;font-family:Arial;display:flex;align-items:center;justify-content:center;min-height:100vh}
+.wrap{padding:22px;width:100%;max-width:360px;text-align:center}
+.pill{border:1px solid #c28840;color:#c28840;padding:4px 12px;border-radius:14px;display:inline-block;font-size:12px;margin-bottom:18px}
+.coin{width:220px;height:220px;margin:10px auto;border-radius:50%;background:transparent;box-shadow:0 0 40px #f9a825;display:flex;align-items:center;justify-content:center}
+.coin img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+h1{color:#f9a825;margin:12px 0 20px;font-size:28px}
+.input-box{margin:12px 0;text-align:left}
+.input-box label{color:#aaa;font-size:13px;display:block;margin-bottom:6px}
+.input-box input{width:100%;padding:12px;border:1px solid #333;border-radius:10px;background:#111;color:#fff;font-size:15px;box-sizing:border-box}
+.input-box input:focus{outline:none;border-color:#f9a825}
+.btn{margin:18px auto;padding:12px 24px;background:#f9a825;color:#000;border:none;border-radius:24px;font-weight:bold;width:100%;cursor:pointer;font-size:15px}
+.btn:disabled{background:#333;color:#666;cursor:not-allowed}
+.btn-google{background:#fff;color:#000;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:0}
+.btn-google img{width:20px;height:20px}
+.divider{color:#666;font-size:12px;margin:20px 0;position:relative}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:#333}
+.divider::before{left:0}
+.divider::after{right:0}
+.toggle{color:#aaa;font-size:13px;margin-top:15px;cursor:pointer}
+.toggle span{color:#f9a825;text-decoration:underline}
+.ft{font-size:11px;color:#666;margin-top:25px}
+a{color:#aaa;text-decoration:none}
+.error{color:#f33;font-size:13px;margin-top:10px;display:none}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<div class="pill">VIP PREMIUM</div>
+<div class="coin"><img src="cropped_circle_image.png" alt="Ruppy Logo"></div>
+<h1>RUPPY NETWORK</h1>
+
+<button class="btn btn-google" onclick="handleGoogleLogin()" id="googleBtn">
+  <img src="https://www.google.com/favicon.ico" alt="Google">
+  Continue with Google
+</button>
+
+<div class="divider">OR</div>
+
+<div id="loginForm">
+  <div class="input-box">
+    <label>Email</label>
+    <input type="email" id="email" placeholder="Enter your email">
+  </div>
+  <div class="input-box">
+    <label>Password</label>
+    <input type="password" id="password" placeholder="Enter password">
+  </div>
+  <div class="error" id="errorMsg"></div>
+  <button class="btn" onclick="handleLogin()" id="loginBtn">LOGIN</button>
+  <div class="toggle">New user? <span onclick="showRegister()">Create Account</span></div>
+</div>
+
+<div id="registerForm" style="display:none">
+  <div class="input-box">
+    <label>Email</label>
+    <input type="email" id="regEmail" placeholder="Enter your email">
+  </div>
+  <div class="input-box">
+    <label>Password</label>
+    <input type="password" id="regPassword" placeholder="Min 6 characters">
+  </div>
+  <div class="input-box">
+    <label>Confirm Password</label>
+    <input type="password" id="regConfirmPassword" placeholder="Re-enter password">
+  </div>
+  <div class="error" id="regErrorMsg"></div>
+  <button class="btn" onclick="handleRegister()" id="registerBtn">CREATE ACCOUNT</button>
+  <div class="toggle">Already have account? <span onclick="showLogin()">Login</span></div>
+</div>
+
+<div class="ft">
+<a href="about.html">About</a> •
+<a href="contact.html">Contact</a> •
+<a href="privacy.html">Privacy</a> •
+<a href="terms.html">Terms</a><br>
+By continuing, you agree to our Terms & Privacy Policy.
+</div>
+</div>
+
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
   import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
@@ -22,13 +109,16 @@
     if(refCode) localStorage.setItem('ruppy_referredBy', refCode);
   })();
 
-  let isProcessing = false;
+  getRedirectResult(auth).catch((error) => {
+    showError('errorMsg', 'Google login failed. Try again');
+    document.getElementById('googleBtn').innerHTML = '<img src="https://www.google.com/favicon.ico" alt="Google"> Continue with Google';
+    document.getElementById('googleBtn').disabled = false;
+  });
 
-  getRedirectResult(auth).then((result) => {
-    if (result && result.user &&!isProcessing) {
-      isProcessing = true;
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
       let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
-        name: result.user.displayName || result.user.email.split('@')[0],
+        name: user.displayName || user.email.split('@')[0],
         balance: 0,
         lastMine: 0,
         lastGift: 0,
@@ -39,17 +129,6 @@
         ultraRewardTime: 0
       };
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
-      window.location.href = 'app.html';
-    }
-  }).catch((error) => {
-    console.log(error);
-    document.getElementById('googleBtn').innerHTML = '<img src="https://www.google.com/favicon.ico" alt="Google"> Continue with Google';
-    document.getElementById('googleBtn').disabled = false;
-  });
-
-  onAuthStateChanged(auth, (user) => {
-    if (user &&!isProcessing &&!window.location.href.includes('app.html')) {
-      isProcessing = true;
       window.location.href = 'app.html';
     }
   });
@@ -121,3 +200,5 @@
     el.style.display = 'block';
   }
 </script>
+</body>
+</html>
