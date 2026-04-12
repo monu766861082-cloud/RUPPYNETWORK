@@ -4,7 +4,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Settings</title>
 
-<!-- Monetag Verification Meta Tag ✅ -->
+<!-- Monetag Verification Meta Tag -->
 <meta name="monetag" content="21dbbe26571c9c62250f84692bff67fc">
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -67,8 +67,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .sp{height:96px}
 .ft-links{font-size:11px;color:#666;text-align:center;margin-top:30px;padding-bottom:20px}
 .ft-links a{color:#aaa;text-decoration:none}
-.goog-te-banner-frame{display:none!important}
-body{top:0!important}
 </style>
 </head>
 <body>
@@ -163,8 +161,29 @@ body{top:0!important}
   </div>
 </div>
 
-<!-- Google Translate Hidden Element -->
+<!-- Google Translate - World Language Support -->
 <div id="google_translate_element" style="display:none;"></div>
+<script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    includedLanguages: 'hi,ar,es,fr,de,zh-CN,pt,ru,ja,ko,it,tr,nl,pl,sv,vi,th,id,ms,ur,bn,ta,te,mr,gu,kn,ml,pa,uk,ro,cs,el,he,fa,sw,fi,da,no,hu,bg,sr,hr,sk,sl,lt,lv,et,is,ga,af,tl',
+    autoDisplay: false
+  }, 'google_translate_element');
+
+  const savedCode = localStorage.getItem('ruppy_language_code');
+  if(savedCode && savedCode!== 'en') {
+    setTimeout(() => {
+      const select = document.querySelector('.goog-te-combo');
+      if(select) {
+        select.value = savedCode;
+        select.dispatchEvent(new Event('change'));
+      }
+    }, 1000);
+  }
+}
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 <script>
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
@@ -175,7 +194,6 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   photo: ''
 };
 
-// World Languages - 50+ Countries
 const languages = [
   {code: 'en', name: 'English', native: 'English'},
   {code: 'hi', name: 'Hindi', native: 'हिंदी'},
@@ -282,7 +300,6 @@ function saveProfile(){
   }
 }
 
-// Language Modal Functions
 function openLanguageModal() {
   document.getElementById('languageModal').classList.add('active');
   renderLanguages(languages);
@@ -329,7 +346,6 @@ function selectLanguage(langName, langCode) {
   document.getElementById('currentLang').innerText = langName;
   closeLanguageModal();
 
-  // Google Translate Trigger
   setTimeout(() => {
     const select = document.querySelector('.goog-te-combo');
     if(select) {
@@ -349,7 +365,6 @@ function logout(){
 
 function goPage(page){ window.location.href = page; }
 
-// Notification System
 let notifEnabled = localStorage.getItem('notif_enabled') === 'true';
 
 function updateNotifStatus(){
@@ -386,33 +401,9 @@ window.sendMiningNotif = function(){
     }
   }
 }
-
-// Google Translate Init
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({
-    pageLanguage: 'en',
-    includedLanguages: languages.map(l => l.code).join(','),
-    autoDisplay: false
-  }, 'google_translate_element');
-
-  // Auto apply saved language
-  const savedCode = localStorage.getItem('ruppy_language_code');
-  if(savedCode && savedCode!== 'en') {
-    setTimeout(() => {
-      const select = document.querySelector('.goog-te-combo');
-      if(select) {
-        select.value = savedCode;
-        select.dispatchEvent(new Event('change'));
-      }
-    }, 1000);
-  }
-}
 </script>
 
-<!-- Google Translate Script ✅ -->
-<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
-<!-- Monetag Multitag Script ✅ -->
-<script src="https://quge5.com/88/tag.min.js" data-zone="228902" async data-cfasync="false"></script>
+<!-- RUPPY TRANSLATE BAR KILLER -->
+<script src="translate-fix.js"></script>
 </body>
 </html>
