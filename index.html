@@ -8,9 +8,9 @@
 body{margin:0;background:#000;color:#fff;font-family:Arial;display:flex;align-items:center;justify-content:center;min-height:100vh}
 .wrap{padding:22px;width:100%;max-width:360px;text-align:center}
 .pill{border:1px solid #c28840;color:#c28840;padding:4px 12px;border-radius:14px;display:inline-block;font-size:12px;margin-bottom:18px}
-.coin{width:170px;height:170px;margin:20px auto;border-radius:50%;background:#111;box-shadow:0 0 28px #f9a825;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.coin img{width:100%;height:100%;object-fit:cover}
-h1{color:#f9a825;margin:12px 0 20px}
+.coin{width:200px;height:200px;margin:15px auto;border-radius:50%;background:#111;box-shadow:0 0 35px #f9a825;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.coin img{width:95%;height:95%;object-fit:contain}
+h1{color:#f9a825;margin:12px 0 20px;font-size:28px}
 .input-box{margin:12px 0;text-align:left}
 .input-box label{color:#aaa;font-size:13px;display:block;margin-bottom:6px}
 .input-box input{width:100%;padding:12px;border:1px solid #333;border-radius:10px;background:#111;color:#fff;font-size:15px;box-sizing:border-box}
@@ -71,7 +71,6 @@ a{color:#aaa;text-decoration:none}
 <a href="terms.html">Terms</a><br>
 By continuing, you agree to our Terms & Privacy Policy.
 </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
@@ -79,13 +78,11 @@ By continuing, you agree to our Terms & Privacy Policy.
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ2p1YnhmeGpha2dpY3VweXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzk4NTIsImV4cCI6MjA5MTIxNTg1Mn0.QST9mZ7uup-H-s9P6DznbOVO14kJTCgYIIZxyTP1T24';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // Check if already logged in
   checkUser();
 
   async function checkUser() {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
-      // Already logged in - redirect to app
       let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
         name: session.user.email.split('@')[0],
         balance: 0,
@@ -187,7 +184,6 @@ By continuing, you agree to our Terms & Privacy Policy.
     if (error) {
       showError('errorMsg', 'Invalid email or password');
     } else {
-      // Save user data
       let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
         name: email.split('@')[0],
         balance: 0,
