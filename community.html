@@ -272,7 +272,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
     <div class="profile-stats">
       <div class="profile-stat">
-        <h3>0</h3>
+        <h3 id="profilePostCount">0</h3>
         <p>Posts</p>
       </div>
       <div class="profile-stat">
@@ -280,7 +280,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
         <p>Friends</p>
       </div>
       <div class="profile-stat">
-        <h3>0</h3>
+        <h3 id="profileLikeCount">0</h3>
         <p>Likes</p>
       </div>
     </div>
@@ -300,7 +300,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <div class="profile-post-item"></div>
     <div class="profile-post-item"></div>
   </div>
-  <div style="padding:40px;text-align:center;color:#666;font-size:13px">No posts yet</div>
+  <div id="profileEmpty" style="padding:40px;text-align:center;color:#666;font-size:13px">No posts yet</div>
 </div>
 
 <!-- Bottom Nav - हल्के येल्लो में -->
@@ -370,6 +370,7 @@ document.getElementById('fileInput').onchange = function(e){
 
 function openCreate(){
   document.getElementById('postText').focus();
+  switchTab('hub');
 }
 
 function addEmoji(){
@@ -424,8 +425,15 @@ function savePost(post){
 }
 
 function updateStats(){
-  document.getElementById('totalPosts').textContent = posts.filter(p => p.reports < 3).length;
-  document.getElementById('totalLikes').textContent = posts.reduce((sum,p) => sum + p.likes, 0);
+  let totalPosts = posts.filter(p => p.reports < 3).length;
+  let totalLikes = posts.reduce((sum,p) => sum + p.likes, 0);
+  document.getElementById('totalPosts').textContent = totalPosts;
+  document.getElementById('totalLikes').textContent = totalLikes;
+  document.getElementById('profilePostCount').textContent = totalPosts;
+  document.getElementById('profileLikeCount').textContent = totalLikes;
+
+  let profileEmpty = document.getElementById('profileEmpty');
+  if(totalPosts > 0 && profileEmpty) profileEmpty.style.display = 'none';
 }
 
 function renderFeed(){
@@ -597,7 +605,7 @@ function switchTab(tab){
   }
 }
 
-// ये लाइन सबसे जरूरी थी - इसी से सब शुरू होता है
+// पेज लोड होते ही फीड रेंडर कर
 renderFeed();
 </script>
 </body>
