@@ -54,7 +54,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-stats{display:flex;gap:10px}
 .stat-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;color:#000;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;cursor:pointer;padding:9px 16px;border-radius:12px;transition:0.2s;box-shadow:0 3px 12px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3)}
 .stat-btn:active{transform:scale(0.92);box-shadow:0 1px 5px rgba(255,215,0,0.4)}
-.stat-btn.liked{background:linear-gradient(135deg,#FF6B6B,#FF4757);color:#fff;box-shadow:0 3px 12px rgba(255,107,0.5), inset 0 1px 0 rgba(255,255,255,0.3)}
+.stat-btn.liked{background:linear-gradient(135deg,#FF6B6B,#FF4757);color:#fff;box-shadow:0 3px 12px rgba(255,107,107,0.5), inset 0 1px 0 rgba(255,255,255,0.3)}
 .stat-btn.liked span{color:#fff}
 .stat-btn svg{width:18px;height:18px;stroke:#000;fill:none;stroke-width:2.5}
 .stat-btn.liked svg{stroke:#fff;fill:#fff}
@@ -517,4 +517,28 @@ function renderFeed(){
       if(post.mediaType === 'video'){
         mediaHTML = `<div class="post-media"><video src="${post.media}" controls></video></div>`;
       } else {
-        mediaHTML = `<div class="post-media
+        mediaHTML = `<div class="post-media"><img src="${post.media}" ondblclick="likePost(${post.id})"></div>`;
+      }
+    }
+
+    let timeAgo = getTimeAgo(post.time);
+    let commentsToShow = post.showAllComments? post.comments : post.comments.slice(-2);
+    let hiddenCount = post.comments.length - commentsToShow.length;
+    let postUser = post.userId === userData.id? userData : allUsers.find(u => u.id === post.userId) || {name:post.user,dp:null};
+
+    feed.innerHTML += `
+    <div class="post-card" id="post-${post.id}">
+      <div class="post-card-head">
+        <div class="post-avatar">${postUser.dp? `<img src="${postUser.dp}">` : post.user[0].toUpperCase()}</div>
+        <div class="post-info">
+          <h4>${post.user}</h4>
+          ${post.time? `<p>${timeAgo}</p>` : ''}
+        </div>
+        <button class="post-more" onclick="reportPost(${post.id})">⋯</button>
+      </div>
+      ${post.text? `<div class="post-content">${post.text}</div>` : ''}
+      ${mediaHTML}
+      <div class="post-footer">
+        <div class="post-stats">
+          <button class="stat-btn ${post.liked?'liked':''}" onclick="likePost(${post.id})">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0
