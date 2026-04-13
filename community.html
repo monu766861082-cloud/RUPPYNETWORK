@@ -137,7 +137,21 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .comment-input input{flex:1;background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:10px 14px;color:#fff;font-size:14px;outline:none}
 .comment-input button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer}
 
-/* Bottom Nav - EXACT MAIN APP COLORS */
+/* TAB CONTENT */
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* Tasks Section */
+.tasks-container{padding:0 20px}
+.task-card{background:#111;border:1px solid #222;border-radius:16px;padding:16px;margin-bottom:12px;display:flex;align-items:center;gap:14px}
+.task-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.task-info{flex:1}
+.task-info h4{font-size:15px;font-weight:600;margin-bottom:4px}
+.task-info p{font-size:12px;color:#888}
+.task-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:8px 18px;color:#000;font-weight:700;font-size:13px;cursor:pointer}
+.task-btn.done{background:#1a1a1a;color:#555;border:1px solid #333;cursor:not-allowed}
+
+/* Bottom Nav */
 .ruppy-nav{position:fixed;bottom:0;left:0;right:0;background:#0a0a0a;border-top:1px solid #222;height:60px;display:flex;justify-content:space-around;align-items:center;z-index:999;padding:0 10px}
 .nav-btn{background:none;border:none;color:#6B7280;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px 10px;border-radius:12px;transition:0.2s}
 .nav-btn.active{color:#FFA500}
@@ -167,62 +181,107 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </button>
 </div>
 
-<!-- Stats -->
-<div class="stats-bar">
-  <div class="stat-card">
-    <h3 id="totalPosts">0</h3>
-    <p>Total Posts</p>
-  </div>
-  <div class="stat-card">
-    <h3 id="totalLikes">0</h3>
-    <p>Total Likes</p>
-  </div>
-  <div class="stat-card">
-    <h3 id="activeUsers">1</h3>
-    <p>Active Now</p>
-  </div>
-</div>
-
-<!-- Create Card -->
-<div class="create-card">
-  <div class="create-top">
-    <div class="create-avatar" id="userAvatar">U</div>
-    <textarea id="postText" placeholder="Share your RUPPY update..." rows="2"></textarea>
-  </div>
-  <div class="create-actions">
-    <div class="left">
-      <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📷</button>
-      <button class="icon-btn" onclick="addEmoji()">😊</button>
+<!-- HUB TAB -->
+<div id="hub-tab" class="tab-content active">
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <h3 id="totalPosts">0</h3>
+      <p>Total Posts</p>
     </div>
-    <button class="post-btn" id="postBtn" onclick="createPost()" disabled>Post</button>
+    <div class="stat-card">
+      <h3 id="totalLikes">0</h3>
+      <p>Total Likes</p>
+    </div>
+    <div class="stat-card">
+      <h3 id="activeUsers">1</h3>
+      <p>Active Now</p>
+    </div>
   </div>
-  <input type="file" id="fileInput" accept="image/*,video/*">
-  <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
+
+  <!-- Create Card -->
+  <div class="create-card">
+    <div class="create-top">
+      <div class="create-avatar" id="userAvatar">U</div>
+      <textarea id="postText" placeholder="Share your RUPPY update..." rows="2"></textarea>
+    </div>
+    <div class="create-actions">
+      <div class="left">
+        <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📷</button>
+        <button class="icon-btn" onclick="addEmoji()">😊</button>
+      </div>
+      <button class="post-btn" id="postBtn" onclick="createPost()" disabled>Post</button>
+    </div>
+    <input type="file" id="fileInput" accept="image/*,video/*">
+    <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
+  </div>
+
+  <!-- Feed -->
+  <div class="feed" id="feed"></div>
 </div>
 
-<!-- Feed -->
-<div class="feed" id="feed"></div>
+<!-- TASKS TAB -->
+<div id="tasks-tab" class="tab-content">
+  <div style="padding:16px 20px">
+    <h2 style="font-size:24px;font-weight:800;margin-bottom:4px">DAILY TASKS</h2>
+    <p style="color:#FFA500;font-size:14px;font-weight:700;margin-bottom:4px">EARN RUPPY</p>
+    <p style="color:#666;font-size:12px;margin-bottom:16px">ID: USER</p>
 
-<!-- Bottom Nav - EXACT SAME AS TASKS PAGE -->
+    <div class="stat-card" style="margin-bottom:16px">
+      <p style="color:#888;font-size:14px">Your Balance: <span style="color:#FFD700;font-size:20px;font-weight:700" id="ruppyBalance">231</span> RUPPY</p>
+    </div>
+  </div>
+
+  <div class="tasks-container">
+    <div class="task-card">
+      <div class="task-icon" style="background:#1DA1F2">✈️</div>
+      <div class="task-info">
+        <h4>Join Telegram</h4>
+        <p>Reward: +20 RUPPY</p>
+      </div>
+      <button class="task-btn" onclick="completeTask(this,20)">JOIN</button>
+    </div>
+
+    <div class="task-card">
+      <div class="task-icon" style="background:#1877F2">f</div>
+      <div class="task-info">
+        <h4>Follow on Facebook</h4>
+        <p>Reward: +20 RUPPY</p>
+      </div>
+      <button class="task-btn done">DONE</button>
+    </div>
+
+    <div class="task-card">
+      <div class="task-icon" style="background:#000">X</div>
+      <div class="task-info">
+        <h4>Follow on X</h4>
+        <p>Reward: +20 RUPPY</p>
+      </div>
+      <button class="task-btn done">DONE</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
 <div class="ruppy-nav">
-  <button class="nav-btn" onclick="location.href='app.html'">
+  <button class="nav-btn" onclick="switchTab('home')">
     <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
     <span>Home</span>
   </button>
-  <button class="nav-btn" onclick="location.href='tasks.html'">
+  <button class="nav-btn" id="tasks-nav-btn" onclick="switchTab('tasks')">
     <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
     <span>Tasks</span>
   </button>
-  <button class="nav-btn" onclick="location.href='referral.html'">
+  <button class="nav-btn" onclick="switchTab('referral')">
     <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
     <span>Referral</span>
   </button>
-  <button class="nav-btn" onclick="location.href='ranking.html'">
-    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 0 00-.806-1.946 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 0 013.138-3.138z"></path></svg>
+  <button class="nav-btn" onclick="switchTab('ranking')">
+    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 0 00-.806 1.946 3.42 0 01-3.138 3.138 3.42 0 00-1.946.806 3.42 0 01-4.438 0 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 0 00-.806-1.946 3.42 0 010-4.438 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
     <span>Ranking</span>
   </button>
-  <button class="nav-btn" onclick="location.href='settings.html'">
-    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+  <button class="nav-btn" onclick="switchTab('settings')">
+    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
     <span>Settings</span>
   </button>
 </div>
@@ -370,7 +429,7 @@ function renderFeed(){
       <div class="post-footer">
         <div class="post-stats">
           <button class="stat-btn ${post.liked?'liked':''}" onclick="likePost(${post.id})">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 0 00-6.364-6.364L12 7.636l-1.318a4.5 0 00-6.364 0z"></path></svg>
             <span>${post.likes}</span>
           </button>
           <button class="stat-btn" onclick="toggleComments(${post.id})">
@@ -479,6 +538,36 @@ function reportPost(id){
     renderFeed();
     updateStats();
   }
+}
+
+// TAB SWITCHING
+function switchTab(tab){
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+  if(tab === 'tasks'){
+    document.getElementById('tasks-tab').classList.add('active');
+    document.getElementById('tasks-nav-btn').classList.add('active');
+  } else if(tab === 'home'){
+    location.href = 'app.html';
+  } else if(tab === 'referral'){
+    location.href = 'referral.html';
+  } else if(tab === 'ranking'){
+    location.href = 'ranking.html';
+  } else if(tab === 'settings'){
+    location.href = 'settings.html';
+  } else {
+    document.getElementById('hub-tab').classList.add('active');
+  }
+}
+
+function completeTask(btn,reward){
+  let balance = parseInt(document.getElementById('ruppyBalance').textContent);
+  balance += reward;
+  document.getElementById('ruppyBalance').textContent = balance;
+  btn.textContent = 'DONE';
+  btn.classList.add('done');
+  btn.disabled = true;
 }
 
 renderFeed();
