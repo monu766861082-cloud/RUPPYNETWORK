@@ -51,6 +51,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .sp{height:96px}
 .ft-links{font-size:11px;color:#666;text-align:center;margin-top:30px;padding-bottom:20px}
 .ft-links a{color:#aaa;text-decoration:none}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:9999}
 </style>
 </head>
 <body>
@@ -132,6 +133,8 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   </div>
 </div>
 
+<div class="toast" id="toast">Copied!</div>
+
 <!-- Supabase Script Added -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
@@ -140,12 +143,21 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
+  userId: '',
   name: 'Guest',
-  id: 'RUPPY000000',
   balance: 0,
   birthday: '',
-  photo: ''
+  photo: '',
+  team: [],
+  lastTeamRewardCheck: 0,
+  teamRewardEarned: 0
 };
+
+// Fix: Generate User ID if missing - same logic as referral.html
+if(!userData.userId || userData.userId === 'undefined' || userData.userId === ''){
+  userData.userId = 'ab' + Math.floor(Math.random()*9000000+1000000);
+  localStorage.setItem('ruppy_user', JSON.stringify(userData));
+}
 
 function loadProfile(){
   if(userData.photo){
@@ -154,16 +166,23 @@ function loadProfile(){
     document.getElementById('avatarBox').innerHTML = `<span>${userData.name.charAt(0).toUpperCase()}</span>`;
   }
   document.getElementById('userName').innerText = userData.name;
-  document.getElementById('userBalance').innerText = userData.balance + ' RUPPY';
-  document.getElementById('userId').innerText = 'ID: ' + userData.id;
-  document.getElementById('refCode').innerText = userData.id;
+  document.getElementById('userBalance').innerText = (userData.balance || 0) + ' RUPPY';
+  document.getElementById('userId').innerText = 'ID: ' + userData.userId;
+  document.getElementById('refCode').innerText = userData.userId;
 }
 
 loadProfile();
 
 function copyRefCode(){
-  navigator.clipboard.writeText(userData.id);
-  alert('Referral Code Copied!');
+  navigator.clipboard.writeText(userData.userId);
+  showToast('Referral Code Copied!');
+}
+
+function showToast(msg){
+  let t = document.getElementById('toast');
+  t.innerText = msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2500);
 }
 
 function openEditProfile(){
