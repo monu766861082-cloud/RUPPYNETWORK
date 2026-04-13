@@ -25,7 +25,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
 .create-card{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:20px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
 .create-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
-.create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px}
+.create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden}
+.create-avatar img{width:100%;height:100%;object-fit:cover}
 .create-card textarea{width:100%;background:#0a0a0a;border:1px solid #222;border-radius:12px;padding:12px;color:#fff;font-size:15px;resize:none;font-family:inherit;min-height:60px}
 .create-card textarea::placeholder{color:#555}
 .create-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
@@ -38,7 +39,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-card{background:#111;border:1px solid #222;border-radius:24px;margin-bottom:16px;overflow:hidden;transition:0.3s;box-shadow:0 8px 25px rgba(0,0,0,0.6)}
 .post-card:active{transform:scale(0.98)}
 .post-card-head{padding:16px;display:flex;align-items:center;gap:12px}
-.post-avatar{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px}
+.post-avatar{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden}
+.post-avatar img{width:100%;height:100%;object-fit:cover}
 .post-info{flex:1}
 .post-info h4{font-size:15px;font-weight:600;margin-bottom:2px}
 .post-info p{font-size:12px;color:#666}
@@ -52,7 +54,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-stats{display:flex;gap:10px}
 .stat-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;color:#000;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;cursor:pointer;padding:9px 16px;border-radius:12px;transition:0.2s;box-shadow:0 3px 12px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3)}
 .stat-btn:active{transform:scale(0.92);box-shadow:0 1px 5px rgba(255,215,0,0.4)}
-.stat-btn.liked{background:linear-gradient(135deg,#FF6B6B,#FF4757);color:#fff;box-shadow:0 3px 12px rgba(255,107,107,0.5), inset 0 1px 0 rgba(255,255,255,0.3)}
+.stat-btn.liked{background:linear-gradient(135deg,#FF6B6B,#FF4757);color:#fff;box-shadow:0 3px 12px rgba(255,107,0.5), inset 0 1px 0 rgba(255,255,255,0.3)}
 .stat-btn.liked span{color:#fff}
 .stat-btn svg{width:18px;height:18px;stroke:#000;fill:none;stroke-width:2.5}
 .stat-btn.liked svg{stroke:#fff;fill:#fff}
@@ -63,7 +65,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .view-more{color:#FFD700;font-size:13px;font-weight:600;padding:8px 0;cursor:pointer;text-align:center;margin-bottom:10px}
 .view-more:active{opacity:0.6}
 .comment{display:flex;gap:10px;margin-bottom:14px}
-.comment-avatar{width:32px;height:32px;border-radius:10px;background:#FFD700;color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.comment-avatar{width:32px;height:32px;border-radius:10px;background:#FFD700;color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;overflow:hidden}
+.comment-avatar img{width:100%;height:100%;object-fit:cover}
 .comment-body{flex:1;background:#1a1a1a;border-radius:12px;padding:10px 12px}
 .comment-body b{font-size:13px;font-weight:600;display:block;margin-bottom:2px}
 .comment-body span{font-size:14px;line-height:1.4;color:#ddd}
@@ -73,30 +76,37 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
 .tab-content{display:none}
 .tab-content.active{display:block}
-.section-title{padding:16px 20px 8px;font-size:18px;font-weight:700;color:#FFD700}
-.section-subtitle{padding:0 20px 16px;font-size:12px;color:#666}
+.section-title{padding:16px 20px 8px;font-size:18px;font-weight:700;color:#FFD700;display:flex;justify-content:space-between;align-items:center}
+.clear-btn{background:none;border:none;color:#FF6B6B;font-size:13px;font-weight:600;cursor:pointer}
 
 .search-bar{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px}
 .search-bar input{flex:1;background:none;border:none;color:#fff;font-size:14px;outline:none}
 .search-bar input::placeholder{color:#555}
 .user-card{background:#111;border:1px solid #222;border-radius:16px;padding:12px;margin:0 20px 12px;display:flex;align-items:center;gap:12px}
-.user-card-avatar{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:18px;flex-shrink:0}
+.user-card-avatar{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:18px;flex-shrink:0;overflow:hidden}
+.user-card-avatar img{width:100%;height:100%;object-fit:cover}
 .user-card-info{flex:1}
 .user-card-info h4{font-size:15px;font-weight:600;margin-bottom:2px}
 .user-card-info p{font-size:12px;color:#666}
 .user-card-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:8px 16px;color:#000;font-weight:700;font-size:12px;cursor:pointer}
 .user-card-btn.secondary{background:#1a1a1a;color:#FFD700;border:1px solid #333}
+.user-card-btn:disabled{opacity:0.5;cursor:not-allowed}
 
-.notif-card{background:#111;border:1px solid #222;border-radius:16px;padding:14px;margin:0 20px 12px;display:flex;gap:12px;align-items:flex-start}
+.notif-card{background:#111;border:1px solid #222;border-radius:16px;padding:14px;margin:0 20px 12px;display:flex;gap:12px;align-items:flex-start;cursor:pointer}
 .notif-card.unread{background:#1a1a1a;border-color:#333}
+.notif-card:active{transform:scale(0.98)}
 .notif-icon{width:40px;height:40px;border-radius:12px;background:#FFD700;color:#000;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .notif-content{flex:1}
 .notif-content p{font-size:14px;line-height:1.4;margin-bottom:4px}
 .notif-content p b{color:#FFD700}
 .notif-time{font-size:11px;color:#666}
+.notif-actions{display:flex;gap:8px;margin-top:8px}
+.notif-actions button{flex:1;padding:8px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer}
 
-.profile-cover{width:100%;height:140px;background:linear-gradient(135deg,#FFD700,#FFA500);position:relative}
-.profile-dp{width:90px;height:90px;border-radius:24px;background:linear-gradient(135deg,#FFA500,#FFD700);border:4px solid #0a0a0a;position:absolute;bottom:-45px;left:20px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:32px}
+.profile-cover{width:100%;height:140px;background:linear-gradient(135deg,#FFD700,#FFA500);position:relative;overflow:hidden}
+.profile-cover img{width:100%;height:100%;object-fit:cover}
+.profile-dp{width:90px;height:90px;border-radius:24px;background:linear-gradient(135deg,#FFA500,#FFD700);border:4px solid #0a0a0a;position:absolute;bottom:-45px;left:20px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:32px;overflow:hidden}
+.profile-dp img{width:100%;height:100%;object-fit:cover}
 .profile-info{padding:55px 20px 16px}
 .profile-info h2{font-size:24px;font-weight:800;margin-bottom:4px}
 .profile-info p{font-size:14px;color:#888;line-height:1.5;margin-bottom:12px}
@@ -108,10 +118,12 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .profile-btn{flex:1;background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:12px;color:#000;font-weight:700;font-size:14px;cursor:pointer}
 .profile-btn.secondary{background:#1a1a1a;color:#FFD700;border:1px solid #333}
 .profile-posts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:0 20px}
-.profile-post-item{aspect-ratio:1;background:#1a1a1a;border-radius:8px}
+.profile-post-item{aspect-ratio:1;background:#1a1a1a;border-radius:8px;overflow:hidden;cursor:pointer}
+.profile-post-item img{width:100%;height:100%;object-fit:cover}
 
 .ruppy-nav{position:fixed;bottom:0;left:0;right:0;background:#0a0a0a;border-top:1px solid #222;height:65px;display:flex;justify-content:space-around;align-items:center;z-index:999;padding:0 10px}
-.nav-btn{background:none;border:none;color:#FFE55C;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:8px 12px;border-radius:12px;transition:0.2s;opacity:0.7}
+.nav-btn{background:none;border:none;color:#FFE55C;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:8px 12px;border-radius:12px;transition:0.2s;opacity:0.7;position:relative}
+.nav-badge{position:absolute;top:4px;right:8px;background:#FF4757;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:10px;min-width:16px;text-align:center}
 .nav-btn.active{color:#FFD700;opacity:1}
 .nav-btn:active{transform:scale(0.9)}
 .nav-btn svg{width:24px;height:24px;stroke-width:2;fill:none;stroke:currentColor}
@@ -123,7 +135,16 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .empty-hub p{font-size:14px;color:#666;margin-bottom:20px}
 .empty-hub button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:14px 28px;color:#000;font-weight:700;font-size:15px;cursor:pointer}
 
-#fileInput{display:none}
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.active{display:flex}
+.modal-content{background:#111;border:1px solid #333;border-radius:20px;padding:20px;width:100%;max-width:400px}
+.modal-content h3{font-size:20px;font-weight:700;margin-bottom:16px;color:#FFD700}
+.modal-content input,.modal-content textarea{width:100%;background:#0a0a0a;border:1px solid #222;border-radius:12px;padding:12px;color:#fff;font-size:14px;margin-bottom:12px;outline:none}
+.modal-content label{display:block;font-size:13px;color:#888;margin-bottom:6px;font-weight:600}
+.modal-actions{display:flex;gap:10px;margin-top:16px}
+.modal-actions button{flex:1}
+
+#fileInput,#dpInput,#coverInput{display:none}
 </style>
 </head>
 <body>
@@ -166,92 +187,35 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 <div id="friend-tab" class="tab-content">
   <div class="search-bar">
     <span>🔍</span>
-    <input type="text" placeholder="Search friends...">
+    <input type="text" id="friendSearch" placeholder="Search friends..." oninput="searchFriends()">
   </div>
 
   <div class="section-title">Friend Requests</div>
-  <div class="user-card">
-    <div class="user-card-avatar">R</div>
-    <div class="user-card-info">
-      <h4>Rahul Sharma</h4>
-      <p>2 mutual friends</p>
-    </div>
-    <button class="user-card-btn">Accept</button>
-    <button class="user-card-btn secondary">✕</button>
-  </div>
-  <div class="user-card">
-    <div class="user-card-avatar">P</div>
-    <div class="user-card-info">
-      <h4>Priya Singh</h4>
-      <p>5 mutual friends</p>
-    </div>
-    <button class="user-card-btn">Accept</button>
-    <button class="user-card-btn secondary">✕</button>
-  </div>
+  <div id="friendRequestsList"></div>
 
   <div class="section-title">People You May Know</div>
-  <div class="user-card">
-    <div class="user-card-avatar">A</div>
-    <div class="user-card-info">
-      <h4>Amit Kumar</h4>
-      <p>8 mutual friends</p>
-    </div>
-    <button class="user-card-btn secondary">Add</button>
-  </div>
-  <div class="user-card">
-    <div class="user-card-avatar">S</div>
-    <div class="user-card-info">
-      <h4>Sneha Patel</h4>
-      <p>3 mutual friends</p>
-    </div>
-    <button class="user-card-btn secondary">Add</button>
-  </div>
+  <div id="suggestedFriendsList"></div>
+
+  <div class="section-title">My Friends</div>
+  <div id="myFriendsList"></div>
 </div>
 
 <div id="notification-tab" class="tab-content">
-  <div class="section-title">Notifications</div>
-
-  <div class="notif-card unread">
-    <div class="notif-icon">❤️</div>
-    <div class="notif-content">
-      <p><b>Rahul Sharma</b> liked your post</p>
-      <div class="notif-time">2 minutes ago</div>
-    </div>
+  <div class="section-title">
+    <span>Notifications</span>
+    <button class="clear-btn" onclick="clearAllNotifications()">Clear All</button>
   </div>
-
-  <div class="notif-card unread">
-    <div class="notif-icon">💬</div>
-    <div class="notif-content">
-      <p><b>Priya Singh</b> commented: "Nice pic bro!"</p>
-      <div class="notif-time">15 minutes ago</div>
-    </div>
-  </div>
-
-  <div class="notif-card">
-    <div class="notif-icon">👥</div>
-    <div class="notif-content">
-      <p><b>Amit Kumar</b> sent you a friend request</p>
-      <div class="notif-time">1 hour ago</div>
-    </div>
-  </div>
-
-  <div class="notif-card">
-    <div class="notif-icon">❤️</div>
-    <div class="notif-content">
-      <p><b>Sneha Patel</b> and 12 others liked your post</p>
-      <div class="notif-time">3 hours ago</div>
-    </div>
-  </div>
+  <div id="notificationsList"></div>
 </div>
 
 <div id="profile-tab" class="tab-content">
-  <div class="profile-cover">
-    <div class="profile-dp">U</div>
+  <div class="profile-cover" id="profileCover">
+    <div class="profile-dp" id="profileDp">U</div>
   </div>
 
   <div class="profile-info">
-    <h2>User847</h2>
-    <p>Living life one post at a time ✨ | RUPPY Member since 2026</p>
+    <h2 id="profileName">User847</h2>
+    <p id="profileBio">Living life one post at a time ✨ | RUPPY Member since 2026</p>
 
     <div class="profile-stats">
       <div class="profile-stat">
@@ -259,7 +223,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
         <p>Posts</p>
       </div>
       <div class="profile-stat">
-        <h3>0</h3>
+        <h3 id="profileFriendCount">0</h3>
         <p>Friends</p>
       </div>
       <div class="profile-stat">
@@ -269,20 +233,13 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     </div>
 
     <div class="profile-actions">
-      <button class="profile-btn">Edit Profile</button>
-      <button class="profile-btn secondary">Share Profile</button>
+      <button class="profile-btn" onclick="openEditProfile()">Edit Profile</button>
+      <button class="profile-btn secondary" onclick="shareProfile()">Share Profile</button>
     </div>
   </div>
 
   <div class="section-title">Posts</div>
-  <div class="profile-posts-grid">
-    <div class="profile-post-item"></div>
-    <div class="profile-post-item"></div>
-    <div class="profile-post-item"></div>
-    <div class="profile-post-item"></div>
-    <div class="profile-post-item"></div>
-    <div class="profile-post-item"></div>
-  </div>
+  <div class="profile-posts-grid" id="profilePostsGrid"></div>
   <div id="profileEmpty" style="padding:40px;text-align:center;color:#666;font-size:13px">No posts yet</div>
 </div>
 
@@ -292,10 +249,12 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <span>Home</span>
   </button>
   <button class="nav-btn" id="friend-nav-btn" onclick="switchTab('friend')">
+    <span class="nav-badge" id="friendBadge" style="display:none">0</span>
     <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 00-3-3.87"></path><path d="M16 3.13a4 4 0 010 7.75"></path></svg>
     <span>Friend</span>
   </button>
   <button class="nav-btn" id="notification-nav-btn" onclick="switchTab('notification')">
+    <span class="nav-badge" id="notifBadge" style="display:none">0</span>
     <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 01-3.46 0"></path></svg>
     <span>Notification</span>
   </button>
@@ -303,6 +262,30 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
     <span>Profile</span>
   </button>
+</div>
+
+<div class="modal" id="editProfileModal">
+  <div class="modal-content">
+    <h3>Edit Profile</h3>
+    <label>Profile Picture</label>
+    <button class="profile-btn secondary" onclick="document.getElementById('dpInput').click()" style="margin-bottom:12px">Change DP</button>
+    <input type="file" id="dpInput" accept="image/*">
+
+    <label>Cover Photo</label>
+    <button class="profile-btn secondary" onclick="document.getElementById('coverInput').click()" style="margin-bottom:12px">Change Cover</button>
+    <input type="file" id="coverInput" accept="image/*">
+
+    <label>Name</label>
+    <input type="text" id="editName" placeholder="Your name">
+
+    <label>Bio</label>
+    <textarea id="editBio" placeholder="Tell us about yourself" rows="3"></textarea>
+
+    <div class="modal-actions">
+      <button class="profile-btn secondary" onclick="closeEditProfile()">Cancel</button>
+      <button class="profile-btn" onclick="saveProfile()">Save</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -321,10 +304,49 @@ function checkContent(text){
 }
 
 let posts = JSON.parse(localStorage.getItem('ruppy_posts') || '[]');
-let currentUser = localStorage.getItem('ruppy_username') || 'User'+Math.floor(Math.random()*999);
-document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
+let userData = JSON.parse(localStorage.getItem('ruppy_user') || '{}');
+let friends = JSON.parse(localStorage.getItem('ruppy_friends') || '[]');
+let friendRequests = JSON.parse(localStorage.getItem('ruppy_friend_requests') || '[]');
+let sentRequests = JSON.parse(localStorage.getItem('ruppy_sent_requests') || '[]');
+let notifications = JSON.parse(localStorage.getItem('ruppy_notifications') || '[]');
+let allUsers = JSON.parse(localStorage.getItem('ruppy_all_users') || '[]');
 
+if(!userData.name){
+  userData = {
+    id: Date.now(),
+    name: 'User'+Math.floor(Math.random()*999),
+    bio: 'Living life one post at a time ✨ | RUPPY Member since 2026',
+    dp: null,
+    cover: null
+  };
+  localStorage.setItem('ruppy_user', JSON.stringify(userData));
+}
+
+if(allUsers.length === 0){
+  allUsers = [
+    {id:1,name:'Rahul Sharma',dp:null,bio:'Tech lover'},
+    {id:2,name:'Priya Singh',dp:null,bio:'Photographer'},
+    {id:3,name:'Amit Kumar',dp:null,bio:'Gamer'},
+    {id:4,name:'Sneha Patel',dp:null,bio:'Artist'}
+  ];
+  localStorage.setItem('ruppy_all_users', JSON.stringify(allUsers));
+}
+
+if(friendRequests.length === 0 && friends.length === 0){
+  friendRequests = [
+    {id:Date.now()+1,from:1,fromName:'Rahul Sharma',time:Date.now()-120000},
+    {id:Date.now()+2,from:2,fromName:'Priya Singh',time:Date.now()-900000}
+  ];
+  localStorage.setItem('ruppy_friend_requests', JSON.stringify(friendRequests));
+}
+
+updateUI();
 updateStats();
+renderFeed();
+renderFriends();
+renderNotifications();
+renderProfilePosts();
+updateBadges();
 
 let selectedFile = null;
 document.getElementById('postText').oninput = function(){
@@ -344,6 +366,62 @@ document.getElementById('fileInput').onchange = function(e){
       document.getElementById('postBtn').disabled = false;
     }
     reader.readAsDataURL(selectedFile);
+  }
+}
+
+document.getElementById('dpInput').onchange = function(e){
+  let file = e.target.files[0];
+  if(file){
+    let reader = new FileReader();
+    reader.onload = function(e){
+      userData.dp = e.target.result;
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
+      updateUI();
+    }
+    reader.readAsDataURL(file);
+  }
+}
+
+document.getElementById('coverInput').onchange = function(e){
+  let file = e.target.files[0];
+  if(file){
+    let reader = new FileReader();
+    reader.onload = function(e){
+      userData.cover = e.target.result;
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
+      updateUI();
+    }
+    reader.readAsDataURL(file);
+  }
+}
+
+function updateUI(){
+  document.getElementById('userAvatar').innerHTML = userData.dp? `<img src="${userData.dp}">` : userData.name[0].toUpperCase();
+  document.getElementById('profileName').textContent = userData.name;
+  document.getElementById('profileBio').textContent = userData.bio;
+  document.getElementById('profileDp').innerHTML = userData.dp? `<img src="${userData.dp}">` : userData.name[0].toUpperCase();
+  if(userData.cover){
+    document.getElementById('profileCover').innerHTML = `<img src="${userData.cover}"><div class="profile-dp">${userData.dp? `<img src="${userData.dp}">` : userData.name[0].toUpperCase()}</div>`;
+  }
+}
+
+function updateBadges(){
+  let friendBadge = document.getElementById('friendBadge');
+  let notifBadge = document.getElementById('notifBadge');
+  let unreadNotifs = notifications.filter(n =>!n.read).length;
+
+  if(friendRequests.length > 0){
+    friendBadge.textContent = friendRequests.length;
+    friendBadge.style.display = 'block';
+  } else {
+    friendBadge.style.display = 'none';
+  }
+
+  if(unreadNotifs > 0){
+    notifBadge.textContent = unreadNotifs;
+    notifBadge.style.display = 'block';
+  } else {
+    notifBadge.style.display = 'none';
   }
 }
 
@@ -367,7 +445,8 @@ function createPost(){
 
   let post = {
     id: Date.now(),
-    user: currentUser,
+    user: userData.name,
+    userId: userData.id,
     text: text,
     time: Date.now(),
     likes: 0,
@@ -401,18 +480,20 @@ function savePost(post){
   selectedFile = null;
   renderFeed();
   updateStats();
+  renderProfilePosts();
 }
 
 function updateStats(){
-  let totalPosts = posts.filter(p => p.reports < 3).length;
-  let totalLikes = posts.reduce((sum,p) => sum + p.likes, 0);
-  document.getElementById('totalPosts').textContent = totalPosts;
+  let myPosts = posts.filter(p => p.userId === userData.id && p.reports < 3);
+  let totalLikes = myPosts.reduce((sum,p) => sum + p.likes, 0);
+  document.getElementById('totalPosts').textContent = myPosts.length;
   document.getElementById('totalLikes').textContent = totalLikes;
-  document.getElementById('profilePostCount').textContent = totalPosts;
+  document.getElementById('profilePostCount').textContent = myPosts.length;
   document.getElementById('profileLikeCount').textContent = totalLikes;
+  document.getElementById('profileFriendCount').textContent = friends.length;
 
   let profileEmpty = document.getElementById('profileEmpty');
-  if(totalPosts > 0 && profileEmpty) profileEmpty.style.display = 'none';
+  if(myPosts.length > 0 && profileEmpty) profileEmpty.style.display = 'none';
 }
 
 function renderFeed(){
@@ -436,138 +517,4 @@ function renderFeed(){
       if(post.mediaType === 'video'){
         mediaHTML = `<div class="post-media"><video src="${post.media}" controls></video></div>`;
       } else {
-        mediaHTML = `<div class="post-media"><img src="${post.media}" ondblclick="likePost(${post.id})"></div>`;
-      }
-    }
-
-    let timeAgo = getTimeAgo(post.time);
-    let commentsToShow = post.showAllComments? post.comments : post.comments.slice(-2);
-    let hiddenCount = post.comments.length - commentsToShow.length;
-
-    feed.innerHTML += `
-    <div class="post-card" id="post-${post.id}">
-      <div class="post-card-head">
-        <div class="post-avatar">${post.user[0].toUpperCase()}</div>
-        <div class="post-info">
-          <h4>${post.user}</h4>
-          ${post.time? `<p>${timeAgo}</p>` : ''}
-        </div>
-        <button class="post-more" onclick="reportPost(${post.id})">⋯</button>
-      </div>
-      ${post.text? `<div class="post-content">${post.text}</div>` : ''}
-      ${mediaHTML}
-      <div class="post-footer">
-        <div class="post-stats">
-          <button class="stat-btn ${post.liked?'liked':''}" onclick="likePost(${post.id})">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 0 00-6.364L12 7.636l-1.318-1.318a4.5 0 00-6.364 0z"></path></svg>
-            <span>${post.likes}</span>
-          </button>
-          <button class="stat-btn" onclick="toggleComments(${post.id})">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-            <span>${post.comments.length}</span>
-          </button>
-        </div>
-        <button class="share-btn" onclick="sharePost(${post.id})">Share</button>
-      </div>
-      <div class="comments-box" id="comments-${post.id}">
-        ${hiddenCount > 0 &&!post.showAllComments? `<div class="view-more" onclick="showAllComments(${post.id})">View ${hiddenCount} more comments</div>` : ''}
-        ${commentsToShow.map(c => `
-          <div class="comment">
-            <div class="comment-avatar">${c.user[0].toUpperCase()}</div>
-            <div class="comment-body">
-              <b>${c.user}</b>
-              <span>${c.text}</span>
-            </div>
-          </div>`).join('')}
-        <div class="comment-input">
-          <input type="text" placeholder="Add a comment..." id="commentInput-${post.id}" onkeypress="if(event.key==='Enter') addComment(${post.id})">
-          <button onclick="addComment(${post.id})">Send</button>
-        </div>
-      </div>
-    </div>`;
-  });
-}
-
-function getTimeAgo(time){
-  if(!time || isNaN(time)) return '';
-  let seconds = Math.floor((Date.now() - Number(time)) / 1000);
-  if(seconds < 60) return 'now';
-  let minutes = Math.floor(seconds / 60);
-  if(minutes < 60) return `${minutes}m ago`;
-  let hours = Math.floor(minutes / 60);
-  if(hours < 24) return `${hours}h ago`;
-  let days = Math.floor(hours / 24);
-  if(days < 7) return `${days}d ago`;
-  return new Date(time).toLocaleDateString();
-}
-
-function likePost(id){
-  let post = posts.find(p => p.id === id);
-  post.liked =!post.liked;
-  post.likes += post.liked? 1 : -1;
-  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
-  renderFeed();
-  updateStats();
-}
-
-function toggleComments(id){
-  let box = document.getElementById(`comments-${id}`);
-  box.style.display = box.style.display === 'block'? 'none' : 'block';
-}
-
-function showAllComments(id){
-  let post = posts.find(p => p.id === id);
-  post.showAllComments = true;
-  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
-  renderFeed();
-  document.getElementById(`comments-${id}`).style.display = 'block';
-}
-
-function addComment(id){
-  let input = document.getElementById(`commentInput-${id}`);
-  let text = input.value.trim();
-  if(!text) return;
-  if(checkContent(text)){
-    alert('Inappropriate content');
-    return;
-  }
-  let post = posts.find(p => p.id === id);
-  post.comments.push({user: currentUser, text: text, time: Date.now()});
-  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
-  input.value = '';
-  renderFeed();
-  document.getElementById(`comments-${id}`).style.display = 'block';
-}
-
-function sharePost(id){
-  let post = posts.find(p => p.id === id);
-  let shareData = {
-    title: 'RUPPY Hub Post',
-    text: post.text || 'Check this post on RUPPY Hub',
-    url: window.location.href
-  };
-  if(navigator.share){
-    navigator.share(shareData).catch(err => console.log('Share failed'));
-  } else {
-    let whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`;
-    window.open(whatsappUrl, '_blank');
-  }
-}
-
-function reportPost(id){
-  if(confirm('Report this post?')){
-    let post = posts.find(p => p.id === id);
-    post.reports++;
-    localStorage.setItem('ruppy_posts', JSON.stringify(posts));
-    alert('Reported');
-    renderFeed();
-    updateStats();
-  }
-}
-
-function switchTab(tab){
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-
-  if(tab === 'hub'){
-    document.getElementById
+        mediaHTML = `<div class="post-media
