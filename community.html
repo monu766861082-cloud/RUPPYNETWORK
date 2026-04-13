@@ -49,6 +49,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 24px;color:#000;font-weight:700;font-size:14px;cursor:pointer}
 .post-btn:disabled{opacity:0.3;cursor:not-allowed}
 .claim-btn{background:#00C853;border:none;border-radius:10px;padding:10px 24px;color:#fff;font-weight:700;font-size:14px;cursor:pointer;width:100%;margin-top:10px}
+.claim-btn.claimed{background:#333;color:#888;cursor:not-allowed}
 .feed{padding:0 20px}
 #fileInput{display:none}
 .post-card{background:#111;border:1px solid #222;border-radius:16px;padding:14px;margin-bottom:12px}
@@ -61,9 +62,9 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-media img,.post-media video{width:100%;border-radius:12px;margin-top:8px}
 .gift-banner{background:#fff3cd;border:1px solid #ffe69c;padding:8px;border-radius:8px;font-size:13px;margin-bottom:10px;color:#664d03;font-weight:600}
 .post-actions{display:flex;gap:10px;margin-top:8px}
-.like-btn,.comment-btn{background:yellow;border:2px solid #e6c200;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;color:#000}
-.like-btn.liked{background:#FFD700;border-color:#FFA500}
-.comment-btn b{color:black}
+.like-btn,.comment-btn{background:#FFF9C4;border:2px solid #F4E04D;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;color:#333}
+.like-btn.liked{background:#FFE082;border-color:#FFC107;color:#000}
+.comment-btn b{color:#333}
 .unclaimed-badge{background:#FF6D00;color:#fff;font-size:11px;padding:3px 8px;border-radius:6px;margin-left:8px}
 .profile-posts{padding:0 20px 20px}
 .profile-posts h3{font-size:16px;color:#888;margin:20px 0 12px}
@@ -87,7 +88,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
 <div id="hub-tab" class="tab-content active">
   <div class="create-card">
-    <div class="gift-banner">🎁 +10 RUPPY Token per post | <span id="limitText">3/3 left</span></div>
+    <div class="gift-banner" id="giftBanner">🎁 +10 RUPPY Token per post | <span id="limitText">3/3 left</span></div>
     <div class="create-top">
       <div class="create-avatar" id="userAvatar">U</div>
       <textarea id="postText" placeholder="Create Post..." rows="2"></textarea>
@@ -177,8 +178,10 @@ function updatePostLimit() {
   if (uData.postsToday >= 3) {
     document.getElementById('postBtn').disabled = true;
     document.getElementById('postBtn').innerText = 'Daily limit reached 3/3';
+    document.getElementById('giftBanner').innerHTML = '🎁 Daily limit reached. Come back tomorrow';
   } else {
     document.getElementById('postBtn').innerText = `Post`;
+    document.getElementById('giftBanner').innerHTML = `🎁 +10 RUPPY Token per post | <span id="limitText">${left}/3 left</span>`;
   }
 }
 
@@ -268,8 +271,12 @@ function renderPostHTML(p,i,showClaim){
     }
     let isLiked = p.likedBy && p.likedBy.includes(uData.uid);
     let claimBtn = '';
-    if(showClaim && p.uid === uData.uid &&!p.claimed){
-      claimBtn = `<button class="claim-btn" onclick="claimReward(${p.id})">Claim +10 Token</button>`;
+    if(showClaim && p.uid === uData.uid){
+      if(!p.claimed){
+        claimBtn = `<button class="claim-btn" onclick="claimReward(${p.id})">Claim +10 Token</button>`;
+      } else {
+        claimBtn = `<button class="claim-btn claimed" disabled>Claimed ✓</button>`;
+      }
     }
     let unclaimedTag = (p.uid === uData.uid &&!p.claimed)? `<span class="unclaimed-badge">Unclaimed</span>` : '';
 
@@ -282,7 +289,7 @@ function renderPostHTML(p,i,showClaim){
       ${claimBtn}
       <div class="post-actions">
         <button class="like-btn ${isLiked?'liked':''}" onclick="likePost(${i})"><b>Like</b> ❤️ ${p.likes||0}</button>
-        <button class="comment-btn"><b style="color:black">Comment</b> 💬</button>
+        <button class="comment-btn"><b style="color:#333">Comment</b> 💬</button>
       </div>
     </div>`;
 }
