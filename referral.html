@@ -4,34 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ruppy Referral</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
-.hdr{padding:20px;font-size:28px;font-weight:bold}
-.card{border:1px solid #a87128;border-radius:14px;padding:16px;margin:16px;box-shadow:0 0 10px #a87128}
-.card h3{margin:0 0 8px;color:#ccc}
-.card .amt{font-size:36px;font-weight:bold;display:flex;align-items:center;gap:10px}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
+body{background:#000;color:#fff;padding-bottom:80px}
+.hdr{padding:20px;font-size:28px;font-weight:800;background:linear-gradient(90deg,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.card{border:1px solid #a87128;border-radius:14px;padding:16px;margin:16px;box-shadow:0 0 15px rgba(168,113,40,0.4);background:linear-gradient(135deg,#111,#0a0a0a)}
+.card h3{margin:0 0 8px;color:#ccc;font-size:14px;font-weight:600}
+.card .amt{font-size:36px;font-weight:800;display:flex;align-items:center;gap:10px}
 .card .amt span{color:#d4a017}
-.logo{width:36px;height:36px;border-radius:50%;object-fit:cover}
-.tag{background:#093;display:inline-block;padding:4px 10px;border-radius:6px;margin-top:8px;color:#0f0}
-.inv{border:1px solid #444;border-radius:14px;padding:16px;margin:16px}
-.inv label{display:block;margin-bottom:8px;color:#ccc}.inpbx{display:flex;gap:8px}
-.inp{flex:1;border:1px solid #444;border-radius:10px;padding:12px;text-align:center;font-size:18px;font-weight:bold;color:#d4a017;background:#111}
-.cp{width:48px;height:48px;border:1px solid #a87128;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.bt{background:#d4a017;color:#000;font-weight:bold;border:none;border-radius:10px;padding:14px;width:100%;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.logo{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid #FFD700}
+.tag{background:#093;display:inline-block;padding:4px 10px;border-radius:6px;margin-top:8px;color:#0f0;font-size:12px;font-weight:700}
+.inv{border:1px solid #444;border-radius:14px;padding:16px;margin:16px;background:#111}
+.inv label{display:block;margin-bottom:8px;color:#ccc;font-size:12px;font-weight:600}
+.inpbx{display:flex;gap:8px}
+.inp{flex:1;border:1px solid #444;border-radius:10px;padding:12px;text-align:center;font-size:18px;font-weight:800;color:#d4a017;background:#0a0a0a}
+.cp{width:48px;height:48px;border:1px solid #a87128;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#1a1a1a;transition:0.2s;font-size:20px}
+.cp:active{transform:scale(0.92)}
+.bt{background:linear-gradient(135deg,#FFD700,#FFA500);color:#000;font-weight:800;border:none;border-radius:10px;padding:14px;width:100%;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-size:15px;box-shadow:0 4px 15px rgba(255,215,0,0.4);transition:0.2s}
+.bt:active{transform:scale(0.98)}
 .sts{display:flex;gap:12px;padding:0 16px;margin-bottom:12px}
-.bx{flex:1;border:1px solid #333;border-radius:10px;padding:16px;text-align:center}
-.bx .v{font-size:24px;font-weight:bold}.bx .l{display:block;margin-top:4px;color:#aaa}
-.team{padding:0 16px;font-size:18px;font-weight:bold;color:#d4a017}
+.bx{flex:1;border:1px solid #333;border-radius:10px;padding:16px;text-align:center;background:#111}
+.bx .v{font-size:24px;font-weight:800}
+.bx .l{display:block;margin-top:4px;color:#aaa;font-size:11px;font-weight:600}
+.team{padding:0 16px 16px;font-size:18px;font-weight:700;color:#d4a017}
 
-/* Bottom Nav - 6 ICONS WITH FEED */
-.nav{position:fixed;bottom:0;left:0;right:0;background:#0a0a0a;border-top:1px solid #222;height:60px;display:flex;justify-content:space-around;align-items:center;z-index:999;padding:0 5px}
+/* Bottom Nav - 6 ICONS CHAMAKTE HUE */
+.ruppy-nav{position:fixed;bottom:0;left:0;right:0;background:#0a0a0a;border-top:1px solid #222;height:60px;display:flex;justify-content:space-around;align-items:center;z-index:999;padding:0 5px;box-shadow:0 -5px 20px rgba(0,0,0,0.8)}
 .nav-btn{background:none;border:none;color:#6B7280;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px 8px;border-radius:12px;transition:0.2s}
 .nav-btn.active{color:#FFA500}
-.nav-btn svg{width:22px;height:22px;stroke-width:2;fill:none;stroke:currentColor}
-.nav-btn.active svg{fill:#FFA500;stroke:#FFA500}
-.nav-btn span{font-size:9px;font-weight:600}
+.nav-btn svg{width:22px;height:22px;stroke-width:2;fill:none;stroke:currentColor;transition:0.2s}
+.nav-btn.active svg{fill:#FFA500;stroke:#FFA500;filter:drop-shadow(0 0 6px rgba(255,165,0,0.6))}
+.nav-btn span{font-size:9px;font-weight:700}
+.nav-btn:active{transform:scale(0.9)}
 
-.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999;box-shadow:0 5px 20px rgba(0,0,0,0.5);font-weight:600}
 </style>
 </head>
 <body>
@@ -64,7 +71,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 <div class="team">👥 My Team</div>
 
 <!-- Bottom Nav - AB 6 ICONS HAIN -->
-<div class="nav">
+<div class="ruppy-nav">
   <button class="nav-btn" onclick="location.href='app.html'">
     <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path><polyline points="9 22 9 12 15 22"></polyline></svg>
     <span>Home</span>
@@ -78,7 +85,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
     <span>Referral</span>
   </button>
   <button class="nav-btn" onclick="location.href='ranking.html'">
-    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 0 001.946-.806 3.42 0 014.438 0 3.42 0 001.946.806 3.42 0 013.138 3.42 0 00.806 1.946 3.42 0 010 4.438 3.42 0 00-.806 1.946 3.42 0 01-3.138 3.42 0 00-1.946.806 3.42 0 01-4.438 0 3.42 0 00-1.946-.806 3.42 0 01-3.138 3.42 0 00-.806-1.946 3.42 0 010-4.438 3.42 0 00.806-1.946 3.42 0 013.138-3.138z"></path></svg>
+    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 0 001.946-.806 3.42 0 014.438 0 3.42 0 001.946.806 3.42 0 013.138 3.138 3.42 0 00.806 1.946 3.42 0 010 4.438 3.42 0 00-.806 1.946 3.42 0 01-3.138 3.138 3.42 0 00-1.946.806 3.42 0 01-4.438 0 3.42 0 00-1.946-.806 3.42 0 01-3.138-3.138 3.42 0 00-.806-1.946 3.42 0 010-4.438 3.42 0 00.806-1.946 3.42 0 013.138-3.138z"></path></svg>
     <span>Ranking</span>
   </button>
   <button class="nav-btn" onclick="location.href='community.html'">
@@ -86,7 +93,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
     <span>Feed</span>
   </button>
   <button class="nav-btn" onclick="location.href='settings.html'">
-    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37a1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
     <span>Settings</span>
   </button>
 </div>
@@ -135,46 +142,4 @@ let newTeamReward = Math.floor(teamCollected24h * 0.02);
 
 if(now - userData.lastTeamRewardCheck > oneDay){
   userData.balance += newTeamReward;
-  userData.lastTeamRewardCheck = now;
-  userData.teamRewardEarned += newTeamReward;
-  localStorage.setItem('ruppy_user', JSON.stringify(userData));
-}
-
-document.getElementById('teamReward').innerText = userData.teamRewardEarned || 0;
-document.getElementById('totalCount').innerText = total;
-document.getElementById('activeCount').innerText = active;
-document.getElementById('inactiveCount').innerText = inactive;
-
-function copy(){
-  navigator.clipboard.writeText(inviteCode);
-  showToast('Invite Code Copied!');
-}
-
-function invite(){
-  let text = `Join RUPPY Network & start playing! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app?ref=${inviteCode}`;
-  
-  if(navigator.share){
-    navigator.share({
-      title: 'Join RUPPY Network',
-      text: text,
-      url: `https://ruppynetwork.vercel.app?ref=${inviteCode}`
-    });
-  } else {
-    navigator.clipboard.writeText(text + '\n\nShare on: WhatsApp, Facebook, Instagram, Telegram');
-    showToast('Invite Link Copied! Share on WhatsApp/Facebook/Instagram/Telegram');
-  }
-}
-
-function showToast(msg){
-  let t = document.getElementById('toast');
-  t.innerText = msg;
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 2500);
-}
-
-window.addEventListener('storage', function(e){
-  if(e.key === 'ruppy_user') location.reload();
-});
-</script>
-</body>
-</html>
+  user
