@@ -67,8 +67,8 @@ h1{color:#F3C774;text-align:center;margin:10px 0 20px;font-size:26px}
 </div>
 
 <script>
-// 1. PORN/GALI FILTER - 500+ शब्द Block
-const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino'];
+// 1. PORN/GALI FILTER - गंदे शब्द Block
+const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
 function checkContent(text){
   let lower = text.toLowerCase();
   return bannedWords.some(word => lower.includes(word));
