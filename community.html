@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RUPPY Hub</title>
+<title>RUPPY Communities</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
@@ -17,113 +17,38 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .hub-logo span{font-size:12px;color:#666;background:#1a1a1a;padding:2px 8px;border-radius:10px}
 .create-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 4px 15px rgba(255,215,0,0.3)}
 
-.stats-bar{display:flex;gap:10px;padding:16px 20px;overflow-x:auto}
-.stats-bar::-webkit-scrollbar{display:none}
-.stat-card{background:linear-gradient(135deg,#1a1a1a,#0d0d0d);border:1px solid #252525;border-radius:16px;padding:12px 16px;min-width:110px;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,0.5)}
-.stat-card h3{font-size:20px;font-weight:700;color:#FFD700;margin-bottom:2px}
-.stat-card p{font-size:11px;color:#888}
-
-.create-card{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:20px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
-.create-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
-.create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden}
-.create-avatar img{width:100%;height:100%;object-fit:cover}
-.create-card textarea{width:100%;background:#0a0a0a;border:1px solid #222;border-radius:12px;padding:12px;color:#fff;font-size:15px;resize:none;font-family:inherit;min-height:60px}
-.create-card textarea::placeholder{color:#555}
-.create-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
-.create-actions.left{display:flex;gap:12px}
-.icon-btn{background:#1a1a1a;border:1px solid #333;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer}
-.post-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 24px;color:#000;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 15px rgba(255,215,0,0.3)}
-.post-btn:disabled{opacity:0.3;cursor:not-allowed}
-
-.feed{padding:0 20px}
-.post-card{background:#111;border:1px solid #222;border-radius:24px;margin-bottom:16px;overflow:hidden;transition:0.3s;box-shadow:0 8px 25px rgba(0,0,0,0.6)}
-.post-card:active{transform:scale(0.98)}
-.post-card-head{padding:16px;display:flex;align-items:center;gap:12px}
-.post-avatar{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden}
-.post-avatar img{width:100%;height:100%;object-fit:cover}
-.post-info{flex:1}
-.post-info h4{font-size:15px;font-weight:600;margin-bottom:2px}
-.post-info p{font-size:12px;color:#666}
-.post-more{background:#1a1a1a;border:none;border-radius:8px;width:32px;height:32px;color:#888;font-size:20px;cursor:pointer}
-
-.post-content{padding:0 16px 16px;font-size:15px;line-height:1.5;color:#ddd}
-.post-media{width:100%;max-height:400px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.post-media img,.post-media video{width:100%;height:auto;display:block}
-
-.post-footer{padding:12px 16px;border-top:1px solid #252525;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,#161616,#101010);box-shadow:inset 0 1px 0 rgba(255,215,0,0.15)}
-.post-stats{display:flex;gap:10px}
-.stat-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;color:#000;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;cursor:pointer;padding:9px 16px;border-radius:12px;transition:0.2s;box-shadow:0 3px 12px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3)}
-.stat-btn:active{transform:scale(0.92);box-shadow:0 1px 5px rgba(255,215,0,0.4)}
-.stat-btn.liked{background:linear-gradient(135deg,#FF6B6B,#FF4757);color:#fff;box-shadow:0 3px 12px rgba(255,107,107,0.5), inset 0 1px 0 rgba(255,255,255,0.3)}
-.stat-btn.liked span{color:#fff}
-.stat-btn svg{width:18px;height:18px;stroke:#000;fill:none;stroke-width:2.5}
-.stat-btn.liked svg{stroke:#fff;fill:#fff}
-.share-btn{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:9px 16px;color:#FFD700;font-size:13px;font-weight:700;cursor:pointer;transition:0.2s}
-.share-btn:active{transform:scale(0.92);background:#222}
-
-.comments-box{display:none;padding:16px;border-top:1px solid #1a1a1a;background:#0d0d0d;max-height:300px;overflow-y:auto}
-.view-more{color:#FFD700;font-size:13px;font-weight:600;padding:8px 0;cursor:pointer;text-align:center;margin-bottom:10px}
-.view-more:active{opacity:0.6}
-.comment{display:flex;gap:10px;margin-bottom:14px}
-.comment-avatar{width:32px;height:32px;border-radius:10px;background:#FFD700;color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;overflow:hidden}
-.comment-avatar img{width:100%;height:100%;object-fit:cover}
-.comment-body{flex:1;background:#1a1a1a;border-radius:12px;padding:10px 12px}
-.comment-body b{font-size:13px;font-weight:600;display:block;margin-bottom:2px}
-.comment-body span{font-size:14px;line-height:1.4;color:#ddd}
-.comment-input{display:flex;gap:10px;padding:12px 16px;border-top:1px solid #1a1a1a}
-.comment-input input{flex:1;background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:10px 14px;color:#fff;font-size:14px;outline:none}
-.comment-input button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer}
-
-.tab-content{display:none}
-.tab-content.active{display:block}
-.section-title{padding:16px 20px 8px;font-size:18px;font-weight:700;color:#FFD700;display:flex;justify-content:space-between;align-items:center}
-.clear-btn{background:none;border:none;color:#FF6B6B;font-size:13px;font-weight:600;cursor:pointer}
-
-.search-bar{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px}
+.search-bar{margin:16px 20px;background:#111;border:1px solid #222;border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px}
 .search-bar input{flex:1;background:none;border:none;color:#fff;font-size:14px;outline:none}
 .search-bar input::placeholder{color:#555}
-.user-card{background:#111;border:1px solid #222;border-radius:16px;padding:12px;margin:0 20px 12px;display:flex;align-items:center;gap:12px}
-.user-card-avatar{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:18px;flex-shrink:0;overflow:hidden}
-.user-card-avatar img{width:100%;height:100%;object-fit:cover}
-.user-card-info{flex:1}
-.user-card-info h4{font-size:15px;font-weight:600;margin-bottom:2px}
-.user-card-info p{font-size:12px;color:#666}
-.user-card-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:8px 16px;color:#000;font-weight:700;font-size:12px;cursor:pointer}
-.user-card-btn.secondary{background:#1a1a1a;color:#FFD700;border:1px solid #333}
-.user-card-btn:disabled{opacity:0.5;cursor:not-allowed}
 
-.notif-card{background:#111;border:1px solid #222;border-radius:16px;padding:14px;margin:0 20px 12px;display:flex;gap:12px;align-items:flex-start;cursor:pointer}
-.notif-card.unread{background:#1a1a1a;border-color:#333}
-.notif-card:active{transform:scale(0.98)}
-.notif-icon{width:40px;height:40px;border-radius:12px;background:#FFD700;color:#000;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.notif-content{flex:1}
-.notif-content p{font-size:14px;line-height:1.4;margin-bottom:4px}
-.notif-content p b{color:#FFD700}
-.notif-time{font-size:11px;color:#666}
-.notif-actions{display:flex;gap:8px;margin-top:8px}
-.notif-actions button{flex:1;padding:8px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer}
+.section-title{padding:16px 20px 8px;font-size:18px;font-weight:700;color:#FFD700}
 
-.profile-cover{width:100%;height:140px;background:linear-gradient(135deg,#FFD700,#FFA500);position:relative;overflow:hidden}
-.profile-cover img{width:100%;height:100%;object-fit:cover}
-.profile-dp{width:90px;height:90px;border-radius:24px;background:linear-gradient(135deg,#FFA500,#FFD700);border:4px solid #0a0a0a;position:absolute;bottom:-45px;left:20px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:32px;overflow:hidden}
-.profile-dp img{width:100%;height:100%;object-fit:cover}
-.profile-info{padding:55px 20px 16px}
-.profile-info h2{font-size:24px;font-weight:800;margin-bottom:4px}
-.profile-info p{font-size:14px;color:#888;line-height:1.5;margin-bottom:12px}
-.profile-stats{display:flex;gap:20px;margin-bottom:16px}
-.profile-stat{text-align:center}
-.profile-stat h3{font-size:18px;font-weight:700;color:#FFD700}
-.profile-stat p{font-size:11px;color:#666;margin:0}
-.profile-actions{display:flex;gap:10px}
-.profile-btn{flex:1;background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:12px;color:#000;font-weight:700;font-size:14px;cursor:pointer}
-.profile-btn.secondary{background:#1a1a1a;color:#FFD700;border:1px solid #333}
-.profile-posts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:0 20px}
-.profile-post-item{aspect-ratio:1;background:#1a1a1a;border-radius:8px;overflow:hidden;cursor:pointer}
-.profile-post-item img{width:100%;height:100%;object-fit:cover}
+.community-card{background:#111;border:1px solid #222;border-radius:20px;margin:0 20px 16px;overflow:hidden;transition:0.3s;box-shadow:0 8px 25px rgba(0,0,0,0.6);cursor:pointer}
+.community-card:active{transform:scale(0.98)}
+.community-banner{width:100%;height:100px;background:linear-gradient(135deg,#FFD700,#FFA500);position:relative;overflow:hidden}
+.community-banner img{width:100%;height:100%;object-fit:cover}
+.community-icon{width:70px;height:70px;border-radius:20px;background:#0a0a0a;border:4px solid #111;position:absolute;bottom:-35px;left:20px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#FFD700;font-size:28px;overflow:hidden}
+.community-icon img{width:100%;height:100%;object-fit:cover}
+.community-info{padding:45px 20px 16px}
+.community-info h3{font-size:18px;font-weight:700;margin-bottom:4px}
+.community-info p{font-size:13px;color:#888;line-height:1.4;margin-bottom:12px}
+.community-stats{display:flex;gap:16px;margin-bottom:12px}
+.community-stat{font-size:12px;color:#666}
+.community-stat b{color:#FFD700;font-weight:700}
+.community-actions{display:flex;gap:10px}
+.community-btn{flex:1;background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:10px;color:#000;font-weight:700;font-size:13px;cursor:pointer}
+.community-btn.joined{background:#1a1a1a;color:#FFD700;border:1px solid #333}
+
+.my-communities{display:flex;gap:12px;padding:0 20px 16px;overflow-x:auto}
+.my-communities::-webkit-scrollbar{display:none}
+.my-community-chip{background:#111;border:1px solid #333;border-radius:16px;padding:10px 14px;display:flex;align-items:center;gap:8px;flex-shrink:0;cursor:pointer}
+.my-community-chip:active{transform:scale(0.95)}
+.my-community-chip-icon{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:14px;overflow:hidden}
+.my-community-chip-icon img{width:100%;height:100%;object-fit:cover}
+.my-community-chip span{font-size:13px;font-weight:600}
 
 .ruppy-nav{position:fixed;bottom:0;left:0;right:0;background:#0a0a0a;border-top:1px solid #222;height:65px;display:flex;justify-content:space-around;align-items:center;z-index:999;padding:0 10px}
-.nav-btn{background:none;border:none;color:#FFE55C;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:8px 12px;border-radius:12px;transition:0.2s;opacity:0.7;position:relative}
-.nav-badge{position:absolute;top:4px;right:8px;background:#FF4757;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:10px;min-width:16px;text-align:center}
+.nav-btn{background:none;border:none;color:#FFE55C;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:8px 12px;border-radius:12px;transition:0.2s;opacity:0.7}
 .nav-btn.active{color:#FFD700;opacity:1}
 .nav-btn:active{transform:scale(0.9)}
 .nav-btn svg{width:24px;height:24px;stroke-width:2;fill:none;stroke:currentColor}
@@ -144,401 +69,254 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .modal-actions{display:flex;gap:10px;margin-top:16px}
 .modal-actions button{flex:1}
 
-#fileInput,#dpInput,#coverInput{display:none}
+#iconInput,#bannerInput{display:none}
 </style>
 </head>
 <body>
 
 <div class="hub-header">
   <div class="hub-logo">
-    <button class="back-arrow" onclick="exitApp()">←</button>
+    <button class="back-arrow" onclick="window.location.href='index.html'">←</button>
     <h1>RUPPY</h1>
-    <span>HUB</span>
+    <span>COMMUNITY</span>
   </div>
-  <button class="create-btn" onclick="openCreate()">
+  <button class="create-btn" onclick="openCreateCommunity()">
     <span>✨</span> Create
   </button>
 </div>
 
-<div id="hub-tab" class="tab-content active">
-  <div class="stats-bar">
-    <div class="stat-card"><h3 id="totalPosts">0</h3><p>Total Posts</p></div>
-    <div class="stat-card"><h3 id="totalLikes">0</h3><p>Total Likes</p></div>
-    <div class="stat-card"><h3 id="activeUsers">1</h3><p>Active Now</p></div>
-  </div>
-  <div class="create-card">
-    <div class="create-top">
-      <div class="create-avatar" id="userAvatar">U</div>
-      <textarea id="postText" placeholder="Share your RUPPY update..." rows="2"></textarea>
-    </div>
-    <div class="create-actions">
-      <div class="left">
-        <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📷</button>
-        <button class="icon-btn" onclick="addEmoji()">😊</button>
-      </div>
-      <button class="post-btn" id="postBtn" onclick="createPost()" disabled>Post</button>
-    </div>
-    <input type="file" id="fileInput" accept="image/*,video/*">
-    <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
-  </div>
-  <div class="feed" id="feed"></div>
+<div class="search-bar">
+  <span>🔍</span>
+  <input type="text" id="communitySearch" placeholder="Search communities..." oninput="searchCommunities()">
 </div>
 
-<div id="friend-tab" class="tab-content">
-  <div class="search-bar">
-    <span>🔍</span>
-    <input type="text" id="friendSearch" placeholder="Search friends..." oninput="searchFriends()">
-  </div>
-
-  <div class="section-title">Friend Requests</div>
-  <div id="friendRequestsList"></div>
-
-  <div class="section-title">People You May Know</div>
-  <div id="suggestedFriendsList"></div>
-
-  <div class="section-title">My Friends</div>
-  <div id="myFriendsList"></div>
+<div class="section-title">My Communities</div>
+<div class="my-communities" id="myCommunitiesList">
+  <div style="padding:0 20px;color:#666;font-size:13px">No communities joined yet</div>
 </div>
 
-<div id="notification-tab" class="tab-content">
-  <div class="section-title">
-    <span>Notifications</span>
-    <button class="clear-btn" onclick="clearAllNotifications()">Clear All</button>
-  </div>
-  <div id="notificationsList"></div>
-</div>
+<div class="section-title">Discover Communities</div>
+<div id="communitiesList"></div>
 
-<div id="profile-tab" class="tab-content">
-  <div class="profile-cover" id="profileCover">
-    <div class="profile-dp" id="profileDp">U</div>
-  </div>
+<div class="modal" id="createCommunityModal">
+  <div class="modal-content">
+    <h3>Create Community</h3>
+    <label>Community Icon</label>
+    <button class="community-btn" onclick="document.getElementById('iconInput').click()" style="margin-bottom:12px;width:100%">Upload Icon</button>
+    <input type="file" id="iconInput" accept="image/*">
 
-  <div class="profile-info">
-    <h2 id="profileName">User847</h2>
-    <p id="profileBio">Living life one post at a time ✨ | RUPPY Member since 2026</p>
+    <label>Banner Image</label>
+    <button class="community-btn" onclick="document.getElementById('bannerInput').click()" style="margin-bottom:12px;width:100%">Upload Banner</button>
+    <input type="file" id="bannerInput" accept="image/*">
 
-    <div class="profile-stats">
-      <div class="profile-stat">
-        <h3 id="profilePostCount">0</h3>
-        <p>Posts</p>
-      </div>
-      <div class="profile-stat">
-        <h3 id="profileFriendCount">0</h3>
-        <p>Friends</p>
-      </div>
-      <div class="profile-stat">
-        <h3 id="profileLikeCount">0</h3>
-        <p>Likes</p>
-      </div>
-    </div>
+    <label>Community Name</label>
+    <input type="text" id="communityName" placeholder="e.g. RUPPY Gamers">
 
-    <div class="profile-actions">
-      <button class="profile-btn" onclick="openEditProfile()">Edit Profile</button>
-      <button class="profile-btn secondary" onclick="shareProfile()">Share Profile</button>
+    <label>Description</label>
+    <textarea id="communityDesc" placeholder="What is this community about?" rows="3"></textarea>
+
+    <div class="modal-actions">
+      <button class="community-btn" style="background:#1a1a1a;color:#FFD700;border:1px solid #333" onclick="closeCreateCommunity()">Cancel</button>
+      <button class="community-btn" onclick="saveCommunity()">Create</button>
     </div>
   </div>
-
-  <div class="section-title">Posts</div>
-  <div class="profile-posts-grid" id="profilePostsGrid"></div>
-  <div id="profileEmpty" style="padding:40px;text-align:center;color:#666;font-size:13px">No posts yet</div>
 </div>
 
 <div class="ruppy-nav">
-  <button class="nav-btn active" id="home-nav-btn" onclick="switchTab('hub')">
+  <button class="nav-btn" onclick="window.location.href='index.html'">
     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path><polyline points="9 22 9 12 15 22"></polyline></svg>
     <span>Home</span>
   </button>
-  <button class="nav-btn" id="friend-nav-btn" onclick="switchTab('friend')">
-    <span class="nav-badge" id="friendBadge" style="display:none">0</span>
+  <button class="nav-btn active">
     <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 00-3-3.87"></path><path d="M16 3.13a4 4 0 010 7.75"></path></svg>
-    <span>Friend</span>
+    <span>Community</span>
   </button>
-  <button class="nav-btn" id="notification-nav-btn" onclick="switchTab('notification')">
-    <span class="nav-badge" id="notifBadge" style="display:none">0</span>
-    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 01-3.46 0"></path></svg>
-    <span>Notification</span>
-  </button>
-  <button class="nav-btn" id="profile-nav-btn" onclick="switchTab('profile')">
-    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-    <span>Profile</span>
-  </button>
-</div>
-
-<div class="modal" id="editProfileModal">
-  <div class="modal-content">
-    <h3>Edit Profile</h3>
-    <label>Profile Picture</label>
-    <button class="profile-btn secondary" onclick="document.getElementById('dpInput').click()" style="margin-bottom:12px">Change DP</button>
-    <input type="file" id="dpInput" accept="image/*">
-
-    <label>Cover Photo</label>
-    <button class="profile-btn secondary" onclick="document.getElementById('coverInput').click()" style="margin-bottom:12px">Change Cover</button>
-    <input type="file" id="coverInput" accept="image/*">
-
-    <label>Name</label>
-    <input type="text" id="editName" placeholder="Your name">
-
-    <label>Bio</label>
-    <textarea id="editBio" placeholder="Tell us about yourself" rows="3"></textarea>
-
-    <div class="modal-actions">
-      <button class="profile-btn secondary" onclick="closeEditProfile()">Cancel</button>
-      <button class="profile-btn" onclick="saveProfile()">Save</button>
-    </div>
-  </div>
 </div>
 
 <script>
-function exitApp(){
-  if(window.history.length > 1){
-    window.history.back();
-  } else {
-    window.close();
-  }
-}
-
-const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
-function checkContent(text){
-  let lower = text.toLowerCase();
-  return bannedWords.some(word => lower.includes(word));
-}
-
-let posts = JSON.parse(localStorage.getItem('ruppy_posts') || '[]');
+let communities = JSON.parse(localStorage.getItem('ruppy_communities') || '[]');
+let myCommunities = JSON.parse(localStorage.getItem('ruppy_my_communities') || '[]');
 let userData = JSON.parse(localStorage.getItem('ruppy_user') || '{}');
-let friends = JSON.parse(localStorage.getItem('ruppy_friends') || '[]');
-let friendRequests = JSON.parse(localStorage.getItem('ruppy_friend_requests') || '[]');
-let sentRequests = JSON.parse(localStorage.getItem('ruppy_sent_requests') || '[]');
-let notifications = JSON.parse(localStorage.getItem('ruppy_notifications') || '[]');
-let allUsers = JSON.parse(localStorage.getItem('ruppy_all_users') || '[]');
 
-if(!userData.name){
-  userData = {
-    id: Date.now(),
-    name: 'User'+Math.floor(Math.random()*999),
-    bio: 'Living life one post at a time ✨ | RUPPY Member since 2026',
-    dp: null,
-    cover: null
-  };
-  localStorage.setItem('ruppy_user', JSON.stringify(userData));
-}
-
-if(allUsers.length === 0){
-  allUsers = [
-    {id:1,name:'Rahul Sharma',dp:null,bio:'Tech lover'},
-    {id:2,name:'Priya Singh',dp:null,bio:'Photographer'},
-    {id:3,name:'Amit Kumar',dp:null,bio:'Gamer'},
-    {id:4,name:'Sneha Patel',dp:null,bio:'Artist'}
+if(communities.length === 0){
+  communities = [
+    {id:1,name:'RUPPY Gamers',desc:'For all gaming lovers. Share tips, gameplay, and more!',members:1247,icon:null,banner:null,created:Date.now()},
+    {id:2,name:'Tech Talk',desc:'Discuss latest tech, gadgets, coding, AI and everything tech!',members:892,icon:null,banner:null,created:Date.now()},
+    {id:3,name:'Creators Hub',desc:'Content creators unite! Share your work and get feedback',members:634,icon:null,banner:null,created:Date.now()},
+    {id:4,name:'Meme Lords',desc:'Only dank memes allowed. No norms!',members:2103,icon:null,banner:null,created:Date.now()}
   ];
-  localStorage.setItem('ruppy_all_users', JSON.stringify(allUsers));
+  localStorage.setItem('ruppy_communities', JSON.stringify(communities));
 }
 
-if(friendRequests.length === 0 && friends.length === 0){
-  friendRequests = [
-    {id:Date.now()+1,from:1,fromName:'Rahul Sharma',time:Date.now()-120000},
-    {id:Date.now()+2,from:2,fromName:'Priya Singh',time:Date.now()-900000}
-  ];
-  localStorage.setItem('ruppy_friend_requests', JSON.stringify(friendRequests));
+renderCommunities();
+renderMyCommunities();
+
+let selectedIcon = null;
+let selectedBanner = null;
+
+document.getElementById('iconInput').onchange = function(e){
+  selectedIcon = e.target.files[0];
 }
 
-updateUI();
-updateStats();
-renderFeed();
-renderFriends();
-renderNotifications();
-renderProfilePosts();
-updateBadges();
-
-let selectedFile = null;
-document.getElementById('postText').oninput = function(){
-  document.getElementById('postBtn').disabled =!this.value.trim() &&!selectedFile;
+document.getElementById('bannerInput').onchange = function(e){
+  selectedBanner = e.target.files[0];
 }
 
-document.getElementById('fileInput').onchange = function(e){
-  selectedFile = e.target.files[0];
-  if(selectedFile){
-    let reader = new FileReader();
-    reader.onload = function(e){
-      let preview = document.getElementById('preview');
-      preview.style.display = 'block';
-      preview.innerHTML = selectedFile.type.includes('video')
-? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
-        : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
-      document.getElementById('postBtn').disabled = false;
-    }
-    reader.readAsDataURL(selectedFile);
-  }
-}
+function renderCommunities(){
+  let list = document.getElementById('communitiesList');
+  let search = document.getElementById('communitySearch').value.toLowerCase();
 
-document.getElementById('dpInput').onchange = function(e){
-  let file = e.target.files[0];
-  if(file){
-    let reader = new FileReader();
-    reader.onload = function(e){
-      userData.dp = e.target.result;
-      localStorage.setItem('ruppy_user', JSON.stringify(userData));
-      updateUI();
-    }
-    reader.readAsDataURL(file);
-  }
-}
+  let filtered = communities.filter(c =>
+    c.name.toLowerCase().includes(search) ||
+    c.desc.toLowerCase().includes(search)
+  );
 
-document.getElementById('coverInput').onchange = function(e){
-  let file = e.target.files[0];
-  if(file){
-    let reader = new FileReader();
-    reader.onload = function(e){
-      userData.cover = e.target.result;
-      localStorage.setItem('ruppy_user', JSON.stringify(userData));
-      updateUI();
-    }
-    reader.readAsDataURL(file);
-  }
-}
-
-function updateUI(){
-  document.getElementById('userAvatar').innerHTML = userData.dp? `<img src="${userData.dp}">` : userData.name[0].toUpperCase();
-  document.getElementById('profileName').textContent = userData.name;
-  document.getElementById('profileBio').textContent = userData.bio;
-  document.getElementById('profileDp').innerHTML = userData.dp? `<img src="${userData.dp}">` : userData.name[0].toUpperCase();
-  if(userData.cover){
-    document.getElementById('profileCover').innerHTML = `<img src="${userData.cover}"><div class="profile-dp">${userData.dp? `<img src="${userData.dp}">` : userData.name[0].toUpperCase()}</div>`;
-  }
-}
-
-function updateBadges(){
-  let friendBadge = document.getElementById('friendBadge');
-  let notifBadge = document.getElementById('notifBadge');
-  let unreadNotifs = notifications.filter(n =>!n.read).length;
-
-  if(friendRequests.length > 0){
-    friendBadge.textContent = friendRequests.length;
-    friendBadge.style.display = 'block';
-  } else {
-    friendBadge.style.display = 'none';
-  }
-
-  if(unreadNotifs > 0){
-    notifBadge.textContent = unreadNotifs;
-    notifBadge.style.display = 'block';
-  } else {
-    notifBadge.style.display = 'none';
-  }
-}
-
-function switchTab(tab){
-  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
-  document.getElementById(tab+'-tab').classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(btn=>btn.classList.remove('active'));
-  document.getElementById(tab+'-nav-btn').classList.add('active');
-}
-
-function openCreate(){
-  document.getElementById('postText').focus();
-  switchTab('hub');
-}
-
-function addEmoji(){
-  document.getElementById('postText').value += ' 🔥';
-  document.getElementById('postBtn').disabled = false;
-}
-
-function createPost(){
-  let text = document.getElementById('postText').value.trim();
-  if(!text &&!selectedFile) return;
-  if(checkContent(text)){
-    alert('Inappropriate content detected');
+  if(filtered.length === 0){
+    list.innerHTML = `<div class="empty-hub"><h3>No Communities Found</h3><p>Try a different search or create one!</p></div>`;
     return;
   }
 
-  let post = {
-    id: Date.now(),
-    user: userData.name,
-    userId: userData.id,
-    text: text,
-    time: Date.now(),
-    likes: 0,
-    liked: false,
-    comments: [],
-    reports: 0,
-    showAllComments: false
-  };
-
-  if(selectedFile){
-    let reader = new FileReader();
-    reader.onload = function(e){
-      post.media = e.target.result;
-      post.mediaType = selectedFile.type.includes('video')? 'video' : 'image';
-      savePost(post);
-    }
-    reader.readAsDataURL(selectedFile);
-  } else {
-    savePost(post);
-  }
+  list.innerHTML = '';
+  filtered.forEach(comm => {
+    let isJoined = myCommunities.includes(comm.id);
+    list.innerHTML += `
+      <div class="community-card">
+        <div class="community-banner">${comm.banner? `<img src="${comm.banner}">` : ''}</div>
+        <div class="community-icon">${comm.icon? `<img src="${comm.icon}">` : comm.name[0]}</div>
+        <div class="community-info">
+          <h3>${comm.name}</h3>
+          <p>${comm.desc}</p>
+          <div class="community-stats">
+            <div class="community-stat"><b>${comm.members}</b> members</div>
+          </div>
+          <div class="community-actions">
+            <button class="community-btn ${isJoined? 'joined' : ''}" onclick="toggleJoin(${comm.id})">
+              ${isJoined? 'Joined ✓' : 'Join Community'}
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
 }
 
-function savePost(post){
-  posts.unshift(post);
-  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
-  document.getElementById('postText').value = '';
-  document.getElementById('preview').style.display = 'none';
-  document.getElementById('preview').innerHTML = '';
-  document.getElementById('fileInput').value = '';
-  document.getElementById('postBtn').disabled = true;
-  selectedFile = null;
-  renderFeed();
-  updateStats();
-  renderProfilePosts();
-}
+function renderMyCommunities(){
+  let list = document.getElementById('myCommunitiesList');
+  let joined = communities.filter(c => myCommunities.includes(c.id));
 
-function updateStats(){
-  let myPosts = posts.filter(p => p.userId === userData.id && p.reports < 3);
-  let totalLikes = myPosts.reduce((sum,p) => sum + p.likes, 0);
-  document.getElementById('totalPosts').textContent = myPosts.length;
-  document.getElementById('totalLikes').textContent = totalLikes;
-  document.getElementById('profilePostCount').textContent = myPosts.length;
-  document.getElementById('profileLikeCount').textContent = totalLikes;
-  document.getElementById('profileFriendCount').textContent = friends.length;
-
-  let profileEmpty = document.getElementById('profileEmpty');
-  if(myPosts.length > 0 && profileEmpty) profileEmpty.style.display = 'none';
-}
-
-function renderFeed(){
-  let feed = document.getElementById('feed');
-  if(!feed) return;
-
-  let validPosts = posts.filter(p => p.reports < 3);
-
-  if(validPosts.length === 0){
-    feed.innerHTML = `
-      <div class="empty-hub">
-        <h3>Welcome to RUPPY Hub</h3>
-        <p>Start the conversation. Share your first update!</p>
-        <button onclick="openCreate()">Create Post</button>
-      </div>`;
+  if(joined.length === 0){
+    list.innerHTML = `<div style="padding:0 20px;color:#666;font-size:13px">No communities joined yet</div>`;
     return;
   }
 
-  feed.innerHTML = '';
-  validPosts.forEach(post => {
-    let mediaHTML = '';
-    if(post.media){
-      if(post.mediaType === 'video'){
-        mediaHTML = `<div class="post-media"><video src="${post.media}" controls></video></div>`;
+  list.innerHTML = '';
+  joined.forEach(comm => {
+    list.innerHTML += `
+      <div class="my-community-chip" onclick="viewCommunity(${comm.id})">
+        <div class="my-community-chip-icon">${comm.icon? `<img src="${comm.icon}">` : comm.name[0]}</div>
+        <span>${comm.name}</span>
+      </div>
+    `;
+  });
+}
+
+function toggleJoin(id){
+  let comm = communities.find(c => c.id === id);
+  if(!comm) return;
+
+  let index = myCommunities.indexOf(id);
+  if(index > -1){
+    myCommunities.splice(index, 1);
+    comm.members--;
+  } else {
+    myCommunities.push(id);
+    comm.members++;
+  }
+
+  localStorage.setItem('ruppy_my_communities', JSON.stringify(myCommunities));
+  localStorage.setItem('ruppy_communities', JSON.stringify(communities));
+  renderCommunities();
+  renderMyCommunities();
+}
+
+function searchCommunities(){
+  renderCommunities();
+}
+
+function viewCommunity(id){
+  alert('Opening community posts - coming in next update!');
+}
+
+function openCreateCommunity(){
+  document.getElementById('createCommunityModal').classList.add('active');
+}
+
+function closeCreateCommunity(){
+  document.getElementById('createCommunityModal').classList.remove('active');
+  document.getElementById('communityName').value = '';
+  document.getElementById('communityDesc').value = '';
+  selectedIcon = null;
+  selectedBanner = null;
+}
+
+function saveCommunity(){
+  let name = document.getElementById('communityName').value.trim();
+  let desc = document.getElementById('communityDesc').value.trim();
+
+  if(!name ||!desc){
+    alert('Please fill all fields');
+    return;
+  }
+
+  let newComm = {
+    id: Date.now(),
+    name: name,
+    desc: desc,
+    members: 1,
+    icon: null,
+    banner: null,
+    created: Date.now()
+  };
+
+  if(selectedIcon){
+    let reader = new FileReader();
+    reader.onload = function(e){
+      newComm.icon = e.target.result;
+      if(selectedBanner){
+        let reader2 = new FileReader();
+        reader2.onload = function(e2){
+          newComm.banner = e2.target.result;
+          finishCreate(newComm);
+        }
+        reader2.readAsDataURL(selectedBanner);
       } else {
-        mediaHTML = `<div class="post-media"><img src="${post.media}" ondblclick="likePost(${post.id})"></div>`;
+        finishCreate(newComm);
       }
     }
+    reader.readAsDataURL(selectedIcon);
+  } else if(selectedBanner){
+    let reader = new FileReader();
+    reader.onload = function(e){
+      newComm.banner = e.target.result;
+      finishCreate(newComm);
+    }
+    reader.readAsDataURL(selectedBanner);
+  } else {
+    finishCreate(newComm);
+  }
+}
 
-    let timeAgo = getTimeAgo(post.time);
-    let commentsToShow = post.showAllComments? post.comments : post.comments.slice(-2);
-    let hiddenCount = post.comments.length - commentsToShow.length;
-    let postUser = post.userId === userData.id? userData : allUsers.find(u => u.id === post.userId) || {name:post.user,dp:null};
+function finishCreate(comm){
+  communities.unshift(comm);
+  myCommunities.push(comm.id);
+  localStorage.setItem('ruppy_communities', JSON.stringify(communities));
+  localStorage.setItem('ruppy_my_communities', JSON.stringify(myCommunities));
+  closeCreateCommunity();
+  renderCommunities();
+  renderMyCommunities();
+  alert('Community created successfully!');
+}
+</script>
 
-    feed.innerHTML += `
-    <div class="post-card" id="post-${post.id}">
-      <div class="post-card-head">
-        <div class="post-avatar">${postUser.dp? `<img src="${postUser.dp}">` : post.user[0].toUpperCase()}</div>
-        <div class="post-info">
-          <h4>${post.user}</h4>
-          ${post.time? `<p>${timeAgo
+</body>
+</html>
