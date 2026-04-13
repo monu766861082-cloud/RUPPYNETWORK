@@ -19,7 +19,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
 .stats-bar{display:flex;gap:10px;padding:16px 20px;overflow-x:auto}
 .stats-bar::-webkit-scrollbar{display:none}
-.stat-card{background:linear-gradient(135deg,#1a1a1a,#0d0d0d);border:1px solid #252525;border-radius:16px;padding:12px 16px;min-width:110px;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,0.5)}
+.stat-card{background:linear-gradient(135deg,#1a1a1a,#0d);border:1px solid #252525;border-radius:16px;padding:12px 16px;min-width:110px;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,0.5)}
 .stat-card h3{font-size:20px;font-weight:700;color:#FFD700;margin-bottom:2px}
 .stat-card p{font-size:11px;color:#888}
 
@@ -101,7 +101,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .notif-content p b{color:#FFD700}
 .notif-time{font-size:11px;color:#666}
 .notif-actions{display:flex;gap:8px;margin-top:8px}
-.notif-actions button{flex:1}
+.notif-actions button{flex:1;padding:8px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer}
 
 .profile-cover{width:100%;height:140px;background:linear-gradient(135deg,#FFD700,#FFA500);position:relative;overflow:hidden}
 .profile-cover img{width:100%;height:100%;object-fit:cover}
@@ -118,7 +118,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .profile-btn{flex:1;background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:12px;color:#000;font-weight:700;font-size:14px;cursor:pointer}
 .profile-btn.secondary{background:#1a1a1a;color:#FFD700;border:1px solid #333}
 .profile-posts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:0 20px}
-.profile-post-item{aspect-ratio:1;background:#1a1a1a;border-radius:8px;overflow:hidden}
+.profile-post-item{aspect-ratio:1;background:#1a1a1a;border-radius:8px;overflow:hidden;cursor:pointer}
 .profile-post-item img{width:100%;height:100%;object-fit:cover}
 
 .ruppy-nav{position:fixed;bottom:0;left:0;right:0;background:#0a0a0a;border-top:1px solid #222;height:65px;display:flex;justify-content:space-around;align-items:center;z-index:999;padding:0 10px}
@@ -258,7 +258,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </button>
 </div>
 
-<!-- Edit Profile Modal -->
 <div class="modal" id="editProfileModal">
   <div class="modal-content">
     <h3>Edit Profile</h3>
@@ -284,7 +283,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <script>
-// EXIT APP FUNCTION
 function exitApp(){
   if(window.history.length > 1){
     window.history.back();
@@ -293,14 +291,12 @@ function exitApp(){
   }
 }
 
-// FILTER
 const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
 function checkContent(text){
   let lower = text.toLowerCase();
   return bannedWords.some(word => lower.includes(word));
 }
 
-// DATA
 let posts = JSON.parse(localStorage.getItem('ruppy_posts') || '[]');
 let userData = JSON.parse(localStorage.getItem('ruppy_user') || '{}');
 let friends = JSON.parse(localStorage.getItem('ruppy_friends') || '[]');
@@ -308,7 +304,6 @@ let friendRequests = JSON.parse(localStorage.getItem('ruppy_friend_requests') ||
 let notifications = JSON.parse(localStorage.getItem('ruppy_notifications') || '[]');
 let allUsers = JSON.parse(localStorage.getItem('ruppy_all_users') || '[]');
 
-// Init default user
 if(!userData.name){
   userData = {
     id: Date.now(),
@@ -320,7 +315,6 @@ if(!userData.name){
   localStorage.setItem('ruppy_user', JSON.stringify(userData));
 }
 
-// Init dummy users if empty
 if(allUsers.length === 0){
   allUsers = [
     {id:1,name:'Rahul Sharma',dp:null,bio:'Tech lover'},
@@ -331,11 +325,10 @@ if(allUsers.length === 0){
   localStorage.setItem('ruppy_all_users', JSON.stringify(allUsers));
 }
 
-// Init dummy requests if empty
 if(friendRequests.length === 0 && friends.length === 0){
   friendRequests = [
-    {id:1,from:1,fromName:'Rahul Sharma',time:Date.now()-120000},
-    {id:2,from:2,fromName:'Priya Singh',time:Date.now()-900000}
+    {id:Date.now()+1,from:1,fromName:'Rahul Sharma',time:Date.now()-120000},
+    {id:Date.now()+2,from:2,fromName:'Priya Singh',time:Date.now()-900000}
   ];
   localStorage.setItem('ruppy_friend_requests', JSON.stringify(friendRequests));
 }
@@ -345,6 +338,7 @@ updateStats();
 renderFeed();
 renderFriends();
 renderNotifications();
+renderProfilePosts();
 
 let selectedFile = null;
 document.getElementById('postText').oninput = function(){
@@ -364,6 +358,32 @@ document.getElementById('fileInput').onchange = function(e){
       document.getElementById('postBtn').disabled = false;
     }
     reader.readAsDataURL(selectedFile);
+  }
+}
+
+document.getElementById('dpInput').onchange = function(e){
+  let file = e.target.files[0];
+  if(file){
+    let reader = new FileReader();
+    reader.onload = function(e){
+      userData.dp = e.target.result;
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
+      updateUI();
+    }
+    reader.readAsDataURL(file);
+  }
+}
+
+document.getElementById('coverInput').onchange = function(e){
+  let file = e.target.files[0];
+  if(file){
+    let reader = new FileReader();
+    reader.onload = function(e){
+      userData.cover = e.target.result;
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
+      updateUI();
+    }
+    reader.readAsDataURL(file);
   }
 }
 
@@ -493,8 +513,4 @@ function renderFeed(){
       <div class="post-footer">
         <div class="post-stats">
           <button class="stat-btn ${post.liked?'liked':''}" onclick="likePost(${post.id})">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 0 00-6.364L12 7.636l-1.318-1.318a4.5 0 00-6.364 0z"></path></svg>
-            <span>${post.likes}</span>
-          </button>
-          <button class="stat-btn" onclick="toggleComments(${post.id})">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 0 00-
