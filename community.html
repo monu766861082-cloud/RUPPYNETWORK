@@ -425,6 +425,13 @@ function updateBadges(){
   }
 }
 
+function switchTab(tab){
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+  document.getElementById(tab+'-tab').classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(btn=>btn.classList.remove('active'));
+  document.getElementById(tab+'-nav-btn').classList.add('active');
+}
+
 function openCreate(){
   document.getElementById('postText').focus();
   switchTab('hub');
@@ -498,6 +505,8 @@ function updateStats(){
 
 function renderFeed(){
   let feed = document.getElementById('feed');
+  if(!feed) return;
+
   let validPosts = posts.filter(p => p.reports < 3);
 
   if(validPosts.length === 0){
@@ -532,13 +541,4 @@ function renderFeed(){
         <div class="post-avatar">${postUser.dp? `<img src="${postUser.dp}">` : post.user[0].toUpperCase()}</div>
         <div class="post-info">
           <h4>${post.user}</h4>
-          ${post.time? `<p>${timeAgo}</p>` : ''}
-        </div>
-        <button class="post-more" onclick="reportPost(${post.id})">⋯</button>
-      </div>
-      ${post.text? `<div class="post-content">${post.text}</div>` : ''}
-      ${mediaHTML}
-      <div class="post-footer">
-        <div class="post-stats">
-          <button class="stat-btn ${post.liked?'liked':''}" onclick="likePost(${post.id})">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0
+          ${post.time? `<p>${timeAgo
