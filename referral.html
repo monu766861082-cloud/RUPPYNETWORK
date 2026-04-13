@@ -46,7 +46,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 <div class="inv">
   <label>YOUR INVITE CODE</label>
   <div class="inpbx">
-    <div class="inp" id="inviteCode">RUPPY786</div>
+    <div class="inp" id="inviteCode">Loading...</div>
     <div class="cp" onclick="copy()">⧉</div>
   </div>
   <button class="bt" onclick="invite()">✨ INVITE FRIENDS</button>
@@ -87,6 +87,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 
 <script>
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
+  userId: '',
   name: 'User',
   balance: 0,
   lastMine: 0,
@@ -98,12 +99,15 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   teamRewardEarned: 0
 };
 
-let inviteCode = 'RUPPY' + userData.name.substring(0,3).toUpperCase() + Math.floor(Math.random()*900+100);
-if(!localStorage.getItem('ruppy_inviteCode')){
-  localStorage.setItem('ruppy_inviteCode', inviteCode);
-} else {
-  inviteCode = localStorage.getItem('ruppy_inviteCode');
+// Fix: Generate User ID if missing
+if(!userData.userId || userData.userId === 'undefined'){
+  userData.userId = 'ab' + Math.floor(Math.random()*9000000+1000000);
+  localStorage.setItem('ruppy_user', JSON.stringify(userData));
 }
+
+// Fix: Invite Code = User ID for consistency
+let inviteCode = userData.userId;
+localStorage.setItem('ruppy_inviteCode', inviteCode);
 document.getElementById('inviteCode').innerText = inviteCode;
 
 let team = userData.team || [];
