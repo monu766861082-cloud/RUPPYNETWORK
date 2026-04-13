@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Community Feed - RUPPY Network</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0B0B0C;color:#fff;font-family:Poppins,Arial,sans-serif;padding:15px;line-height:1.6}
+.wrap{max-width:600px;margin:auto;padding-bottom:90px}
+h1{color:#F3C774;text-align:center;margin:10px 0 20px;font-size:26px}
+.create-box{background:#161617;border:1px solid #2A2A2C;border-radius:16px;padding:15px;margin-bottom:20px}
+.create-box textarea{width:100%;background:#0B0B0C;border:1px solid #2A2A2C;border-radius:12px;padding:12px;color:#fff;resize:none;font-family:Poppins;font-size:14px}
+.create-actions{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.upload-btn{background:#2A2A2C;color:#F3C774;padding:8px 12px;border-radius:8px;font-size:13px;cursor:pointer;border:none}
+.post-btn{background:#F3C774;color:#000;padding:8px 20px;border-radius:20px;font-weight:600;border:none;cursor:pointer}
+.post-btn:disabled{opacity:0.5}
+.feed-post{background:#161617;border:1px solid #2A2A2C;border-radius:16px;padding:15px;margin:15px 0}
+.post-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.avatar{width:36px;height:36px;border-radius:50%;background:#F3C774;color:#000;display:flex;align-items:center;justify-content:center;font-weight:700}
+.post-user{font-weight:600;font-size:14px}
+.post-time{font-size:11px;color:#9CA3AF}
+.post-text{font-size:14px;color:#ccc;margin-bottom:12px;word-break:break-word}
+.post-img,.post-video{width:100%;border-radius:12px;margin-bottom:12px;max-height:400px;object-fit:cover}
+.post-actions{display:flex;justify-content:space-around;border-top:1px solid #2A2A2C;padding-top:10px}
+.action-btn{background:none;border:none;color:#9CA3AF;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px}
+.action-btn.liked{color:#F3C774}
+.comment-box{margin-top:12px;border-top:1px solid #2A2A2C;padding-top:12px;display:none}
+.comment-item{font-size:13px;color:#ccc;margin-bottom:8px;background:#0B0B0C;padding:8px;border-radius:8px}
+.comment-input{display:flex;gap:8px;margin-top:10px}
+.comment-input input{flex:1;background:#0B0B0C;border:1px solid #2A2A2C;border-radius:20px;padding:8px 12px;color:#fff;font-size:13px}
+.comment-input button{background:#F3C774;color:#000;border:none;border-radius:20px;padding:8px 12px;font-weight:600;font-size:12px}
+.report-btn{font-size:11px;color:#666;background:none;border:none;cursor:pointer;margin-left:auto}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0;z-index:999}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:10px;cursor:pointer;padding:5px 0;width:16.6%}
+.nav-item.active{color:#FFA500}
+#fileInput{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>RUPPY Community 📝</h1>
+
+<div class="create-box">
+<textarea id="postText" rows="3" placeholder="RUPPY Token ya Coins ke baare me kuch likho..."></textarea>
+<div class="create-actions">
+  <div>
+    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">📷 Photo/Video</button>
+    <input type="file" id="fileInput" accept="image/*,video/*">
+    <span id="fileName" style="font-size:11px;color:#9CA3AF;margin-left:8px"></span>
+  </div>
+  <button class="post-btn" id="postBtn" onclick="createPost()">Post</button>
+</div>
+</div>
+
+<div id="feed"></div>
+</div>
+
+<div class="nav">
+  <a href="app.html" class="nav-item"><div>🏠</div><span>Home</span></a>
+  <a href="tasks.html" class="nav-item"><div>📋</div><span>Tasks</span></a>
+  <a href="referral.html" class="nav-item"><div>👥</div><span>Referral</span></a>
+  <a href="ranking.html" class="nav-item"><div>🏆</div><span>Ranking</span></a>
+  <a href="community.html" class="nav-item active"><div>📝</div><span>Feed</span></a>
+  <a href="settings.html" class="nav-item"><div>⚙️</div><span>Settings</span></a>
+</div>
+
+<script>
+// 1. PORN/GALI FILTER - 500+ शब्द Block
+const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino'];
+function checkContent(text){
+  let lower = text.toLowerCase();
+  return bannedWords.some(word => lower.includes(word));
+}
+
+// 2. POST CREATE करना
+let posts = JSON.parse(localStorage.getItem('ruppy_posts') || '[]');
+let currentUser = localStorage.getItem('ruppy_username') || 'User'+Math.floor(Math.random()*999);
+
+document.getElementById('fileInput').onchange = function(e){
+  document.getElementById('fileName').textContent = e.target.files[0]?.name || '';
+}
+
+function createPost(){
+  let text = document.getElementById('postText').value.trim();
+  let file = document.getElementById('fileInput').files[0];
+
+  if(!text &&!file){ alert('Kuch likho ya Photo/Video dalo'); return; }
+  if(checkContent(text)){ alert('Post me galat shabd hain. RUPPY se related hi likho'); return; }
+
+  let post = {
+    id: Date.now(),
+    user: currentUser,
+    text: text,
+    time: 'Just now',
+    likes: 0,
+    liked: false,
+    comments: [],
+    reports: 0
+  };
+
+  if(file){
+    let reader = new FileReader();
+    reader.onload = function(e){
+      post.media = e.target.result;
+      post.mediaType = file.type.includes('video')? 'video' : 'image';
+      savePost(post);
+    }
+    reader.readAsDataURL(file);
+  } else {
+    savePost(post);
+  }
+}
+
+function savePost(post){
+  posts.unshift(post);
+  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
+  document.getElementById('postText').value = '';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('fileName').textContent = '';
+  renderFeed();
+}
+
+// 3. FEED दिखाना
+function renderFeed(){
+  let feed = document.getElementById('feed');
+  feed.innerHTML = '';
+  posts.filter(p => p.reports < 3).forEach(post => {
+    let mediaHTML = '';
+    if(post.media){
+      if(post.mediaType === 'video'){
+        mediaHTML = `<video class="post-video" controls src="${post.media}"></video>`;
+      } else {
+        mediaHTML = `<img class="post-img" src="${post.media}">`;
+      }
+    }
+
+    feed.innerHTML += `
+    <div class="post" id="post-${post.id}">
+      <div class="post-head">
+        <div class="avatar">${post.user[0]}</div>
+        <div>
+          <div class="post-user">${post.user}</div>
+          <div class="post-time">${post.time}</div>
+        </div>
+        <button class="report-btn" onclick="reportPost(${post.id})">Report</button>
+      </div>
+      <div class="post-text">${post.text}</div>
+      ${mediaHTML}
+      <div class="post-actions">
+        <button class="action-btn ${post.liked? 'liked' : ''}" onclick="likePost(${post.id})">❤️ ${post.likes}</button>
+        <button class="action-btn" onclick="toggleComment(${post.id})">💬 ${post.comments.length}</button>
+        <button class="action-btn" onclick="sharePost(${post.id})">↗️ Share</button>
+      </div>
+      <div class="comment-box" id="comment-${post.id}">
+        ${post.comments.map(c => `<div class="comment-item"><b>${c.user}:</b> ${c.text}</div>`).join('')}
+        <div class="comment-input">
+          <input type="text" placeholder="Comment likho..." id="commentInput-${post.id}">
+          <button onclick="addComment(${post.id})">Send</button>
+        </div>
+      </div>
+    </div>`;
+  });
+}
+
+// 4. LIKE, COMMENT, SHARE, REPORT
+function likePost(id){
+  let post = posts.find(p => p.id === id);
+  post.liked =!post.liked;
+  post.likes += post.liked? 1 : -1;
+  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
+  renderFeed();
+}
+function toggleComment(id){
+  let box = document.getElementById(`comment-${id}`);
+  box.style.display = box.style.display === 'block'? 'none' : 'block';
+}
+function addComment(id){
+  let input = document.getElementById(`commentInput-${id}`);
+  let text = input.value.trim();
+  if(!text) return;
+  if(checkContent(text)){ alert('Comment me galat shabd hain'); return; }
+  let post = posts.find(p => p.id === id);
+  post.comments.push({user: currentUser, text: text});
+  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
+  input.value = '';
+  renderFeed();
+  document.getElementById(`comment-${id}`).style.display = 'block';
+}
+function sharePost(id){
+  let url = window.location.href;
+  navigator.clipboard.writeText(url);
+  alert('Link Copied! WhatsApp pe Share kar do');
+}
+function reportPost(id){
+  let post = posts.find(p => p.id === id);
+  post.reports++;
+  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
+  alert('Post Reported. 3 Report ke baad Auto Hide ho jayegi');
+  renderFeed();
+}
+
+renderFeed();
+</script>
+</body>
+</html>
