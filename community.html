@@ -86,9 +86,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <div id="hub-tab" class="tab-content active">
-  <!-- Create Post अब ऊपर आ गया -->
   <div class="create-card">
-    <div class="gift-banner">🎁 हर पोस्ट पे +10 RUPPY Token | <span id="limitText">3/3 बाकी</span></div>
+    <div class="gift-banner">🎁 +10 RUPPY Token per post | <span id="limitText">3/3 left</span></div>
     <div class="create-top">
       <div class="create-avatar" id="userAvatar">U</div>
       <textarea id="postText" placeholder="Create Post..." rows="2"></textarea>
@@ -104,7 +103,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
   </div>
 
-  <!-- Feed अब नीचे -->
   <div id="feed" style="padding:0 20px 20px"></div>
 </div>
 
@@ -129,7 +127,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <div class="p-detail"><span class="icon">🎮</span> <span id="view-hobbies">Not Set</span></div>
     <button onclick="openEdit()" style="width:100%;padding:12px;background:#1a1a1a;border:1px solid #333;color:#FFD700;border-radius:12px;margin-top:20px;font-weight:700">Edit Profile</button>
   </div>
-  <!-- प्रोफाइल में यूजर की पोस्ट -->
   <div class="profile-posts">
     <h3>Your Posts</h3>
     <div id="profileFeed"></div>
@@ -153,7 +150,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 <div class="ruppy-nav">
   <button class="nav-btn active" id="btn-hub" onclick="switchTab('hub')"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg><span>Home</span></button>
   <button class="nav-btn" id="btn-friend" onclick="switchTab('friend')"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg><span>Friend</span></button>
-  <button class="nav-btn" id="btn-notification" onclick="switchTab('notification')"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path><circle cx="12" cy="1" r="1"></circle><path d="M13.73 21a2 2 0 01-3.46 0"></path></svg><span>Notif</span></button>
+  <button class="nav-btn" id="btn-notification" onclick="switchTab('notification')"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9h18s-3-2-3-9"></path><circle cx="12" cy="1" r="1"></circle><path d="M13.73 21a2 2 0 01-3.46 0"></path></svg><span>Notif</span></button>
   <button class="nav-btn" id="btn-profile" onclick="switchTab('profile')"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>Profile</span></button>
 </div>
 
@@ -173,13 +170,13 @@ function updatePostLimit() {
     localStorage.setItem('ruppy_pro', JSON.stringify(uData));
   }
   let left = 3 - uData.postsToday;
-  document.getElementById('limitText').innerText = `${left}/3 बाकी`;
+  document.getElementById('limitText').innerText = `${left}/3 left`;
   document.getElementById('myRewards').innerText = uData.tokens;
-  document.getElementById('totalBalance').innerText = uData.tokens; // अभी माइनिंग/बूस्ट नहीं है तो सेम है
+  document.getElementById('totalBalance').innerText = uData.tokens;
 
   if (uData.postsToday >= 3) {
     document.getElementById('postBtn').disabled = true;
-    document.getElementById('postBtn').innerText = 'आज की लिमिट पूरी 3/3';
+    document.getElementById('postBtn').innerText = 'Daily limit reached 3/3';
   } else {
     document.getElementById('postBtn').innerText = `Post`;
   }
@@ -195,7 +192,7 @@ function exitApp(){window.history.back()}
 
 let selectedFile=null;
 document.getElementById('postText').oninput=function(){
-  if(document.getElementById('postBtn').innerText.includes('लिमिट पूरी')) return;
+  if(document.getElementById('postBtn').innerText.includes('limit reached')) return;
   document.getElementById('postBtn').disabled=!this.value.trim()&&!selectedFile
 }
 document.getElementById('fileInput').onchange=function(e){selectedFile=e.target.files[0];if(selectedFile){let r=new FileReader();r.onload=function(e){let p=document.getElementById('preview');p.style.display='block';p.innerHTML=selectedFile.type.includes('video')?`<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`:`<img src="${e.target.result}" style="width:100%;border-radius:12px">`;document.getElementById('postBtn').disabled=false};r.readAsDataURL(selectedFile)}}
@@ -207,7 +204,7 @@ function createPost(){
 
   const today = new Date().toISOString().split('T')[0];
   if (uData.lastPostDate === today && uData.postsToday >= 3) {
-    alert("आज की 3 पोस्ट हो गई भाई। कल फिर आना।");
+    alert("Daily limit of 3 posts reached. Come back tomorrow.");
     return;
   }
 
@@ -229,7 +226,6 @@ function createPost(){
 function savePost(p){
   posts.unshift(p);
   localStorage.setItem('ruppy_posts',JSON.stringify(posts));
-  // Token अब यहाँ नहीं मिलेगा, Claim करने पे मिलेगा
 
   document.getElementById('postText').value='';
   document.getElementById('preview').style.display='none';
@@ -243,7 +239,7 @@ function savePost(p){
 function claimReward(postId){
   const today = new Date().toISOString().split('T')[0];
   if (uData.lastPostDate === today && uData.postsToday >= 3) {
-    alert("आज की 3 Claim हो गई भाई। कल फिर आना।");
+    alert("Daily limit of 3 claims reached. Come back tomorrow.");
     return;
   }
 
@@ -258,7 +254,7 @@ function claimReward(postId){
   uData.lastPostDate = today;
   localStorage.setItem('ruppy_pro',JSON.stringify(uData));
 
-  alert("हाँ मैंने 10 Token ले लिए! 🎉");
+  alert("You claimed 10 Tokens! 🎉");
   renderFeed();
   updatePostLimit();
   renderProfileFeed();
@@ -320,7 +316,6 @@ function likePost(i) {
     let userIndex = posts[i].likedBy.indexOf(uData.uid);
 
     if(userIndex === -1) {
-        // 1 यूजर 1 लाइक
         posts[i].likes = (posts[i].likes || 0) + 1;
         posts[i].likedBy.push(uData.uid);
     } else {
