@@ -12,6 +12,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 /* Header - RUPPY Style */
 .hub-header{position:sticky;top:0;background:linear-gradient(180deg,#0a0a0a 0%,#0a0a0a 80%,transparent 100%);backdrop-filter:blur(10px);padding:16px 20px;z-index:100;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a1a1a}
 .hub-logo{display:flex;align-items:center;gap:8px}
+.back-arrow{background:none;border:none;color:#FFD700;font-size:24px;cursor:pointer;padding:0 8px 0 0;margin-left:-8px}
+.back-arrow:active{opacity:0.6}
 .hub-logo h1{font-size:24px;font-weight:800;background:linear-gradient(90deg,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hub-logo span{font-size:12px;color:#666;background:#1a1a1a;padding:2px 8px;border-radius:10px}
 .create-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 4px 15px rgba(255,215,0,0.3)}
@@ -173,6 +175,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 <!-- Header -->
 <div class="hub-header">
   <div class="hub-logo">
+    <button class="back-arrow" onclick="exitApp()">←</button>
     <h1>RUPPY</h1>
     <span>HUB</span>
   </div>
@@ -220,73 +223,60 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   <div class="feed" id="feed"></div>
 </div>
 
-<!-- TASKS TAB -->
-<div id="tasks-tab" class="tab-content">
-  <div style="padding:16px 20px">
-    <h2 style="font-size:24px;font-weight:800;margin-bottom:4px">DAILY TASKS</h2>
-    <p style="color:#FFA500;font-size:14px;font-weight:700;margin-bottom:4px">EARN RUPPY</p>
-    <p style="color:#666;font-size:12px;margin-bottom:16px">ID: USER</p>
-
-    <div class="stat-card" style="margin-bottom:16px">
-      <p style="color:#888;font-size:14px">Your Balance: <span style="color:#FFD700;font-size:20px;font-weight:700" id="ruppyBalance">231</span> RUPPY</p>
-    </div>
+<!-- FRIEND TAB -->
+<div id="friend-tab" class="tab-content">
+  <div style="padding:20px;text-align:center">
+    <h2 style="font-size:24px;font-weight:800;margin-bottom:8px">Friends</h2>
+    <p style="color:#666">Coming Soon...</p>
   </div>
+</div>
 
-  <div class="tasks-container">
-    <div class="task-card">
-      <div class="task-icon" style="background:#1DA1F2">✈️</div>
-      <div class="task-info">
-        <h4>Join Telegram</h4>
-        <p>Reward: +20 RUPPY</p>
-      </div>
-      <button class="task-btn" onclick="completeTask(this,20)">JOIN</button>
-    </div>
+<!-- NOTIFICATION TAB -->
+<div id="notification-tab" class="tab-content">
+  <div style="padding:20px;text-align:center">
+    <h2 style="font-size:24px;font-weight:800;margin-bottom:8px">Notifications</h2>
+    <p style="color:#666">Coming Soon...</p>
+  </div>
+</div>
 
-    <div class="task-card">
-      <div class="task-icon" style="background:#1877F2">f</div>
-      <div class="task-info">
-        <h4>Follow on Facebook</h4>
-        <p>Reward: +20 RUPPY</p>
-      </div>
-      <button class="task-btn done">DONE</button>
-    </div>
-
-    <div class="task-card">
-      <div class="task-icon" style="background:#000">X</div>
-      <div class="task-info">
-        <h4>Follow on X</h4>
-        <p>Reward: +20 RUPPY</p>
-      </div>
-      <button class="task-btn done">DONE</button>
-    </div>
+<!-- PROFILE TAB -->
+<div id="profile-tab" class="tab-content">
+  <div style="padding:20px;text-align:center">
+    <h2 style="font-size:24px;font-weight:800;margin-bottom:8px">Profile</h2>
+    <p style="color:#666">Coming Soon...</p>
   </div>
 </div>
 
 <!-- Bottom Nav -->
 <div class="ruppy-nav">
-  <button class="nav-btn" onclick="switchTab('home')">
-    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+  <button class="nav-btn active" id="home-nav-btn" onclick="switchTab('hub')">
+    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path><polyline points="9 22 9 12 15 22"></polyline></svg>
     <span>Home</span>
   </button>
-  <button class="nav-btn" id="tasks-nav-btn" onclick="switchTab('tasks')">
-    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-    <span>Tasks</span>
+  <button class="nav-btn" id="friend-nav-btn" onclick="switchTab('friend')">
+    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"></path></svg>
+    <span>Friend</span>
   </button>
-  <button class="nav-btn" onclick="switchTab('referral')">
-    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-    <span>Referral</span>
+  <button class="nav-btn" id="notification-nav-btn" onclick="switchTab('notification')">
+    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0.538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+    <span>Notification</span>
   </button>
-  <button class="nav-btn" onclick="switchTab('ranking')">
-    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 0 00-.806 1.946 3.42 0 01-3.138 3.138 3.42 0 00-1.946.806 3.42 0 01-4.438 0 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 0 00-.806-1.946 3.42 0 010-4.438 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
-    <span>Ranking</span>
-  </button>
-  <button class="nav-btn" onclick="switchTab('settings')">
-    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-    <span>Settings</span>
+  <button class="nav-btn" id="profile-nav-btn" onclick="switchTab('profile')">
+    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+    <span>Profile</span>
   </button>
 </div>
 
 <script>
+// EXIT APP FUNCTION - तीर वाला बटन
+function exitApp(){
+  if(window.history.length > 1){
+    window.history.back();
+  } else {
+    window.close();
+  }
+}
+
 // FILTER
 const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
 function checkContent(text){
@@ -429,11 +419,11 @@ function renderFeed(){
       <div class="post-footer">
         <div class="post-stats">
           <button class="stat-btn ${post.liked?'liked':''}" onclick="likePost(${post.id})">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 0 00-6.364-6.364L12 7.636l-1.318a4.5 0 00-6.364 0z"></path></svg>
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
             <span>${post.likes}</span>
           </button>
           <button class="stat-btn" onclick="toggleComments(${post.id})">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
             <span>${post.comments.length}</span>
           </button>
         </div>
@@ -540,34 +530,24 @@ function reportPost(id){
   }
 }
 
-// TAB SWITCHING
+// TAB SWITCHING - अपडेट किया
 function switchTab(tab){
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
 
-  if(tab === 'tasks'){
-    document.getElementById('tasks-tab').classList.add('active');
-    document.getElementById('tasks-nav-btn').classList.add('active');
-  } else if(tab === 'home'){
-    location.href = 'app.html';
-  } else if(tab === 'referral'){
-    location.href = 'referral.html';
-  } else if(tab === 'ranking'){
-    location.href = 'ranking.html';
-  } else if(tab === 'settings'){
-    location.href = 'settings.html';
-  } else {
+  if(tab === 'hub'){
     document.getElementById('hub-tab').classList.add('active');
+    document.getElementById('home-nav-btn').classList.add('active');
+  } else if(tab === 'friend'){
+    document.getElementById('friend-tab').classList.add('active');
+    document.getElementById('friend-nav-btn').classList.add('active');
+  } else if(tab === 'notification'){
+    document.getElementById('notification-tab').classList.add('active');
+    document.getElementById('notification-nav-btn').classList.add('active');
+  } else if(tab === 'profile'){
+    document.getElementById('profile-tab').classList.add('active');
+    document.getElementById('profile-nav-btn').classList.add('active');
   }
-}
-
-function completeTask(btn,reward){
-  let balance = parseInt(document.getElementById('ruppyBalance').textContent);
-  balance += reward;
-  document.getElementById('ruppyBalance').textContent = balance;
-  btn.textContent = 'DONE';
-  btn.classList.add('done');
-  btn.disabled = true;
 }
 
 renderFeed();
