@@ -2,442 +2,351 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ruppy Network Hub</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RUPPY Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #0f0f0f;
-    color: #e0e0e0;
-    min-height: 100vh;
-}
-.container {
-    max-width: 480px;
-    margin: 0 auto;
-    background: #1a1a1a;
-    min-height: 100vh;
-    position: relative;
-    padding-bottom: 80px;
-}
-.header {
-    background: linear-gradient(135deg, #FFD700, #FFA500);
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #1a1a1a;
-    font-weight: bold;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-.user-info { display: flex; align-items: center; gap: 10px; }
-.avatar {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    background: #1a1a1a;
-    color: #FFD700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-}
-.balance { font-size: 16px; }
-.main-content { padding: 15px; }
-.stats-bar {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-.stat-card {
-    background: #2a2a2a;
-    padding: 12px 8px;
-    border-radius: 10px;
-    text-align: center;
-    border: 1px solid #3a3a3a;
-}
-.stat-number {
-    font-size: 18px;
-    font-weight: bold;
-    color: #FFD700;
-    margin-bottom: 3px;
-}
-.stat-label {
-    font-size: 11px;
-    color: #aaa;
-    line-height: 1.2;
-}
-.balance-card .stat-number {
-    font-size: 20px;
-}
-.balance-card .reward-label {
-    font-size: 11px;
-    color: #FFA500;
-    margin-bottom: 5px;
-}
-.create-post {
-    background: #2a2a2a;
-    padding: 15px;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #3a3a3a;
-}
-.post-input {
-    width: 100%;
-    background: #1a1a1a;
-    border: 1px solid #3a3a3a;
-    border-radius: 8px;
-    padding: 12px;
-    color: #e0e0e0;
-    resize: none;
-    font-family: inherit;
-    margin-bottom: 10px;
-}
-.post-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.char-count { font-size: 12px; color: #888; }
-.post-btn {
-    background: linear-gradient(135deg, #FFD700, #FFA500);
-    color: #1a1a1a;
-    border: none;
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-.post-btn:hover { transform: scale(1.05); }
-.post-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.posts-container {
-    scroll-snap-type: y mandatory;
-    overflow-y: auto;
-    height: calc(100vh - 350px);
-}
-.post-card {
-    background: #2a2a2a;
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 15px;
-    border: 1px solid #3a3a3a;
-    scroll-snap-align: start;
-    min-height: calc(100vh - 350px);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-.post-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-.post-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #FFD700, #FFA500);
-    color: #1a1a1a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 16px;
-}
-.post-user-info { flex: 1; }
-.post-username { font-weight: bold; font-size: 14px; }
-.post-time { font-size: 12px; color: #888; }
-.post-content {
-    margin-bottom: 15px;
-    line-height: 1.5;
-    font-size: 15px;
-    flex: 1;
-}
-.post-stats {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 12px;
-    border-top: 1px solid #3a3a3a;
-}
-.like-section {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-.like-btn {
-    background: none;
-    border: none;
-    color: #888;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 14px;
-    transition: color 0.2s;
-}
-.like-btn.liked { color: #ff4757; }
-.like-btn:hover { color: #ff4757; }
-.claim-btn {
-    background: linear-gradient(135deg, #4CAF50, #45a049);
-    color: white;
-    border: none;
-    padding: 6px 15px;
-    border-radius: 15px;
-    font-size: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-.claim-btn:hover { transform: scale(1.05); }
-.claim-btn:disabled {
-    background: #555;
-    cursor: not-allowed;
-    transform: none;
-}
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 480px;
-    background: #2a2a2a;
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
-    border-top: 1px solid #3a3a3a;
-    z-index: 100;
-}
-.nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    color: #888;
-    text-decoration: none;
-    font-size: 12px;
-    cursor: pointer;
-}
-.nav-item.active { color: #FFD700; }
-.nav-icon { font-size: 20px; }
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
+body{background:#0a0a0a;color:#fff;padding-bottom:70px}
+.hub-header{position:sticky;top:0;background:linear-gradient(180deg,#0a0a0a 0%,#0a0a0a 80%,transparent 100%);backdrop-filter:blur(10px);padding:16px 20px;z-index:100;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a1a1a}
+.hub-logo{display:flex;align-items:center;gap:8px}
+.back-arrow{background:none;border:none;color:#FFD700;font-size:24px;cursor:pointer;padding:0 8px 0 0;margin-left:-8px}
+.hub-logo h1{font-size:24px;font-weight:800;background:linear-gradient(90deg,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hub-logo span{font-size:12px;color:#666;background:#1a1a1a;padding:2px 8px;border-radius:10px}
+.stats-bar{display:flex;gap:10px;padding:16px 20px;overflow-x:auto}
+.stats-bar::-webkit-scrollbar{display:none}
+.stat-card{background:linear-gradient(135deg,#1a1a1a,#0d0d0d);border:1px solid #252525;border-radius:16px;padding:12px 16px;min-width:110px;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,0.5)}
+.stat-card h3{font-size:20px;font-weight:700;color:#FFD700;margin-bottom:2px}
+.stat-card p{font-size:11px;color:#888}
+.stat-card.sub-balance{font-size:10px;color:#555;margin-top:3px}
+.profile-cover{width:100%;height:140px;background:linear-gradient(135deg,#FFD700,#FFA500);position:relative}
+.profile-dp{width:90px;height:90px;border-radius:24px;background:linear-gradient(135deg,#FFA500,#FFD700);border:4px solid #0a0a0a;position:absolute;bottom:-45px;left:20px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:32px;overflow:hidden}
+.profile-dp img{width:100%;height:100%;object-fit:cover}
+.profile-info{padding:55px 20px 16px}
+.profile-info h2{font-size:24px;font-weight:800;margin-bottom:4px}
+.profile-info p{font-size:14px;color:#888;margin-bottom:12px}
+.p-detail{display:flex;align-items:center;gap:10px;margin-bottom:10px;color:#ddd;font-size:14px}
+.p-detail span.icon{font-size:18px;width:25px}
+.tab-content{display:none}
+.tab-content.active{display:block}
+#editModal{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0a;z-index:9999;display:none;flex-direction:column;overflow-y:auto;padding:20px}
+.edit-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.edit-field{margin-bottom:15px}
+.edit-field label{display:block;color:#666;font-size:12px;margin-bottom:5px;text-transform:uppercase}
+.edit-field input,.edit-field textarea{width:100%;background:#111;border:1px solid #222;padding:12px;color:#fff;border-radius:10px;outline:none}
+.ruppy-nav{position:fixed;bottom:0;left:0;right:0;background:#0a0a0a;border-top:1px solid #222;height:65px;display:flex;justify-content:space-around;align-items:center;z-index:999}
+.nav-btn{background:none;border:none;color:#FFE55C;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;opacity:0.7;font-size:10px}
+.nav-btn.active{color:#FFD700;opacity:1}
+.nav-btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2}
+.create-card{margin:16px 20px;background:#111;border:1px solid #222;border-radius:20px;padding:16px}
+.create-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden;flex-shrink:0}
+.create-avatar img{width:100%;height:100%;object-fit:cover}
+.create-card textarea{width:100%;background:#0a0a0a;border:1px solid #222;border-radius:12px;padding:12px;color:#fff;font-size:15px;resize:none;min-height:60px}
+.create-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.create-actions.left{display:flex;gap:12px}
+.icon-btn{background:#1a1a1a;border:1px solid #333;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer}
+.post-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 24px;color:#000;font-weight:700;font-size:14px;cursor:pointer}
+.post-btn:disabled{opacity:0.3;cursor:not-allowed}
+.claim-btn{background:#81C784;border:none;border-radius:10px;padding:10px 24px;color:#fff;font-weight:700;font-size:14px;cursor:pointer;width:100%;margin-top:10px}
+.claim-btn.claimed{background:#333;color:#888;cursor:not-allowed}
+.feed{padding:0 20px}
+#fileInput{display:none}
+.post-card{background:#111;border:1px solid #222;border-radius:16px;padding:14px;margin-bottom:12px}
+.post-card-head{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.post-avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:14px;overflow:hidden}
+.post-avatar img{width:100%;height:100%;object-fit:cover}
+.post-info h4{font-size:15px;font-weight:700}
+.post-info p{font-size:12px;color:#666}
+.post-content{margin-bottom:10px;font-size:15px;line-height:1.4}
+.post-media img,.post-media video{width:100%;border-radius:12px;margin-top:8px}
+.gift-banner{background:#fff3cd;border:1px solid #ffe69c;padding:8px;border-radius:8px;font-size:13px;margin-bottom:10px;color:#664d03;font-weight:600}
+.post-actions{display:flex;gap:10px;margin-top:8px}
+.like-btn,.comment-btn{background:#FFF9C4;border:2px solid #F4E04D;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;color:#333}
+.like-btn.liked{background:#FFE082;border-color:#FFC107;color:#000}
+.comment-btn b{color:#333}
+.unclaimed-badge{background:#FF6D00;color:#fff;font-size:11px;padding:3px 8px;border-radius:6px;margin-left:8px}
+.profile-posts{padding:0 20px 20px}
+.profile-posts h3{font-size:16px;color:#888;margin:20px 0 12px}
 </style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <div class="user-info">
-            <div class="avatar" id="userAvatar">U</div>
-            <span id="username">User</span>
-        </div>
-        <div class="balance" id="headerBalance">0 RUPPY</div>
-    </div>
 
-    <div class="main-content">
-        <div class="stats-bar">
-            <div class="stat-card">
-                <div class="stat-number" id="totalPosts">0</div>
-                <div class="stat-label">Total Posts</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="totalLikes">0</div>
-                <div class="stat-label">Total Likes</div>
-            </div>
-            <div class="stat-card balance-card">
-                <div class="reward-label">My Reward: <span id="lastReward">0</span></div>
-                <div class="stat-label">TOTAL BALANCE</div>
-                <div class="stat-number" id="totalBalance">0 RUPPY</div>
-            </div>
-        </div>
+<div class="hub-header">
+  <div class="hub-logo"><button class="back-arrow" onclick="exitApp()">←</button><h1>RUPPY</h1><span>HUB</span></div>
+</div>
 
-        <div class="create-post">
-            <textarea class="post-input" id="postInput" placeholder="Share your thoughts..." maxlength="500" rows="3"></textarea>
-            <div class="post-actions">
-                <span class="char-count" id="charCount">0/500</span>
-                <button class="post-btn" id="postBtn" disabled>Post</button>
-            </div>
-        </div>
-
-        <div class="posts-container" id="postsContainer"></div>
-    </div>
-
-    <div class="bottom-nav">
-        <div class="nav-item active">
-            <div class="nav-icon">🏠</div>
-            <span>Home</span>
-        </div>
-        <div class="nav-item">
-            <div class="nav-icon">🔍</div>
-            <span>Explore</span>
-        </div>
-        <div class="nav-item">
-            <div class="nav-icon">➕</div>
-            <span>Create</span>
-        </div>
-        <div class="nav-item">
-            <div class="nav-icon">👤</div>
-            <span>Profile</span>
-        </div>
+<div class="stats-bar">
+    <div class="stat-card"><h3 id="totalPosts">0</h3><p>Total Posts</p></div>
+    <div class="stat-card"><h3 id="totalLikes">0</h3><p>Total Likes</p></div>
+    <div class="stat-card">
+      <h3 id="myRewards">0</h3>
+      <p>My Reward</p>
+      <div class="sub-balance">Total Balance: <span id="totalBalance">0</span></div>
     </div>
 </div>
 
+<div id="hub-tab" class="tab-content active">
+  <div class="create-card">
+    <div class="gift-banner" id="giftBanner">🎁 +10 RUPPY Token per post | <span id="limitText">3/3 left</span></div>
+    <div class="create-top">
+      <div class="create-avatar" id="userAvatar">U</div>
+      <textarea id="postText" placeholder="Create Post..." rows="2"></textarea>
+    </div>
+    <div class="create-actions">
+      <div class="left">
+        <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📷</button>
+        <button class="icon-btn" onclick="addEmoji()">😊</button>
+      </div>
+      <button class="post-btn" id="postBtn" onclick="createPost()" disabled>Post</button>
+    </div>
+    <input type="file" id="fileInput" accept="image/*,video/*">
+    <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
+  </div>
+
+  <div id="feed" style="padding:0 20px 20px"></div>
+</div>
+
+<div id="friend-tab" class="tab-content">
+  <div style="padding:20px"><h3>Friend Requests</h3><p style="color:#666">No new requests</p></div>
+</div>
+
+<div id="notification-tab" class="tab-content">
+  <div style="padding:20px"><h3>Notifications</h3><p style="color:#666">You are all caught up!</p></div>
+</div>
+
+<div id="profile-tab" class="tab-content">
+  <div class="profile-cover"><div class="profile-dp" id="main-dp">U</div></div>
+  <div class="profile-info">
+    <h2 id="view-name">User847</h2>
+    <p id="view-bio">Living life...</p>
+    <div class="p-detail"><span class="icon">📍</span> <span id="view-city">Not Set</span></div>
+    <div class="p-detail"><span class="icon">🏠</span> <span id="view-hometown">Not Set</span></div>
+    <div class="p-detail"><span class="icon">❤️</span> <span id="view-rel">Single</span></div>
+    <div class="p-detail"><span class="icon">💼</span> <span id="view-work">Not Set</span></div>
+    <div class="p-detail"><span class="icon">🎓</span> <span id="view-edu">Not Set</span></div>
+    <div class="p-detail"><span class="icon">🎮</span> <span id="view-hobbies">Not Set</span></div>
+    <button onclick="openEdit()" style="width:100%;padding:12px;background:#1a1a1a;border:1px solid #333;color:#FFD700;border-radius:12px;margin-top:20px;font-weight:700">Edit Profile</button>
+  </div>
+  <div class="profile-posts">
+    <h3>Your Posts</h3>
+    <div id="profileFeed"></div>
+  </div>
+</div>
+
+<div id="editModal">
+  <div class="edit-header"><h3>Edit Profile</h3><button onclick="closeEdit()" style="color:#fff;background:none;border:none;font-size:20px">✕</button></div>
+  <div class="edit-field"><label>Profile Photo</label><input type="file" id="in-photo" accept="image/*"></div>
+  <div class="edit-field"><label>Name</label><input type="text" id="in-name"></div>
+  <div class="edit-field"><label>Bio</label><textarea id="in-bio"></textarea></div>
+  <div class="edit-field"><label>Current City</label><input type="text" id="in-city"></div>
+  <div class="edit-field"><label>Hometown</label><input type="text" id="in-hometown"></div>
+  <div class="edit-field"><label>Relationship</label><input type="text" id="in-rel"></div>
+  <div class="edit-field"><label>Work</label><input type="text" id="in-work"></div>
+  <div class="edit-field"><label>Education</label><input type="text" id="in-edu"></div>
+  <div class="edit-field"><label>Hobbies</label><input type="text" id="in-hobbies"></div>
+  <button onclick="saveProfile()" style="width:100%;padding:15px;background:#FFD700;border:none;border-radius:12px;font-weight:800;margin-top:10px">Save Changes</button>
+</div>
+
+<div class="ruppy-nav">
+  <button class="nav-btn active" id="btn-hub" onclick="switchTab('hub')">
+    <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 22"></polyline></svg>
+    <span>Home</span>
+  </button>
+  <button class="nav-btn" id="btn-friend" onclick="switchTab('friend')">
+    <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+    <span>Friend</span>
+  </button>
+  <button class="nav-btn" id="btn-notification" onclick="switchTab('notification')">
+    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+    <span>Notif</span>
+  </button>
+  <button class="nav-btn" id="btn-profile" onclick="switchTab('profile')">
+    <svg viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+    <span>Profile</span>
+  </button>
+</div>
+
 <script>
-let userData = {
-    username: 'RuppyUser',
-    avatar: 'R',
-    tokens: 250,
-    lastReward: 0,
-    posts: [],
-    likedPosts: []
-};
-
-// Load from localStorage
-function loadUserData() {
-    const saved = localStorage.getItem('ruppy_pro');
-    if (saved) {
-        const parsed = JSON.parse(saved);
-        userData = { ...userData, ...parsed };
-    }
-    updateUI();
+if(!localStorage.getItem('ruppy_uid')) {
+  localStorage.setItem('ruppy_uid', 'u_' + Date.now() + Math.random().toString(36).substr(2, 5));
 }
 
-// Save to localStorage
-function saveUserData() {
-    localStorage.setItem('ruppy_pro', JSON.stringify(userData));
-    // Trigger storage event for other tabs
-    window.dispatchEvent(new Event('storage'));
-}
+let uData=JSON.parse(localStorage.getItem('ruppy_pro'))||{name:'User847',bio:'Living life...',city:'Not Set',hometown:'Not Set',rel:'Single',work:'Not Set',edu:'Not Set',hobbies:'Not Set',photo:'',tokens:0,postsToday:0,lastPostDate:'',uid:localStorage.getItem('ruppy_uid'),likedPosts:[]};
+let posts=JSON.parse(localStorage.getItem('ruppy_posts')||'[]');
 
-// Listen for changes from other tabs/pages
-window.addEventListener('storage', (e) => {
-    if (e.key === 'ruppy_pro') {
-        loadUserData();
-    }
-});
+function updatePostLimit() {
+  const today = new Date().toISOString().split('T')[0];
+  if (uData.lastPostDate!== today) {
+    uData.postsToday = 0;
+    uData.lastPostDate = today;
+    localStorage.setItem('ruppy_pro', JSON.stringify(uData));
+  }
+  let left = 3 - uData.postsToday;
+  document.getElementById('limitText').innerText = `${left}/3 left`;
+  document.getElementById('myRewards').innerText = uData.tokens;
+  document.getElementById('totalBalance').innerText = uData.tokens;
 
-function updateUI() {
-    document.getElementById('userAvatar').textContent = userData.avatar;
-    document.getElementById('username').textContent = userData.username;
-    document.getElementById('headerBalance').textContent = userData.tokens + ' RUPPY';
-    document.getElementById('totalPosts').textContent = userData.posts.length;
-    document.getElementById('totalLikes').textContent = userData.likedPosts.length;
-    document.getElementById('lastReward').textContent = userData.lastReward;
-    document.getElementById('totalBalance').textContent = userData.tokens + ' RUPPY';
-}
-
-function createPost() {
-    const input = document.getElementById('postInput');
-    const content = input.value.trim();
-    if (!content) return;
-
-    const post = {
-        id: Date.now(),
-        username: userData.username,
-        avatar: userData.avatar,
-        content: content,
-        time: 'Just now',
-        likes: 0,
-        claimed: false,
-        liked: false
-    };
-
-    userData.posts.unshift(post);
-    input.value = '';
-    document.getElementById('charCount').textContent = '0/500';
+  if (uData.postsToday >= 3) {
     document.getElementById('postBtn').disabled = true;
-    
-    saveUserData();
-    renderPosts();
+    document.getElementById('postBtn').innerText = 'Daily limit reached 3/3';
+    document.getElementById('giftBanner').innerHTML = '🎁 Daily limit reached. Come back tomorrow';
+  } else {
+    document.getElementById('postBtn').innerText = `Post`;
+    document.getElementById('giftBanner').innerHTML = `🎁 +10 RUPPY Token per post | <span id="limitText">${left}/3 left</span>`;
+  }
 }
 
-function toggleLike(postId) {
-    const post = userData.posts.find(p => p.id === postId);
-    if (!post) return;
+function loadUI(){document.getElementById('view-name').innerText=uData.name;document.getElementById('view-bio').innerText=uData.bio;document.getElementById('view-city').innerText=uData.city;document.getElementById('view-hometown').innerText=uData.hometown;document.getElementById('view-rel').innerText=uData.rel;document.getElementById('view-work').innerText=uData.work;document.getElementById('view-edu').innerText=uData.edu;document.getElementById('view-hobbies').innerText=uData.hobbies;document.getElementById('userAvatar').innerText=uData.name[0];if(uData.photo){document.getElementById('main-dp').innerHTML=`<img src="${uData.photo}">`;document.getElementById('userAvatar').innerHTML=`<img src="${uData.photo}">`}else{document.getElementById('main-dp').innerText=uData.name[0]}updatePostLimit()}
+function openEdit(){document.getElementById('editModal').style.display='flex';document.getElementById('in-name').value=uData.name;document.getElementById('in-bio').value=uData.bio;document.getElementById('in-city').value=uData.city;document.getElementById('in-hometown').value=uData.hometown;document.getElementById('in-rel').value=uData.rel;document.getElementById('in-work').value=uData.work;document.getElementById('in-edu').value=uData.edu;document.getElementById('in-hobbies').value=uData.hobbies}
+function closeEdit(){document.getElementById('editModal').style.display='none'}
+function saveProfile(){uData.name=document.getElementById('in-name').value;uData.bio=document.getElementById('in-bio').value;uData.city=document.getElementById('in-city').value;uData.hometown=document.getElementById('in-hometown').value;uData.rel=document.getElementById('in-rel').value;uData.work=document.getElementById('in-work').value;uData.edu=document.getElementById('in-edu').value;uData.hobbies=document.getElementById('in-hobbies').value;const file=document.getElementById('in-photo').files[0];if(file){const reader=new FileReader();reader.onload=(e)=>{uData.photo=e.target.result;finish()};reader.readAsDataURL(file)}else finish()}
+function finish(){localStorage.setItem('ruppy_pro',JSON.stringify(uData));loadUI();closeEdit()}
+function switchTab(t){document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));document.getElementById(t+'-tab').classList.add('active');document.getElementById('btn-'+t).classList.add('active');if(t==='profile')renderProfileFeed()}
+function exitApp(){window.history.back()}
 
-    if (post.liked) {
-        post.likes--;
-        post.liked = false;
-        userData.likedPosts = userData.likedPosts.filter(id => id !== postId);
+let selectedFile=null;
+document.getElementById('postText').oninput=function(){
+  if(document.getElementById('postBtn').innerText.includes('limit reached')) return;
+  document.getElementById('postBtn').disabled=!this.value.trim()&&!selectedFile
+}
+document.getElementById('fileInput').onchange=function(e){selectedFile=e.target.files[0];if(selectedFile){let r=new FileReader();r.onload=function(e){let p=document.getElementById('preview');p.style.display='block';p.innerHTML=selectedFile.type.includes('video')?`<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`:`<img src="${e.target.result}" style="width:100%;border-radius:12px">`;document.getElementById('postBtn').disabled=false};r.readAsDataURL(selectedFile)}}
+function addEmoji(){document.getElementById('postText').value+=' 🔥';document.getElementById('postBtn').disabled=false}
+
+function createPost(){
+  let t=document.getElementById('postText').value.trim();
+  if(!t&&!selectedFile)return;
+
+  const today = new Date().toISOString().split('T')[0];
+  if (uData.lastPostDate === today && uData.postsToday >= 3) {
+    alert("Daily limit of 3 posts reached. Come back tomorrow.");
+    return;
+  }
+
+  let p={id:Date.now(),user:uData.name,photo:uData.photo,text:t,likes:0,likedBy:[],time:Date.now(),claimed:false,uid:uData.uid};
+
+  if(selectedFile){
+    let r=new FileReader();
+    r.onload=function(e){
+      p.media=e.target.result;
+      p.mediaType=selectedFile.type.includes('video')?'video':'image';
+      savePost(p)
+    };
+    r.readAsDataURL(selectedFile)
+  } else {
+    savePost(p)
+  }
+}
+
+function savePost(p){
+  posts.unshift(p);
+  localStorage.setItem('ruppy_posts',JSON.stringify(posts));
+
+  document.getElementById('postText').value='';
+  document.getElementById('preview').style.display='none';
+  document.getElementById('preview').innerHTML='';
+  document.getElementById('fileInput').value='';
+  document.getElementById('postBtn').disabled=true;
+  selectedFile=null;
+  renderFeed();
+}
+
+function claimReward(postId){
+  const today = new Date().toISOString().split('T')[0];
+  if (uData.lastPostDate === today && uData.postsToday >= 3) {
+    alert("Daily limit of 3 claims reached. Come back tomorrow.");
+    return;
+  }
+
+  let postIndex = posts.findIndex(p => p.id === postId);
+  if(postIndex === -1 || posts[postIndex].claimed) return;
+
+  posts[postIndex].claimed = true;
+  localStorage.setItem('ruppy_posts',JSON.stringify(posts));
+
+  uData.tokens += 10;
+  uData.postsToday = uData.lastPostDate === today? uData.postsToday + 1 : 1;
+  uData.lastPostDate = today;
+  localStorage.setItem('ruppy_pro',JSON.stringify(uData));
+
+  alert("You claimed 10 Tokens! 🎉");
+  renderFeed();
+  updatePostLimit();
+  renderProfileFeed();
+}
+
+function renderPostHTML(p,i,showClaim){
+    let m='';
+    if(p.media){
+      if(p.mediaType==='video'){m=`<div class="post-media"><video src="${p.media}" controls></video></div>`}
+      else{m=`<div class="post-media"><img src="${p.media}"></div>`}
+    }
+    let isLiked = p.likedBy && p.likedBy.includes(uData.uid);
+    let claimBtn = '';
+    if(showClaim && p.uid === uData.uid){
+      if(!p.claimed){
+        claimBtn = `<button class="claim-btn" onclick="claimReward(${p.id})">Claim +10 Token</button>`;
+      } else {
+        claimBtn = `<button class="claim-btn claimed" disabled>Claimed ✓</button>`;
+      }
+    }
+    let unclaimedTag = (p.uid === uData.uid &&!p.claimed)? `<span class="unclaimed-badge">Unclaimed</span>` : '';
+
+    return `<div class="post-card">
+      <div class="post-card-head">
+        <div class="post-avatar">${p.photo?`<img src="${p.photo}">`:p.user[0]}</div>
+        <div class="post-info"><h4>${p.user} ${unclaimedTag}</h4><p>now</p></div>
+      </div>
+      ${p.text?`<div class="post-content">${p.text}</div>`:''}${m}
+      ${claimBtn}
+      <div class="post-actions">
+        <button class="like-btn ${isLiked?'liked':''}" onclick="likePost(${i})"><b>Like</b> ❤️ ${p.likes||0}</button>
+        <button class="comment-btn"><b style="color:#333">Comment</b> 💬</button>
+      </div>
+    </div>`;
+}
+
+function renderFeed(){
+  let f=document.getElementById('feed');
+  if(posts.length===0){f.innerHTML=`<div style="padding:40px;text-align:center;color:#666">No posts yet</div>`;return}
+  f.innerHTML='';
+  let totalLikes = 0;
+  posts.forEach((p,i)=>{
+    totalLikes += p.likes || 0;
+    f.innerHTML += renderPostHTML(p,i,true);
+  });
+  document.getElementById('totalPosts').innerText = posts.length;
+  document.getElementById('totalLikes').innerText = totalLikes;
+}
+
+function renderProfileFeed(){
+  let f=document.getElementById('profileFeed');
+  let userPosts = posts.filter(p => p.uid === uData.uid);
+  if(userPosts.length===0){f.innerHTML=`<div style="padding:20px;text-align:center;color:#666">No posts yet</div>`;return}
+  f.innerHTML='';
+  userPosts.forEach((p)=>{
+    let i = posts.findIndex(post => post.id === p.id);
+    f.innerHTML += renderPostHTML(p,i,false);
+  });
+}
+
+function likePost(i) {
+    if(!posts[i].likedBy) posts[i].likedBy = [];
+    let userIndex = posts[i].likedBy.indexOf(uData.uid);
+
+    if(userIndex === -1) {
+        posts[i].likes = (posts[i].likes || 0) + 1;
+        posts[i].likedBy.push(uData.uid);
     } else {
-        post.likes++;
-        post.liked = true;
-        userData.likedPosts.push(postId);
+        posts[i].likes = (posts[i].likes || 1) - 1;
+        posts[i].likedBy.splice(userIndex, 1);
     }
-
-    saveUserData();
-    renderPosts();
+    localStorage.setItem('ruppy_posts',JSON.stringify(posts));
+    renderFeed();
+    renderProfileFeed();
 }
 
-function claimReward(postId) {
-    const post = userData.posts.find(p => p.id === postId);
-    if (!post || post.claimed) return;
-
-    const reward = 10;
-    post.claimed = true;
-    userData.lastReward = reward;
-    userData.tokens += reward;
-
-    saveUserData();
-    updateUI();
-    renderPosts();
-}
-
-function renderPosts() {
-    const container = document.getElementById('postsContainer');
-    if (userData.posts.length === 0) {
-        container.innerHTML = '<div style="text-align:center;padding:40px;color:#888;">No posts yet. Create your first post!</div>';
-        return;
-    }
-
-    container.innerHTML = userData.posts.map(post => `
-        <div class="post-card">
-            <div>
-                <div class="post-header">
-                    <div class="post-avatar">${post.avatar}</div>
-                    <div class="post-user-info">
-                        <div class="post-username">${post.username}</div>
-                        <div class="post-time">${post.time}</div>
-                    </div>
-                <div class="post-content">${post.content}</div>
-            </div>
-            <div class="post-stats">
-                <div class="like-section">
-                    <button class="like-btn ${post.liked ? 'liked' : ''}" onclick="toggleLike(${post.id})">
-                        ❤️ ${post.likes}
-                    </button>
-                </div>
-                <button class="claim-btn" onclick="claimReward(${post.id})" ${post.claimed ? 'disabled' : ''}>
-                    ${post.claimed ? 'Claimed' : 'Claim +10'}
-                </button>
-            </div>
-        </div>
-    `).join('');
-}
-
-// Event Listeners
-document.getElementById('postInput').addEventListener('input', (e) => {
-    const len = e.target.value.length;
-    document.getElementById('charCount').textContent = len + '/500';
-    document.getElementById('postBtn').disabled = len === 0;
-});
-
-document.getElementById('postBtn').addEventListener('click', createPost);
-
-document.getElementById('postInput').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        createPost();
-    }
-});
-
-// Init
-loadUserData();
-renderPosts();
+window.onload=function(){loadUI();renderFeed();renderProfileFeed()}
 </script>
 </body>
 </html>
