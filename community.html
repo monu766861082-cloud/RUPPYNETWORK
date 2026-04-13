@@ -9,6 +9,7 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
 body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
+/* Header - RUPPY Style */
 .hub-header{position:sticky;top:0;background:linear-gradient(180deg,#0a0a0a 0%,#0a0a0a 80%,transparent 100%);backdrop-filter:blur(10px);padding:16px 20px;z-index:100;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a1a1a}
 .hub-logo{display:flex;align-items:center;gap:8px}
 .back-arrow{background:none;border:none;color:#FFD700;font-size:24px;cursor:pointer;padding:0 8px 0 0;margin-left:-8px}
@@ -17,12 +18,14 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .hub-logo span{font-size:12px;color:#666;background:#1a1a1a;padding:2px 8px;border-radius:10px}
 .create-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 4px 15px rgba(255,215,0,0.3)}
 
+/* Stats Bar */
 .stats-bar{display:flex;gap:10px;padding:16px 20px;overflow-x:auto}
 .stats-bar::-webkit-scrollbar{display:none}
 .stat-card{background:linear-gradient(135deg,#1a1a1a,#0d0d0d);border:1px solid #252525;border-radius:16px;padding:12px 16px;min-width:110px;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,0.5)}
 .stat-card h3{font-size:20px;font-weight:700;color:#FFD700;margin-bottom:2px}
 .stat-card p{font-size:11px;color:#888}
 
+/* Create Post Card */
 .create-card{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:20px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
 .create-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
 .create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px}
@@ -34,6 +37,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 24px;color:#000;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 15px rgba(255,215,0,0.3)}
 .post-btn:disabled{opacity:0.3;cursor:not-allowed}
 
+/* Feed */
 .feed{padding:0 20px}
 .post-card{background:#111;border:1px solid #222;border-radius:24px;margin-bottom:16px;overflow:hidden;transition:0.3s;box-shadow:0 8px 25px rgba(0,0,0,0.6)}
 .post-card:active{transform:scale(0.98)}
@@ -48,6 +52,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-media{width:100%;max-height:400px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .post-media img,.post-media video{width:100%;height:auto;display:block}
 
+/* ROYAL LIKE COMMENT SHARE BAR */
 .post-footer{padding:12px 16px;border-top:1px solid #252525;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,#161616,#101010);box-shadow:inset 0 1px 0 rgba(255,215,0,0.15)}
 .post-stats{display:flex;gap:10px}
 .stat-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;color:#000;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;cursor:pointer;padding:9px 16px;border-radius:12px;transition:0.2s;box-shadow:0 3px 12px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3)}
@@ -59,6 +64,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .share-btn{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:9px 16px;color:#FFD700;font-size:13px;font-weight:700;cursor:pointer;transition:0.2s}
 .share-btn:active{transform:scale(0.92);background:#222}
 
+/* Comments */
 .comments-box{display:none;padding:16px;border-top:1px solid #1a1a1a;background:#0d0d0d;max-height:300px;overflow-y:auto}
 .view-more{color:#FFD700;font-size:13px;font-weight:600;padding:8px 0;cursor:pointer;text-align:center;margin-bottom:10px}
 .view-more:active{opacity:0.6}
@@ -71,11 +77,13 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .comment-input input{flex:1;background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:10px 14px;color:#fff;font-size:14px;outline:none}
 .comment-input button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer}
 
+/* TAB CONTENT */
 .tab-content{display:none}
 .tab-content.active{display:block}
 .section-title{padding:16px 20px 8px;font-size:18px;font-weight:700;color:#FFD700}
 .section-subtitle{padding:0 20px 16px;font-size:12px;color:#666}
 
+/* FRIEND TAB STYLES */
 .search-bar{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px}
 .search-bar input{flex:1;background:none;border:none;color:#fff;font-size:14px;outline:none}
 .search-bar input::placeholder{color:#555}
@@ -87,6 +95,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .user-card-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:8px 16px;color:#000;font-weight:700;font-size:12px;cursor:pointer}
 .user-card-btn.secondary{background:#1a1a1a;color:#FFD700;border:1px solid #333}
 
+/* NOTIFICATION TAB STYLES */
 .notif-card{background:#111;border:1px solid #222;border-radius:16px;padding:14px;margin:0 20px 12px;display:flex;gap:12px;align-items:flex-start}
 .notif-card.unread{background:#1a1a1a;border-color:#333}
 .notif-icon{width:40px;height:40px;border-radius:12px;background:#FFD700;color:#000;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
@@ -95,6 +104,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .notif-content p b{color:#FFD700}
 .notif-time{font-size:11px;color:#666}
 
+/* PROFILE TAB STYLES */
 .profile-cover{width:100%;height:140px;background:linear-gradient(135deg,#FFD700,#FFA500);position:relative}
 .profile-dp{width:90px;height:90px;border-radius:24px;background:linear-gradient(135deg,#FFA500,#FFD700);border:4px solid #0a0a0a;position:absolute;bottom:-45px;left:20px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:32px}
 .profile-info{padding:55px 20px 16px}
@@ -110,6 +120,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .profile-posts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:0 20px}
 .profile-post-item{aspect-ratio:1;background:#1a1a1a;border-radius:8px}
 
+/* Bottom Nav - हल्के येल्लो में */
 .ruppy-nav{position:fixed;bottom:0;left:0;right:0;background:#0a0a0a;border-top:1px solid #222;height:65px;display:flex;justify-content:space-around;align-items:center;z-index:999;padding:0 10px}
 .nav-btn{background:none;border:none;color:#FFE55C;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:8px 12px;border-radius:12px;transition:0.2s;opacity:0.7}
 .nav-btn.active{color:#FFD700;opacity:1}
@@ -118,6 +129,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .nav-btn.active svg{fill:#FFD700;stroke:#FFD700}
 .nav-btn span{font-size:10px;font-weight:600}
 
+/* Empty */
 .empty-hub{text-align:center;padding:80px 40px}
 .empty-hub h3{font-size:24px;font-weight:800;margin-bottom:8px;background:linear-gradient(90deg,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .empty-hub p{font-size:14px;color:#666;margin-bottom:20px}
@@ -128,6 +140,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </head>
 <body>
 
+<!-- Header -->
 <div class="hub-header">
   <div class="hub-logo">
     <button class="back-arrow" onclick="exitApp()">←</button>
@@ -139,6 +152,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </button>
 </div>
 
+<!-- HUB TAB -->
 <div id="hub-tab" class="tab-content active">
   <div class="stats-bar">
     <div class="stat-card"><h3 id="totalPosts">0</h3><p>Total Posts</p></div>
@@ -163,6 +177,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   <div class="feed" id="feed"></div>
 </div>
 
+<!-- FRIEND TAB -->
 <div id="friend-tab" class="tab-content">
   <div class="search-bar">
     <span>🔍</span>
@@ -208,6 +223,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </div>
 </div>
 
+<!-- NOTIFICATION TAB -->
 <div id="notification-tab" class="tab-content">
   <div class="section-title">Notifications</div>
 
@@ -244,6 +260,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </div>
 </div>
 
+<!-- PROFILE TAB -->
 <div id="profile-tab" class="tab-content">
   <div class="profile-cover">
     <div class="profile-dp">U</div>
@@ -255,7 +272,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
     <div class="profile-stats">
       <div class="profile-stat">
-        <h3 id="profilePostCount">0</h3>
+        <h3>0</h3>
         <p>Posts</p>
       </div>
       <div class="profile-stat">
@@ -263,7 +280,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
         <p>Friends</p>
       </div>
       <div class="profile-stat">
-        <h3 id="profileLikeCount">0</h3>
+        <h3>0</h3>
         <p>Likes</p>
       </div>
     </div>
@@ -283,9 +300,10 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <div class="profile-post-item"></div>
     <div class="profile-post-item"></div>
   </div>
-  <div id="profileEmpty" style="padding:40px;text-align:center;color:#666;font-size:13px">No posts yet</div>
+  <div style="padding:40px;text-align:center;color:#666;font-size:13px">No posts yet</div>
 </div>
 
+<!-- Bottom Nav - हल्के येल्लो में -->
 <div class="ruppy-nav">
   <button class="nav-btn active" id="home-nav-btn" onclick="switchTab('hub')">
     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path><polyline points="9 22 9 12 15 22"></polyline></svg>
@@ -306,6 +324,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <script>
+// EXIT APP FUNCTION
 function exitApp(){
   if(window.history.length > 1){
     window.history.back();
@@ -314,12 +333,14 @@ function exitApp(){
   }
 }
 
+// FILTER
 const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
 function checkContent(text){
   let lower = text.toLowerCase();
   return bannedWords.some(word => lower.includes(word));
 }
 
+// DATA
 let posts = JSON.parse(localStorage.getItem('ruppy_posts') || '[]');
 let currentUser = localStorage.getItem('ruppy_username') || 'User'+Math.floor(Math.random()*999);
 document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
@@ -349,7 +370,6 @@ document.getElementById('fileInput').onchange = function(e){
 
 function openCreate(){
   document.getElementById('postText').focus();
-  switchTab('hub');
 }
 
 function addEmoji(){
@@ -404,15 +424,8 @@ function savePost(post){
 }
 
 function updateStats(){
-  let totalPosts = posts.filter(p => p.reports < 3).length;
-  let totalLikes = posts.reduce((sum,p) => sum + p.likes, 0);
-  document.getElementById('totalPosts').textContent = totalPosts;
-  document.getElementById('totalLikes').textContent = totalLikes;
-  document.getElementById('profilePostCount').textContent = totalPosts;
-  document.getElementById('profileLikeCount').textContent = totalLikes;
-
-  let profileEmpty = document.getElementById('profileEmpty');
-  if(totalPosts > 0 && profileEmpty) profileEmpty.style.display = 'none';
+  document.getElementById('totalPosts').textContent = posts.filter(p => p.reports < 3).length;
+  document.getElementById('totalLikes').textContent = posts.reduce((sum,p) => sum + p.likes, 0);
 }
 
 function renderFeed(){
@@ -459,7 +472,7 @@ function renderFeed(){
       <div class="post-footer">
         <div class="post-stats">
           <button class="stat-btn ${post.liked?'liked':''}" onclick="likePost(${post.id})">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 0 00-6.364L12 7.636l-1.318-1.318a4.5 0 00-6.364 0z"></path></svg>
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 0 00-6.364L12 7.636l-1.318a4.5 0 00-6.364 0z"></path></svg>
             <span>${post.likes}</span>
           </button>
           <button class="stat-btn" onclick="toggleComments(${post.id})">
@@ -570,4 +583,22 @@ function switchTab(tab){
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
 
   if(tab === 'hub'){
-    document.getElementById
+    document.getElementById('hub-tab').classList.add('active');
+    document.getElementById('home-nav-btn').classList.add('active');
+  } else if(tab === 'friend'){
+    document.getElementById('friend-tab').classList.add('active');
+    document.getElementById('friend-nav-btn').classList.add('active');
+  } else if(tab === 'notification'){
+    document.getElementById('notification-tab').classList.add('active');
+    document.getElementById('notification-nav-btn').classList.add('active');
+  } else if(tab === 'profile'){
+    document.getElementById('profile-tab').classList.add('active');
+    document.getElementById('profile-nav-btn').classList.add('active');
+  }
+}
+
+// ये लाइन सबसे जरूरी थी - इसी से सब शुरू होता है
+renderFeed();
+</script>
+</body>
+</html>
