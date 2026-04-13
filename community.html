@@ -8,57 +8,53 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
 body{background:#0a0a0a;color:#fff;padding-bottom:70px}
-
-/* Header */
 .hub-header{position:sticky;top:0;background:linear-gradient(180deg,#0a0a0a 0%,#0a0a0a 80%,transparent 100%);backdrop-filter:blur(10px);padding:16px 20px;z-index:100;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a1a1a}
 .hub-logo{display:flex;align-items:center;gap:8px}
 .back-arrow{background:none;border:none;color:#FFD700;font-size:24px;cursor:pointer;padding:0 8px 0 0;margin-left:-8px}
 .hub-logo h1{font-size:24px;font-weight:800;background:linear-gradient(90deg,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hub-logo span{font-size:12px;color:#666;background:#1a1a1a;padding:2px 8px;border-radius:10px}
-.create-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 4px 15px rgba(255,215,0,0.3)}
-
-/* Stats Bar */
 .stats-bar{display:flex;gap:10px;padding:16px 20px;overflow-x:auto}
 .stats-bar::-webkit-scrollbar{display:none}
 .stat-card{background:linear-gradient(135deg,#1a1a1a,#0d0d0d);border:1px solid #252525;border-radius:16px;padding:12px 16px;min-width:110px;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,0.5)}
 .stat-card h3{font-size:20px;font-weight:700;color:#FFD700;margin-bottom:2px}
 .stat-card p{font-size:11px;color:#888}
-
-/* Profile Content */
 .profile-cover{width:100%;height:140px;background:linear-gradient(135deg,#FFD700,#FFA500);position:relative}
 .profile-dp{width:90px;height:90px;border-radius:24px;background:linear-gradient(135deg,#FFA500,#FFD700);border:4px solid #0a0a0a;position:absolute;bottom:-45px;left:20px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:32px;overflow:hidden}
 .profile-dp img{width:100%;height:100%;object-fit:cover}
 .profile-info{padding:55px 20px 16px}
 .profile-info h2{font-size:24px;font-weight:800;margin-bottom:4px}
 .profile-info p{font-size:14px;color:#888;margin-bottom:12px}
-
-/* Detail Rows from Screenshot */
 .p-detail{display:flex;align-items:center;gap:10px;margin-bottom:10px;color:#ddd;font-size:14px}
 .p-detail span.icon{font-size:18px;width:25px}
-
-/* Tabs */
 .tab-content{display:none}
 .tab-content.active{display:block}
-
-/* Edit Modal */
 #editModal{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0a;z-index:9999;display:none;flex-direction:column;overflow-y:auto;padding:20px}
 .edit-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
 .edit-field{margin-bottom:15px}
 .edit-field label{display:block;color:#666;font-size:12px;margin-bottom:5px;text-transform:uppercase}
-.edit-field input, .edit-field textarea{width:100%;background:#111;border:1px solid #222;padding:12px;color:#fff;border-radius:10px;outline:none}
-
-/* Nav */
+.edit-field input,.edit-field textarea{width:100%;background:#111;border:1px solid #222;padding:12px;color:#fff;border-radius:10px;outline:none}
 .ruppy-nav{position:fixed;bottom:0;left:0;right:0;background:#0a0a0a;border-top:1px solid #222;height:65px;display:flex;justify-content:space-around;align-items:center;z-index:999}
 .nav-btn{background:none;border:none;color:#FFE55C;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;opacity:0.7}
 .nav-btn.active{color:#FFD700;opacity:1}
 .nav-btn svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2}
+.create-card{margin:16px 20px;background:#111;border:1px solid #222;border-radius:20px;padding:16px}
+.create-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden;flex-shrink:0}
+.create-avatar img{width:100%;height:100%;object-fit:cover}
+.create-card textarea{width:100%;background:#0a0a0a;border:1px solid #222;border-radius:12px;padding:12px;color:#fff;font-size:15px;resize:none;min-height:60px}
+.create-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.create-actions.left{display:flex;gap:12px}
+.icon-btn{background:#1a1a1a;border:1px solid #333;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer}
+.post-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 24px;color:#000;font-weight:700;font-size:14px;cursor:pointer}
+.post-btn:disabled{opacity:0.3;cursor:not-allowed}
+.feed{padding:0 20px}
+#fileInput{display:none}
 </style>
 </head>
 <body>
 
 <div class="hub-header">
   <div class="hub-logo"><button class="back-arrow" onclick="exitApp()">←</button><h1>RUPPY</h1><span>HUB</span></div>
-  <button class="create-btn" onclick="switchTab('hub')">✨ Create</button>
 </div>
 
 <div class="stats-bar">
@@ -69,6 +65,23 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
 <div id="hub-tab" class="tab-content active">
   <div id="feed" style="padding:20px"></div>
+
+  <!-- CREATE CARD AB SIRF HOME TAB ME SABSE NEECHE -->
+  <div class="create-card">
+    <div class="create-top">
+      <div class="create-avatar" id="userAvatar">U</div>
+      <textarea id="postText" placeholder="Create Post..." rows="2"></textarea>
+    </div>
+    <div class="create-actions">
+      <div class="left">
+        <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📷</button>
+        <button class="icon-btn" onclick="addEmoji()">😊</button>
+      </div>
+      <button class="post-btn" id="postBtn" onclick="createPost()" disabled>Post</button>
+    </div>
+    <input type="file" id="fileInput" accept="image/*,video/*">
+    <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
+  </div>
 </div>
 
 <div id="friend-tab" class="tab-content">
@@ -84,20 +97,18 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   <div class="profile-info">
     <h2 id="view-name">User847</h2>
     <p id="view-bio">Living life...</p>
-    
     <div class="p-detail"><span class="icon">📍</span> <span id="view-city">Not Set</span></div>
     <div class="p-detail"><span class="icon">🏠</span> <span id="view-hometown">Not Set</span></div>
     <div class="p-detail"><span class="icon">❤️</span> <span id="view-rel">Single</span></div>
     <div class="p-detail"><span class="icon">💼</span> <span id="view-work">Not Set</span></div>
     <div class="p-detail"><span class="icon">🎓</span> <span id="view-edu">Not Set</span></div>
     <div class="p-detail"><span class="icon">🎮</span> <span id="view-hobbies">Not Set</span></div>
-
-    <button onclick="openEdit()" style="width:100%; padding:12px; background:#1a1a1a; border:1px solid #333; color:#FFD700; border-radius:12px; margin-top:20px; font-weight:700">Edit Profile</button>
+    <button onclick="openEdit()" style="width:100%;padding:12px;background:#1a1a1a;border:1px solid #333;color:#FFD700;border-radius:12px;margin-top:20px;font-weight:700">Edit Profile</button>
   </div>
 </div>
 
 <div id="editModal">
-  <div class="edit-header"><h3>Edit Profile</h3><button onclick="closeEdit()" style="color:#fff; background:none; border:none; font-size:20px">✕</button></div>
+  <div class="edit-header"><h3>Edit Profile</h3><button onclick="closeEdit()" style="color:#fff;background:none;border:none;font-size:20px">✕</button></div>
   <div class="edit-field"><label>Profile Photo</label><input type="file" id="in-photo" accept="image/*"></div>
   <div class="edit-field"><label>Name</label><input type="text" id="in-name"></div>
   <div class="edit-field"><label>Bio</label><textarea id="in-bio"></textarea></div>
@@ -107,7 +118,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   <div class="edit-field"><label>Work</label><input type="text" id="in-work"></div>
   <div class="edit-field"><label>Education</label><input type="text" id="in-edu"></div>
   <div class="edit-field"><label>Hobbies</label><input type="text" id="in-hobbies"></div>
-  <button onclick="saveProfile()" style="width:100%; padding:15px; background:#FFD700; border:none; border-radius:12px; font-weight:800; margin-top:10px">Save Changes</button>
+  <button onclick="saveProfile()" style="width:100%;padding:15px;background:#FFD700;border:none;border-radius:12px;font-weight:800;margin-top:10px">Save Changes</button>
 </div>
 
 <div class="ruppy-nav">
@@ -118,67 +129,23 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <script>
-let uData = JSON.parse(localStorage.getItem('ruppy_pro')) || { name:'User847', bio:'Living life...', city:'Not Set', hometown:'Not Set', rel:'Single', work:'Not Set', edu:'Not Set', hobbies:'Not Set', photo:'' };
-
-function loadUI() {
-    document.getElementById('view-name').innerText = uData.name;
-    document.getElementById('view-bio').innerText = uData.bio;
-    document.getElementById('view-city').innerText = uData.city;
-    document.getElementById('view-hometown').innerText = uData.hometown;
-    document.getElementById('view-rel').innerText = uData.rel;
-    document.getElementById('view-work').innerText = uData.work;
-    document.getElementById('view-edu').innerText = uData.edu;
-    document.getElementById('view-hobbies').innerText = uData.hobbies;
-    if(uData.photo) document.getElementById('main-dp').innerHTML = `<img src="${uData.photo}">`;
-    else document.getElementById('main-dp').innerText = uData.name[0];
-}
-
-function openEdit() {
-    document.getElementById('editModal').style.display = 'flex';
-    document.getElementById('in-name').value = uData.name;
-    document.getElementById('in-bio').value = uData.bio;
-    document.getElementById('in-city').value = uData.city;
-    document.getElementById('in-hometown').value = uData.hometown;
-    document.getElementById('in-rel').value = uData.rel;
-    document.getElementById('in-work').value = uData.work;
-    document.getElementById('in-edu').value = uData.edu;
-    document.getElementById('in-hobbies').value = uData.hobbies;
-}
-
-function closeEdit() { document.getElementById('editModal').style.display = 'none'; }
-
-function saveProfile() {
-    uData.name = document.getElementById('in-name').value;
-    uData.bio = document.getElementById('in-bio').value;
-    uData.city = document.getElementById('in-city').value;
-    uData.hometown = document.getElementById('in-hometown').value;
-    uData.rel = document.getElementById('in-rel').value;
-    uData.work = document.getElementById('in-work').value;
-    uData.edu = document.getElementById('in-edu').value;
-    uData.hobbies = document.getElementById('in-hobbies').value;
-    
-    const file = document.getElementById('in-photo').files[0];
-    if(file) {
-        const reader = new FileReader();
-        reader.onload = (e) => { uData.photo = e.target.result; finish(); };
-        reader.readAsDataURL(file);
-    } else finish();
-}
-
-function finish() {
-    localStorage.setItem('ruppy_pro', JSON.stringify(uData));
-    loadUI(); closeEdit();
-}
-
-function switchTab(t) {
-    document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
-    document.getElementById(t + '-tab').classList.add('active');
-    document.getElementById('btn-' + t).classList.add('active');
-}
-
-function exitApp() { window.history.back(); }
-window.onload = loadUI;
+let uData=JSON.parse(localStorage.getItem('ruppy_pro'))||{name:'User847',bio:'Living life...',city:'Not Set',hometown:'Not Set',rel:'Single',work:'Not Set',edu:'Not Set',hobbies:'Not Set',photo:''};
+let posts=JSON.parse(localStorage.getItem('ruppy_posts')||'[]');
+function loadUI(){document.getElementById('view-name').innerText=uData.name;document.getElementById('view-bio').innerText=uData.bio;document.getElementById('view-city').innerText=uData.city;document.getElementById('view-hometown').innerText=uData.hometown;document.getElementById('view-rel').innerText=uData.rel;document.getElementById('view-work').innerText=uData.work;document.getElementById('view-edu').innerText=uData.edu;document.getElementById('view-hobbies').innerText=uData.hobbies;document.getElementById('userAvatar').innerText=uData.name[0];if(uData.photo){document.getElementById('main-dp').innerHTML=`<img src="${uData.photo}">`;document.getElementById('userAvatar').innerHTML=`<img src="${uData.photo}">`}else{document.getElementById('main-dp').innerText=uData.name[0]}}
+function openEdit(){document.getElementById('editModal').style.display='flex';document.getElementById('in-name').value=uData.name;document.getElementById('in-bio').value=uData.bio;document.getElementById('in-city').value=uData.city;document.getElementById('in-hometown').value=uData.hometown;document.getElementById('in-rel').value=uData.rel;document.getElementById('in-work').value=uData.work;document.getElementById('in-edu').value=uData.edu;document.getElementById('in-hobbies').value=uData.hobbies}
+function closeEdit(){document.getElementById('editModal').style.display='none'}
+function saveProfile(){uData.name=document.getElementById('in-name').value;uData.bio=document.getElementById('in-bio').value;uData.city=document.getElementById('in-city').value;uData.hometown=document.getElementById('in-hometown').value;uData.rel=document.getElementById('in-rel').value;uData.work=document.getElementById('in-work').value;uData.edu=document.getElementById('in-edu').value;uData.hobbies=document.getElementById('in-hobbies').value;const file=document.getElementById('in-photo').files[0];if(file){const reader=new FileReader();reader.onload=(e)=>{uData.photo=e.target.result;finish()};reader.readAsDataURL(file)}else finish()}
+function finish(){localStorage.setItem('ruppy_pro',JSON.stringify(uData));loadUI();closeEdit()}
+function switchTab(t){document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));document.getElementById(t+'-tab').classList.add('active');document.getElementById('btn-'+t).classList.add('active')}
+function exitApp(){window.history.back()}
+let selectedFile=null;
+document.getElementById('postText').oninput=function(){document.getElementById('postBtn').disabled=!this.value.trim()&&!selectedFile}
+document.getElementById('fileInput').onchange=function(e){selectedFile=e.target.files[0];if(selectedFile){let r=new FileReader();r.onload=function(e){let p=document.getElementById('preview');p.style.display='block';p.innerHTML=selectedFile.type.includes('video')?`<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`:`<img src="${e.target.result}" style="width:100%;border-radius:12px">`;document.getElementById('postBtn').disabled=false};r.readAsDataURL(selectedFile)}}
+function addEmoji(){document.getElementById('postText').value+=' 🔥';document.getElementById('postBtn').disabled=false}
+function createPost(){let t=document.getElementById('postText').value.trim();if(!t&&!selectedFile)return;let p={id:Date.now(),user:uData.name,text:t,time:Date.now()};if(selectedFile){let r=new FileReader();r.onload=function(e){p.media=e.target.result;p.mediaType=selectedFile.type.includes('video')?'video':'image';savePost(p)};r.readAsDataURL(selectedFile)}else savePost(p)}
+function savePost(p){posts.unshift(p);localStorage.setItem('ruppy_posts',JSON.stringify(posts));document.getElementById('postText').value='';document.getElementById('preview').style.display='none';document.getElementById('preview').innerHTML='';document.getElementById('fileInput').value='';document.getElementById('postBtn').disabled=true;selectedFile=null;renderFeed()}
+function renderFeed(){let f=document.getElementById('feed');if(posts.length===0){f.innerHTML=`<div style="padding:40px;text-align:center;color:#666">No posts yet</div>`;return}f.innerHTML='';posts.forEach(p=>{let m='';if(p.media){if(p.mediaType==='video'){m=`<div class="post-media"><video src="${p.media}" controls></video></div>`}else{m=`<div class="post-media"><img src="${p.media}"></div>`}}f.innerHTML+=`<div class="post-card"><div class="post-card-head"><div class="post-avatar">${uData.photo?`<img src="${uData.photo}">`:uData.name[0]}</div><div class="post-info"><h4>${p.user}</h4><p>now</p></div></div>${p.text?`<div class="post-content">${p.text}</div>`:''}${m}</div>`})}
+window.onload=function(){loadUI();renderFeed()}
 </script>
 </body>
 </html>
