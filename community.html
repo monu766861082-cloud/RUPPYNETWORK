@@ -9,7 +9,7 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
 body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
-/* Header */
+/* Header - RUPPY Style */
 .hub-header{position:sticky;top:0;background:linear-gradient(180deg,#0a0a0a 0%,#0a0a0a 80%,transparent 100%);backdrop-filter:blur(10px);padding:16px 20px;z-index:100;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a1a1a}
 .hub-logo{display:flex;align-items:center;gap:8px}
 .back-arrow{background:none;border:none;color:#FFD700;font-size:24px;cursor:pointer;padding:0 8px 0 0;margin-left:-8px}
@@ -28,8 +28,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 /* Create Post Card */
 .create-card{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:20px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
 .create-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
-.create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden}
-.create-avatar img{width:100%;height:100%;object-fit:cover}
+.create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px}
 .create-card textarea{width:100%;background:#0a0a0a;border:1px solid #222;border-radius:12px;padding:12px;color:#fff;font-size:15px;resize:none;font-family:inherit;min-height:60px}
 .create-card textarea::placeholder{color:#555}
 .create-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
@@ -43,8 +42,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-card{background:#111;border:1px solid #222;border-radius:24px;margin-bottom:16px;overflow:hidden;transition:0.3s;box-shadow:0 8px 25px rgba(0,0,0,0.6)}
 .post-card:active{transform:scale(0.98)}
 .post-card-head{padding:16px;display:flex;align-items:center;gap:12px}
-.post-avatar{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden}
-.post-avatar img{width:100%;height:100%;object-fit:cover}
+.post-avatar{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px}
 .post-info{flex:1}
 .post-info h4{font-size:15px;font-weight:600;margin-bottom:2px}
 .post-info p{font-size:12px;color:#666}
@@ -54,21 +52,24 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-media{width:100%;max-height:400px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .post-media img,.post-media video{width:100%;height:auto;display:block}
 
-/* FACEBOOK STYLE LIKE COMMENT BAR */
-.post-footer{padding:8px 16px;border-top:1px solid #252525;display:flex;justify-content:space-around;align-items:center;background:#111}
-.fb-action-btn{flex:1;background:none;border:none;color:#B0B3B8;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:600;cursor:pointer;padding:8px;border-radius:8px;transition:0.2s}
-.fb-action-btn:active{background:#222}
-.fb-action-btn.liked{color:#1877F2}
-.fb-action-btn svg{width:20px;height:20px;fill:currentColor}
-.like-count{padding:8px 16px;font-size:13px;color:#B0B3B8;border-bottom:1px solid #252525}
+/* ROYAL LIKE COMMENT SHARE BAR */
+.post-footer{padding:12px 16px;border-top:1px solid #252525;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,#161616,#101010);box-shadow:inset 0 1px 0 rgba(255,215,0,0.15)}
+.post-stats{display:flex;gap:10px}
+.stat-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;color:#000;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;cursor:pointer;padding:9px 16px;border-radius:12px;transition:0.2s;box-shadow:0 3px 12px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3)}
+.stat-btn:active{transform:scale(0.92);box-shadow:0 1px 5px rgba(255,215,0,0.4)}
+.stat-btn.liked{background:linear-gradient(135deg,#FF6B6B,#FF4757);color:#fff;box-shadow:0 3px 12px rgba(255,107,107,0.5), inset 0 1px 0 rgba(255,255,255,0.3)}
+.stat-btn.liked span{color:#fff}
+.stat-btn svg{width:18px;height:18px;stroke:#000;fill:none;stroke-width:2.5}
+.stat-btn.liked svg{stroke:#fff;fill:#fff}
+.share-btn{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:9px 16px;color:#FFD700;font-size:13px;font-weight:700;cursor:pointer;transition:0.2s}
+.share-btn:active{transform:scale(0.92);background:#222}
 
 /* Comments */
 .comments-box{display:none;padding:16px;border-top:1px solid #1a1a1a;background:#0d0d0d;max-height:300px;overflow-y:auto}
 .view-more{color:#FFD700;font-size:13px;font-weight:600;padding:8px 0;cursor:pointer;text-align:center;margin-bottom:10px}
 .view-more:active{opacity:0.6}
 .comment{display:flex;gap:10px;margin-bottom:14px}
-.comment-avatar{width:32px;height:32px;border-radius:10px;background:#FFD700;color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;overflow:hidden}
-.comment-avatar img{width:100%;height:100%;object-fit:cover}
+.comment-avatar{width:32px;height:32px;border-radius:10px;background:#FFD700;color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
 .comment-body{flex:1;background:#1a1a1a;border-radius:12px;padding:10px 12px}
 .comment-body b{font-size:13px;font-weight:600;display:block;margin-bottom:2px}
 .comment-body span{font-size:14px;line-height:1.4;color:#ddd}
@@ -87,8 +88,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .search-bar input{flex:1;background:none;border:none;color:#fff;font-size:14px;outline:none}
 .search-bar input::placeholder{color:#555}
 .user-card{background:#111;border:1px solid #222;border-radius:16px;padding:12px;margin:0 20px 12px;display:flex;align-items:center;gap:12px}
-.user-card-avatar{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:18px;flex-shrink:0;overflow:hidden}
-.user-card-avatar img{width:100%;height:100%;object-fit:cover}
+.user-card-avatar{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:18px;flex-shrink:0}
 .user-card-info{flex:1}
 .user-card-info h4{font-size:15px;font-weight:600;margin-bottom:2px}
 .user-card-info p{font-size:12px;color:#666}
@@ -105,12 +105,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .notif-time{font-size:11px;color:#666}
 
 /* PROFILE TAB STYLES */
-.profile-cover{width:100%;height:140px;background:linear-gradient(135deg,#FFD700,#FFA500);position:relative;overflow:hidden;cursor:pointer}
-.profile-cover img{width:100%;height:100%;object-fit:cover}
-.profile-cover:hover::after{content:'📷 Change Cover';position:absolute;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;font-weight:700}
-.profile-dp{width:90px;height:90px;border-radius:24px;background:linear-gradient(135deg,#FFA500,#FFD700);border:4px solid #0a0a0a;position:absolute;bottom:-45px;left:20px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:32px;overflow:hidden;cursor:pointer}
-.profile-dp img{width:100%;height:100%;object-fit:cover}
-.profile-dp:hover::after{content:'📷';position:absolute;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;font-size:24px}
+.profile-cover{width:100%;height:140px;background:linear-gradient(135deg,#FFD700,#FFA500);position:relative}
+.profile-dp{width:90px;height:90px;border-radius:24px;background:linear-gradient(135deg,#FFA500,#FFD700);border:4px solid #0a0a0a;position:absolute;bottom:-45px;left:20px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:32px}
 .profile-info{padding:55px 20px 16px}
 .profile-info h2{font-size:24px;font-weight:800;margin-bottom:4px}
 .profile-info p{font-size:14px;color:#888;line-height:1.5;margin-bottom:12px}
@@ -122,25 +118,9 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .profile-btn{flex:1;background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:12px;color:#000;font-weight:700;font-size:14px;cursor:pointer}
 .profile-btn.secondary{background:#1a1a1a;color:#FFD700;border:1px solid #333}
 .profile-posts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:0 20px}
-.profile-post-item{aspect-ratio:1;background:#1a1a1a;border-radius:8px;overflow:hidden}
-.profile-post-item img{width:100%;height:100%;object-fit:cover}
+.profile-post-item{aspect-ratio:1;background:#1a1a1a;border-radius:8px}
 
-/* EDIT PROFILE MODAL */
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;overflow-y:auto;padding:20px}
-.modal.active{display:flex;align-items:flex-start;justify-content:center}
-.modal-content{background:#111;border:1px solid #222;border-radius:20px;width:100%;max-width:500px;margin-top:40px;max-height:90vh;overflow-y:auto}
-.modal-header{padding:20px;border-bottom:1px solid #222;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#111}
-.modal-header h2{font-size:20px;font-weight:700}
-.close-btn{background:#1a1a1a;border:none;border-radius:10px;width:36px;height:36px;color:#fff;font-size:20px;cursor:pointer}
-.modal-body{padding:20px}
-.form-group{margin-bottom:20px}
-.form-group label{display:block;font-size:13px;color:#888;margin-bottom:8px;font-weight:600}
-.form-group input,.form-group textarea{width:100%;background:#0a0a0a;border:1px solid #333;border-radius:12px;padding:12px;color:#fff;font-size:15px;outline:none}
-.form-group textarea{resize:vertical;min-height:80px}
-.form-group input:focus,.form-group textarea:focus{border-color:#FFD700}
-.save-profile-btn{width:100%;background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:14px;color:#000;font-weight:700;font-size:15px;cursor:pointer}
-
-/* Bottom Nav */
+/* Bottom Nav - हल्के येल्लो में */
 .ruppy-nav{position:fixed;bottom:0;left:0;right:0;background:#0a0a0a;border-top:1px solid #222;height:65px;display:flex;justify-content:space-around;align-items:center;z-index:999;padding:0 10px}
 .nav-btn{background:none;border:none;color:#FFE55C;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:8px 12px;border-radius:12px;transition:0.2s;opacity:0.7}
 .nav-btn.active{color:#FFD700;opacity:1}
@@ -155,7 +135,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .empty-hub p{font-size:14px;color:#666;margin-bottom:20px}
 .empty-hub button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:14px 28px;color:#000;font-weight:700;font-size:15px;cursor:pointer}
 
-#fileInput,#profilePicInput,#coverPicInput{display:none}
+#fileInput{display:none}
 </style>
 </head>
 <body>
@@ -177,7 +157,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   <div class="stats-bar">
     <div class="stat-card"><h3 id="totalPosts">0</h3><p>Total Posts</p></div>
     <div class="stat-card"><h3 id="totalLikes">0</h3><p>Total Likes</p></div>
-    <div class="stat-card"><h3 id="activeUsers">0</h3><p>Active Now</p></div>
+    <div class="stat-card"><h3 id="activeUsers">1</h3><p>Active Now</p></div>
   </div>
   <div class="create-card">
     <div class="create-top">
@@ -201,97 +181,129 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 <div id="friend-tab" class="tab-content">
   <div class="search-bar">
     <span>🔍</span>
-    <input type="text" placeholder="Search friends..." id="friendSearch">
+    <input type="text" placeholder="Search friends...">
   </div>
+
   <div class="section-title">Friend Requests</div>
-  <div id="friendRequests"></div>
+  <div class="user-card">
+    <div class="user-card-avatar">R</div>
+    <div class="user-card-info">
+      <h4>Rahul Sharma</h4>
+      <p>2 mutual friends</p>
+    </div>
+    <button class="user-card-btn">Accept</button>
+    <button class="user-card-btn secondary">✕</button>
+  </div>
+  <div class="user-card">
+    <div class="user-card-avatar">P</div>
+    <div class="user-card-info">
+      <h4>Priya Singh</h4>
+      <p>5 mutual friends</p>
+    </div>
+    <button class="user-card-btn">Accept</button>
+    <button class="user-card-btn secondary">✕</button>
+  </div>
+
   <div class="section-title">People You May Know</div>
-  <div id="suggestedFriends"></div>
+  <div class="user-card">
+    <div class="user-card-avatar">A</div>
+    <div class="user-card-info">
+      <h4>Amit Kumar</h4>
+      <p>8 mutual friends</p>
+    </div>
+    <button class="user-card-btn secondary">Add</button>
+  </div>
+  <div class="user-card">
+    <div class="user-card-avatar">S</div>
+    <div class="user-card-info">
+      <h4>Sneha Patel</h4>
+      <p>3 mutual friends</p>
+    </div>
+    <button class="user-card-btn secondary">Add</button>
+  </div>
 </div>
 
 <!-- NOTIFICATION TAB -->
 <div id="notification-tab" class="tab-content">
   <div class="section-title">Notifications</div>
-  <div id="notificationsList"></div>
+
+  <div class="notif-card unread">
+    <div class="notif-icon">❤️</div>
+    <div class="notif-content">
+      <p><b>Rahul Sharma</b> liked your post</p>
+      <div class="notif-time">2 minutes ago</div>
+    </div>
+  </div>
+
+  <div class="notif-card unread">
+    <div class="notif-icon">💬</div>
+    <div class="notif-content">
+      <p><b>Priya Singh</b> commented: "Nice pic bro!"</p>
+      <div class="notif-time">15 minutes ago</div>
+    </div>
+  </div>
+
+  <div class="notif-card">
+    <div class="notif-icon">👥</div>
+    <div class="notif-content">
+      <p><b>Amit Kumar</b> sent you a friend request</p>
+      <div class="notif-time">1 hour ago</div>
+    </div>
+  </div>
+
+  <div class="notif-card">
+    <div class="notif-icon">❤️</div>
+    <div class="notif-content">
+      <p><b>Sneha Patel</b> and 12 others liked your post</p>
+      <div class="notif-time">3 hours ago</div>
+    </div>
+  </div>
 </div>
 
 <!-- PROFILE TAB -->
 <div id="profile-tab" class="tab-content">
-  <div class="profile-cover" onclick="document.getElementById('coverPicInput').click()">
-    <img id="coverImg" style="display:none">
-    <div class="profile-dp" onclick="event.stopPropagation();document.getElementById('profilePicInput').click()">
-      <span id="profileDpText">U</span>
-      <img id="profileImg" style="display:none">
-    </div>
+  <div class="profile-cover">
+    <div class="profile-dp">U</div>
   </div>
 
   <div class="profile-info">
-    <h2 id="profileName">User</h2>
-    <p id="profileBio">No bio yet</p>
+    <h2>User847</h2>
+    <p>Living life one post at a time ✨ | RUPPY Member since 2026</p>
 
     <div class="profile-stats">
       <div class="profile-stat">
-        <h3 id="profilePostCount">0</h3>
+        <h3>0</h3>
         <p>Posts</p>
       </div>
       <div class="profile-stat">
-        <h3 id="profileFriendCount">0</h3>
+        <h3>0</h3>
         <p>Friends</p>
       </div>
       <div class="profile-stat">
-        <h3 id="profileLikeCount">0</h3>
+        <h3>0</h3>
         <p>Likes</p>
       </div>
     </div>
 
     <div class="profile-actions">
-      <button class="profile-btn" onclick="openEditProfile()">Edit Profile</button>
-      <button class="profile-btn secondary" onclick="shareProfile()">Share Profile</button>
+      <button class="profile-btn">Edit Profile</button>
+      <button class="profile-btn secondary">Share Profile</button>
     </div>
   </div>
 
   <div class="section-title">Posts</div>
-  <div class="profile-posts-grid" id="profilePostsGrid"></div>
-  <div id="noProfilePosts" style="padding:40px;text-align:center;color:#666;font-size:13px">No posts yet</div>
-</div>
-
-<!-- EDIT PROFILE MODAL -->
-<div class="modal" id="editProfileModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Edit Profile</h2>
-      <button class="close-btn" onclick="closeEditProfile()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label>Profile Photo</label>
-        <button class="profile-btn secondary" onclick="document.getElementById('profilePicInput').click()">Choose Photo</button>
-      </div>
-      <div class="form-group">
-        <label>Cover Photo</label>
-        <button class="profile-btn secondary" onclick="document.getElementById('coverPicInput').click()">Choose Cover</button>
-      </div>
-      <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" id="editName" placeholder="Your name">
-      </div>
-      <div class="form-group">
-        <label>Bio</label>
-        <textarea id="editBio" placeholder="Tell us about yourself..."></textarea>
-      </div>
-      <div class="form-group">
-        <label>Birthday</label>
-        <input type="date" id="editBirthday">
-      </div>
-      <button class="save-profile-btn" onclick="saveProfile()">Save Changes</button>
-    </div>
+  <div class="profile-posts-grid">
+    <div class="profile-post-item"></div>
+    <div class="profile-post-item"></div>
+    <div class="profile-post-item"></div>
+    <div class="profile-post-item"></div>
+    <div class="profile-post-item"></div>
+    <div class="profile-post-item"></div>
   </div>
+  <div style="padding:40px;text-align:center;color:#666;font-size:13px">No posts yet</div>
 </div>
 
-<input type="file" id="profilePicInput" accept="image/*">
-<input type="file" id="coverPicInput" accept="image/*">
-
-<!-- Bottom Nav -->
+<!-- Bottom Nav - हल्के येल्लो में -->
 <div class="ruppy-nav">
   <button class="nav-btn active" id="home-nav-btn" onclick="switchTab('hub')">
     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path><polyline points="9 22 9 12 15 22"></polyline></svg>
@@ -328,55 +340,12 @@ function checkContent(text){
   return bannedWords.some(word => lower.includes(word));
 }
 
-// DATA - AUTOMATIC SYSTEM
+// DATA
 let posts = JSON.parse(localStorage.getItem('ruppy_posts') || '[]');
-let users = JSON.parse(localStorage.getItem('ruppy_users') || '[]');
-let notifications = JSON.parse(localStorage.getItem('ruppy_notifications') || '[]');
-let currentUserId = localStorage.getItem('ruppy_current_user_id');
+let currentUser = localStorage.getItem('ruppy_username') || 'User'+Math.floor(Math.random()*999);
+document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
 
-// CREATE USER IF NOT EXISTS
-if(!currentUserId){
-  currentUserId = 'user_' + Date.now();
-  localStorage.setItem('ruppy_current_user_id', currentUserId);
-  let newUser = {
-    id: currentUserId,
-    name: 'User' + Math.floor(Math.random()*999),
-    bio: '',
-    birthday: '',
-    profilePic: '',
-    coverPic: '',
-    friends: [],
-    joinDate: Date.now()
-  };
-  users.push(newUser);
-  localStorage.setItem('ruppy_users', JSON.stringify(users));
-}
-
-let currentUser = users.find(u => u.id === currentUserId);
-
-// UPDATE UI WITH USER DATA
-function updateUserUI(){
-  document.getElementById('userAvatar').innerHTML = currentUser.profilePic? `<img src="${currentUser.profilePic}">` : currentUser.name[0].toUpperCase();
-  document.getElementById('profileName').textContent = currentUser.name;
-  document.getElementById('profileBio').textContent = currentUser.bio || 'No bio yet';
-  document.getElementById('profileDpText').textContent = currentUser.name[0].toUpperCase();
-  if(currentUser.profilePic){
-    document.getElementById('profileImg').src = currentUser.profilePic;
-    document.getElementById('profileImg').style.display = 'block';
-    document.getElementById('profileDpText').style.display = 'none';
-  }
-  if(currentUser.coverPic){
-    document.getElementById('coverImg').src = currentUser.coverPic;
-    document.getElementById('coverImg').style.display = 'block';
-  }
-}
-
-updateUserUI();
 updateStats();
-renderFeed();
-renderFriends();
-renderNotifications();
-updateProfileStats();
 
 let selectedFile = null;
 document.getElementById('postText').oninput = function(){
@@ -391,37 +360,11 @@ document.getElementById('fileInput').onchange = function(e){
       let preview = document.getElementById('preview');
       preview.style.display = 'block';
       preview.innerHTML = selectedFile.type.includes('video')
-       ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
+? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
         : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
       document.getElementById('postBtn').disabled = false;
     }
     reader.readAsDataURL(selectedFile);
-  }
-}
-
-document.getElementById('profilePicInput').onchange = function(e){
-  let file = e.target.files[0];
-  if(file){
-    let reader = new FileReader();
-    reader.onload = function(e){
-      currentUser.profilePic = e.target.result;
-      localStorage.setItem('ruppy_users', JSON.stringify(users));
-      updateUserUI();
-    }
-    reader.readAsDataURL(file);
-  }
-}
-
-document.getElementById('coverPicInput').onchange = function(e){
-  let file = e.target.files[0];
-  if(file){
-    let reader = new FileReader();
-    reader.onload = function(e){
-      currentUser.coverPic = e.target.result;
-      localStorage.setItem('ruppy_users', JSON.stringify(users));
-      updateUserUI();
-    }
-    reader.readAsDataURL(file);
   }
 }
 
@@ -444,13 +387,11 @@ function createPost(){
 
   let post = {
     id: Date.now(),
-    userId: currentUserId,
-    user: currentUser.name,
-    userPic: currentUser.profilePic,
+    user: currentUser,
     text: text,
     time: Date.now(),
     likes: 0,
-    likedBy: [],
+    liked: false,
     comments: [],
     reports: 0,
     showAllComments: false
@@ -472,14 +413,6 @@ function createPost(){
 function savePost(post){
   posts.unshift(post);
   localStorage.setItem('ruppy_posts', JSON.stringify(posts));
-  
-  // AUTO NOTIFICATION TO ALL USERS
-  users.forEach(u => {
-    if(u.id!== currentUserId){
-      addNotification(u.id, `${currentUser.name} posted: ${post.text.substring(0,30)}...`, 'post');
-    }
-  });
-  
   document.getElementById('postText').value = '';
   document.getElementById('preview').style.display = 'none';
   document.getElementById('preview').innerHTML = '';
@@ -488,35 +421,184 @@ function savePost(post){
   selectedFile = null;
   renderFeed();
   updateStats();
-  updateProfileStats();
 }
 
 function updateStats(){
-  let validPosts = posts.filter(p => p.reports < 3);
-  document.getElementById('totalPosts').textContent = validPosts.length;
-  document.getElementById('totalLikes').textContent = validPosts.reduce((sum,p) => sum + p.likes, 0);
-  document.getElementById('activeUsers').textContent = users.length;
-}
-
-function updateProfileStats(){
-  let userPosts = posts.filter(p => p.userId === currentUserId && p.reports < 3);
-  document.getElementById('profilePostCount').textContent = userPosts.length;
-  document.getElementById('profileFriendCount').textContent = currentUser.friends.length;
-  document.getElementById('profileLikeCount').textContent = userPosts.reduce((sum,p) => sum + p.likes, 0);
-  
-  let grid = document.getElementById('profilePostsGrid');
-  let noPosts = document.getElementById('noProfilePosts');
-  if(userPosts.length > 0){
-    grid.innerHTML = userPosts.slice(0,9).map(p => 
-      p.media? `<div class="profile-post-item"><img src="${p.media}"></div>` : `<div class="profile-post-item"></div>`
-    ).join('');
-    noPosts.style.display = 'none';
-  } else {
-    grid.innerHTML = '';
-    noPosts.style.display = 'block';
-  }
+  document.getElementById('totalPosts').textContent = posts.filter(p => p.reports < 3).length;
+  document.getElementById('totalLikes').textContent = posts.reduce((sum,p) => sum + p.likes, 0);
 }
 
 function renderFeed(){
   let feed = document.getElementById('feed');
-  let validPosts = posts.filter(p => p.reports < 3
+  let validPosts = posts.filter(p => p.reports < 3);
+
+  if(validPosts.length === 0){
+    feed.innerHTML = `
+      <div class="empty-hub">
+        <h3>Welcome to RUPPY Hub</h3>
+        <p>Start the conversation. Share your first update!</p>
+        <button onclick="openCreate()">Create Post</button>
+      </div>`;
+    return;
+  }
+
+  feed.innerHTML = '';
+  validPosts.forEach(post => {
+    let mediaHTML = '';
+    if(post.media){
+      if(post.mediaType === 'video'){
+        mediaHTML = `<div class="post-media"><video src="${post.media}" controls></video></div>`;
+      } else {
+        mediaHTML = `<div class="post-media"><img src="${post.media}" ondblclick="likePost(${post.id})"></div>`;
+      }
+    }
+
+    let timeAgo = getTimeAgo(post.time);
+    let commentsToShow = post.showAllComments? post.comments : post.comments.slice(-2);
+    let hiddenCount = post.comments.length - commentsToShow.length;
+
+    feed.innerHTML += `
+    <div class="post-card" id="post-${post.id}">
+      <div class="post-card-head">
+        <div class="post-avatar">${post.user[0].toUpperCase()}</div>
+        <div class="post-info">
+          <h4>${post.user}</h4>
+          ${post.time? `<p>${timeAgo}</p>` : ''}
+        </div>
+        <button class="post-more" onclick="reportPost(${post.id})">⋯</button>
+      </div>
+      ${post.text? `<div class="post-content">${post.text}</div>` : ''}
+      ${mediaHTML}
+      <div class="post-footer">
+        <div class="post-stats">
+          <button class="stat-btn ${post.liked?'liked':''}" onclick="likePost(${post.id})">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 0 00-6.364L12 7.636l-1.318a4.5 0 00-6.364 0z"></path></svg>
+            <span>${post.likes}</span>
+          </button>
+          <button class="stat-btn" onclick="toggleComments(${post.id})">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+            <span>${post.comments.length}</span>
+          </button>
+        </div>
+        <button class="share-btn" onclick="sharePost(${post.id})">Share</button>
+      </div>
+      <div class="comments-box" id="comments-${post.id}">
+        ${hiddenCount > 0 &&!post.showAllComments? `<div class="view-more" onclick="showAllComments(${post.id})">View ${hiddenCount} more comments</div>` : ''}
+        ${commentsToShow.map(c => `
+          <div class="comment">
+            <div class="comment-avatar">${c.user[0].toUpperCase()}</div>
+            <div class="comment-body">
+              <b>${c.user}</b>
+              <span>${c.text}</span>
+            </div>
+          </div>`).join('')}
+        <div class="comment-input">
+          <input type="text" placeholder="Add a comment..." id="commentInput-${post.id}" onkeypress="if(event.key==='Enter') addComment(${post.id})">
+          <button onclick="addComment(${post.id})">Send</button>
+        </div>
+      </div>
+    </div>`;
+  });
+}
+
+function getTimeAgo(time){
+  if(!time || isNaN(time)) return '';
+  let seconds = Math.floor((Date.now() - Number(time)) / 1000);
+  if(seconds < 60) return 'now';
+  let minutes = Math.floor(seconds / 60);
+  if(minutes < 60) return `${minutes}m ago`;
+  let hours = Math.floor(minutes / 60);
+  if(hours < 24) return `${hours}h ago`;
+  let days = Math.floor(hours / 24);
+  if(days < 7) return `${days}d ago`;
+  return new Date(time).toLocaleDateString();
+}
+
+function likePost(id){
+  let post = posts.find(p => p.id === id);
+  post.liked =!post.liked;
+  post.likes += post.liked? 1 : -1;
+  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
+  renderFeed();
+  updateStats();
+}
+
+function toggleComments(id){
+  let box = document.getElementById(`comments-${id}`);
+  box.style.display = box.style.display === 'block'? 'none' : 'block';
+}
+
+function showAllComments(id){
+  let post = posts.find(p => p.id === id);
+  post.showAllComments = true;
+  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
+  renderFeed();
+  document.getElementById(`comments-${id}`).style.display = 'block';
+}
+
+function addComment(id){
+  let input = document.getElementById(`commentInput-${id}`);
+  let text = input.value.trim();
+  if(!text) return;
+  if(checkContent(text)){
+    alert('Inappropriate content');
+    return;
+  }
+  let post = posts.find(p => p.id === id);
+  post.comments.push({user: currentUser, text: text, time: Date.now()});
+  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
+  input.value = '';
+  renderFeed();
+  document.getElementById(`comments-${id}`).style.display = 'block';
+}
+
+function sharePost(id){
+  let post = posts.find(p => p.id === id);
+  let shareData = {
+    title: 'RUPPY Hub Post',
+    text: post.text || 'Check this post on RUPPY Hub',
+    url: window.location.href
+  };
+  if(navigator.share){
+    navigator.share(shareData).catch(err => console.log('Share failed'));
+  } else {
+    let whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`;
+    window.open(whatsappUrl, '_blank');
+  }
+}
+
+function reportPost(id){
+  if(confirm('Report this post?')){
+    let post = posts.find(p => p.id === id);
+    post.reports++;
+    localStorage.setItem('ruppy_posts', JSON.stringify(posts));
+    alert('Reported');
+    renderFeed();
+    updateStats();
+  }
+}
+
+function switchTab(tab){
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+  if(tab === 'hub'){
+    document.getElementById('hub-tab').classList.add('active');
+    document.getElementById('home-nav-btn').classList.add('active');
+  } else if(tab === 'friend'){
+    document.getElementById('friend-tab').classList.add('active');
+    document.getElementById('friend-nav-btn').classList.add('active');
+  } else if(tab === 'notification'){
+    document.getElementById('notification-tab').classList.add('active');
+    document.getElementById('notification-nav-btn').classList.add('active');
+  } else if(tab === 'profile'){
+    document.getElementById('profile-tab').classList.add('active');
+    document.getElementById('profile-nav-btn').classList.add('active');
+  }
+}
+
+// 
+renderFeed();
+</script>
+</body>
+</html>
