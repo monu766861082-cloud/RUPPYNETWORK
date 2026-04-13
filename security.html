@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Security Policy - RUPPY Network</title>
+<meta name="description" content="Security and data protection policy of RUPPY Network rewards application. Learn how we protect user accounts and data.">
+<style>
+body{margin:0;background:#000;color:#fff;font-family:Arial, sans-serif;padding:20px;line-height:1.8}
+.wrap{max-width:800px;margin:auto;padding-bottom:80px}
+h1{color:#f9a825;text-align:center;margin-bottom:30px;font-size:32px;font-weight:700}
+h2{color:#f9a825;margin-top:40px;margin-bottom:15px;font-size:22px;border-left:4px solid #f9a825;padding-left:12px}
+h3{color:#f9a825;margin-top:25px;font-size:18px}
+p{color:#ccc;font-size:15px;margin-bottom:18px;text-align:justify}
+ul{color:#ccc;font-size:15px;margin:15px 0 25px 25px}
+li{margin-bottom:12px;line-height:1.7}
+.btn{display:block;margin:40px auto;padding:14px 28px;background:#f9a825;color:#000;border:none;border-radius:30px;font-weight:bold;width:220px;text-align:center;text-decoration:none;font-size:16px}
+a{color:#f9a825;text-decoration:none}
+a:hover{text-decoration:underline}
+.note{background:#111;border:1px solid #333;padding:20px;border-radius:12px;margin:25px 0;border-left:4px solid #f9a825}
+.note strong{color:#f9a825}
+table{width:100%;border-collapse:collapse;margin:20px 0;color:#ccc;font-size:14px}
+th,td{border:1px solid #333;padding:12px;text-align:left}
+th{background:#111;color:#f9a825}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Security Policy & Data Protection</h1>
+
+<p>Last Updated: April 12, 2026</p>
+
+<p>Welcome to RUPPY Network. Your trust is the foundation of our platform. This comprehensive Security Policy explains in detail how RUPPY Network protects your account, secures your data, and maintains the integrity of our rewards ecosystem. We are committed to transparency and want every user to understand the technical and procedural safeguards we have implemented. By creating an account or using RUPPY Network, you acknowledge that you have read, understood, and agree to be bound by this Security Policy.</p>
+
+<h2>1. Our Core Security Philosophy</h2>
+<p>RUPPY Network is built on the principle of "Privacy by Design and Security by Default." This means that security is not an afterthought but is integrated into every layer of our application architecture. Our primary goal is to ensure that users can enjoy earning rewards without worrying about their personal data, account safety, or the fairness of the platform. We believe that a secure platform is essential for building long-term user trust and a sustainable community.</p>
+<p>Unlike many applications that collect extensive personal information, RUPPY Network operates on a data minimization model. We only process the absolute minimum data required to provide our core functionality: displaying your username, tracking your RUPPY balance, and managing your referral code. This approach significantly reduces security risks because there is less sensitive data to protect.</p>
+
+<h2>2. Account Security Architecture</h2>
+<p>Your RUPPY Network account is protected by multiple layers of security designed to prevent unauthorized access, data breaches, and fraudulent activities.</p>
+
+<h3>2.1. Local-First Data Storage</h3>
+<p>All critical user data, including your RUPPY balance, mining timestamps, boost status, referral information, and profile settings, is stored locally on your device using the browser's secure localStorage API. This architecture provides several security advantages:</p>
+<ul>
+<li><strong>No Central Database of Passwords:</strong> Because we do not use traditional username-password authentication, there is no central database of user credentials that could be targeted by hackers. This eliminates the risk of large-scale password leaks that affect millions of users on other platforms.</li>
+<li><strong>User Control:</strong> You maintain direct control over your data. Your account data exists only on your device and is not transmitted to or stored on our servers unless explicitly required for a specific feature.</li>
+<li><strong>Reduced Attack Surface:</strong> With no central repository of user data, there is no single point of failure that an attacker could exploit to compromise all user accounts simultaneously.</li>
+</ul>
+
+<h3>2.2. Unique User Identification System</h3>
+<p>Every account on RUPPY Network is assigned a unique User ID at the moment of creation. This identifier serves as the primary key for your account and has the following security properties:</p>
+<ul>
+<li><strong>Cryptographic Generation:</strong> User IDs are generated using a combination of timestamp data and random number generation, creating IDs like RUP42413101. This makes them statistically impossible to guess or brute-force.</li>
+<li><strong>Non-Sequential:</strong> IDs are not sequential, which prevents an attacker from enumerating user accounts by simply incrementing a number.</li>
+<li><strong>Account Recovery:</strong> Your User ID is the sole credential required to identify and recover your account. This is why we strongly emphasize the importance of saving it in a secure location.</li>
+</ul>
+
+<h3>2.3. Session and Device Management</h3>
+<p>Your active session is tied exclusively to the specific browser and device you use to access RUPPY Network. We do not support simultaneous logins across multiple devices for a single account, which prevents session hijacking attacks. If you clear your browser data or switch to a new device, your session will end, and you will need to use your User ID to restore your progress on the new device.</p>
+
+<h2>3. Data Protection and Privacy Measures</h2>
+<p>Protecting your personal information is a legal and ethical obligation we take seriously. Our data handling practices are designed to comply with global privacy standards, including the General Data Protection Regulation (GDPR) principles.</p>
+
+<h3>3.1. Data We Collect and Why</h3>
+<p>RUPPY Network collects minimal data. The following table outlines exactly what we collect, why we collect it, and how it is stored:</p>
+<table>
+<tr>
+<th>Data Type</th>
+<th>Purpose</th>
+<th>Storage Location</th>
+<th>Retention Period</th>
+</tr>
+<tr>
+<td>Username</td>
+<td>To display your identity within the app and on leaderboards</td>
+<td>Local device storage only</td>
+<td>Until you clear app data or delete account</td>
+</tr>
+<tr>
+<td>User ID</td>
+<td>To uniquely identify your account and track rewards</td>
+<td>Local device storage only</td>
+<td>Until you clear app data or delete account</td>
+</tr>
+<tr>
+<td>RUPPY Balance</td>
+<td>To track your earned virtual rewards</td>
+<td>Local device storage only</td>
+<td>Until you clear app data or delete account</td>
+</tr>
+<tr>
+<td>Mining Timestamps</td>
+<td>To enforce the 3-hour cooldown period between claims</td>
+<td>Local device storage only</td>
+<td>Until you clear app data or delete account</td>
+</tr>
+<tr>
+<td>Device Information</td>
+<td>To optimize app performance for your screen size</td>
+<td>Processed in real-time, not stored</td>
+<td>Not stored</td>
+</tr>
+</table>
+<p>We explicitly do NOT collect: your real name, email address, phone number, physical address, GPS location, financial information, credit card details, bank account numbers, government ID numbers, or biometric data.</p>
+
+<h3>3.2. Data Encryption in Transit</h3>
+<p>All communication between your device and any external services used by RUPPY Network, such as our content delivery network or advertising partners, is encrypted using Transport Layer Security (TLS 1.3), also known as HTTPS. This industry-standard encryption ensures that any data transmitted over the internet cannot be intercepted, read, or modified by malicious third parties through man-in-the-middle attacks.</p>
+
+<h3>3.3. Third-Party Services and Data Sharing</h3>
+<p>To provide a complete service, RUPPY Network integrates with a limited number of carefully vetted third-party services. We are transparent about these integrations:</p>
+<ul>
+<li><strong>Google AdMob:</strong> Used to display advertisements that support our free service. AdMob may collect anonymized device identifiers for ad personalization. We do not share your RUPPY username, balance, or User ID with AdMob. You can opt out of personalized ads through your device settings.</li>
+<li><strong>Google Translate API:</strong> Used to provide multi-language support. When you select a language, your browser sends the text to be translated to Google. We do not send any personal account data to this service.</li>
+<li><strong>Monetag:</strong> An advertising partner used for additional monetization. Similar to AdMob, they receive only technical data required to serve ads and not your personal RUPPY account information.</li>
+</ul>
+<p>We do not sell, rent, or trade your personal information to any third parties for marketing purposes. Our business model is based on advertising revenue, not on data brokerage.</p>
+
+<h2>4. Platform Integrity and Anti-Fraud Systems</h2>
+<p>Maintaining a fair and balanced rewards ecosystem is crucial for the long-term health of RUPPY Network. We have implemented sophisticated automated systems to detect and prevent fraud, abuse, and unfair gameplay.</p>
+
+<h3>4.1. Prohibited Activities</h3>
+<p>The following activities are strictly prohibited and will result in immediate and permanent account suspension without warning:</p>
+<ul>
+<li>Using bots, scripts, auto-clickers, or any form of automation to claim rewards or complete tasks.</li>
+<li>Attempting to manipulate the client-side code to alter your RUPPY balance or bypass cooldown timers.</li>
+<li>Creating multiple accounts to abuse the referral system or claim new user bonuses repeatedly.</li>
+<li>Using VPNs, proxies, or emulators to mask your location or device identity for the purpose of exploiting the system.</li>
+<li>Engaging in any form of harassment, hate speech, or illegal activity within the app community.</li>
+</ul>
+
+<h3>4.2. How Our Detection Systems Work</h3>
+<p>Our anti-fraud system operates 24/7 and monitors for anomalous patterns that indicate non-human behavior. This includes analyzing claim frequency, click patterns, session duration, and device consistency. When suspicious activity is detected, the account is automatically flagged for review. Our security team then investigates the flag. If cheating is confirmed, the account is permanently banned, and all associated RUPPY coins are voided. This zero-tolerance policy ensures that genuine, honest users are not disadvantaged by cheaters.</p>
+
+<h2>5. User Responsibilities for Account Security</h2>
+<p>Security is a shared responsibility. While we implement robust protections on our end, you must also take proactive steps to secure your account. Failure to follow these guidelines may result in loss of access to your account, for which RUPPY Network cannot be held responsible.</p>
+
+<h3>5.1. Safeguarding Your User ID</h3>
+<p>Your User ID is the master key to your account. Treat it with the same level of care as you would a password.</p>
+<ul>
+<li><strong>Do:</strong> Copy your User ID from the Settings page and store it in a secure password manager like Bitwarden, 1Password, or a private encrypted note.</li>
+<li><strong>Do:</strong> Write it down on paper and store it in a safe physical location.</li>
+<li><strong>Do Not:</strong> Share your User ID on public forums, social media, or with anyone you do not trust completely.</li>
+<li><strong>Do Not:</strong> Save your User ID in an unprotected text file or screenshot on your phone, as this could be accessed if your device is compromised.</li>
+</ul>
+
+<h3>5.2. Recognizing and Avoiding Phishing Attacks</h3>
+<p>Phishing is a common tactic where attackers impersonate RUPPY Network to trick you into revealing your User ID or other information. Be vigilant:</p>
+<ul>
+<li>RUPPY Network staff will NEVER contact you via Telegram, WhatsApp, or social media to ask for your User ID. All official communication occurs through our support email: support@ruppynetwork.com.</li>
+<li>We will NEVER ask you to install software, grant remote access to your device, or send cryptocurrency to "verify" your account. These are all scams.</li>
+<li>Always check the URL in your browser. The only official domain is ruppynetwork.com. Beware of lookalike domains such as ruppynetwork-official.com or ruppy-network.net.</li>
+</ul>
+
+<h3>5.3. Device Security Best Practices</h3>
+<ul>
+<li>Keep your operating system and web browser updated to the latest version. Updates contain critical security patches.</li>
+<li>Use a reputable antivirus or anti-malware application on your device.</li>
+<li>Avoid accessing RUPPY Network on public or shared computers. If you must, always use the browser's private/incognito mode and ensure you log out and clear data afterward.</li>
+<li>Use a lock screen password, PIN, or biometric lock on your mobile device to prevent physical access by others.</li>
+</ul>
+
+<h2>6. Incident Response and Account Recovery</h2>
+<p>Despite best efforts, security incidents can occur. We have a defined process for handling them.</p>
+
+<h3>6.1. Reporting a Security Issue</h3>
+<p>If you believe you have discovered a security vulnerability in RUPPY Network or your account has been compromised, please contact us immediately at support@ruppynetwork.com with the subject line "URGENT: Security Issue". Please provide as much detail as possible, including steps to reproduce the vulnerability if applicable. We are committed to investigating all legitimate reports promptly and responsibly. We operate a responsible disclosure policy and ask that you do not publicly disclose the vulnerability until we have had a chance to address it.</p>
+
+<h3>6.2. Account Recovery Process</h3>
+<p>If you lose access to your device and need to recover your account, you must provide our support team with your User ID. Without this ID, we have no way to verify your ownership of an account due to our minimal data collection policy. This is a deliberate trade-off between privacy and convenience. Once you provide your User ID, we can manually restore your balance and progress to a new device. Please allow up to 48 business hours for account recovery requests to be processed.</p>
+
+<h2>7. Compliance and Legal Framework</h2>
+<p>RUPPY Network is designed to comply with applicable laws and regulations regarding data protection and online services. Because we do not handle real money or financial instruments, we are classified as an entertainment and gaming application, not a financial service. RUPPY coins have no monetary value outside the app and cannot be redeemed for cash or cryptocurrency. This distinction is important for legal and tax purposes.</p>
+
+<h2>8. Changes to This Policy</h2>
+<p>We may update this Security Policy periodically to reflect changes in our security practices, legal requirements, or platform features. When we make material changes, we will update the "Last Updated" date at the top of this page and may provide notice within the app. We encourage you to review this policy regularly to stay informed. Your continued use of RUPPY Network after any changes constitutes your acceptance of the updated policy.</p>
+
+<h2>9. Contact Information</h2>
+<p>For any questions, concerns, or reports related to security, privacy, or data protection, please do not hesitate to contact our dedicated team.</p>
+<p><strong>RUPPY Network Security Team</strong><br>
+<strong>Email:</strong> <a href="mailto:support@ruppynetwork.com">support@ruppynetwork.com</a><br>
+<strong>Response Time:</strong> We aim to respond to all security-related inquiries within 48 business hours.</p>
+<div class="note">
+<strong>Final Reminder:</strong> Your security is our priority, but it requires your participation. Please save your User ID, be wary of scams, and use the app responsibly. Together, we can keep the RUPPY Network community safe and fun for everyone.
+</div>
+
+<a href="app.html" class="btn">Back to App</a>
+</div>
+</body>
+</html>
