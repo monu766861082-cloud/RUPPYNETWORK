@@ -1,65 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Contact Us - RUPPY Network</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contact & Support - RUPPY Network</title>
+<meta name="description" content="Contact RUPPY Network support via Gmail or WhatsApp. We provide 24/7 support for all your queries related to RUPPY app, rewards, and account issues.">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0B0B0C;--card:#161617;--border:#2A2A2C;--gold:#F3C774;--muted:#9CA3AF}
-*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
-body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px;max-width:800px;margin:0 auto}
-.header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
-.back{font-size:24px;cursor:pointer;color:var(--gold)}
-.title{font-size:22px;font-weight:600}
-.content{color:var(--muted);line-height:1.8;font-size:14px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin:20px 0}
-.card h3{color:var(--gold);margin-bottom:12px;font-size:16px}
-.email-box{display:flex;align-items:center;gap:12px;padding:14px;background:#0B0B0C;border:1px solid var(--border);border-radius:12px;margin-top:10px}
-.email-icon{font-size:24px}
-.email-text{color:#fff;font-size:15px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0B0B0C;color:#fff;font-family:Poppins,Arial,sans-serif;padding:20px;line-height:1.8}
+.wrap{max-width:800px;margin:auto;padding-bottom:90px}
+h1{color:#F3C774;text-align:center;margin-bottom:10px;font-size:30px}
+.subtitle{text-align:center;color:#9CA3AF;font-size:15px;margin-bottom:35px}
+h2{color:#F3C774;margin:35px 0 15px;font-size:22px;border-left:4px solid #F3C774;padding-left:12px}
+h3{color:#F3C774;margin-top:25px;font-size:18px;display:flex;align-items:center;gap:8px}
+p{color:#ccc;font-size:14px;margin-bottom:15px}
+.card{background:#161617;border:1px solid #2A2A2C;border-radius:20px;padding:25px;margin:25px 0}
+.contact-btn{display:flex;align-items:center;gap:15px;width:100%;margin:15px 0;padding:16px 22px;border-radius:14px;text-decoration:none;font-weight:600;font-size:16px;transition:0.3s;border:2px solid}
+.contact-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.3)}
+.gmail-btn{background:#0B0B0C;border-color:#EA4335;color:#EA4335}
+.gmail-btn:hover{background:#EA4335;color:#fff}
+.whatsapp-btn{background:#0B0B0C;border-color:#25D366;color:#25D366}
+.whatsapp-btn:hover{background:#25D366;color:#fff}
+.icon{width:28px;height:28px}
+ul{color:#ccc;font-size:14px;margin:15px 0 15px 25px}
+li{margin-bottom:12px}
+.note{background:#111;border-left:4px solid #F3C774;padding:18px;border-radius:8px;margin:30px 0;color:#aaa;font-size:13px}
+.highlight{color:#F3C774;font-weight:600}
+.btn{display:block;margin:45px auto;padding:16px 32px;background:#F3C774;color:#000;border:none;border-radius:30px;font-weight:bold;width:240px;text-align:center;text-decoration:none;font-size:16px;transition:0.3s}
+.btn:hover{opacity:0.85}
+table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}
+td{border:1px solid #2A2A2C;padding:12px;color:#ccc}
+td:first-child{color:#F3C774;font-weight:600;width:40%}
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0;z-index:999}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:20%}
-.nav-item .icon{font-size:20px;line-height:1}
-a{color:var(--gold);text-decoration:none}
+.nav-item.active{color:#FFA500}
 </style>
 </head>
 <body>
-<div class="header">
-  <div class="back" onclick="history.back()">←</div>
-  <div class="title">Contact Us</div>
+<div class="wrap">
+<h1>Contact & Support</h1>
+<p class="subtitle">Facing any issue? Message us directly. We are here to help and support you!</p>
+
+<div class="card">
+<h2>📞 Direct Support - Contact Us Personally</h2>
+<p>Hello! This is the <span class="highlight">RUPPY Network Support Team</span>. If you are experiencing <span class="highlight">any problem</span> while using the RUPPY App - whether it's an account issue, rewards problem, mining not working, or any other question - you can contact us directly. <span class="highlight">We promise to reply to every message and provide you with complete support.</span></p>
+
+<p>Click any button below to message us instantly. No forms to fill, no waiting in queue. Direct support for all users.</p>
+
+<!-- Gmail Button -->
+<a href="mailto:farmanking7867@gmail.com?subject=RUPPY%20Network%20Support%20Request&body=Hello%20Support%20Team,%0A%0AMy%20Name:%20%0AMy%20User%20ID:%20%0AMy%20Issue:%20%0A%0AThank%20you!" class="contact-btn gmail-btn">
+  <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+  <div>
+    <div>Message on Gmail</div>
+    <div style="font-size:12px;font-weight:400;opacity:0.8">farmanking7867@gmail.com</div>
+  </div>
+</a>
+
+<!-- WhatsApp Button -->
+<a href="https://wa.me/966545841749?text=Hello%20RUPPY%20Support%20Team,%0A%0AMy%20Name:%20%0AMy%20User%20ID:%20%0AI%20need%20help%20with:%20" class="contact-btn whatsapp-btn">
+  <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M16.75 13.96c.25.13.41.2.46.3.06.11.04.61-.21 1.18-.2.56-1.24 1.1-1.7 1.12-.46.03-.47.36-.98.4-.51.04-.66-.12-1.15-.49-.48-.36-1.16-.91-1.83-1.66-1.16-1.31-1.89-2.89-1.92-3.03-.03-.14-.35-1.8.16-2.48.47-.65 1.09-.86 1.43-.85.34.01.56.05.79.27.26.35.71.54 1.21.15.41.24.74.36.87.13.14.2.11.37.02.16-.09.66-.25 1.23-.46.57-.21 1.08-.2 1.4-.12.32.08.78.36 1.03.58.25.22.59.22.75 0 .16-.01.28.06.41zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.19 0 2.34-.21 3.41-.6l3.09.91-.91-3.09c.39-1.07.6-2.22.6-3.41 0-5.52-4.48-10-10-10z"/></svg>
+  <div>
+    <div>Message on WhatsApp</div>
+    <div style="font-size:12px;font-weight:400;opacity:0.8">+966 545 841 749</div>
+  </div>
+</a>
+
+<p style="font-size:13px;color:#9CA3AF;margin-top:10px">* You can message us on Gmail or WhatsApp. We are active on both platforms and will reply within 24-48 business hours.</p>
 </div>
 
-<div class="content">
-  <p>Have questions or feedback about RUPPY Network? We're here to help!</p>
+<div class="card">
+<h2>🎮 About RUPPY Network & Our Support Promise</h2>
+<p>RUPPY Network is a free-to-play entertainment and rewards application designed specifically for users in India. Our goal is to provide you with an opportunity to collect virtual RUPPY points in a fun way through daily tasks, mining activities, mini-games, and our referral program.</p>
+<p><strong class="highlight">Important Disclaimer:</strong> RUPPY points are virtual rewards for entertainment purposes only. They have no real-world monetary value and cannot be exchanged for cash, cryptocurrency, or any goods and services outside the RUPPY Network application. This app is not a financial, investment, banking, or gambling platform. We do not promise any real income.</p>
+<p><strong class="highlight">Our Support Commitment:</strong> We believe that a great app is built not just with features, but with excellent customer support. That is why we have provided direct Gmail and WhatsApp support. Your time is valuable, so we do not make you deal with tickets and bots. Contact us directly, and we will solve your problem. If there is a technical issue that takes time to fix, we will keep you updated at every step. Transparency is our priority.</p>
+</div>
 
-  <div class="card">
-    <h3>📧 Email Support</h3>
-    <p>For any questions, suggestions, or technical issues, feel free to reach out to us:</p>
-    <div class="email-box">
-      <div class="email-icon">✉️</div>
-      <div class="email-text">yourname@gmail.com</div>
-    </div>
-    <p style="margin-top:12px;font-size:12px;color:#666">We typically respond within 24-48 hours.</p>
-  </div>
+<div class="card">
+<h2>❓ Frequently Asked Questions - FAQ</h2>
+<p><strong>1. How to recover my account?</strong><br>
+If you got a new phone or the app was deleted, do not worry. Just send us your old <span class="highlight">User ID</span> on Gmail or WhatsApp. We will restore your points and progress to your new device. Recovery is not possible without a User ID, so please keep it saved.</p>
 
-  <div class="card">
-    <h3>🎮 About RUPPY Network</h3>
-    <p>RUPPY Network is a fun rewards and entertainment application where users can collect RUPPY points by completing daily tasks, playing games, and inviting friends.</p>
-    <p style="margin-top:10px">Please note: RUPPY points are virtual rewards for in-app entertainment only and have no real-world monetary value.</p>
-  </div>
+<p><strong>2. Why is my mining button not working?</strong><br>
+Mining activates once every 3 hours. If the timer is running, please wait until it reaches zero. If the button still does not work after the timer ends, please clear the app cache or send us a screenshot. We will check it immediately.</p>
 
-  <div class="card">
-    <h3>🔗 Quick Links</h3>
-    <p><a href="privacy.html">Privacy Policy</a> • <a href="terms.html">Terms & Conditions</a> • <a href="about.html">About Us</a></p>
-  </div>
+<p><strong>3. Can RUPPY Coins be converted to real money?</strong><br>
+No. As mentioned above, RUPPY Coins are virtual points for fun inside the app only. They cannot be transferred to a bank, nor do they have any cash value. Please be aware of anyone offering to buy or sell RUPPY Coins - it is a scam.</p>
+
+<p><strong>4. My referral code is not working?</strong><br>
+Please ensure your friend is a completely new user and has never installed the RUPPY App before. Only one account is allowed per device. If the issue persists, send us your friend's User ID and a screenshot.</p>
+
+<p><strong>5. How quickly do you reply?</strong><br>
+Our target is to reply to every message within 24 to 48 business hours. On WhatsApp, you usually get a reply within 12 hours. Business Hours: Monday to Saturday, 10:00 AM to 7:00 PM IST.</p>
+</div>
+
+<div class="card">
+<h2>⏰ Support Hours & Response Time</h2>
+<p>We are always ready to help you. However, being a small team, our response times are as follows:</p>
+<table>
+<tr><td>Platform</td><td>Gmail & WhatsApp</td></tr>
+<tr><td>Business Days</td><td>Monday to Saturday</td></tr>
+<tr><td>Business Hours</td><td>10:00 AM - 7:00 PM IST</td></tr>
+<tr><td>Average Reply Time</td><td>WhatsApp: 12 Hours, Gmail: 24-48 Hours</td></tr>
+<tr><td>Sunday/Holidays</td><td>Limited Support - Replies may be delayed</td></tr>
+</table>
+<p>If your query is urgent, messaging on WhatsApp is recommended. Always include your <span class="highlight">User ID and problem details</span> in your message so we can help you faster.</p>
+</div>
+
+<div class="card">
+<h2>🏢 Business & Partnership Inquiries</h2>
+<p>If you are an advertiser, content creator, or business and wish to partner with RUPPY Network, you are welcome. Please email us at <span class="highlight">farmanking7867@gmail.com</span> with the subject "Business Partnership Proposal".</p>
+<p>Include details about your company, website/channel, and collaboration idea in your email. Our business team will review your proposal and respond within 5-7 business days. Please note that we only work with legal and family-friendly brands.</p>
+<p><strong>Registered Address:</strong><br>
+RUPPY Network<br>
+Digital Entertainment Platform<br>
+India</p>
+</div>
+
+<div class="note">
+<strong>⚠️ Security Warning - Beware of Scams:</strong> The RUPPY Network team will never ask for your password, OTP, bank account details, UPI PIN, or remote access to your phone. If someone claiming to be RUPPY Support asks for this information, it is fraud. Report it immediately to us at <span class="highlight">farmanking7867@gmail.com</span>. Always contact only the official Gmail and WhatsApp number listed on this page.
+</div>
+
+<a href="app.html" class="btn">Back to App</a>
 </div>
 
 <div class="nav">
-  <div class="nav-item" onclick="location.href='app.html'"><div class="icon">🏠</div><span>Home</span></div>
-  <div class="nav-item" onclick="location.href='tasks.html'"><div class="icon">📋</div><span>Tasks</span></div>
-  <div class="nav-item" onclick="location.href='referral.html'"><div class="icon">👥</div><span>Referral</span></div>
-  <div class="nav-item" onclick="location.href='ranking.html'"><div class="icon">🏆</div><span>Ranking</span></div>
-  <div class="nav-item" onclick="location.href='settings.html'"><div class="icon">⚙️</div><span>Settings</span></div>
+  <a href="app.html" class="nav-item"><div>🏠</div><span>Home</span></a>
+  <a href="tasks.html" class="nav-item"><div>📋</div><span>Tasks</span></a>
+  <a href="referral.html" class="nav-item"><div>👥</div><span>Referral</span></a>
+  <a href="ranking.html" class="nav-item"><div>🏆</div><span>Ranking</span></a>
+  <a href="settings.html" class="nav-item"><div>⚙️</div><span>Settings</span></a>
 </div>
 </body>
 </html>
