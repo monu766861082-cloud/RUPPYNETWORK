@@ -177,7 +177,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   <div class="feed" id="feed"></div>
 </div>
 
-<!-- FRIEND TAB - UPDATED -->
+<!-- FRIEND TAB -->
 <div id="friend-tab" class="tab-content">
   <div class="search-bar">
     <span>🔍</span>
@@ -223,7 +223,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </div>
 </div>
 
-<!-- NOTIFICATION TAB - UPDATED -->
+<!-- NOTIFICATION TAB -->
 <div id="notification-tab" class="tab-content">
   <div class="section-title">Notifications</div>
 
@@ -260,7 +260,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </div>
 </div>
 
-<!-- PROFILE TAB - UPDATED -->
+<!-- PROFILE TAB -->
 <div id="profile-tab" class="tab-content">
   <div class="profile-cover">
     <div class="profile-dp">U</div>
@@ -472,7 +472,7 @@ function renderFeed(){
       <div class="post-footer">
         <div class="post-stats">
           <button class="stat-btn ${post.liked?'liked':''}" onclick="likePost(${post.id})">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364L12 7.636l-1.318-1.318a4.5 0 00-6.364 0z"></path></svg>
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 0 00-6.364L12 7.636l-1.318a4.5 0 00-6.364 0z"></path></svg>
             <span>${post.likes}</span>
           </button>
           <button class="stat-btn" onclick="toggleComments(${post.id})">
@@ -585,3 +585,20 @@ function switchTab(tab){
   if(tab === 'hub'){
     document.getElementById('hub-tab').classList.add('active');
     document.getElementById('home-nav-btn').classList.add('active');
+  } else if(tab === 'friend'){
+    document.getElementById('friend-tab').classList.add('active');
+    document.getElementById('friend-nav-btn').classList.add('active');
+  } else if(tab === 'notification'){
+    document.getElementById('notification-tab').classList.add('active');
+    document.getElementById('notification-nav-btn').classList.add('active');
+  } else if(tab === 'profile'){
+    document.getElementById('profile-tab').classList.add('active');
+    document.getElementById('profile-nav-btn').classList.add('active');
+  }
+}
+
+// ये लाइन सबसे जरूरी थी - इसी से सब शुरू होता है
+renderFeed();
+</script>
+</body>
+</html>
