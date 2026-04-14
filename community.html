@@ -411,36 +411,41 @@ window.createPost = function(){
 
 function savePost(p){
   fbPush(fbRef(db, 'posts'), p);
+
+  const today = new Date().toISOString().split('T')[0];
+  userData.postsToday = (userData.lastPostDate === today) ? (userData.postsToday + 1) : 1;
+  userData.lastPostDate = today;
+
+  fbUpdate(fbRef(db, 'users/' + uid), {
+    postsToday: userData.postsToday,
+    lastPostDate: userData.lastPostDate
+  });
+  localStorage.setItem('ruppy_user', JSON.stringify(userData));
+
   document.getElementById('postText').value='';
   document.getElementById('preview').style.display='none';
   document.getElementById('preview').innerHTML='';
   document.getElementById('fileInput').value='';
-  document.getElementById('postBtn').disabled=true;
   selectedFile=null;
+
+  updatePostLimit();
 }
 
 window.claimReward = function(postId){
-  const today = new Date().toISOString().split('T')[0];
-  if (userData.lastPostDate === today && userData.postsToday >= 3) {
-    alert("Daily limit of 3 claims reached. Come back tomorrow.");
-    return;
-  }
-
   let post = posts.find(p => p.id === postId);
   if(!post || post.claimed) return;
 
   userData.balance = Number(userData.balance) || 0;
   userData.balance += 10;
-  userData.postsToday = userData.lastPostDate === today? (userData.postsToday + 1) : 1;
-  userData.lastPostDate = today;
 
   fbUpdate(fbRef(db, 'posts/' + postId), {claimed: true});
   fbUpdate(fbRef(db, 'users/' + uid), {
-    balance: userData.balance,
-    postsToday: userData.postsToday,
-    lastPostDate: today
+    balance: userData.balance
   });
   localStorage.setItem('ruppy_user', JSON.stringify(userData));
+
+  document.getElementById('myRewards').innerText = userData.balance;
+  document.getElementById('totalBalance').innerText = userData.balance;
 
   alert("You claimed 10 Tokens! 🎉");
 }
@@ -462,13 +467,11 @@ window.addComment = function(id){
   inp.value='';
 }
 
-// ✅ नया फंक्शन: दूसरे यूजर का प्रोफाइल खोलना (Facebook style)
 window.openUserProfile = function(username, userUid) {
   if(userUid === uid) {
     switchTab('profile');
     return;
   }
-  // दूसरे यूजर का डेटा Firebase से लाएँ
   fbGet(fbChild(fbRef(db), 'users/' + userUid)).then((snapshot) => {
     if(snapshot.exists()) {
       let otherUser = snapshot.val();
@@ -494,7 +497,6 @@ window.openUserProfile = function(username, userUid) {
         </div>
       `;
       document.body.insertAdjacentHTML('beforeend', modalHtml);
-      // उस यूजर की पोस्ट दिखाओ
       let userPosts = posts.filter(p => p.uid === userUid);
       let container = document.getElementById('otherUserPosts');
       if(userPosts.length === 0) {
