@@ -133,7 +133,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
         <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📷</button>
         <button class="icon-btn" onclick="addEmoji()">😊</button>
       </div>
-      <button class="post-btn" id="postBtn">Post</button>
+      <button class="post-btn" id="postBtn" onclick="createPost()">Post</button>
     </div>
     <input type="file" id="fileInput" accept="image/*,video/*">
     <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
@@ -253,7 +253,7 @@ fbOnValue(fbRef(db, 'posts'), (snapshot) => {
 
 function updatePostLimit() {
   const today = new Date().toISOString().split('T')[0];
-  if (userData.lastPostDate!== today) {
+  if (userData.lastPostDate !== today) {
     userData.postsToday = 0;
     userData.lastPostDate = today;
     fbUpdate(fbRef(db, 'users/' + uid), {postsToday: 0, lastPostDate: today});
@@ -353,7 +353,7 @@ window.exitApp = function(){window.history.back()}
 let selectedFile=null;
 document.getElementById('postText').oninput=function(){
   if(document.getElementById('postBtn').innerText.includes('limit reached')) return;
-  document.getElementById('postBtn').disabled =!this.value.trim() &&!selectedFile;
+  document.getElementById('postBtn').disabled = !this.value.trim() && !selectedFile;
 }
 document.getElementById('fileInput').onchange=function(e){
   selectedFile=e.target.files[0];
@@ -478,7 +478,7 @@ window.openUserProfile = function(username, userUid) {
             <h2 style="color:#FFD700">${otherUser.name || username}'s Profile</h2>
             <button onclick="document.getElementById('otherProfileModal').remove()" style="background:none;border:none;color:#fff;font-size:24px">✕</button>
           </div>
-          <div class="profile-cover" style="margin-bottom:20px"><div class="profile-dp" style="position:relative;margin:0 auto">${otherUser.dp? `<img src="${otherUser.dp}">` : (otherUser.name? otherUser.name[0] : 'U')}</div></div>
+          <div class="profile-cover" style="margin-bottom:20px"><div class="profile-dp" style="position:relative;margin:0 auto">${otherUser.dp ? `<img src="${otherUser.dp}">` : (otherUser.name ? otherUser.name[0] : 'U')}</div></div>
           <div class="profile-info">
             <h2>${otherUser.name || username}</h2>
             <p>${otherUser.bio || 'Living life...'}</p>
@@ -525,7 +525,7 @@ function renderPostHTML(p, showClaim) {
         claimBtn = `<button class="claim-btn claimed" disabled>Claimed ✓</button>`;
       }
     }
-    let unclaimedTag = (p.uid === uid &&!p.claimed)? `<span class="unclaimed-badge">Unclaimed</span>` : '';
+    let unclaimedTag = (p.uid === uid && !p.claimed)? `<span class="unclaimed-badge">Unclaimed</span>` : '';
 
     let commentsHTML = '';
     if(p.comments && p.comments.length > 0){
@@ -581,4 +581,20 @@ window.renderProfileFeed = function(){
 window.likePost = function(id) {
     let post = posts.find(p => p.id === id);
     if(!post) return;
-    let likedBy =
+    let likedBy = post.likedBy || [];
+    let userIndex = likedBy.indexOf(uid);
+    let newLikes = post.likes || 0;
+
+    if(userIndex === -1) {
+        newLikes += 1;
+        likedBy.push(uid);
+    } else {
+        newLikes -= 1;
+        likedBy.splice(userIndex, 1);
+    }
+    fbUpdate(fbRef(db, 'posts/' + id), {likes: newLikes, likedBy: likedBy});
+}
+
+</script>
+</body>
+</html>
