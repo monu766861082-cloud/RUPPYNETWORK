@@ -79,9 +79,10 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </style>
 
 <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-<script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, push, onValue, update, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
   const firebaseConfig = {
     apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
     authDomain: "ruppynetwork-50362.firebaseapp.com",
@@ -91,8 +92,16 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     messagingSenderId: "132064610854",
     appId: "1:132064610854:web:3c217eaf3618007f5934e7"
   };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  window.db = db;
+  window.fbRef = ref;
+  window.fbPush = push;
+  window.fbOnValue = onValue;
+  window.fbUpdate = update;
+  window.fbGet = get;
+  window.fbChild = child;
 </script>
 
 </head>
@@ -193,7 +202,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </button>
 </div>
 
-<script> 
+<script type="module">
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   name: 'User',
   dp: null,
@@ -365,27 +374,17 @@ window.addEmoji = function(){
   document.getElementById('postBtn').disabled=false
 }
 
-// ✅ यहाँ सिर्फ POST बटन ठीक किया गया है - बाकी कुछ नहीं बदला
 window.createPost = function(){
-  let t = document.getElementById('postText').value.trim();
-  if(!t && !selectedFile) {
-    alert("Please write something or add media");
-    return;
-  }
+  let t=document.getElementById('postText').value.trim();
+  if(!t&&!selectedFile)return;
 
   const today = new Date().toISOString().split('T')[0];
-  
-  if (userData.lastPostDate !== today) {
-    userData.postsToday = 0;
-    userData.lastPostDate = today;
-  }
-  
-  if (userData.postsToday >= 3) {
+  if (userData.lastPostDate === today && userData.postsToday >= 3) {
     alert("Daily limit of 3 posts reached. Come back tomorrow.");
     return;
   }
 
-  let p = {
+  let p={
     user: userData.name,
     photo: userData.dp,
     text: t,
@@ -397,36 +396,27 @@ window.createPost = function(){
     comments: []
   };
 
-  function saveAndReset(postData) {
-    fbPush(fbRef(db, 'posts'), postData);
-    document.getElementById('postText').value = '';
-    document.getElementById('preview').style.display = 'none';
-    document.getElementById('preview').innerHTML = '';
-    document.getElementById('fileInput').value = '';
-    document.getElementById('postBtn').disabled = true;
-    selectedFile = null;
-    
-    userData.postsToday++;
-    userData.lastPostDate = today;
-    fbUpdate(fbRef(db, 'users/' + uid), {
-      postsToday: userData.postsToday,
-      lastPostDate: today
-    });
-    localStorage.setItem('ruppy_user', JSON.stringify(userData));
-    updatePostLimit();
-  }
-
   if(selectedFile){
-    let r = new FileReader();
-    r.onload = function(e){
-      p.media = e.target.result;
-      p.mediaType = selectedFile.type.includes('video') ? 'video' : 'image';
-      saveAndReset(p);
+    let r=new FileReader();
+    r.onload=function(e){
+      p.media=e.target.result;
+      p.mediaType=selectedFile.type.includes('video')?'video':'image';
+      savePost(p)
     };
-    r.readAsDataURL(selectedFile);
+    r.readAsDataURL(selectedFile)
   } else {
-    saveAndReset(p);
+    savePost(p)
   }
+}
+
+function savePost(p){
+  fbPush(fbRef(db, 'posts'), p);
+  document.getElementById('postText').value='';
+  document.getElementById('preview').style.display='none';
+  document.getElementById('preview').innerHTML='';
+  document.getElementById('fileInput').value='';
+  document.getElementById('postBtn').disabled=true;
+  selectedFile=null;
 }
 
 window.claimReward = function(postId){
@@ -472,11 +462,13 @@ window.addComment = function(id){
   inp.value='';
 }
 
+// ✅ नया फंक्शन: दूसरे यूजर का प्रोफाइल खोलना (Facebook style)
 window.openUserProfile = function(username, userUid) {
   if(userUid === uid) {
     switchTab('profile');
     return;
   }
+  // दूसरे यूजर का डेटा Firebase से लाएँ
   fbGet(fbChild(fbRef(db), 'users/' + userUid)).then((snapshot) => {
     if(snapshot.exists()) {
       let otherUser = snapshot.val();
@@ -502,6 +494,7 @@ window.openUserProfile = function(username, userUid) {
         </div>
       `;
       document.body.insertAdjacentHTML('beforeend', modalHtml);
+      // उस यूजर की पोस्ट दिखाओ
       let userPosts = posts.filter(p => p.uid === userUid);
       let container = document.getElementById('otherUserPosts');
       if(userPosts.length === 0) {
