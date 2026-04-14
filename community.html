@@ -79,10 +79,9 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </style>
 
 <!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDatabase, ref, push, onValue, update, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script>
   const firebaseConfig = {
     apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
     authDomain: "ruppynetwork-50362.firebaseapp.com",
@@ -92,16 +91,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     messagingSenderId: "132064610854",
     appId: "1:132064610854:web:3c217eaf3618007f5934e7"
   };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  window.db = db;
-  window.fbRef = ref;
-  window.fbPush = push;
-  window.fbOnValue = onValue;
-  window.fbUpdate = update;
-  window.fbGet = get;
-  window.fbChild = child;
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 </script>
 
 </head>
@@ -202,8 +193,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </button>
 </div>
 
-<script type="module">
-// मेन ऐप वाला User Data ही यूज करेंगे - ruppy_user
+<script> 
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   name: 'User',
   dp: null,
