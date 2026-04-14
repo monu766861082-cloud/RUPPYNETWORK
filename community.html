@@ -203,7 +203,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <script type="module">
-// मेन ऐप वाला User Data
+// मेन ऐप वाला User Data ही यूज करेंगे - ruppy_user
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   name: 'User',
   dp: null,
@@ -229,45 +229,27 @@ userData.balance = Number(userData.balance);
 if (isNaN(userData.balance)) userData.balance = 0;
 
 let posts = [];
-let uid = userData.name;
-
-// ✅ FIX 1: नए यूजर के लिए Firebase में एंट्री बनाएँ
-function ensureUserInFirebase() {
-  get(child(fbRef(db), 'users/' + uid)).then((snapshot) => {
-    if(!snapshot.exists()) {
-      fbUpdate(fbRef(db, 'users/' + uid), userData);
-    }
-  });
-}
-ensureUserInFirebase();
+const uid = userData.name;
 
 fbOnValue(fbRef(db, 'users/' + uid), (snapshot) => {
   if(snapshot.exists()){
     let fbData = snapshot.val();
-    userData = {...userData, ...fbData};
+    userData = {...userData,...fbData};
     localStorage.setItem('ruppy_user', JSON.stringify(userData));
-  } else {
-    fbUpdate(fbRef(db, 'users/' + uid), userData);
   }
   loadUI();
 });
 
-// ✅ FIX 2: पोस्ट हमेशा तेजी से लोड हों (कोई देरी नहीं)
 fbOnValue(fbRef(db, 'posts'), (snapshot) => {
-  let newPosts = [];
+  posts = [];
   if(snapshot.exists()){
     snapshot.forEach((child) => {
-      newPosts.push({id: child.key, ...child.val()});
+      posts.push({id: child.key,...child.val()});
     });
-    newPosts.reverse();
+    posts.reverse();
   }
-  posts = newPosts;
   renderFeed();
   renderProfileFeed();
-  document.getElementById('totalPosts').innerText = posts.length;
-  let totalLikes = 0;
-  posts.forEach(p => totalLikes += (p.likes || 0));
-  document.getElementById('totalLikes').innerText = totalLikes;
 });
 
 function updatePostLimit() {
@@ -279,56 +261,36 @@ function updatePostLimit() {
     localStorage.setItem('ruppy_user', JSON.stringify(userData));
   }
   let left = 3 - userData.postsToday;
-  let limitSpan = document.getElementById('limitText');
-  if(limitSpan) limitSpan.innerText = `${left}/3 left`;
-  let myRewardsSpan = document.getElementById('myRewards');
-  if(myRewardsSpan) myRewardsSpan.innerText = userData.balance || 0;
-  let totalBalanceSpan = document.getElementById('totalBalance');
-  if(totalBalanceSpan) totalBalanceSpan.innerText = userData.balance || 0;
+  document.getElementById('limitText').innerText = `${left}/3 left`;
+  document.getElementById('myRewards').innerText = userData.balance || 0;
+  document.getElementById('totalBalance').innerText = userData.balance || 0;
 
-  let postBtn = document.getElementById('postBtn');
   if (userData.postsToday >= 3) {
-    if(postBtn) postBtn.disabled = true;
-    if(postBtn) postBtn.innerText = 'Daily limit reached 3/3';
-    let banner = document.getElementById('giftBanner');
-    if(banner) banner.innerHTML = '🎁 Daily limit reached. Come back tomorrow';
+    document.getElementById('postBtn').disabled = true;
+    document.getElementById('postBtn').innerText = 'Daily limit reached 3/3';
+    document.getElementById('giftBanner').innerHTML = '🎁 Daily limit reached. Come back tomorrow';
   } else {
-    if(postBtn) postBtn.disabled = false;
-    if(postBtn) postBtn.innerText = 'Post';
-    let banner = document.getElementById('giftBanner');
-    if(banner) banner.innerHTML = `🎁 +10 RUPPY Token per post | <span id="limitText">${left}/3 left</span>`;
+    document.getElementById('postBtn').disabled = false;
+    document.getElementById('postBtn').innerText = `Post`;
+    document.getElementById('giftBanner').innerHTML = `🎁 +10 RUPPY Token per post | <span id="limitText">${left}/3 left</span>`;
   }
 }
 
 window.loadUI = function(){
-  let viewName = document.getElementById('view-name');
-  if(viewName) viewName.innerText = userData.name;
-  let viewBio = document.getElementById('view-bio');
-  if(viewBio) viewBio.innerText = userData.bio || 'Living life...';
-  let viewCity = document.getElementById('view-city');
-  if(viewCity) viewCity.innerText = userData.city || 'Not Set';
-  let viewHometown = document.getElementById('view-hometown');
-  if(viewHometown) viewHometown.innerText = userData.hometown || 'Not Set';
-  let viewRel = document.getElementById('view-rel');
-  if(viewRel) viewRel.innerText = userData.rel || 'Single';
-  let viewWork = document.getElementById('view-work');
-  if(viewWork) viewWork.innerText = userData.work || 'Not Set';
-  let viewEdu = document.getElementById('view-edu');
-  if(viewEdu) viewEdu.innerText = userData.edu || 'Not Set';
-  let viewHobbies = document.getElementById('view-hobbies');
-  if(viewHobbies) viewHobbies.innerText = userData.hobbies || 'Not Set';
-  let userAvatar = document.getElementById('userAvatar');
-  if(userAvatar){
-    userAvatar.innerText = userData.name[0];
-    if(userData.dp) userAvatar.innerHTML = `<img src="${userData.dp}">`;
-  }
-  let mainDp = document.getElementById('main-dp');
-  if(mainDp){
-    if(userData.dp){
-      mainDp.innerHTML = `<img src="${userData.dp}">`;
-    } else {
-      mainDp.innerText = userData.name[0];
-    }
+  document.getElementById('view-name').innerText = userData.name;
+  document.getElementById('view-bio').innerText = userData.bio || 'Living life...';
+  document.getElementById('view-city').innerText = userData.city || 'Not Set';
+  document.getElementById('view-hometown').innerText = userData.hometown || 'Not Set';
+  document.getElementById('view-rel').innerText = userData.rel || 'Single';
+  document.getElementById('view-work').innerText = userData.work || 'Not Set';
+  document.getElementById('view-edu').innerText = userData.edu || 'Not Set';
+  document.getElementById('view-hobbies').innerText = userData.hobbies || 'Not Set';
+  document.getElementById('userAvatar').innerText = userData.name[0];
+  if(userData.dp){
+    document.getElementById('main-dp').innerHTML = `<img src="${userData.dp}">`;
+    document.getElementById('userAvatar').innerHTML = `<img src="${userData.dp}">`
+  }else{
+    document.getElementById('main-dp').innerText = userData.name[0]
   }
   updatePostLimit();
 }
@@ -364,15 +326,13 @@ window.saveProfile = function(){
       finish()
     };
     reader.readAsDataURL(file)
-  } else finish()
+  }else finish()
 }
 
 function finish(){
-  uid = userData.name;
   fbUpdate(fbRef(db, 'users/' + uid), userData);
   localStorage.setItem('ruppy_user', JSON.stringify(userData));
   closeEdit();
-  loadUI();
 }
 
 window.switchTab = function(t){
@@ -392,40 +352,32 @@ window.switchTab = function(t){
 window.exitApp = function(){window.history.back()}
 
 let selectedFile=null;
-let postTextarea = document.getElementById('postText');
-if(postTextarea){
-  postTextarea.oninput = function(){
-    if(document.getElementById('postBtn').innerText.includes('limit reached')) return;
-    document.getElementById('postBtn').disabled = !this.value.trim() && !selectedFile;
-  }
+document.getElementById('postText').oninput=function(){
+  if(document.getElementById('postBtn').innerText.includes('limit reached')) return;
+  document.getElementById('postBtn').disabled = !this.value.trim() && !selectedFile;
 }
-let fileInput = document.getElementById('fileInput');
-if(fileInput){
-  fileInput.onchange = function(e){
-    selectedFile = e.target.files[0];
-    if(selectedFile){
-      let r = new FileReader();
-      r.onload = function(e){
-        let p = document.getElementById('preview');
-        p.style.display = 'block';
-        p.innerHTML = selectedFile.type.includes('video') ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>` : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
-        document.getElementById('postBtn').disabled = false;
-      };
-      r.readAsDataURL(selectedFile);
-    }
+document.getElementById('fileInput').onchange=function(e){
+  selectedFile=e.target.files[0];
+  if(selectedFile){
+    let r=new FileReader();
+    r.onload=function(e){
+      let p=document.getElementById('preview');
+      p.style.display='block';
+      p.innerHTML=selectedFile.type.includes('video')?`<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`:`<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
+      document.getElementById('postBtn').disabled=false
+    };
+    r.readAsDataURL(selectedFile)
   }
 }
 
 window.addEmoji = function(){
-  let pt = document.getElementById('postText');
-  if(pt) pt.value += ' 🔥';
-  let pb = document.getElementById('postBtn');
-  if(pb) pb.disabled = false;
+  document.getElementById('postText').value+=' 🔥';
+  document.getElementById('postBtn').disabled=false
 }
 
 window.createPost = function(){
-  let t = document.getElementById('postText').value.trim();
-  if(!t && !selectedFile) return;
+  let t=document.getElementById('postText').value.trim();
+  if(!t&&!selectedFile)return;
 
   const today = new Date().toISOString().split('T')[0];
   if (userData.lastPostDate === today && userData.postsToday >= 3) {
@@ -433,7 +385,7 @@ window.createPost = function(){
     return;
   }
 
-  let p = {
+  let p={
     user: userData.name,
     photo: userData.dp,
     text: t,
@@ -446,26 +398,26 @@ window.createPost = function(){
   };
 
   if(selectedFile){
-    let r = new FileReader();
-    r.onload = function(e){
-      p.media = e.target.result;
-      p.mediaType = selectedFile.type.includes('video') ? 'video' : 'image';
-      savePost(p);
+    let r=new FileReader();
+    r.onload=function(e){
+      p.media=e.target.result;
+      p.mediaType=selectedFile.type.includes('video')?'video':'image';
+      savePost(p)
     };
-    r.readAsDataURL(selectedFile);
+    r.readAsDataURL(selectedFile)
   } else {
-    savePost(p);
+    savePost(p)
   }
 }
 
 function savePost(p){
   fbPush(fbRef(db, 'posts'), p);
-  document.getElementById('postText').value = '';
-  document.getElementById('preview').style.display = 'none';
-  document.getElementById('preview').innerHTML = '';
-  document.getElementById('fileInput').value = '';
-  document.getElementById('postBtn').disabled = true;
-  selectedFile = null;
+  document.getElementById('postText').value='';
+  document.getElementById('preview').style.display='none';
+  document.getElementById('preview').innerHTML='';
+  document.getElementById('fileInput').value='';
+  document.getElementById('postBtn').disabled=true;
+  selectedFile=null;
 }
 
 window.claimReward = function(postId){
@@ -480,7 +432,7 @@ window.claimReward = function(postId){
 
   userData.balance = Number(userData.balance) || 0;
   userData.balance += 10;
-  userData.postsToday = userData.lastPostDate === today ? (userData.postsToday + 1) : 1;
+  userData.postsToday = userData.lastPostDate === today? (userData.postsToday + 1) : 1;
   userData.lastPostDate = today;
 
   fbUpdate(fbRef(db, 'posts/' + postId), {claimed: true});
@@ -490,38 +442,35 @@ window.claimReward = function(postId){
     lastPostDate: today
   });
   localStorage.setItem('ruppy_user', JSON.stringify(userData));
+
   alert("You claimed 10 Tokens! 🎉");
-  updatePostLimit();
 }
 
 window.openComment = function(id){
   let box = document.getElementById('cbox-'+id);
-  if(box) box.classList.toggle('active');
+  box.classList.toggle('active');
 }
 
 window.addComment = function(id){
   let inp = document.getElementById('cinp-'+id);
-  let txt = inp ? inp.value.trim() : '';
+  let txt = inp.value.trim();
   if(!txt) return;
   let post = posts.find(p => p.id === id);
   if(!post) return;
   let comments = post.comments || [];
-  comments.push({user: userData.name, text: txt});
+  comments.push({user:userData.name,text:txt});
   fbUpdate(fbRef(db, 'posts/' + id), {comments: comments});
-  if(inp) inp.value = '';
+  inp.value='';
 }
 
-// ✅ दूसरे यूजर का प्रोफाइल खोलना (तेजी से)
+// ✅ नया फंक्शन: दूसरे यूजर का प्रोफाइल खोलना (Facebook style)
 window.openUserProfile = function(username, userUid) {
   if(userUid === uid) {
     switchTab('profile');
     return;
   }
-  // पहले से मौजूद मोडल हटाएँ
-  let existingModal = document.getElementById('otherProfileModal');
-  if(existingModal) existingModal.remove();
-  
-  get(child(fbRef(db), 'users/' + userUid)).then((snapshot) => {
+  // दूसरे यूजर का डेटा Firebase से लाएँ
+  fbGet(fbChild(fbRef(db), 'users/' + userUid)).then((snapshot) => {
     if(snapshot.exists()) {
       let otherUser = snapshot.val();
       let modalHtml = `
@@ -546,12 +495,12 @@ window.openUserProfile = function(username, userUid) {
         </div>
       `;
       document.body.insertAdjacentHTML('beforeend', modalHtml);
+      // उस यूजर की पोस्ट दिखाओ
       let userPosts = posts.filter(p => p.uid === userUid);
       let container = document.getElementById('otherUserPosts');
       if(userPosts.length === 0) {
         container.innerHTML = '<div style="padding:20px;text-align:center;color:#666">No posts yet</div>';
       } else {
-        container.innerHTML = '';
         userPosts.forEach(p => {
           container.innerHTML += renderPostHTML(p, false);
         });
@@ -577,7 +526,7 @@ function renderPostHTML(p, showClaim) {
         claimBtn = `<button class="claim-btn claimed" disabled>Claimed ✓</button>`;
       }
     }
-    let unclaimedTag = (p.uid === uid && !p.claimed) ? `<span class="unclaimed-badge">Unclaimed</span>` : '';
+    let unclaimedTag = (p.uid === uid && !p.claimed)? `<span class="unclaimed-badge">Unclaimed</span>` : '';
 
     let commentsHTML = '';
     if(p.comments && p.comments.length > 0){
@@ -587,15 +536,15 @@ function renderPostHTML(p, showClaim) {
     }
 
     return `<div class="post-card">
-      <div class="post-card-head" onclick="openUserProfile('${p.user.replace(/'/g, "\\'")}', '${p.uid}')">
-        <div class="post-avatar">${p.photo ? `<img src="${p.photo}">` : (p.user ? p.user[0] : 'U')}</div>
+      <div class="post-card-head" onclick="openUserProfile('${p.user}', '${p.uid}')">
+        <div class="post-avatar">${p.photo?`<img src="${p.photo}">`:p.user[0]}</div>
         <div class="post-info"><h4>${p.user} ${unclaimedTag}</h4><p>now</p></div>
       </div>
-      ${p.text ? `<div class="post-content">${p.text.replace(/'/g, "\\'")}</div>` : ''}${m}
+      ${p.text?`<div class="post-content">${p.text}</div>`:''}${m}
       ${claimBtn}
       <div class="post-actions">
-        <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="likePost('${p.id}')"><b>Like</b> ❤️ ${p.likes||0}</button>
-        <button class="comment-btn" onclick="openComment('${p.id}')"><b style="color:#333">Comment</b> 💬 ${p.comments ? p.comments.length : 0}</button>
+        <button class="like-btn ${isLiked?'liked':''}" onclick="likePost('${p.id}')"><b>Like</b> ❤️ ${p.likes||0}</button>
+        <button class="comment-btn" onclick="openComment('${p.id}')"><b style="color:#333">Comment</b> 💬 ${p.comments?p.comments.length:0}</button>
       </div>
       <div class="comment-box" id="cbox-${p.id}">
         <div class="comment-input-row">
@@ -608,29 +557,25 @@ function renderPostHTML(p, showClaim) {
 }
 
 window.renderFeed = function(){
-  let f = document.getElementById('feed');
-  if(!f) return;
-  if(posts.length === 0){
-    f.innerHTML = `<div style="padding:40px;text-align:center;color:#666">No posts yet</div>`;
-    return;
-  }
-  f.innerHTML = '';
+  let f=document.getElementById('feed');
+  if(posts.length===0){f.innerHTML=`<div style="padding:40px;text-align:center;color:#666">No posts yet</div>`;return}
+  f.innerHTML='';
+  let totalLikes = 0;
   posts.forEach((p)=>{
-    f.innerHTML += renderPostHTML(p, true);
+    totalLikes += p.likes || 0;
+    f.innerHTML += renderPostHTML(p,true);
   });
+  document.getElementById('totalPosts').innerText = posts.length;
+  document.getElementById('totalLikes').innerText = totalLikes;
 }
 
 window.renderProfileFeed = function(){
-  let f = document.getElementById('profileFeed');
-  if(!f) return;
+  let f=document.getElementById('profileFeed');
   let userPosts = posts.filter(p => p.uid === uid);
-  if(userPosts.length === 0){
-    f.innerHTML = `<div style="padding:20px;text-align:center;color:#666">No posts yet</div>`;
-    return;
-  }
-  f.innerHTML = '';
+  if(userPosts.length===0){f.innerHTML=`<div style="padding:20px;text-align:center;color:#666">No posts yet</div>`;return}
+  f.innerHTML='';
   userPosts.forEach((p)=>{
-    f.innerHTML += renderPostHTML(p, false);
+    f.innerHTML += renderPostHTML(p,false);
   });
 }
 
@@ -650,6 +595,7 @@ window.likePost = function(id) {
     }
     fbUpdate(fbRef(db, 'posts/' + id), {likes: newLikes, likedBy: likedBy});
 }
+
 </script>
 </body>
 </html>
