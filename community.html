@@ -53,7 +53,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .feed{padding:0 20px}
 #fileInput{display:none}
 .post-card{background:#111;border:1px solid #222;border-radius:16px;padding:14px;margin-bottom:12px}
-.post-card-head{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.post-card-head{display:flex;gap:10px;align-items:center;margin-bottom:10px;cursor:pointer}
 .post-avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:14px;overflow:hidden}
 .post-avatar img{width:100%;height:100%;object-fit:cover}
 .post-info h4{font-size:15px;font-weight:700}
@@ -133,7 +133,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
         <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📷</button>
         <button class="icon-btn" onclick="addEmoji()">😊</button>
       </div>
-      <button class="post-btn" id="postBtn" onclick="createPost()" disabled>Post</button>
+      <button class="post-btn" id="postBtn" onclick="createPost()">Post</button>
     </div>
     <input type="file" id="fileInput" accept="image/*,video/*">
     <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
@@ -203,7 +203,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <script type="module">
-// मेन ऐप वाला User Data ही यूज करेंगे - ruppy_user
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   name: 'User',
   dp: null,
@@ -214,7 +213,6 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   boostResetTime: Date.now(),
   firstRewardTime: 0,
   ultraRewardTime: 0,
-  // Hub के लिए Extra Fields
   bio:'Living life...',
   city:'Not Set',
   hometown:'Not Set',
@@ -226,16 +224,12 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   lastPostDate:''
 };
 
-// Safe conversion - मेन ऐप वाला Logic
 userData.balance = Number(userData.balance);
 if (isNaN(userData.balance)) userData.balance = 0;
 
 let posts = [];
-
-// User का नाम ही UID है मेन ऐप में
 const uid = userData.name;
 
-// Firebase से User Data Sync करो
 fbOnValue(fbRef(db, 'users/' + uid), (snapshot) => {
   if(snapshot.exists()){
     let fbData = snapshot.val();
@@ -245,7 +239,6 @@ fbOnValue(fbRef(db, 'users/' + uid), (snapshot) => {
   loadUI();
 });
 
-// Firebase से Posts लाओ
 fbOnValue(fbRef(db, 'posts'), (snapshot) => {
   posts = [];
   if(snapshot.exists()){
@@ -260,7 +253,7 @@ fbOnValue(fbRef(db, 'posts'), (snapshot) => {
 
 function updatePostLimit() {
   const today = new Date().toISOString().split('T')[0];
-  if (userData.lastPostDate!== today) {
+  if (userData.lastPostDate !== today) {
     userData.postsToday = 0;
     userData.lastPostDate = today;
     fbUpdate(fbRef(db, 'users/' + uid), {postsToday: 0, lastPostDate: today});
@@ -276,6 +269,7 @@ function updatePostLimit() {
     document.getElementById('postBtn').innerText = 'Daily limit reached 3/3';
     document.getElementById('giftBanner').innerHTML = '🎁 Daily limit reached. Come back tomorrow';
   } else {
+    document.getElementById('postBtn').disabled = false;
     document.getElementById('postBtn').innerText = `Post`;
     document.getElementById('giftBanner').innerHTML = `🎁 +10 RUPPY Token per post | <span id="limitText">${left}/3 left</span>`;
   }
@@ -341,25 +335,16 @@ function finish(){
 }
 
 window.switchTab = function(t){
-  // hide all tabs
   document.querySelectorAll('.tab-content').forEach(tab=>{
     tab.classList.remove('active');
   });
-
-  // remove active from all buttons
   document.querySelectorAll('.nav-btn').forEach(btn=>{
     btn.classList.remove('active');
   });
-
-  // show selected tab
   const activeTab = document.getElementById(t + '-tab');
   if(activeTab) activeTab.classList.add('active');
-
-  // activate correct button (FIXED for notification)
   const activeBtn = document.getElementById('btn-' + t);
   if(activeBtn) activeBtn.classList.add('active');
-
-  // extra render
   if(t === 'profile') renderProfileFeed();
 }
 
@@ -368,7 +353,7 @@ window.exitApp = function(){window.history.back()}
 let selectedFile=null;
 document.getElementById('postText').oninput=function(){
   if(document.getElementById('postBtn').innerText.includes('limit reached')) return;
-  document.getElementById('postBtn').disabled=!this.value.trim()&&!selectedFile
+  document.getElementById('postBtn').disabled = !this.value.trim() && !selectedFile;
 }
 document.getElementById('fileInput').onchange=function(e){
   selectedFile=e.target.files[0];
@@ -477,7 +462,55 @@ window.addComment = function(id){
   inp.value='';
 }
 
-function renderPostHTML(p,showClaim){
+// ✅ नया फंक्शन: दूसरे यूजर का प्रोफाइल खोलना (Facebook style)
+window.openUserProfile = function(username, userUid) {
+  if(userUid === uid) {
+    switchTab('profile');
+    return;
+  }
+  // दूसरे यूजर का डेटा Firebase से लाएँ
+  fbGet(fbChild(fbRef(db), 'users/' + userUid)).then((snapshot) => {
+    if(snapshot.exists()) {
+      let otherUser = snapshot.val();
+      let modalHtml = `
+        <div id="otherProfileModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0a;z-index:10000;overflow-y:auto;padding:20px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+            <h2 style="color:#FFD700">${otherUser.name || username}'s Profile</h2>
+            <button onclick="document.getElementById('otherProfileModal').remove()" style="background:none;border:none;color:#fff;font-size:24px">✕</button>
+          </div>
+          <div class="profile-cover" style="margin-bottom:20px"><div class="profile-dp" style="position:relative;margin:0 auto">${otherUser.dp ? `<img src="${otherUser.dp}">` : (otherUser.name ? otherUser.name[0] : 'U')}</div></div>
+          <div class="profile-info">
+            <h2>${otherUser.name || username}</h2>
+            <p>${otherUser.bio || 'Living life...'}</p>
+            <div class="p-detail"><span class="icon">📍</span> ${otherUser.city || 'Not Set'}</div>
+            <div class="p-detail"><span class="icon">🏠</span> ${otherUser.hometown || 'Not Set'}</div>
+            <div class="p-detail"><span class="icon">❤️</span> ${otherUser.rel || 'Single'}</div>
+            <div class="p-detail"><span class="icon">💼</span> ${otherUser.work || 'Not Set'}</div>
+            <div class="p-detail"><span class="icon">🎓</span> ${otherUser.edu || 'Not Set'}</div>
+            <div class="p-detail"><span class="icon">🎮</span> ${otherUser.hobbies || 'Not Set'}</div>
+          </div>
+          <h3 style="color:#888;margin-top:20px">${otherUser.name}'s Posts</h3>
+          <div id="otherUserPosts"></div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      // उस यूजर की पोस्ट दिखाओ
+      let userPosts = posts.filter(p => p.uid === userUid);
+      let container = document.getElementById('otherUserPosts');
+      if(userPosts.length === 0) {
+        container.innerHTML = '<div style="padding:20px;text-align:center;color:#666">No posts yet</div>';
+      } else {
+        userPosts.forEach(p => {
+          container.innerHTML += renderPostHTML(p, false);
+        });
+      }
+    } else {
+      alert("User profile not found");
+    }
+  });
+}
+
+function renderPostHTML(p, showClaim) {
     let m='';
     if(p.media){
       if(p.mediaType==='video'){m=`<div class="post-media"><video src="${p.media}" controls></video></div>`}
@@ -492,7 +525,7 @@ function renderPostHTML(p,showClaim){
         claimBtn = `<button class="claim-btn claimed" disabled>Claimed ✓</button>`;
       }
     }
-    let unclaimedTag = (p.uid === uid &&!p.claimed)? `<span class="unclaimed-badge">Unclaimed</span>` : '';
+    let unclaimedTag = (p.uid === uid && !p.claimed)? `<span class="unclaimed-badge">Unclaimed</span>` : '';
 
     let commentsHTML = '';
     if(p.comments && p.comments.length > 0){
@@ -502,7 +535,7 @@ function renderPostHTML(p,showClaim){
     }
 
     return `<div class="post-card">
-      <div class="post-card-head">
+      <div class="post-card-head" onclick="openUserProfile('${p.user}', '${p.uid}')">
         <div class="post-avatar">${p.photo?`<img src="${p.photo}">`:p.user[0]}</div>
         <div class="post-info"><h4>${p.user} ${unclaimedTag}</h4><p>now</p></div>
       </div>
