@@ -79,6 +79,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </style>
 
 <!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
@@ -89,10 +91,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     messagingSenderId: "132064610854",
     appId: "1:132064610854:web:3c217eaf3618007f5934e7"
   };
-</script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-<script>
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
   window.db = db;
@@ -214,7 +212,6 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   boostResetTime: Date.now(),
   firstRewardTime: 0,
   ultraRewardTime: 0,
-  // Hub के लिए Extra Fields
   bio:'Living life...',
   city:'Not Set',
   hometown:'Not Set',
@@ -226,16 +223,12 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   lastPostDate:''
 };
 
-// Safe conversion - मेन ऐप वाला Logic
 userData.balance = Number(userData.balance);
 if (isNaN(userData.balance)) userData.balance = 0;
 
 let posts = [];
-
-// User का नाम ही UID है मेन ऐप में
 const uid = userData.name;
 
-// Firebase से User Data Sync करो
 fbOnValue(fbRef('users/' + uid), (snapshot) => {
   if(snapshot.exists()){
     let fbData = snapshot.val();
@@ -245,7 +238,6 @@ fbOnValue(fbRef('users/' + uid), (snapshot) => {
   loadUI();
 });
 
-// Firebase से Posts लाओ
 fbOnValue(fbRef('posts'), (snapshot) => {
   posts = [];
   if(snapshot.exists()){
@@ -341,25 +333,16 @@ function finish(){
 }
 
 window.switchTab = function(t){
-  // hide all tabs
   document.querySelectorAll('.tab-content').forEach(tab=>{
     tab.classList.remove('active');
   });
-
-  // remove active from all buttons
   document.querySelectorAll('.nav-btn').forEach(btn=>{
     btn.classList.remove('active');
   });
-
-  // show selected tab
   const activeTab = document.getElementById(t + '-tab');
   if(activeTab) activeTab.classList.add('active');
-
-  // activate correct button (FIXED for notification)
   const activeBtn = document.getElementById('btn-' + t);
   if(activeBtn) activeBtn.classList.add('active');
-
-  // extra render
   if(t === 'profile') renderProfileFeed();
 }
 
@@ -567,7 +550,7 @@ window.likePost = function(id) {
 
 window.viewProfile = function(targetUid) {
   switchTab('profile');
-  fbGet(fbChild(fbRef('users/' + targetUid))).then((snap)=>{
+  fbGet(fbRef('users/' + targetUid)).then((snap)=>{
     if(!snap.exists()) return;
     const tUser = snap.val();
     document.getElementById('view-name').innerText = tUser.name;
@@ -581,18 +564,4 @@ window.viewProfile = function(targetUid) {
     if(tUser.dp){document.getElementById('main-dp').innerHTML = `<img src="${tUser.dp}">`;}
     else{document.getElementById('main-dp').innerText = tUser.name[0];}
     document.getElementById('editProfileBtn').style.display = (targetUid === uid)? 'block' : 'none';
-    document.querySelector('#profile-tab.profile-posts h3').innerText = (targetUid === uid)? 'Your Posts' : tUser.name + ' Posts';
-    let f = document.getElementById('profileFeed');
-    let userPosts = posts.filter(p => p.uid === targetUid);
-    if(userPosts.length === 0){
-      f.innerHTML = `<div style="padding:20px;text-align:center;color:#666">No posts yet</div>`;
-    } else {
-      f.innerHTML = '';
-      userPosts.forEach((p) => { f.innerHTML += renderPostHTML(p, false); });
-    }
-  });
-}
-
-</script>
-</body>
-</html>
+    document.querySelector('#profile-tab.profile
