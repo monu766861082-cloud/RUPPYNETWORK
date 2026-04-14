@@ -193,7 +193,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <span>Friend</span>
   </button>
   <button class="nav-btn" id="btn-notification" onclick="switchTab('notification')">
-    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
     <span>Notif</span>
   </button>
   <button class="nav-btn" id="btn-profile" onclick="switchTab('profile')">
@@ -232,12 +232,8 @@ if (isNaN(userData.balance)) userData.balance = 0;
 
 let posts = [];
 
-// FIX: Unique UID बनाओ - हर User का अलग ID
-let uid = localStorage.getItem('ruppy_uid');
-if (!uid) {
-  uid = 'user_' + Math.random().toString(36).substr(2, 16);
-  localStorage.setItem('ruppy_uid', uid);
-}
+// User का नाम ही UID है मेन ऐप में
+const uid = userData.name;
 
 // Firebase से User Data Sync करो
 fbOnValue(fbRef(db, 'users/' + uid), (snapshot) => {
