@@ -56,7 +56,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-card-head{display:flex;gap:10px;align-items:center;margin-bottom:10px}
 .post-avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:14px;overflow:hidden}
 .post-avatar img{width:100%;height:100%;object-fit:cover}
-.post-info h4{font-size:15px;font-weight:700;cursor:pointer}
+.post-info h4{font-size:15px;font-weight:700}
 .post-info p{font-size:12px;color:#666}
 .post-content{margin-bottom:10px;font-size:15px;line-height:1.4}
 .post-media img,.post-media video{width:100%;border-radius:12px;margin-top:8px}
@@ -161,10 +161,10 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <div class="p-detail"><span class="icon">💼</span> <span id="view-work">Not Set</span></div>
     <div class="p-detail"><span class="icon">🎓</span> <span id="view-edu">Not Set</span></div>
     <div class="p-detail"><span class="icon">🎮</span> <span id="view-hobbies">Not Set</span></div>
-    <button onclick="openEdit()" id="editProfileBtn" style="width:100%;padding:12px;background:#1a1a1a;border:1px solid #333;color:#FFD700;border-radius:12px;margin-top:20px;font-weight:700">Edit Profile</button>
+    <button onclick="openEdit()" style="width:100%;padding:12px;background:#1a1a1a;border:1px solid #333;color:#FFD700;border-radius:12px;margin-top:20px;font-weight:700">Edit Profile</button>
   </div>
   <div class="profile-posts">
-    <h3 id="profilePostTitle">Your Posts</h3>
+    <h3>Your Posts</h3>
     <div id="profileFeed"></div>
   </div>
 </div>
@@ -226,24 +226,14 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   lastPostDate:''
 };
 
-// ADD 1: नए User को Unique ID और नाम दो
-if (!userData.uid) {
-  userData.uid = 'u_' + Date.now() + Math.random().toString(36).substr(2, 5);
-}
-if (!userData.name || userData.name === 'User') {
-  userData.name = 'User' + Math.floor(1000 + Math.random() * 9000);
-  localStorage.setItem('ruppy_user', JSON.stringify(userData));
-}
-
 // Safe conversion - मेन ऐप वाला Logic
 userData.balance = Number(userData.balance);
 if (isNaN(userData.balance)) userData.balance = 0;
 
 let posts = [];
-let currentViewingUid = null; // ADD 2: कौनसी Profile देख रहे
 
-// User का UID यूज करो, नाम नहीं
-const uid = userData.uid;
+// User का नाम ही UID है मेन ऐप में
+const uid = userData.name;
 
 // Firebase से User Data Sync करो
 fbOnValue(fbRef(db, 'users/' + uid), (snapshot) => {
@@ -292,37 +282,21 @@ function updatePostLimit() {
 }
 
 window.loadUI = function(){
-  let dataToShow = userData;
-  let isOwnProfile = true;
-
-  if(currentViewingUid && currentViewingUid!== uid){
-    isOwnProfile = false;
-  }
-
-  document.getElementById('view-name').innerText = dataToShow.name;
-  document.getElementById('view-bio').innerText = dataToShow.bio || 'Living life...';
-  document.getElementById('view-city').innerText = dataToShow.city || 'Not Set';
-  document.getElementById('view-hometown').innerText = dataToShow.hometown || 'Not Set';
-  document.getElementById('view-rel').innerText = dataToShow.rel || 'Single';
-  document.getElementById('view-work').innerText = dataToShow.work || 'Not Set';
-  document.getElementById('view-edu').innerText = dataToShow.edu || 'Not Set';
-  document.getElementById('view-hobbies').innerText = dataToShow.hobbies || 'Not Set';
+  document.getElementById('view-name').innerText = userData.name;
+  document.getElementById('view-bio').innerText = userData.bio || 'Living life...';
+  document.getElementById('view-city').innerText = userData.city || 'Not Set';
+  document.getElementById('view-hometown').innerText = userData.hometown || 'Not Set';
+  document.getElementById('view-rel').innerText = userData.rel || 'Single';
+  document.getElementById('view-work').innerText = userData.work || 'Not Set';
+  document.getElementById('view-edu').innerText = userData.edu || 'Not Set';
+  document.getElementById('view-hobbies').innerText = userData.hobbies || 'Not Set';
   document.getElementById('userAvatar').innerText = userData.name[0];
-
-  if(dataToShow.dp){
-    document.getElementById('main-dp').innerHTML = `<img src="${dataToShow.dp}">`;
-  }else{
-    document.getElementById('main-dp').innerText = dataToShow.name[0]
-  }
-
   if(userData.dp){
+    document.getElementById('main-dp').innerHTML = `<img src="${userData.dp}">`;
     document.getElementById('userAvatar').innerHTML = `<img src="${userData.dp}">`
+  }else{
+    document.getElementById('main-dp').innerText = userData.name[0]
   }
-
-  // ADD 3: दूसरे की Profile पे Edit बटन Hide करो
-  document.getElementById('editProfileBtn').style.display = isOwnProfile? 'block' : 'none';
-  document.getElementById('profilePostTitle').innerText = isOwnProfile? 'Your Posts' : dataToShow.name + "'s Posts";
-
   updatePostLimit();
 }
 
@@ -371,50 +345,7 @@ window.switchTab = function(t){
   document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
   document.getElementById(t+'-tab').classList.add('active');
   document.getElementById('btn-'+t).classList.add('active');
-  if(t==='profile'){
-    currentViewingUid = null; // अपनी Profile पे वापस आओ
-    loadUI();
-    renderProfileFeed();
-  }
-}
-
-// ADD 4: नाम पे Click करके Profile खोलो
-window.viewUserProfile = function(viewUid){
-  if(viewUid === uid){
-    switchTab('profile');
-    return;
-  }
-  currentViewingUid = viewUid;
-  fbGet(fbRef(db, 'users/' + viewUid)).then((snapshot) => {
-    if(snapshot.exists()){
-      let otherUser = snapshot.val();
-      document.getElementById('view-name').innerText = otherUser.name;
-      document.getElementById('view-bio').innerText = otherUser.bio || 'Living life...';
-      document.getElementById('view-city').innerText = otherUser.city || 'Not Set';
-      document.getElementById('view-hometown').innerText = otherUser.hometown || 'Not Set';
-      document.getElementById('view-rel').innerText = otherUser.rel || 'Single';
-      document.getElementById('view-work').innerText = otherUser.work || 'Not Set';
-      document.getElementById('view-edu').innerText = otherUser.edu || 'Not Set';
-      document.getElementById('view-hobbies').innerText = otherUser.hobbies || 'Not Set';
-      document.getElementById('main-dp').innerHTML = otherUser.dp? `<img src="${otherUser.dp}">` : otherUser.name[0];
-      document.getElementById('editProfileBtn').style.display = 'none';
-      document.getElementById('profilePostTitle').innerText = otherUser.name + "'s Posts";
-
-      // उस User के Posts दिखाओ
-      let f = document.getElementById('profileFeed');
-      let userPosts = posts.filter(p => p.uid === viewUid);
-      if(userPosts.length === 0){
-        f.innerHTML = `<div style="padding:20px;text-align:center;color:#666">No posts yet</div>`;
-      } else {
-        f.innerHTML = '';
-        userPosts.forEach((p) => {
-          f.innerHTML += renderPostHTML(p,false);
-        });
-      }
-
-      switchTab('profile');
-    }
-  });
+  if(t==='profile')renderProfileFeed();
 }
 
 window.exitApp = function(){window.history.back()}
@@ -429,4 +360,193 @@ document.getElementById('fileInput').onchange=function(e){
   if(selectedFile){
     let r=new FileReader();
     r.onload=function(e){
-      let p=document.getElementById
+      let p=document.getElementById('preview');
+      p.style.display='block';
+      p.innerHTML=selectedFile.type.includes('video')?`<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`:`<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
+      document.getElementById('postBtn').disabled=false
+    };
+    r.readAsDataURL(selectedFile)
+  }
+}
+
+window.addEmoji = function(){
+  document.getElementById('postText').value+=' 🔥';
+  document.getElementById('postBtn').disabled=false
+}
+
+window.createPost = function(){
+  let t=document.getElementById('postText').value.trim();
+  if(!t&&!selectedFile)return;
+
+  const today = new Date().toISOString().split('T')[0];
+  if (userData.lastPostDate === today && userData.postsToday >= 3) {
+    alert("Daily limit of 3 posts reached. Come back tomorrow.");
+    return;
+  }
+
+  let p={
+    user: userData.name,
+    photo: userData.dp,
+    text: t,
+    likes: 0,
+    likedBy: [],
+    time: Date.now(),
+    claimed: false,
+    uid: uid,
+    comments: []
+  };
+
+  if(selectedFile){
+    let r=new FileReader();
+    r.onload=function(e){
+      p.media=e.target.result;
+      p.mediaType=selectedFile.type.includes('video')?'video':'image';
+      savePost(p)
+    };
+    r.readAsDataURL(selectedFile)
+  } else {
+    savePost(p)
+  }
+}
+
+function savePost(p){
+  fbPush(fbRef(db, 'posts'), p);
+  document.getElementById('postText').value='';
+  document.getElementById('preview').style.display='none';
+  document.getElementById('preview').innerHTML='';
+  document.getElementById('fileInput').value='';
+  document.getElementById('postBtn').disabled=true;
+  selectedFile=null;
+}
+
+window.claimReward = function(postId){
+  const today = new Date().toISOString().split('T')[0];
+  if (userData.lastPostDate === today && userData.postsToday >= 3) {
+    alert("Daily limit of 3 claims reached. Come back tomorrow.");
+    return;
+  }
+
+  let post = posts.find(p => p.id === postId);
+  if(!post || post.claimed) return;
+
+  userData.balance = Number(userData.balance) || 0;
+  userData.balance += 10;
+  userData.postsToday = userData.lastPostDate === today? (userData.postsToday + 1) : 1;
+  userData.lastPostDate = today;
+
+  fbUpdate(fbRef(db, 'posts/' + postId), {claimed: true});
+  fbUpdate(fbRef(db, 'users/' + uid), {
+    balance: userData.balance,
+    postsToday: userData.postsToday,
+    lastPostDate: today
+  });
+  localStorage.setItem('ruppy_user', JSON.stringify(userData));
+
+  alert("You claimed 10 Tokens! 🎉");
+}
+
+window.openComment = function(id){
+  let box = document.getElementById('cbox-'+id);
+  box.classList.toggle('active');
+}
+
+window.addComment = function(id){
+  let inp = document.getElementById('cinp-'+id);
+  let txt = inp.value.trim();
+  if(!txt) return;
+  let post = posts.find(p => p.id === id);
+  if(!post) return;
+  let comments = post.comments || [];
+  comments.push({user:userData.name,text:txt});
+  fbUpdate(fbRef(db, 'posts/' + id), {comments: comments});
+  inp.value='';
+}
+
+function renderPostHTML(p,showClaim){
+    let m='';
+    if(p.media){
+      if(p.mediaType==='video'){m=`<div class="post-media"><video src="${p.media}" controls></video></div>`}
+      else{m=`<div class="post-media"><img src="${p.media}"></div>`}
+    }
+    let isLiked = p.likedBy && p.likedBy.includes(uid);
+    let claimBtn = '';
+    if(showClaim && p.uid === uid){
+      if(!p.claimed){
+        claimBtn = `<button class="claim-btn" onclick="claimReward('${p.id}')">Claim +10 Token</button>`;
+      } else {
+        claimBtn = `<button class="claim-btn claimed" disabled>Claimed ✓</button>`;
+      }
+    }
+    let unclaimedTag = (p.uid === uid &&!p.claimed)? `<span class="unclaimed-badge">Unclaimed</span>` : '';
+
+    let commentsHTML = '';
+    if(p.comments && p.comments.length > 0){
+      p.comments.forEach(c=>{
+        commentsHTML += `<div class="comment-item"><b>${c.user}:</b> ${c.text}</div>`;
+      });
+    }
+
+    return `<div class="post-card">
+      <div class="post-card-head">
+        <div class="post-avatar">${p.photo?`<img src="${p.photo}">`:p.user[0]}</div>
+        <div class="post-info"><h4>${p.user} ${unclaimedTag}</h4><p>now</p></div>
+      </div>
+      ${p.text?`<div class="post-content">${p.text}</div>`:''}${m}
+      ${claimBtn}
+      <div class="post-actions">
+        <button class="like-btn ${isLiked?'liked':''}" onclick="likePost('${p.id}')"><b>Like</b> ❤️ ${p.likes||0}</button>
+        <button class="comment-btn" onclick="openComment('${p.id}')"><b style="color:#333">Comment</b> 💬 ${p.comments?p.comments.length:0}</button>
+      </div>
+      <div class="comment-box" id="cbox-${p.id}">
+        <div class="comment-input-row">
+          <input type="text" id="cinp-${p.id}" placeholder="Write a comment...">
+          <button class="comment-send" onclick="addComment('${p.id}')">Send</button>
+        </div>
+        <div class="comment-list">${commentsHTML}</div>
+      </div>
+    </div>`;
+}
+
+window.renderFeed = function(){
+  let f=document.getElementById('feed');
+  if(posts.length===0){f.innerHTML=`<div style="padding:40px;text-align:center;color:#666">No posts yet</div>`;return}
+  f.innerHTML='';
+  let totalLikes = 0;
+  posts.forEach((p)=>{
+    totalLikes += p.likes || 0;
+    f.innerHTML += renderPostHTML(p,true);
+  });
+  document.getElementById('totalPosts').innerText = posts.length;
+  document.getElementById('totalLikes').innerText = totalLikes;
+}
+
+window.renderProfileFeed = function(){
+  let f=document.getElementById('profileFeed');
+  let userPosts = posts.filter(p => p.uid === uid);
+  if(userPosts.length===0){f.innerHTML=`<div style="padding:20px;text-align:center;color:#666">No posts yet</div>`;return}
+  f.innerHTML='';
+  userPosts.forEach((p)=>{
+    f.innerHTML += renderPostHTML(p,false);
+  });
+}
+
+window.likePost = function(id) {
+    let post = posts.find(p => p.id === id);
+    if(!post) return;
+    let likedBy = post.likedBy || [];
+    let userIndex = likedBy.indexOf(uid);
+    let newLikes = post.likes || 0;
+
+    if(userIndex === -1) {
+        newLikes += 1;
+        likedBy.push(uid);
+    } else {
+        newLikes -= 1;
+        likedBy.splice(userIndex, 1);
+    }
+    fbUpdate(fbRef(db, 'posts/' + id), {likes: newLikes, likedBy: likedBy});
+}
+
+</script>
+</body>
+</html>
