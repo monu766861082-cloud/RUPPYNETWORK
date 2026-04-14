@@ -78,7 +78,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .comment-item b{color:#FFD700}
 </style>
 
-<!-- Firebase SDK -->
+<!-- Firebase SDK - मेन ऐप वाला ही Config -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getDatabase, ref, push, onValue, update, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -153,7 +153,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 <div id="profile-tab" class="tab-content">
   <div class="profile-cover"><div class="profile-dp" id="main-dp">U</div></div>
   <div class="profile-info">
-    <h2 id="view-name">User847</h2>
+    <h2 id="view-name">User</h2>
     <p id="view-bio">Living life...</p>
     <div class="p-detail"><span class="icon">📍</span> <span id="view-city">Not Set</span></div>
     <div class="p-detail"><span class="icon">🏠</span> <span id="view-hometown">Not Set</span></div>
@@ -203,24 +203,47 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <script type="module">
-let uid = localStorage.getItem('ruppy_uid');
-if(!uid) {
-  uid = 'u_' + Date.now() + Math.random().toString(36).substr(2, 5);
-  localStorage.setItem('ruppy_uid', uid);
-}
+// मेन ऐप वाला User Data ही यूज करेंगे
+let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
+  name: 'User',
+  dp: null,
+  balance: 0,
+  lastMine: 0,
+  lastGift: 0,
+  boostCount: 0,
+  boostResetTime: Date.now(),
+  firstRewardTime: 0,
+  ultraRewardTime: 0,
+  // Hub के लिए Extra Fields
+  bio:'Living life...',
+  city:'Not Set',
+  hometown:'Not Set',
+  rel:'Single',
+  work:'Not Set',
+  edu:'Not Set',
+  hobbies:'Not Set',
+  postsToday:0,
+  lastPostDate:''
+};
 
-let uData = {name:'User847',bio:'Living life...',city:'Not Set',hometown:'Not Set',rel:'Single',work:'Not Set',edu:'Not Set',hobbies:'Not Set',photo:'',tokens:0,postsToday:0,lastPostDate:'',uid:uid};
+// Safe conversion
+userData.balance = Number(userData.balance) || 0;
 let posts = [];
 
-// Load User Profile from Firebase
+// User का नाम ही UID है मेन ऐप में
+const uid = userData.name;
+
+// Firebase से User Data Sync करो
 fbOnValue(fbRef(db, 'users/' + uid), (snapshot) => {
   if(snapshot.exists()){
-    uData = {...uData,...snapshot.val()};
+    let fbData = snapshot.val();
+    userData = {...userData,...fbData};
+    localStorage.setItem('ruppy_user', JSON.stringify(userData));
   }
   loadUI();
 });
 
-// Load All Posts from Firebase
+// Firebase से Posts लाओ
 fbOnValue(fbRef(db, 'posts'), (snapshot) => {
   posts = [];
   if(snapshot.exists()){
@@ -235,17 +258,18 @@ fbOnValue(fbRef(db, 'posts'), (snapshot) => {
 
 function updatePostLimit() {
   const today = new Date().toISOString().split('T')[0];
-  if (uData.lastPostDate!== today) {
-    uData.postsToday = 0;
-    uData.lastPostDate = today;
+  if (userData.lastPostDate!== today) {
+    userData.postsToday = 0;
+    userData.lastPostDate = today;
     fbUpdate(fbRef(db, 'users/' + uid), {postsToday: 0, lastPostDate: today});
+    localStorage.setItem('ruppy_user', JSON.stringify(userData));
   }
-  let left = 3 - uData.postsToday;
+  let left = 3 - userData.postsToday;
   document.getElementById('limitText').innerText = `${left}/3 left`;
-  document.getElementById('myRewards').innerText = uData.tokens || 0;
-  document.getElementById('totalBalance').innerText = uData.tokens || 0;
+  document.getElementById('myRewards').innerText = userData.balance || 0;
+  document.getElementById('totalBalance').innerText = userData.balance || 0;
 
-  if (uData.postsToday >= 3) {
+  if (userData.postsToday >= 3) {
     document.getElementById('postBtn').disabled = true;
     document.getElementById('postBtn').innerText = 'Daily limit reached 3/3';
     document.getElementById('giftBanner').innerHTML = '🎁 Daily limit reached. Come back tomorrow';
@@ -256,52 +280,52 @@ function updatePostLimit() {
 }
 
 window.loadUI = function(){
-  document.getElementById('view-name').innerText=uData.name;
-  document.getElementById('view-bio').innerText=uData.bio;
-  document.getElementById('view-city').innerText=uData.city;
-  document.getElementById('view-hometown').innerText=uData.hometown;
-  document.getElementById('view-rel').innerText=uData.rel;
-  document.getElementById('view-work').innerText=uData.work;
-  document.getElementById('view-edu').innerText=uData.edu;
-  document.getElementById('view-hobbies').innerText=uData.hobbies;
-  document.getElementById('userAvatar').innerText=uData.name[0];
-  if(uData.photo){
-    document.getElementById('main-dp').innerHTML=`<img src="${uData.photo}">`;
-    document.getElementById('userAvatar').innerHTML=`<img src="${uData.photo}">`
+  document.getElementById('view-name').innerText = userData.name;
+  document.getElementById('view-bio').innerText = userData.bio || 'Living life...';
+  document.getElementById('view-city').innerText = userData.city || 'Not Set';
+  document.getElementById('view-hometown').innerText = userData.hometown || 'Not Set';
+  document.getElementById('view-rel').innerText = userData.rel || 'Single';
+  document.getElementById('view-work').innerText = userData.work || 'Not Set';
+  document.getElementById('view-edu').innerText = userData.edu || 'Not Set';
+  document.getElementById('view-hobbies').innerText = userData.hobbies || 'Not Set';
+  document.getElementById('userAvatar').innerText = userData.name[0];
+  if(userData.dp){
+    document.getElementById('main-dp').innerHTML = `<img src="${userData.dp}">`;
+    document.getElementById('userAvatar').innerHTML = `<img src="${userData.dp}">`
   }else{
-    document.getElementById('main-dp').innerText=uData.name[0]
+    document.getElementById('main-dp').innerText = userData.name[0]
   }
   updatePostLimit();
 }
 
 window.openEdit = function(){
   document.getElementById('editModal').style.display='flex';
-  document.getElementById('in-name').value=uData.name;
-  document.getElementById('in-bio').value=uData.bio;
-  document.getElementById('in-city').value=uData.city;
-  document.getElementById('in-hometown').value=uData.hometown;
-  document.getElementById('in-rel').value=uData.rel;
-  document.getElementById('in-work').value=uData.work;
-  document.getElementById('in-edu').value=uData.edu;
-  document.getElementById('in-hobbies').value=uData.hobbies;
+  document.getElementById('in-name').value = userData.name;
+  document.getElementById('in-bio').value = userData.bio || '';
+  document.getElementById('in-city').value = userData.city || '';
+  document.getElementById('in-hometown').value = userData.hometown || '';
+  document.getElementById('in-rel').value = userData.rel || '';
+  document.getElementById('in-work').value = userData.work || '';
+  document.getElementById('in-edu').value = userData.edu || '';
+  document.getElementById('in-hobbies').value = userData.hobbies || '';
 }
 
 window.closeEdit = function(){document.getElementById('editModal').style.display='none'}
 
 window.saveProfile = function(){
-  uData.name=document.getElementById('in-name').value;
-  uData.bio=document.getElementById('in-bio').value;
-  uData.city=document.getElementById('in-city').value;
-  uData.hometown=document.getElementById('in-hometown').value;
-  uData.rel=document.getElementById('in-rel').value;
-  uData.work=document.getElementById('in-work').value;
-  uData.edu=document.getElementById('in-edu').value;
-  uData.hobbies=document.getElementById('in-hobbies').value;
-  const file=document.getElementById('in-photo').files[0];
+  userData.name = document.getElementById('in-name').value;
+  userData.bio = document.getElementById('in-bio').value;
+  userData.city = document.getElementById('in-city').value;
+  userData.hometown = document.getElementById('in-hometown').value;
+  userData.rel = document.getElementById('in-rel').value;
+  userData.work = document.getElementById('in-work').value;
+  userData.edu = document.getElementById('in-edu').value;
+  userData.hobbies = document.getElementById('in-hobbies').value;
+  const file = document.getElementById('in-photo').files[0];
   if(file){
-    const reader=new FileReader();
-    reader.onload=(e)=>{
-      uData.photo=e.target.result;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      userData.dp = e.target.result;
       finish()
     };
     reader.readAsDataURL(file)
@@ -309,7 +333,8 @@ window.saveProfile = function(){
 }
 
 function finish(){
-  fbUpdate(fbRef(db, 'users/' + uid), uData);
+  fbUpdate(fbRef(db, 'users/' + uid), userData);
+  localStorage.setItem('ruppy_user', JSON.stringify(userData));
   closeEdit();
 }
 
@@ -352,12 +377,22 @@ window.createPost = function(){
   if(!t&&!selectedFile)return;
 
   const today = new Date().toISOString().split('T')[0];
-  if (uData.lastPostDate === today && uData.postsToday >= 3) {
+  if (userData.lastPostDate === today && userData.postsToday >= 3) {
     alert("Daily limit of 3 posts reached. Come back tomorrow.");
     return;
   }
 
-  let p={user:uData.name,photo:uData.photo,text:t,likes:0,likedBy:[],time:Date.now(),claimed:false,uid:uData.uid,comments:[]};
+  let p={
+    user: userData.name,
+    photo: userData.dp,
+    text: t,
+    likes: 0,
+    likedBy: [],
+    time: Date.now(),
+    claimed: false,
+    uid: uid,
+    comments: []
+  };
 
   if(selectedFile){
     let r=new FileReader();
@@ -384,7 +419,7 @@ function savePost(p){
 
 window.claimReward = function(postId){
   const today = new Date().toISOString().split('T')[0];
-  if (uData.lastPostDate === today && uData.postsToday >= 3) {
+  if (userData.lastPostDate === today && userData.postsToday >= 3) {
     alert("Daily limit of 3 claims reached. Come back tomorrow.");
     return;
   }
@@ -392,15 +427,18 @@ window.claimReward = function(postId){
   let post = posts.find(p => p.id === postId);
   if(!post || post.claimed) return;
 
-  let newTokens = (uData.tokens || 0) + 10;
-  let newPostsToday = uData.lastPostDate === today? (uData.postsToday + 1) : 1;
+  userData.balance = Number(userData.balance) || 0;
+  userData.balance += 10;
+  userData.postsToday = userData.lastPostDate === today? (userData.postsToday + 1) : 1;
+  userData.lastPostDate = today;
 
   fbUpdate(fbRef(db, 'posts/' + postId), {claimed: true});
   fbUpdate(fbRef(db, 'users/' + uid), {
-    tokens: newTokens,
-    postsToday: newPostsToday,
+    balance: userData.balance,
+    postsToday: userData.postsToday,
     lastPostDate: today
   });
+  localStorage.setItem('ruppy_user', JSON.stringify(userData));
 
   alert("You claimed 10 Tokens! 🎉");
 }
@@ -417,7 +455,7 @@ window.addComment = function(id){
   let post = posts.find(p => p.id === id);
   if(!post) return;
   let comments = post.comments || [];
-  comments.push({user:uData.name,text:txt});
+  comments.push({user:userData.name,text:txt});
   fbUpdate(fbRef(db, 'posts/' + id), {comments: comments});
   inp.value='';
 }
