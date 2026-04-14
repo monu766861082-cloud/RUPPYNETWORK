@@ -523,4 +523,79 @@ function renderPostHTML(p, showClaim) {
       if(!p.claimed){
         claimBtn = `<button class="claim-btn" onclick="claimReward('${p.id}')">Claim +10 Token</button>`;
       } else {
-        claimBtn = `<button class="claim-btn claimed" disabled>Claimed ✓</
+        claimBtn = `<button class="claim-btn claimed" disabled>Claimed ✓</button>`;
+      }
+    }
+    let unclaimedTag = (p.uid === uid && !p.claimed)? `<span class="unclaimed-badge">Unclaimed</span>` : '';
+
+    let commentsHTML = '';
+    if(p.comments && p.comments.length > 0){
+      p.comments.forEach(c=>{
+        commentsHTML += `<div class="comment-item"><b>${c.user}:</b> ${c.text}</div>`;
+      });
+    }
+
+    return `<div class="post-card">
+      <div class="post-card-head" onclick="openUserProfile('${p.user}', '${p.uid}')">
+        <div class="post-avatar">${p.photo?`<img src="${p.photo}">`:p.user[0]}</div>
+        <div class="post-info"><h4>${p.user} ${unclaimedTag}</h4><p>now</p></div>
+      </div>
+      ${p.text?`<div class="post-content">${p.text}</div>`:''}${m}
+      ${claimBtn}
+      <div class="post-actions">
+        <button class="like-btn ${isLiked?'liked':''}" onclick="likePost('${p.id}')"><b>Like</b> ❤️ ${p.likes||0}</button>
+        <button class="comment-btn" onclick="openComment('${p.id}')"><b style="color:#333">Comment</b> 💬 ${p.comments?p.comments.length:0}</button>
+      </div>
+      <div class="comment-box" id="cbox-${p.id}">
+        <div class="comment-input-row">
+          <input type="text" id="cinp-${p.id}" placeholder="Write a comment...">
+          <button class="comment-send" onclick="addComment('${p.id}')">Send</button>
+        </div>
+        <div class="comment-list">${commentsHTML}</div>
+      </div>
+    </div>`;
+}
+
+window.renderFeed = function(){
+  let f=document.getElementById('feed');
+  if(posts.length===0){f.innerHTML=`<div style="padding:40px;text-align:center;color:#666">No posts yet</div>`;return}
+  f.innerHTML='';
+  let totalLikes = 0;
+  posts.forEach((p)=>{
+    totalLikes += p.likes || 0;
+    f.innerHTML += renderPostHTML(p,true);
+  });
+  document.getElementById('totalPosts').innerText = posts.length;
+  document.getElementById('totalLikes').innerText = totalLikes;
+}
+
+window.renderProfileFeed = function(){
+  let f=document.getElementById('profileFeed');
+  let userPosts = posts.filter(p => p.uid === uid);
+  if(userPosts.length===0){f.innerHTML=`<div style="padding:20px;text-align:center;color:#666">No posts yet</div>`;return}
+  f.innerHTML='';
+  userPosts.forEach((p)=>{
+    f.innerHTML += renderPostHTML(p,false);
+  });
+}
+
+window.likePost = function(id) {
+    let post = posts.find(p => p.id === id);
+    if(!post) return;
+    let likedBy = post.likedBy || [];
+    let userIndex = likedBy.indexOf(uid);
+    let newLikes = post.likes || 0;
+
+    if(userIndex === -1) {
+        newLikes += 1;
+        likedBy.push(uid);
+    } else {
+        newLikes -= 1;
+        likedBy.splice(userIndex, 1);
+    }
+    fbUpdate(fbRef(db, 'posts/' + id), {likes: newLikes, likedBy: likedBy});
+}
+
+</script>
+</body>
+</html>
