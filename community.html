@@ -68,6 +68,14 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .unclaimed-badge{background:#FF6D00;color:#fff;font-size:11px;padding:3px 8px;border-radius:6px;margin-left:8px}
 .profile-posts{padding:0 20px 20px}
 .profile-posts h3{font-size:16px;color:#888;margin:20px 0 12px}
+.comment-box{margin-top:10px;padding-top:10px;border-top:1px solid #222;display:none}
+.comment-box.active{display:block}
+.comment-input-row{display:flex;gap:8px;margin-bottom:10px}
+.comment-input-row input{flex:1;background:#0a0a0a;border:1px solid #333;border-radius:8px;padding:8px 12px;color:#fff;font-size:13px}
+.comment-send{background:#FFD700;border:none;border-radius:8px;padding:8px 12px;color:#000;font-weight:700;font-size:12px;cursor:pointer}
+.comment-list{max-height:150px;overflow-y:auto}
+.comment-item{background:#0a0a0a;border-radius:8px;padding:8px;margin-bottom:6px;font-size:13px}
+.comment-item b{color:#FFD700}
 </style>
 </head>
 <body>
@@ -223,7 +231,7 @@ function createPost(){
     return;
   }
 
-  let p={id:Date.now(),user:uData.name,photo:uData.photo,text:t,likes:0,likedBy:[],time:Date.now(),claimed:false,uid:uData.uid};
+  let p={id:Date.now(),user:uData.name,photo:uData.photo,text:t,likes:0,likedBy:[],time:Date.now(),claimed:false,uid:uData.uid,comments:[]};
 
   if(selectedFile){
     let r=new FileReader();
@@ -275,6 +283,24 @@ function claimReward(postId){
   renderProfileFeed();
 }
 
+function openComment(i){
+  let box = document.getElementById('cbox-'+i);
+  box.classList.toggle('active');
+}
+
+function addComment(i){
+  let inp = document.getElementById('cinp-'+i);
+  let txt = inp.value.trim();
+  if(!txt) return;
+  if(!posts[i].comments) posts[i].comments = [];
+  posts[i].comments.push({user:uData.name,text:txt});
+  localStorage.setItem('ruppy_posts',JSON.stringify(posts));
+  inp.value='';
+  renderFeed();
+  renderProfileFeed();
+  document.getElementById('cbox-'+i).classList.add('active');
+}
+
 function renderPostHTML(p,i,showClaim){
     let m='';
     if(p.media){
@@ -292,6 +318,13 @@ function renderPostHTML(p,i,showClaim){
     }
     let unclaimedTag = (p.uid === uData.uid &&!p.claimed)? `<span class="unclaimed-badge">Unclaimed</span>` : '';
 
+    let commentsHTML = '';
+    if(p.comments && p.comments.length > 0){
+      p.comments.forEach(c=>{
+        commentsHTML += `<div class="comment-item"><b>${c.user}:</b> ${c.text}</div>`;
+      });
+    }
+
     return `<div class="post-card">
       <div class="post-card-head">
         <div class="post-avatar">${p.photo?`<img src="${p.photo}">`:p.user[0]}</div>
@@ -301,7 +334,14 @@ function renderPostHTML(p,i,showClaim){
       ${claimBtn}
       <div class="post-actions">
         <button class="like-btn ${isLiked?'liked':''}" onclick="likePost(${i})"><b>Like</b> ❤️ ${p.likes||0}</button>
-        <button class="comment-btn"><b style="color:#333">Comment</b> 💬</button>
+        <button class="comment-btn" onclick="openComment(${i})"><b style="color:#333">Comment</b> 💬 ${p.comments?p.comments.length:0}</button>
+      </div>
+      <div class="comment-box" id="cbox-${i}">
+        <div class="comment-input-row">
+          <input type="text" id="cinp-${i}" placeholder="Write a comment...">
+          <button class="comment-send" onclick="addComment(${i})">Send</button>
+        </div>
+        <div class="comment-list">${commentsHTML}</div>
       </div>
     </div>`;
 }
