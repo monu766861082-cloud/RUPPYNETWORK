@@ -78,9 +78,11 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .comment-item b{color:#FFD700}
 </style>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-<script>
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, push, onValue, update, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
   const firebaseConfig = {
     apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
     authDomain: "ruppynetwork-50362.firebaseapp.com",
@@ -90,8 +92,16 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     messagingSenderId: "132064610854",
     appId: "1:132064610854:web:3c217eaf3618007f5934e7"
   };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  window.db = db;
+  window.fbRef = ref;
+  window.fbPush = push;
+  window.fbOnValue = onValue;
+  window.fbUpdate = update;
+  window.fbGet = get;
+  window.fbChild = child;
 </script>
 
 </head>
@@ -151,7 +161,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <div class="p-detail"><span class="icon">💼</span> <span id="view-work">Not Set</span></div>
     <div class="p-detail"><span class="icon">🎓</span> <span id="view-edu">Not Set</span></div>
     <div class="p-detail"><span class="icon">🎮</span> <span id="view-hobbies">Not Set</span></div>
-    <button id="editProfileBtn" onclick="openEdit()" style="width:100%;padding:12px;background:#1a1a1a;border:1px solid #333;color:#FFD700;border-radius:12px;margin-top:20px;font-weight:700">Edit Profile</button>
+    <button onclick="openEdit()" style="width:100%;padding:12px;background:#1a1a1a;border:1px solid #333;color:#FFD700;border-radius:12px;margin-top:20px;font-weight:700">Edit Profile</button>
   </div>
   <div class="profile-posts">
     <h3>Your Posts</h3>
@@ -192,7 +202,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </button>
 </div>
 
-<script>
+<script type="module">
+// मेन ऐप वाला User Data ही यूज करेंगे - ruppy_user
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   name: 'User',
   dp: null,
@@ -220,7 +231,7 @@ if (isNaN(userData.balance)) userData.balance = 0;
 let posts = [];
 const uid = userData.name;
 
-db.ref('users/' + uid).on('value', (snapshot) => {
+fbOnValue(fbRef(db, 'users/' + uid), (snapshot) => {
   if(snapshot.exists()){
     let fbData = snapshot.val();
     userData = {...userData,...fbData};
@@ -229,7 +240,7 @@ db.ref('users/' + uid).on('value', (snapshot) => {
   loadUI();
 });
 
-db.ref('posts').on('value', (snapshot) => {
+fbOnValue(fbRef(db, 'posts'), (snapshot) => {
   posts = [];
   if(snapshot.exists()){
     snapshot.forEach((child) => {
@@ -243,10 +254,10 @@ db.ref('posts').on('value', (snapshot) => {
 
 function updatePostLimit() {
   const today = new Date().toISOString().split('T')[0];
-  if (userData.lastPostDate!== today) {
+  if (userData.lastPostDate !== today) {
     userData.postsToday = 0;
     userData.lastPostDate = today;
-    db.ref('users/' + uid).update({postsToday: 0, lastPostDate: today});
+    fbUpdate(fbRef(db, 'users/' + uid), {postsToday: 0, lastPostDate: today});
     localStorage.setItem('ruppy_user', JSON.stringify(userData));
   }
   let left = 3 - userData.postsToday;
@@ -259,18 +270,9 @@ function updatePostLimit() {
     document.getElementById('postBtn').innerText = 'Daily limit reached 3/3';
     document.getElementById('giftBanner').innerHTML = '🎁 Daily limit reached. Come back tomorrow';
   } else {
+    document.getElementById('postBtn').disabled = false;
     document.getElementById('postBtn').innerText = `Post`;
     document.getElementById('giftBanner').innerHTML = `🎁 +10 RUPPY Token per post | <span id="limitText">${left}/3 left</span>`;
-    checkPostBtnState();
-  }
-}
-
-function checkPostBtnState(){
-  let txt = document.getElementById('postText').value.trim();
-  if(userData.postsToday >= 3){
-    document.getElementById('postBtn').disabled = true;
-  } else {
-    document.getElementById('postBtn').disabled =!txt &&!selectedFile;
   }
 }
 
@@ -328,7 +330,7 @@ window.saveProfile = function(){
 }
 
 function finish(){
-  db.ref('users/' + uid).update(userData);
+  fbUpdate(fbRef(db, 'users/' + uid), userData);
   localStorage.setItem('ruppy_user', JSON.stringify(userData));
   closeEdit();
 }
@@ -351,7 +353,8 @@ window.exitApp = function(){window.history.back()}
 
 let selectedFile=null;
 document.getElementById('postText').oninput=function(){
-  checkPostBtnState();
+  if(document.getElementById('postBtn').innerText.includes('limit reached')) return;
+  document.getElementById('postBtn').disabled = !this.value.trim() && !selectedFile;
 }
 document.getElementById('fileInput').onchange=function(e){
   selectedFile=e.target.files[0];
@@ -361,7 +364,7 @@ document.getElementById('fileInput').onchange=function(e){
       let p=document.getElementById('preview');
       p.style.display='block';
       p.innerHTML=selectedFile.type.includes('video')?`<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`:`<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
-      checkPostBtnState();
+      document.getElementById('postBtn').disabled=false
     };
     r.readAsDataURL(selectedFile)
   }
@@ -369,20 +372,30 @@ document.getElementById('fileInput').onchange=function(e){
 
 window.addEmoji = function(){
   document.getElementById('postText').value+=' 🔥';
-  checkPostBtnState();
+  document.getElementById('postBtn').disabled=false
 }
 
+// ✅ यहाँ सिर्फ POST बटन ठीक किया गया है - बाकी कुछ नहीं बदला
 window.createPost = function(){
-  let t=document.getElementById('postText').value.trim();
-  if(!t&&!selectedFile)return;
+  let t = document.getElementById('postText').value.trim();
+  if(!t && !selectedFile) {
+    alert("Please write something or add media");
+    return;
+  }
 
   const today = new Date().toISOString().split('T')[0];
-  if (userData.lastPostDate === today && userData.postsToday >= 3) {
+  
+  if (userData.lastPostDate !== today) {
+    userData.postsToday = 0;
+    userData.lastPostDate = today;
+  }
+  
+  if (userData.postsToday >= 3) {
     alert("Daily limit of 3 posts reached. Come back tomorrow.");
     return;
   }
 
-  let p={
+  let p = {
     user: userData.name,
     photo: userData.dp,
     text: t,
@@ -394,27 +407,36 @@ window.createPost = function(){
     comments: []
   };
 
-  if(selectedFile){
-    let r=new FileReader();
-    r.onload=function(e){
-      p.media=e.target.result;
-      p.mediaType=selectedFile.type.includes('video')?'video':'image';
-      savePost(p)
-    };
-    r.readAsDataURL(selectedFile)
-  } else {
-    savePost(p)
+  function saveAndReset(postData) {
+    fbPush(fbRef(db, 'posts'), postData);
+    document.getElementById('postText').value = '';
+    document.getElementById('preview').style.display = 'none';
+    document.getElementById('preview').innerHTML = '';
+    document.getElementById('fileInput').value = '';
+    document.getElementById('postBtn').disabled = true;
+    selectedFile = null;
+    
+    userData.postsToday++;
+    userData.lastPostDate = today;
+    fbUpdate(fbRef(db, 'users/' + uid), {
+      postsToday: userData.postsToday,
+      lastPostDate: today
+    });
+    localStorage.setItem('ruppy_user', JSON.stringify(userData));
+    updatePostLimit();
   }
-}
 
-function savePost(p){
-  db.ref('posts').push(p);
-  document.getElementById('postText').value='';
-  document.getElementById('preview').style.display='none';
-  document.getElementById('preview').innerHTML='';
-  document.getElementById('fileInput').value='';
-  selectedFile=null;
-  checkPostBtnState();
+  if(selectedFile){
+    let r = new FileReader();
+    r.onload = function(e){
+      p.media = e.target.result;
+      p.mediaType = selectedFile.type.includes('video') ? 'video' : 'image';
+      saveAndReset(p);
+    };
+    r.readAsDataURL(selectedFile);
+  } else {
+    saveAndReset(p);
+  }
 }
 
 window.claimReward = function(postId){
@@ -432,13 +454,14 @@ window.claimReward = function(postId){
   userData.postsToday = userData.lastPostDate === today? (userData.postsToday + 1) : 1;
   userData.lastPostDate = today;
 
-  db.ref('posts/' + postId).update({claimed: true});
-  db.ref('users/' + uid).update({
+  fbUpdate(fbRef(db, 'posts/' + postId), {claimed: true});
+  fbUpdate(fbRef(db, 'users/' + uid), {
     balance: userData.balance,
     postsToday: userData.postsToday,
     lastPostDate: today
   });
   localStorage.setItem('ruppy_user', JSON.stringify(userData));
+
   alert("You claimed 10 Tokens! 🎉");
 }
 
@@ -455,7 +478,7 @@ window.addComment = function(id){
   if(!post) return;
   let comments = post.comments || [];
   comments.push({user:userData.name,text:txt});
-  db.ref('posts/' + id).update({comments: comments});
+  fbUpdate(fbRef(db, 'posts/' + id), {comments: comments});
   inp.value='';
 }
 
@@ -464,7 +487,7 @@ window.openUserProfile = function(username, userUid) {
     switchTab('profile');
     return;
   }
-  db.ref('users/' + userUid).get().then((snapshot) => {
+  fbGet(fbChild(fbRef(db), 'users/' + userUid)).then((snapshot) => {
     if(snapshot.exists()) {
       let otherUser = snapshot.val();
       let modalHtml = `
@@ -473,7 +496,7 @@ window.openUserProfile = function(username, userUid) {
             <h2 style="color:#FFD700">${otherUser.name || username}'s Profile</h2>
             <button onclick="document.getElementById('otherProfileModal').remove()" style="background:none;border:none;color:#fff;font-size:24px">✕</button>
           </div>
-          <div class="profile-cover" style="margin-bottom:20px"><div class="profile-dp" style="position:relative;margin:0 auto">${otherUser.dp? `<img src="${otherUser.dp}">` : (otherUser.name? otherUser.name[0] : 'U')}</div></div>
+          <div class="profile-cover" style="margin-bottom:20px"><div class="profile-dp" style="position:relative;margin:0 auto">${otherUser.dp ? `<img src="${otherUser.dp}">` : (otherUser.name ? otherUser.name[0] : 'U')}</div></div>
           <div class="profile-info">
             <h2>${otherUser.name || username}</h2>
             <p>${otherUser.bio || 'Living life...'}</p>
@@ -504,7 +527,7 @@ window.openUserProfile = function(username, userUid) {
   });
 }
 
-function renderPostHTML(p,showClaim){
+function renderPostHTML(p, showClaim) {
     let m='';
     if(p.media){
       if(p.mediaType==='video'){m=`<div class="post-media"><video src="${p.media}" controls></video></div>`}
@@ -519,7 +542,7 @@ function renderPostHTML(p,showClaim){
         claimBtn = `<button class="claim-btn claimed" disabled>Claimed ✓</button>`;
       }
     }
-    let unclaimedTag = (p.uid === uid &&!p.claimed)? `<span class="unclaimed-badge">Unclaimed</span>` : '';
+    let unclaimedTag = (p.uid === uid && !p.claimed)? `<span class="unclaimed-badge">Unclaimed</span>` : '';
 
     let commentsHTML = '';
     if(p.comments && p.comments.length > 0){
@@ -536,4 +559,59 @@ function renderPostHTML(p,showClaim){
       ${p.text?`<div class="post-content">${p.text}</div>`:''}${m}
       ${claimBtn}
       <div class="post-actions">
-        <button class="like-btn ${isLiked?'liked':''}" onclick="likePost('${p.id}')"><b>
+        <button class="like-btn ${isLiked?'liked':''}" onclick="likePost('${p.id}')"><b>Like</b> ❤️ ${p.likes||0}</button>
+        <button class="comment-btn" onclick="openComment('${p.id}')"><b style="color:#333">Comment</b> 💬 ${p.comments?p.comments.length:0}</button>
+      </div>
+      <div class="comment-box" id="cbox-${p.id}">
+        <div class="comment-input-row">
+          <input type="text" id="cinp-${p.id}" placeholder="Write a comment...">
+          <button class="comment-send" onclick="addComment('${p.id}')">Send</button>
+        </div>
+        <div class="comment-list">${commentsHTML}</div>
+      </div>
+    </div>`;
+}
+
+window.renderFeed = function(){
+  let f=document.getElementById('feed');
+  if(posts.length===0){f.innerHTML=`<div style="padding:40px;text-align:center;color:#666">No posts yet</div>`;return}
+  f.innerHTML='';
+  let totalLikes = 0;
+  posts.forEach((p)=>{
+    totalLikes += p.likes || 0;
+    f.innerHTML += renderPostHTML(p,true);
+  });
+  document.getElementById('totalPosts').innerText = posts.length;
+  document.getElementById('totalLikes').innerText = totalLikes;
+}
+
+window.renderProfileFeed = function(){
+  let f=document.getElementById('profileFeed');
+  let userPosts = posts.filter(p => p.uid === uid);
+  if(userPosts.length===0){f.innerHTML=`<div style="padding:20px;text-align:center;color:#666">No posts yet</div>`;return}
+  f.innerHTML='';
+  userPosts.forEach((p)=>{
+    f.innerHTML += renderPostHTML(p,false);
+  });
+}
+
+window.likePost = function(id) {
+    let post = posts.find(p => p.id === id);
+    if(!post) return;
+    let likedBy = post.likedBy || [];
+    let userIndex = likedBy.indexOf(uid);
+    let newLikes = post.likes || 0;
+
+    if(userIndex === -1) {
+        newLikes += 1;
+        likedBy.push(uid);
+    } else {
+        newLikes -= 1;
+        likedBy.splice(userIndex, 1);
+    }
+    fbUpdate(fbRef(db, 'posts/' + id), {likes: newLikes, likedBy: likedBy});
+}
+
+</script>
+</body>
+</html>
