@@ -79,10 +79,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </style>
 
 <!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDatabase, ref, push, onValue, update, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
+<script>
   const firebaseConfig = {
     apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
     authDomain: "ruppynetwork-50362.firebaseapp.com",
@@ -92,16 +89,19 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     messagingSenderId: "132064610854",
     appId: "1:132064610854:web:3c217eaf3618007f5934e7"
   };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script>
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
   window.db = db;
-  window.fbRef = ref;
-  window.fbPush = push;
-  window.fbOnValue = onValue;
-  window.fbUpdate = update;
-  window.fbGet = get;
-  window.fbChild = child;
+  window.fbRef = (path) => firebase.database().ref(path);
+  window.fbPush = (ref, data) => ref.push(data);
+  window.fbOnValue = (ref, callback) => ref.on('value', callback);
+  window.fbUpdate = (ref, data) => ref.update(data);
+  window.fbGet = (ref) => ref.get();
+  window.fbChild = (ref, path) => ref.child(path);
 </script>
 
 </head>
@@ -161,7 +161,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <div class="p-detail"><span class="icon">💼</span> <span id="view-work">Not Set</span></div>
     <div class="p-detail"><span class="icon">🎓</span> <span id="view-edu">Not Set</span></div>
     <div class="p-detail"><span class="icon">🎮</span> <span id="view-hobbies">Not Set</span></div>
-    <button onclick="openEdit()" style="width:100%;padding:12px;background:#1a1a1a;border:1px solid #333;color:#FFD700;border-radius:12px;margin-top:20px;font-weight:700">Edit Profile</button>
+    <button id="editProfileBtn" onclick="openEdit()" style="width:100%;padding:12px;background:#1a1a1a;border:1px solid #333;color:#FFD700;border-radius:12px;margin-top:20px;font-weight:700">Edit Profile</button>
   </div>
   <div class="profile-posts">
     <h3>Your Posts</h3>
@@ -202,7 +202,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </button>
 </div>
 
-<script type="module">
+<script>
 // मेन ऐप वाला User Data ही यूज करेंगे - ruppy_user
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   name: 'User',
@@ -236,7 +236,7 @@ let posts = [];
 const uid = userData.name;
 
 // Firebase से User Data Sync करो
-fbOnValue(fbRef(db, 'users/' + uid), (snapshot) => {
+fbOnValue(fbRef('users/' + uid), (snapshot) => {
   if(snapshot.exists()){
     let fbData = snapshot.val();
     userData = {...userData,...fbData};
@@ -246,7 +246,7 @@ fbOnValue(fbRef(db, 'users/' + uid), (snapshot) => {
 });
 
 // Firebase से Posts लाओ
-fbOnValue(fbRef(db, 'posts'), (snapshot) => {
+fbOnValue(fbRef('posts'), (snapshot) => {
   posts = [];
   if(snapshot.exists()){
     snapshot.forEach((child) => {
@@ -263,7 +263,7 @@ function updatePostLimit() {
   if (userData.lastPostDate!== today) {
     userData.postsToday = 0;
     userData.lastPostDate = today;
-    fbUpdate(fbRef(db, 'users/' + uid), {postsToday: 0, lastPostDate: today});
+    fbUpdate(fbRef('users/' + uid), {postsToday: 0, lastPostDate: today});
     localStorage.setItem('ruppy_user', JSON.stringify(userData));
   }
   let left = 3 - userData.postsToday;
@@ -335,7 +335,7 @@ window.saveProfile = function(){
 }
 
 function finish(){
-  fbUpdate(fbRef(db, 'users/' + uid), userData);
+  fbUpdate(fbRef('users/' + uid), userData);
   localStorage.setItem('ruppy_user', JSON.stringify(userData));
   closeEdit();
 }
@@ -367,8 +367,11 @@ window.exitApp = function(){window.history.back()}
 
 let selectedFile=null;
 document.getElementById('postText').oninput=function(){
-  if(document.getElementById('postBtn').innerText.includes('limit reached')) return;
-  document.getElementById('postBtn').disabled=!this.value.trim()&&!selectedFile
+  if(userData.postsToday >= 3) {
+    document.getElementById('postBtn').disabled = true;
+    return;
+  }
+  document.getElementById('postBtn').disabled=!this.value.trim()&&!selectedFile;
 }
 document.getElementById('fileInput').onchange=function(e){
   selectedFile=e.target.files[0];
@@ -378,7 +381,7 @@ document.getElementById('fileInput').onchange=function(e){
       let p=document.getElementById('preview');
       p.style.display='block';
       p.innerHTML=selectedFile.type.includes('video')?`<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`:`<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
-      document.getElementById('postBtn').disabled=false
+      if(userData.postsToday < 3) document.getElementById('postBtn').disabled=false;
     };
     r.readAsDataURL(selectedFile)
   }
@@ -386,7 +389,7 @@ document.getElementById('fileInput').onchange=function(e){
 
 window.addEmoji = function(){
   document.getElementById('postText').value+=' 🔥';
-  document.getElementById('postBtn').disabled=false
+  if(userData.postsToday < 3) document.getElementById('postBtn').disabled=false;
 }
 
 window.createPost = function(){
@@ -425,7 +428,7 @@ window.createPost = function(){
 }
 
 function savePost(p){
-  fbPush(fbRef(db, 'posts'), p);
+  fbPush(fbRef('posts'), p);
   document.getElementById('postText').value='';
   document.getElementById('preview').style.display='none';
   document.getElementById('preview').innerHTML='';
@@ -449,8 +452,8 @@ window.claimReward = function(postId){
   userData.postsToday = userData.lastPostDate === today? (userData.postsToday + 1) : 1;
   userData.lastPostDate = today;
 
-  fbUpdate(fbRef(db, 'posts/' + postId), {claimed: true});
-  fbUpdate(fbRef(db, 'users/' + uid), {
+  fbUpdate(fbRef('posts/' + postId), {claimed: true});
+  fbUpdate(fbRef('users/' + uid), {
     balance: userData.balance,
     postsToday: userData.postsToday,
     lastPostDate: today
@@ -473,7 +476,7 @@ window.addComment = function(id){
   if(!post) return;
   let comments = post.comments || [];
   comments.push({user:userData.name,text:txt});
-  fbUpdate(fbRef(db, 'posts/' + id), {comments: comments});
+  fbUpdate(fbRef('posts/' + id), {comments: comments});
   inp.value='';
 }
 
@@ -504,7 +507,7 @@ function renderPostHTML(p,showClaim){
     return `<div class="post-card">
       <div class="post-card-head">
         <div class="post-avatar">${p.photo?`<img src="${p.photo}">`:p.user[0]}</div>
-        <div class="post-info"><h4>${p.user} ${unclaimedTag}</h4><p>now</p></div>
+        <div class="post-info"><h4 onclick="viewProfile('${p.uid}')" style="cursor:pointer">${p.user} ${unclaimedTag}</h4><p>now</p></div>
       </div>
       ${p.text?`<div class="post-content">${p.text}</div>`:''}${m}
       ${claimBtn}
@@ -559,7 +562,35 @@ window.likePost = function(id) {
         newLikes -= 1;
         likedBy.splice(userIndex, 1);
     }
-    fbUpdate(fbRef(db, 'posts/' + id), {likes: newLikes, likedBy: likedBy});
+    fbUpdate(fbRef('posts/' + id), {likes: newLikes, likedBy: likedBy});
+}
+
+window.viewProfile = function(targetUid) {
+  switchTab('profile');
+  fbGet(fbChild(fbRef('users/' + targetUid))).then((snap)=>{
+    if(!snap.exists()) return;
+    const tUser = snap.val();
+    document.getElementById('view-name').innerText = tUser.name;
+    document.getElementById('view-bio').innerText = tUser.bio || 'Living life...';
+    document.getElementById('view-city').innerText = tUser.city || 'Not Set';
+    document.getElementById('view-hometown').innerText = tUser.hometown || 'Not Set';
+    document.getElementById('view-rel').innerText = tUser.rel || 'Single';
+    document.getElementById('view-work').innerText = tUser.work || 'Not Set';
+    document.getElementById('view-edu').innerText = tUser.edu || 'Not Set';
+    document.getElementById('view-hobbies').innerText = tUser.hobbies || 'Not Set';
+    if(tUser.dp){document.getElementById('main-dp').innerHTML = `<img src="${tUser.dp}">`;}
+    else{document.getElementById('main-dp').innerText = tUser.name[0];}
+    document.getElementById('editProfileBtn').style.display = (targetUid === uid)? 'block' : 'none';
+    document.querySelector('#profile-tab.profile-posts h3').innerText = (targetUid === uid)? 'Your Posts' : tUser.name + ' Posts';
+    let f = document.getElementById('profileFeed');
+    let userPosts = posts.filter(p => p.uid === targetUid);
+    if(userPosts.length === 0){
+      f.innerHTML = `<div style="padding:20px;text-align:center;color:#666">No posts yet</div>`;
+    } else {
+      f.innerHTML = '';
+      userPosts.forEach((p) => { f.innerHTML += renderPostHTML(p, false); });
+    }
+  });
 }
 
 </script>
