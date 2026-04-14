@@ -54,9 +54,9 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 #fileInput{display:none}
 .post-card{background:#111;border:1px solid #222;border-radius:16px;padding:14px;margin-bottom:12px}
 .post-card-head{display:flex;gap:10px;align-items:center;margin-bottom:10px}
-.post-avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:14px;overflow:hidden}
+.post-avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:14px;overflow:hidden;cursor:pointer}
 .post-avatar img{width:100%;height:100%;object-fit:cover}
-.post-info h4{font-size:15px;font-weight:700}
+.post-info h4{font-size:15px;font-weight:700;cursor:pointer}
 .post-info p{font-size:12px;color:#666}
 .post-content{margin-bottom:10px;font-size:15px;line-height:1.4}
 .post-media img,.post-media video{width:100%;border-radius:12px;margin-top:8px}
@@ -76,6 +76,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .comment-list{max-height:150px;overflow-y:auto}
 .comment-item{background:#0a0a0a;border-radius:8px;padding:8px;margin-bottom:6px;font-size:13px}
 .comment-item b{color:#FFD700}
+#profileBackBtn{display:none;background:none;border:none;color:#FFD700;font-size:16px;margin-bottom:10px;cursor:pointer}
 </style>
 
 <!-- Firebase SDK -->
@@ -151,6 +152,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <div id="profile-tab" class="tab-content">
+  <button id="profileBackBtn" onclick="backToMyProfile()">← Back to My Profile</button>
   <div class="profile-cover"><div class="profile-dp" id="main-dp">U</div></div>
   <div class="profile-info">
     <h2 id="view-name">User</h2>
@@ -161,10 +163,10 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <div class="p-detail"><span class="icon">💼</span> <span id="view-work">Not Set</span></div>
     <div class="p-detail"><span class="icon">🎓</span> <span id="view-edu">Not Set</span></div>
     <div class="p-detail"><span class="icon">🎮</span> <span id="view-hobbies">Not Set</span></div>
-    <button onclick="openEdit()" style="width:100%;padding:12px;background:#1a1a1a;border:1px solid #333;color:#FFD700;border-radius:12px;margin-top:20px;font-weight:700">Edit Profile</button>
+    <button id="editProfileBtn" onclick="openEdit()" style="width:100%;padding:12px;background:#1a1a1a;border:1px solid #333;color:#FFD700;border-radius:12px;margin-top:20px;font-weight:700">Edit Profile</button>
   </div>
   <div class="profile-posts">
-    <h3>Your Posts</h3>
+    <h3 id="profilePostsTitle">Your Posts</h3>
     <div id="profileFeed"></div>
   </div>
 </div>
@@ -193,7 +195,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <span>Friend</span>
   </button>
   <button class="nav-btn" id="btn-notification" onclick="switchTab('notification')">
-    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
     <span>Notif</span>
   </button>
   <button class="nav-btn" id="btn-profile" onclick="switchTab('profile')">
@@ -226,14 +228,21 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   lastPostDate:''
 };
 
+// FIX 1: Unique UID बनाओ - Name सेम होने पे भी दिक्कत नहीं
+if(!userData.uid){
+  userData.uid = 'u_' + Date.now() + '_' + Math.floor(Math.random()*10000);
+  localStorage.setItem('ruppy_user', JSON.stringify(userData));
+}
+
 // Safe conversion - मेन ऐप वाला Logic
 userData.balance = Number(userData.balance);
 if (isNaN(userData.balance)) userData.balance = 0;
 
 let posts = [];
+let viewingUid = null; // FIX 2: किसकी Profile देख रहे हैं
 
-// User का नाम ही UID है मेन ऐप में
-const uid = userData.name;
+// User का Unique UID यूज करो
+const uid = userData.uid;
 
 // Firebase से User Data Sync करो
 fbOnValue(fbRef(db, 'users/' + uid), (snapshot) => {
@@ -255,7 +264,7 @@ fbOnValue(fbRef(db, 'posts'), (snapshot) => {
     posts.reverse();
   }
   renderFeed();
-  renderProfileFeed();
+  if(viewingUid) renderProfileFeed(viewingUid); else renderProfileFeed(uid);
 });
 
 function updatePostLimit() {
@@ -282,22 +291,60 @@ function updatePostLimit() {
 }
 
 window.loadUI = function(){
-  document.getElementById('view-name').innerText = userData.name;
-  document.getElementById('view-bio').innerText = userData.bio || 'Living life...';
-  document.getElementById('view-city').innerText = userData.city || 'Not Set';
-  document.getElementById('view-hometown').innerText = userData.hometown || 'Not Set';
-  document.getElementById('view-rel').innerText = userData.rel || 'Single';
-  document.getElementById('view-work').innerText = userData.work || 'Not Set';
-  document.getElementById('view-edu').innerText = userData.edu || 'Not Set';
-  document.getElementById('view-hobbies').innerText = userData.hobbies || 'Not Set';
+  loadProfileData(userData, true);
+  updatePostLimit();
+}
+
+// FIX 2: Profile Data Load करने का Function
+function loadProfileData(data, isOwn){
+  document.getElementById('view-name').innerText = data.name;
+  document.getElementById('view-bio').innerText = data.bio || 'Living life...';
+  document.getElementById('view-city').innerText = data.city || 'Not Set';
+  document.getElementById('view-hometown').innerText = data.hometown || 'Not Set';
+  document.getElementById('view-rel').innerText = data.rel || 'Single';
+  document.getElementById('view-work').innerText = data.work || 'Not Set';
+  document.getElementById('view-edu').innerText = data.edu || 'Not Set';
+  document.getElementById('view-hobbies').innerText = data.hobbies || 'Not Set';
+
+  if(data.dp){
+    document.getElementById('main-dp').innerHTML = `<img src="${data.dp}">`;
+  }else{
+    document.getElementById('main-dp').innerText = data.name[0]
+  }
+
+  // Own Profile है तो Edit Button दिखाओ
+  document.getElementById('editProfileBtn').style.display = isOwn? 'block' : 'none';
+  document.getElementById('profileBackBtn').style.display = isOwn? 'none' : 'block';
+  document.getElementById('profilePostsTitle').innerText = isOwn? 'Your Posts' : `${data.name}'s Posts`;
+
+  // User Avatar भी Update करो
   document.getElementById('userAvatar').innerText = userData.name[0];
   if(userData.dp){
-    document.getElementById('main-dp').innerHTML = `<img src="${userData.dp}">`;
     document.getElementById('userAvatar').innerHTML = `<img src="${userData.dp}">`
-  }else{
-    document.getElementById('main-dp').innerText = userData.name[0]
   }
-  updatePostLimit();
+}
+
+// FIX 2: User Profile खोलो
+window.openUserProfile = async function(targetUid){
+  if(targetUid === uid) {
+    viewingUid = null;
+    switchTab('profile');
+    return;
+  }
+
+  viewingUid = targetUid;
+  const snapshot = await fbGet(fbChild(fbRef(db), 'users/' + targetUid));
+  if(snapshot.exists()){
+    loadProfileData(snapshot.val(), false);
+    renderProfileFeed(targetUid);
+    switchTab('profile');
+  }
+}
+
+window.backToMyProfile = function(){
+  viewingUid = null;
+  loadProfileData(userData, true);
+  renderProfileFeed(uid);
 }
 
 window.openEdit = function(){
@@ -360,7 +407,12 @@ window.switchTab = function(t){
   if(activeBtn) activeBtn.classList.add('active');
 
   // extra render
-  if(t === 'profile') renderProfileFeed();
+  if(t === 'profile') {
+    if(!viewingUid) {
+      loadProfileData(userData, true);
+      renderProfileFeed(uid);
+    }
+  }
 }
 
 window.exitApp = function(){window.history.back()}
@@ -407,7 +459,8 @@ window.createPost = function(){
     likedBy: [],
     time: Date.now(),
     claimed: false,
-    uid: uid,
+    uid: uid, // FIX 1: Unique UID यूज करो
+    userUid: uid, // FIX 2: Profile के लिए
     comments: []
   };
 
@@ -501,10 +554,11 @@ function renderPostHTML(p,showClaim){
       });
     }
 
+    // FIX 2: User DP और Name पे Click Event
     return `<div class="post-card">
       <div class="post-card-head">
-        <div class="post-avatar">${p.photo?`<img src="${p.photo}">`:p.user[0]}</div>
-        <div class="post-info"><h4>${p.user} ${unclaimedTag}</h4><p>now</p></div>
+        <div class="post-avatar" onclick="openUserProfile('${p.userUid || p.uid}')">${p.photo?`<img src="${p.photo}">`:p.user[0]}</div>
+        <div class="post-info"><h4 onclick="openUserProfile('${p.userUid || p.uid}')">${p.user} ${unclaimedTag}</h4><p>now</p></div>
       </div>
       ${p.text?`<div class="post-content">${p.text}</div>`:''}${m}
       ${claimBtn}
@@ -512,56 +566,4 @@ function renderPostHTML(p,showClaim){
         <button class="like-btn ${isLiked?'liked':''}" onclick="likePost('${p.id}')"><b>Like</b> ❤️ ${p.likes||0}</button>
         <button class="comment-btn" onclick="openComment('${p.id}')"><b style="color:#333">Comment</b> 💬 ${p.comments?p.comments.length:0}</button>
       </div>
-      <div class="comment-box" id="cbox-${p.id}">
-        <div class="comment-input-row">
-          <input type="text" id="cinp-${p.id}" placeholder="Write a comment...">
-          <button class="comment-send" onclick="addComment('${p.id}')">Send</button>
-        </div>
-        <div class="comment-list">${commentsHTML}</div>
-      </div>
-    </div>`;
-}
-
-window.renderFeed = function(){
-  let f=document.getElementById('feed');
-  if(posts.length===0){f.innerHTML=`<div style="padding:40px;text-align:center;color:#666">No posts yet</div>`;return}
-  f.innerHTML='';
-  let totalLikes = 0;
-  posts.forEach((p)=>{
-    totalLikes += p.likes || 0;
-    f.innerHTML += renderPostHTML(p,true);
-  });
-  document.getElementById('totalPosts').innerText = posts.length;
-  document.getElementById('totalLikes').innerText = totalLikes;
-}
-
-window.renderProfileFeed = function(){
-  let f=document.getElementById('profileFeed');
-  let userPosts = posts.filter(p => p.uid === uid);
-  if(userPosts.length===0){f.innerHTML=`<div style="padding:20px;text-align:center;color:#666">No posts yet</div>`;return}
-  f.innerHTML='';
-  userPosts.forEach((p)=>{
-    f.innerHTML += renderPostHTML(p,false);
-  });
-}
-
-window.likePost = function(id) {
-    let post = posts.find(p => p.id === id);
-    if(!post) return;
-    let likedBy = post.likedBy || [];
-    let userIndex = likedBy.indexOf(uid);
-    let newLikes = post.likes || 0;
-
-    if(userIndex === -1) {
-        newLikes += 1;
-        likedBy.push(uid);
-    } else {
-        newLikes -= 1;
-        likedBy.splice(userIndex, 1);
-    }
-    fbUpdate(fbRef(db, 'posts/' + id), {likes: newLikes, likedBy: likedBy});
-}
-
-</script>
-</body>
-</html>
+      <div class="
