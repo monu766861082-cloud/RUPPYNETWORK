@@ -104,7 +104,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <div class="reward-banner" id="rewardBanner">
-  <span>🎁 +10 RUPPY रुपए per post | 3/3 left</span>
+  <span>🎁 +10 RUPPY Coin reword par post | 3/3 left</span>
 </div>
 
 <div class="create-card">
@@ -269,7 +269,7 @@ window.addEmoji = function(){
 
 window.claimPost = function(postId){
   markPostClaimed(postId);
-  alert('10 रुपए Claimed! 🎉');
+  alert('10 Ruppy coin Claimed! 🎉');
   updateRewardBanner();
   renderFeed(JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]'));
 }
@@ -282,7 +282,7 @@ window.createPost = async function(){
   }
 
   if(getUnclaimedPost()){
-    alert('पहले Claim करो, फिर Post करो');
+    alert('Claim Post ');
     return;
   }
 
