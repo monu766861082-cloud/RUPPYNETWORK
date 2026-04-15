@@ -29,8 +29,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .reward-banner span{font-size:14px;color:#92400E;font-weight:700}
 .create-card{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:20px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
 .create-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
-.create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden}
-.create-avatar img{width:100%;height:100%;object-fit:cover}
+.create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px}
 .create-card textarea{width:100%;background:#0a0a0a;border:1px solid #222;border-radius:12px;padding:12px;color:#fff;font-size:15px;resize:none;font-family:inherit;min-height:60px}
 .create-card textarea::placeholder{color:#555}
 .create-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
@@ -181,7 +180,7 @@ function checkContent(text){
   return bannedWords.some(word => lower.includes(word));
 }
 
-// AUTO SYNC - Load userData from localStorage - SAME AS APP SDML
+// AUTO SYNC - Load userData from localStorage
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   name: 'User',
   dp: null,
@@ -193,19 +192,20 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   boostResetTime: Date.now(),
   firstRewardTime: 0,
   ultraRewardTime: 0
-});
+};
+
+// Safe conversion
+userData.balance = Number(userData.balance) || 0;
+userData.taskBalance = Number(userData.taskBalance) || 0;
+userData.lastMine = Number(userData.lastMine) || 0;
+userData.lastGift = Number(userData.lastGift) || 0;
+userData.boostCount = Number(userData.boostCount) || 0;
+userData.boostResetTime = Number(userData.boostResetTime) || Date.now();
+userData.firstRewardTime = Number(userData.firstRewardTime) || 0;
+userData.ultraRewardTime = Number(userData.ultraRewardTime) || 0;
 
 let currentUser = userData.name || 'User'+Math.floor(Math.random()*999);
-
-// AUTO DP SYNC - अगर DP है तो दिखाओ, वरना Letter
-function updateUserProfile(){
-  if(userData.dp) {
-    document.getElementById('userAvatar').innerHTML = '<img src="' + userData.dp + '" alt="DP">';
-  } else {
-    document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
-  }
-}
-updateUserProfile();
+document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
 
 // DAILY LIMIT + CLAIM SYSTEM
 function getTodayKey(){
@@ -228,9 +228,8 @@ function getTodayPostCount(){
 
 // AUTO BALANCE UPDATE - Main App Balance + Task Balance
 function updateBalanceBox(){
-  userData = JSON.parse(localStorage.getItem('ruppy_user')) || userData;
-  document.getElementById('taskBalance').textContent = Number(userData.taskBalance) || 0;
-  document.getElementById('totalBalance').textContent = Number(userData.balance) || 0;
+  document.getElementById('taskBalance').textContent = userData.taskBalance || 0;
+  document.getElementById('totalBalance').textContent = userData.balance || 0;
 }
 
 function saveTodayPost(postId){
@@ -251,7 +250,6 @@ function markPostClaimed(postId){
       userData.balance = Number(userData.balance) || 0;
       userData.balance += 10;
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
-      updateBalanceBox();
     }
     localStorage.setItem('ruppy_daily_posts', JSON.stringify(data));
   }
@@ -572,17 +570,6 @@ window.reportPost = async function(id){
   }
 }
 
-// AUTO SYNC LISTENER - दूसरी Tab में Data Change हो तो यहाँ Auto Update
-window.addEventListener('storage', function(e) {
-  if(e.key === 'ruppy_user') {
-    userData = JSON.parse(e.newValue) || userData;
-    currentUser = userData.name || 'User';
-    updateUserProfile();
-    updateBalanceBox();
-  }
-});
-
 // INIT - Load everything on page load
 updateBalanceBox();
-updateRewardBanner();
 </script>
