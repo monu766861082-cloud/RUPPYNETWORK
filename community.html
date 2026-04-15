@@ -9,7 +9,7 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
 body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .hub-header{position:sticky;top:0;background:linear-gradient(180deg,#0a0a0a 0%,#0a0a0a 80%,transparent 100%);backdrop-filter:blur(10px);padding:16px 20px;z-index:100;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a1a1a}
-.hub-logo{display:flex;align-items:center;gap:8px}
+.hub-logo{display:flex;align-items:center;gap:8px;cursor:pointer}
 .hub-logo h1{font-size:24px;font-weight:800;background:linear-gradient(90deg,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hub-logo span{font-size:12px;color:#666;background:#1a1a1a;padding:2px 8px;border-radius:10px}
 .create-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 4px 15px rgba(255,215,0,0.3)}
@@ -20,7 +20,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .stat-card p{font-size:11px;color:#888}
 .create-card{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:20px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
 .create-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
-.create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px}
+.create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;cursor:pointer}
 .create-card textarea{width:100%;background:#0a0a0a;border:1px solid #222;border-radius:12px;padding:12px;color:#fff;font-size:15px;resize:none;font-family:inherit;min-height:60px}
 .create-card textarea::placeholder{color:#555}
 .create-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
@@ -32,9 +32,10 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-card{background:#111;border:1px solid #222;border-radius:24px;margin-bottom:16px;overflow:hidden;transition:0.3s;box-shadow:0 8px 25px rgba(0,0,0,0.6)}
 .post-card:active{transform:scale(0.98)}
 .post-card-head{padding:16px;display:flex;align-items:center;gap:12px}
-.post-avatar{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px}
+.post-avatar{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;cursor:pointer}
 .post-info{flex:1}
-.post-info h4{font-size:15px;font-weight:600;margin-bottom:2px}
+.post-info h4{font-size:15px;font-weight:600;margin-bottom:2px;cursor:pointer;display:inline-block}
+.post-info h4:hover{color:#FFD700}
 .post-info p{font-size:12px;color:#666}
 .post-more{background:#1a1a1a;border:none;border-radius:8px;width:32px;height:32px;color:#888;font-size:20px;cursor:pointer}
 .post-content{padding:0 16px 16px;font-size:15px;line-height:1.5;color:#ddd}
@@ -54,9 +55,10 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .view-more{color:#FFD700;font-size:13px;font-weight:600;padding:8px 0;cursor:pointer;text-align:center;margin-bottom:10px}
 .view-more:active{opacity:0.6}
 .comment{display:flex;gap:10px;margin-bottom:14px}
-.comment-avatar{width:32px;height:32px;border-radius:10px;background:#FFD700;color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.comment-avatar{width:32px;height:32px;border-radius:10px;background:#FFD700;color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;cursor:pointer}
 .comment-body{flex:1;background:#1a1a1a;border-radius:12px;padding:10px 12px}
-.comment-body b{font-size:13px;font-weight:600;display:block;margin-bottom:2px}
+.comment-body b{font-size:13px;font-weight:600;display:block;margin-bottom:2px;cursor:pointer}
+.comment-body b:hover{color:#FFD700}
 .comment-body span{font-size:14px;line-height:1.4;color:#ddd}
 .comment-input{display:flex;gap:10px;padding:12px 16px;border-top:1px solid #1a1a1a}
 .comment-input input{flex:1;background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:10px 14px;color:#fff;font-size:14px;outline:none}
@@ -72,12 +74,31 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .empty-hub button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:14px 28px;color:#000;font-weight:700;font-size:15px;cursor:pointer}
 #fileInput{display:none}
 .loading{text-align:center;padding:40px;color:#666}
+
+/* PROFILE MODAL */
+.profile-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);z-index:1000;display:none;overflow-y:auto}
+.profile-header{background:linear-gradient(180deg,#1a1a1a,#0a0a0a);padding:20px;border-bottom:1px solid #222;position:sticky;top:0;z-index:10}
+.profile-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.close-profile{background:#1a1a1a;border:none;border-radius:10px;width:40px;height:40px;color:#fff;font-size:24px;cursor:pointer}
+.profile-info{display:flex;gap:16px;align-items:center}
+.profile-avatar{width:80px;height:80px;border-radius:20px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:32px}
+.profile-details h2{font-size:24px;font-weight:800;margin-bottom:4px}
+.profile-details p{font-size:14px;color:#666}
+.profile-stats{display:flex;gap:20px;margin-top:16px}
+.profile-stat{text-align:center}
+.profile-stat h3{font-size:20px;font-weight:700;color:#FFD700}
+.profile-stat p{font-size:12px;color:#888;margin-top:2px}
+.profile-actions{display:flex;gap:10px;margin-top:16px}
+.friend-btn{flex:1;background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:12px;color:#000;font-weight:700;font-size:14px;cursor:pointer}
+.friend-btn.pending{background:#333;color:#888}
+.friend-btn.friends{background:#1a1a1a;color:#FFD700;border:1px solid #FFD700}
+.profile-posts{padding:20px}
 </style>
 </head>
 <body>
 
 <div class="hub-header">
-  <div class="hub-logo">
+  <div class="hub-logo" onclick="goHome()">
     <h1>RUPPY</h1>
     <span>HUB</span>
   </div>
@@ -103,7 +124,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
 <div class="create-card">
   <div class="create-top">
-    <div class="create-avatar" id="userAvatar">U</div>
+    <div class="create-avatar" id="userAvatar" onclick="openProfile(currentUser)">U</div>
     <textarea id="postText" placeholder="Share your RUPPY update..." rows="2"></textarea>
   </div>
   <div class="create-actions">
@@ -119,8 +140,40 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
 <div class="feed" id="feed"><div class="loading">Loading posts...</div></div>
 
+<!-- PROFILE MODAL -->
+<div class="profile-modal" id="profileModal">
+  <div class="profile-header">
+    <div class="profile-top">
+      <h2>User Profile</h2>
+      <button class="close-profile" onclick="closeProfile()">×</button>
+    </div>
+    <div class="profile-info">
+      <div class="profile-avatar" id="profileAvatar">U</div>
+      <div class="profile-details">
+        <h2 id="profileName">User</h2>
+        <p id="profileBio">RUPPY Member</p>
+      </div>
+    <div class="profile-stats">
+      <div class="profile-stat">
+        <h3 id="profilePosts">0</h3>
+        <p>Posts</p>
+      </div>
+      <div class="profile-stat">
+        <h3 id="profileFriends">0</h3>
+        <p>Friends</p>
+      </div>
+      <div class="profile-stat">
+        <h3 id="profileLikes">0</h3>
+        <p>Likes</p>
+      </div>
+    </div>
+    <div class="profile-actions" id="profileActions"></div>
+  </div>
+  <div class="profile-posts" id="profilePosts"></div>
+</div>
+
 <div class="ruppy-nav">
-  <button class="nav-btn" onclick="location.href='app.html'">
+  <button class="nav-btn active" onclick="goHome()">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
     <span>Home</span>
   </button>
@@ -142,10 +195,9 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </button>
 </div>
 
-<!-- Firebase SDK - REALTIME DATABASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, push, onValue, update, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, update, get, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
 const firebaseConfig = {
@@ -171,6 +223,22 @@ function checkContent(text){
 let currentUser = localStorage.getItem('ruppy_username') || 'User'+Math.floor(Math.random()*999);
 document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
 
+// CREATE USER PROFILE IF NOT EXISTS
+async function initUser(){
+  const userRef = ref(db, `users/${currentUser}`);
+  const snapshot = await get(userRef);
+  if(!snapshot.exists()){
+    await set(userRef, {
+      username: currentUser,
+      joinedAt: Date.now(),
+      friends: {},
+      friendRequests: {},
+      sentRequests: {}
+    });
+  }
+}
+initUser();
+
 let selectedFile = null;
 document.getElementById('postText').oninput = function(){
   document.getElementById('postBtn').disabled =!this.value.trim() &&!selectedFile;
@@ -184,7 +252,7 @@ document.getElementById('fileInput').onchange = function(e){
       let preview = document.getElementById('preview');
       preview.style.display = 'block';
       preview.innerHTML = selectedFile.type.includes('video')
-      ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
+     ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
         : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
       document.getElementById('postBtn').disabled = false;
     }
@@ -201,7 +269,12 @@ window.addEmoji = function(){
   document.getElementById('postBtn').disabled = false;
 }
 
-// CREATE POST - REALTIME DB
+window.goHome = function(){
+  closeProfile();
+  window.scrollTo(0,0);
+}
+
+// CREATE POST
 window.createPost = async function(){
   let text = document.getElementById('postText').value.trim();
   if(!text &&!selectedFile) return;
@@ -250,7 +323,7 @@ window.createPost = async function(){
   document.getElementById('postBtn').textContent = 'Post';
 }
 
-// REAL-TIME LISTEN - REALTIME DB
+// REAL-TIME POSTS
 onValue(ref(db, 'posts'), (snapshot) => {
   let posts = [];
   let totalLikes = 0;
@@ -304,9 +377,9 @@ function renderFeed(posts){
     feed.innerHTML += `
     <div class="post-card" id="post-${post.id}">
       <div class="post-card-head">
-        <div class="post-avatar">${post.user[0].toUpperCase()}</div>
+        <div class="post-avatar" onclick="openProfile('${post.user}')">${post.user[0].toUpperCase()}</div>
         <div class="post-info">
-          <h4>${post.user}</h4>
+          <h4 onclick="openProfile('${post.user}')">${post.user}</h4>
           <p>${timeAgo}</p>
         </div>
         <button class="post-more" onclick="reportPost('${post.id}')">⋯</button>
@@ -318,7 +391,7 @@ function renderFeed(posts){
       <div class="post-footer">
         <div class="post-stats">
           <button class="stat-btn ${isLiked? 'liked' : ''}" onclick="likePost('${post.id}')">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 0 00-6.364L12 7.636l-1.318a4.5 0 00-6.364 0z"></path></svg>
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 0 00-6.364L12 7.636l-1.318a4.5 0 00-6.364 0z"></path></svg>
             <span>${post.likes || 0}</span>
           </button>
           <button class="stat-btn" onclick="toggleComments('${post.id}')">
@@ -334,9 +407,9 @@ function renderFeed(posts){
 
         ${commentsToShow.map(c => `
           <div class="comment">
-            <div class="comment-avatar">${c.user[0].toUpperCase()}</div>
+            <div class="comment-avatar" onclick="openProfile('${c.user}')">${c.user[0].toUpperCase()}</div>
             <div class="comment-body">
-              <b>${c.user}</b>
+              <b onclick="openProfile('${c.user}')">${c.user}</b>
               <span>${c.text}</span>
             </div>
           </div>`).join('')}
@@ -363,7 +436,6 @@ function getTimeAgo(time){
   return new Date(time).toLocaleDateString();
 }
 
-// LIKE POST - REALTIME DB
 window.likePost = async function(id){
   const postRef = ref(db, `posts/${id}`);
   const snapshot = await get(postRef);
@@ -392,7 +464,6 @@ window.showAllComments = function(id){
   document.getElementById(`comments-${id}`).style.display = 'block';
 }
 
-// ADD COMMENT - REALTIME DB
 window.addComment = async function(id){
   let input = document.getElementById(`commentInput-${id}`);
   let text = input.value.trim();
@@ -428,7 +499,6 @@ window.sharePost = function(id){
   }
 }
 
-// REPORT POST - REALTIME DB
 window.reportPost = async function(id){
   if(confirm('Report this post?')){
     const postRef = ref(db, `posts/${id}`);
@@ -440,6 +510,39 @@ window.reportPost = async function(id){
   }
 }
 
-</script>
-</body>
-</html>
+// PROFILE SYSTEM
+window.openProfile = async function(username){
+  const modal = document.getElementById('profileModal');
+  modal.style.display = 'block';
+
+  document.getElementById('profileAvatar').textContent = username[0].toUpperCase();
+  document.getElementById('profileName').textContent = username;
+
+  // Get user data
+  const userRef = ref(db, `users/${username}`);
+  const userSnap = await get(userRef);
+  const userData = userSnap.val() || {};
+
+  // Get user posts
+  const postsRef = ref(db, 'posts');
+  const postsSnap = await get(postsRef);
+  let userPosts = [];
+  let totalLikes = 0;
+
+  postsSnap.forEach((childSnap) => {
+    const post = childSnap.val();
+    if(post.user === username && post.reports < 3){
+      userPosts.unshift({id: childSnap.key,...post});
+      totalLikes += post.likes || 0;
+    }
+  });
+
+  document.getElementById('profilePosts').textContent = userPosts.length;
+  document.getElementById('profileLikes').textContent = totalLikes;
+  document.getElementById('profileFriends').textContent = Object.keys(userData.friends || {}).length;
+
+  // Friend button logic
+  const actionsDiv = document.getElementById('profileActions');
+  if(username === currentUser){
+    actionsDiv.innerHTML = '<button class="friend-btn">This is You</button>';
+  } else {
