@@ -436,6 +436,25 @@ function getTimeAgo(time){
 }
 
 // LIKE POST - REALTIME DB
+  window.claimPostToken = async function(id){
+  const postRef = ref(db, `posts/${id}`);
+  const snapshot = await get(postRef);
+  const post = snapshot.val();
+
+  if(post.tokenGivenBy && post.tokenGivenBy[currentUser]){
+    alert('You already claimed tokens for this post');
+    return;
+  }
+
+  await update(ref(db), {
+    [`posts/${id}/tokens`]: (post.tokens || 0) + 10,
+    [`posts/${id}/tokenGivenBy/${currentUser}`]: true
+  });
+
+  document.getElementById(`post-${id}`).style.boxShadow = '0 0 20px rgba(255,215,0,0.6)';
+  document.getElementById(`post-${id}`).style.borderColor = '#FFD700';
+  document.getElementById(`comments-${id}`).style.display = 'block';
+}
 window.likePost = async function(id){
   const postRef = ref(db, `posts/${id}`);
   const snapshot = await get(postRef);
