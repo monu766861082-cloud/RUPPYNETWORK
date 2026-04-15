@@ -152,33 +152,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
 #fileInput{display:none}
 </style>
-
-<!-- सिर्फ ये Firebase वाला हिस्सा जोड़ा है - बाकी कुछ नहीं छेड़ा -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
-    authDomain: "ruppynetwork-50362.firebaseapp.com",
-    databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
-    projectId: "ruppynetwork-50362",
-    storageBucket: "ruppynetwork-50362.firebasestorage.app",
-    messagingSenderId: "132064610854",
-    appId: "1:132064610854:web:3c217eaf3618007f5934e7"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  // Firebase को Global बना दिया ताकि नीचे वाले Script में Use हो सके
-  window.fbDB = db;
-  window.fbRef = ref;
-  window.fbPush = push;
-  window.fbOnValue = onValue;
-  window.fbUpdate = update;
-</script>
-
 </head>
 <body>
 
@@ -240,7 +213,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <span>Tasks</span>
   </button>
   <button class="nav-btn" onclick="location.href='referral.html'">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
     <span>Referral</span>
   </button>
   <button class="nav-btn" onclick="location.href='ranking.html'">
@@ -248,7 +221,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <span>Ranking</span>
   </button>
   <button class="nav-btn" onclick="location.href='settings.html'">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
     <span>Settings</span>
   </button>
 </div>
@@ -261,23 +234,10 @@ function checkContent(text){
   return bannedWords.some(word => lower.includes(word));
 }
 
-// DATA - अब Firebase से आएगा
-let posts = [];
+// DATA
+let posts = JSON.parse(localStorage.getItem('ruppy_posts') || '[]');
 let currentUser = localStorage.getItem('ruppy_username') || 'User'+Math.floor(Math.random()*999);
 document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
-
-// Firebase से Real-time Post सुनो - यही सब User तक Post पहुंचाएगा
-fbOnValue(fbRef(fbDB, 'posts'), (snapshot) => {
-  posts = [];
-  if(snapshot.exists()){
-    snapshot.forEach((child) => {
-      posts.push({id: child.key,...child.val()});
-    });
-    posts.reverse();
-  }
-  renderFeed();
-  updateStats();
-});
 
 updateStats();
 
@@ -320,11 +280,12 @@ function createPost(){
   }
 
   let post = {
+    id: Date.now(),
     user: currentUser,
     text: text,
     time: Date.now(),
     likes: 0,
-    likedBy: [],
+    liked: false,
     comments: [],
     reports: 0,
     showAllComments: false
@@ -344,25 +305,26 @@ function createPost(){
 }
 
 function savePost(post){
-  // बस ये 1 Line बदली है - Firebase में Save करो ताकि सबको दिखे
-  fbPush(fbRef(fbDB, 'posts'), post);
-
+  posts.unshift(post);
+  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
   document.getElementById('postText').value = '';
   document.getElementById('preview').style.display = 'none';
   document.getElementById('preview').innerHTML = '';
   document.getElementById('fileInput').value = '';
   document.getElementById('postBtn').disabled = true;
   selectedFile = null;
+  renderFeed();
+  updateStats();
 }
 
 function updateStats(){
-  document.getElementById('totalPosts').textContent = posts.filter(p => (p.reports||0) < 3).length;
-  document.getElementById('totalLikes').textContent = posts.reduce((sum,p) => sum + (p.likes||0), 0);
+  document.getElementById('totalPosts').textContent = posts.filter(p => p.reports < 3).length;
+  document.getElementById('totalLikes').textContent = posts.reduce((sum,p) => sum + p.likes, 0);
 }
 
 function renderFeed(){
   let feed = document.getElementById('feed');
-  let validPosts = posts.filter(p => (p.reports||0) < 3);
+  let validPosts = posts.filter(p => p.reports < 3);
 
   if(validPosts.length === 0){
     feed.innerHTML = `
@@ -381,15 +343,14 @@ function renderFeed(){
       if(post.mediaType === 'video'){
         mediaHTML = `<div class="post-media"><video src="${post.media}" controls></video></div>`;
       } else {
-        mediaHTML = `<div class="post-media"><img src="${post.media}" ondblclick="likePost('${post.id}')"></div>`;
+        mediaHTML = `<div class="post-media"><img src="${post.media}" ondblclick="likePost(${post.id})"></div>`;
       }
     }
 
     let timeAgo = getTimeAgo(post.time);
-    let isLiked = post.likedBy && post.likedBy.includes(currentUser);
-    let comments = post.comments || [];
-    let commentsToShow = post.showAllComments? comments : comments.slice(-2);
-    let hiddenCount = comments.length - commentsToShow.length;
+
+    let commentsToShow = post.showAllComments? post.comments : post.comments.slice(-2);
+    let hiddenCount = post.comments.length - commentsToShow.length;
 
     feed.innerHTML += `
     <div class="post-card" id="post-${post.id}">
@@ -399,7 +360,7 @@ function renderFeed(){
           <h4>${post.user}</h4>
           ${post.time? `<p>${timeAgo}</p>` : ''}
         </div>
-        <button class="post-more" onclick="reportPost('${post.id}')">⋯</button>
+        <button class="post-more" onclick="reportPost(${post.id})">⋯</button>
       </div>
 
       ${post.text? `<div class="post-content">${post.text}</div>` : ''}
@@ -407,20 +368,20 @@ function renderFeed(){
 
       <div class="post-footer">
         <div class="post-stats">
-          <button class="stat-btn ${isLiked?'liked':''}" onclick="likePost('${post.id}')">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 0 00-6.364L12 7.636l-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-            <span>${post.likes||0}</span>
+          <button class="stat-btn ${post.liked?'liked':''}" onclick="likePost(${post.id})">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 0 00-6.364-6.364L12 7.636l-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+            <span>${post.likes}</span>
           </button>
-          <button class="stat-btn" onclick="toggleComments('${post.id}')">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-            <span>${comments.length}</span>
+          <button class="stat-btn" onclick="toggleComments(${post.id})">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+            <span>${post.comments.length}</span>
           </button>
         </div>
-        <button class="share-btn" onclick="sharePost('${post.id}')">Share</button>
+        <button class="share-btn" onclick="sharePost(${post.id})">Share</button>
       </div>
 
       <div class="comments-box" id="comments-${post.id}">
-        ${hiddenCount > 0 &&!post.showAllComments? `<div class="view-more" onclick="showAllComments('${post.id}')">View ${hiddenCount} more comments</div>` : ''}
+        ${hiddenCount > 0 &&!post.showAllComments? `<div class="view-more" onclick="showAllComments(${post.id})">View ${hiddenCount} more comments</div>` : ''}
 
         ${commentsToShow.map(c => `
           <div class="comment">
@@ -432,8 +393,8 @@ function renderFeed(){
           </div>`).join('')}
 
         <div class="comment-input">
-          <input type="text" placeholder="Add a comment..." id="commentInput-${post.id}" onkeypress="if(event.key==='Enter') addComment('${post.id}')">
-          <button onclick="addComment('${post.id}')">Send</button>
+          <input type="text" placeholder="Add a comment..." id="commentInput-${post.id}" onkeypress="if(event.key==='Enter') addComment(${post.id})">
+          <button onclick="addComment(${post.id})">Send</button>
         </div>
       </div>
     </div>`;
@@ -455,19 +416,11 @@ function getTimeAgo(time){
 
 function likePost(id){
   let post = posts.find(p => p.id === id);
-  if(!post) return;
-  let likedBy = post.likedBy || [];
-  let userIndex = likedBy.indexOf(currentUser);
-  let newLikes = post.likes || 0;
-
-  if(userIndex === -1) {
-      newLikes += 1;
-      likedBy.push(currentUser);
-  } else {
-      newLikes -= 1;
-      likedBy.splice(userIndex, 1);
-  }
-  fbUpdate(fbRef(fbDB, 'posts/' + id), {likes: newLikes, likedBy: likedBy});
+  post.liked =!post.liked;
+  post.likes += post.liked? 1 : -1;
+  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
+  renderFeed();
+  updateStats();
 }
 
 function toggleComments(id){
@@ -478,6 +431,7 @@ function toggleComments(id){
 function showAllComments(id){
   let post = posts.find(p => p.id === id);
   post.showAllComments = true;
+  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
   renderFeed();
   document.getElementById(`comments-${id}`).style.display = 'block';
 }
@@ -492,10 +446,11 @@ function addComment(id){
   }
 
   let post = posts.find(p => p.id === id);
-  let comments = post.comments || [];
-  comments.push({user: currentUser, text: text, time: Date.now()});
-  fbUpdate(fbRef(fbDB, 'posts/' + id), {comments: comments});
+  post.comments.push({user: currentUser, text: text, time: Date.now()});
+  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
   input.value = '';
+  renderFeed();
+  document.getElementById(`comments-${id}`).style.display = 'block';
 }
 
 function sharePost(id){
@@ -517,11 +472,15 @@ function sharePost(id){
 function reportPost(id){
   if(confirm('Report this post?')){
     let post = posts.find(p => p.id === id);
-    let reports = (post.reports||0) + 1;
-    fbUpdate(fbRef(fbDB, 'posts/' + id), {reports: reports});
+    post.reports++;
+    localStorage.setItem('ruppy_posts', JSON.stringify(posts));
     alert('Reported');
+    renderFeed();
+    updateStats();
   }
 }
+
+renderFeed();
 </script>
 </body>
 </html>
