@@ -18,6 +18,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .stat-card{background:linear-gradient(135deg,#1a1a1a,#0d0d0d);border:1px solid #252525;border-radius:16px;padding:12px 16px;min-width:110px;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,0.5)}
 .stat-card h3{font-size:20px;font-weight:700;color:#FFD700;margin-bottom:2px}
 .stat-card p{font-size:11px;color:#888}
+.reward-banner{margin:0 20px 16px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:10px}
+.reward-banner span{font-size:14px;color:#92400E;font-weight:700}
 .create-card{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:20px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
 .create-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
 .create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px}
@@ -34,7 +36,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-card-head{padding:16px;display:flex;align-items:center;gap:12px}
 .post-avatar{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px}
 .post-info{flex:1}
-.post-info h4{font-size:15px;font-weight:600;margin-bottom:2px;display:flex;align-items:center}
+.post-info h4{font-size:15px;font-weight:600;margin-bottom:2px}
 .post-info p{font-size:12px;color:#666}
 .post-more{background:#1a1a1a;border:none;border-radius:8px;width:32px;height:32px;color:#888;font-size:20px;cursor:pointer}
 .post-content{padding:0 16px 16px;font-size:15px;line-height:1.5;color:#ddd}
@@ -43,7 +45,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .claim-btn{width:calc(100% - 32px);background:#22C55E;border:none;border-radius:12px;padding:12px;color:#ffffff;font-weight:700;font-size:14px;cursor:pointer;margin:0 16px 12px;box-shadow:0 4px 12px rgba(34,197,94,0.4);transition:all 0.2s}
 .claim-btn:active{transform:scale(0.98)}
 .claim-btn.claimed{background:#1a1a1a;color:#666;box-shadow:none;cursor:not-allowed;border:1px solid #333}
-.unclaimed-badge{background:#F97316;color:#fff;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;margin-left:8px}
 .post-footer{padding:12px 16px;border-top:1px solid #252525;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,#161616,#101010);box-shadow:inset 0 1px 0 rgba(255,215,0,0.15)}
 .post-stats{display:flex;gap:8px}
 .stat-btn{background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:6px 14px;color:#000000;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-width:85px;box-shadow:0 0 10px rgba(251,191,36,0.4);transition:0.2s}
@@ -102,6 +103,10 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </div>
 </div>
 
+<div class="reward-banner" id="rewardBanner">
+  <span>🎁 +10 RUPPY रुपए per post | 3/3 left</span>
+</div>
+
 <div class="create-card">
   <div class="create-top">
     <div class="create-avatar" id="userAvatar">U</div>
@@ -130,7 +135,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <span>Tasks</span>
   </button>
   <button class="nav-btn" onclick="location.href='referral.html'">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
     <span>Referral</span>
   </button>
   <button class="nav-btn" onclick="location.href='ranking.html'">
@@ -172,9 +177,69 @@ function checkContent(text){
 let currentUser = localStorage.getItem('ruppy_username') || 'User'+Math.floor(Math.random()*999);
 document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
 
+// DAILY LIMIT + CLAIM SYSTEM
+function getTodayKey(){
+  return new Date().toDateString();
+}
+
+function getTodayPosts(){
+  let data = JSON.parse(localStorage.getItem('ruppy_daily_posts') || '{}');
+  return data[getTodayKey()] || [];
+}
+
+function getUnclaimedPost(){
+  let posts = getTodayPosts();
+  return posts.find(p =>!p.claimed);
+}
+
+function getTodayPostCount(){
+  return getTodayPosts().length;
+}
+
+function saveTodayPost(postId){
+  let data = JSON.parse(localStorage.getItem('ruppy_daily_posts') || '{}');
+  let today = getTodayKey();
+  if(!data[today]) data[today] = [];
+  data[today].push({id: postId, claimed: false, time: Date.now()});
+  localStorage.setItem('ruppy_daily_posts', JSON.stringify(data));
+}
+
+function markPostClaimed(postId){
+  let data = JSON.parse(localStorage.getItem('ruppy_daily_posts') || '{}');
+  let today = getTodayKey();
+  if(data[today]){
+    let post = data[today].find(p => p.id === postId);
+    if(post) post.claimed = true;
+    localStorage.setItem('ruppy_daily_posts', JSON.stringify(data));
+  }
+}
+
+function updateRewardBanner(){
+  let count = getTodayPostCount();
+  let unclaimed = getUnclaimedPost();
+  let banner = document.getElementById('rewardBanner');
+  let postBtn = document.getElementById('postBtn');
+
+  if(count >= 3){
+    banner.innerHTML = `<span>🎁 Daily limit reached. Come back tomorrow</span>`;
+    postBtn.textContent = 'Daily limit reached 3/3';
+    postBtn.disabled = true;
+  } else if(unclaimed){
+    let left = 3 - count;
+    banner.innerHTML = `<span>⚠️ Claim करो पहले | ${left}/3 left</span>`;
+    postBtn.textContent = `Post ${count+1}/3`;
+    postBtn.disabled = true;
+  } else {
+    let left = 3 - count;
+    banner.innerHTML = `<span>🎁 +10 RUPPY रुपए per post | ${left}/3 left</span>`;
+    postBtn.textContent = `Post ${count+1}/3`;
+    postBtn.disabled =!document.getElementById('postText').value.trim() &&!selectedFile;
+  }
+}
+
 let selectedFile = null;
 document.getElementById('postText').oninput = function(){
-  document.getElementById('postBtn').disabled =!this.value.trim() &&!selectedFile;
+  updateRewardBanner();
 }
 
 document.getElementById('fileInput').onchange = function(e){
@@ -185,9 +250,9 @@ document.getElementById('fileInput').onchange = function(e){
       let preview = document.getElementById('preview');
       preview.style.display = 'block';
       preview.innerHTML = selectedFile.type.includes('video')
-    ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
+   ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
         : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
-      document.getElementById('postBtn').disabled = false;
+      updateRewardBanner();
     }
     reader.readAsDataURL(selectedFile);
   }
@@ -199,55 +264,28 @@ window.openCreate = function(){
 
 window.addEmoji = function(){
   document.getElementById('postText').value += ' 🔥';
-  document.getElementById('postBtn').disabled = false;
+  updateRewardBanner();
 }
 
-// CLAIM SYSTEM
-function getTodayPostCount(){
-  let today = new Date().toDateString();
-  let posts = JSON.parse(localStorage.getItem('ruppy_posts_today') || '[]');
-  posts = posts.filter(p => new Date(p.time).toDateString() === today);
-  return posts.length;
-}
-
-function hasClaimedToday(){
-  let lastClaim = localStorage.getItem('ruppy_last_claim');
-  if(!lastClaim) return false;
-  return new Date(lastClaim).toDateString() === new Date().toDateString();
-}
-
-function getClaimButtonHTML(){
-  let claimed = hasClaimedToday();
-  let postCount = getTodayPostCount();
-  let canClaim = postCount >= 3 &&!claimed;
-
-  if(!canClaim &&!claimed) return '';
-
-  return `<button class="claim-btn ${claimed? 'claimed' : ''}"
-    onclick="claimBonus()"
-    ${claimed? 'disabled' : ''}>
-    ${claimed? 'Claimed' : 'Claim +10 Token'}
-  </button>`;
-}
-
-window.claimBonus = function(){
-  if(hasClaimedToday()){
-    alert('आज Claim हो चुका है');
-    return;
-  }
-
-  if(getTodayPostCount() < 3){
-    alert('3 Post करो पहले');
-    return;
-  }
-
-  localStorage.setItem('ruppy_last_claim', new Date().toISOString());
-  alert('10 Tokens Claimed! 🎉');
-  location.reload();
+window.claimPost = function(postId){
+  markPostClaimed(postId);
+  alert('10 रुपए Claimed! 🎉');
+  updateRewardBanner();
+  renderFeed(JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]'));
 }
 
 // CREATE POST - REALTIME DB
 window.createPost = async function(){
+  if(getTodayPostCount() >= 3){
+    alert('Daily limit reached. कल आना');
+    return;
+  }
+
+  if(getUnclaimedPost()){
+    alert('पहले Claim करो, फिर Post करो');
+    return;
+  }
+
   let text = document.getElementById('postText').value.trim();
   if(!text &&!selectedFile) return;
   if(checkContent(text)){
@@ -269,7 +307,7 @@ window.createPost = async function(){
       mediaType = selectedFile.type.includes('video')? 'video' : 'image';
     }
 
-    await push(ref(db, 'posts'), {
+    const newPostRef = await push(ref(db, 'posts'), {
       user: currentUser,
       text: text,
       media: mediaUrl,
@@ -281,9 +319,7 @@ window.createPost = async function(){
       reports: 0
     });
 
-    let todayPosts = JSON.parse(localStorage.getItem('ruppy_posts_today') || '[]');
-    todayPosts.push({time: Date.now()});
-    localStorage.setItem('ruppy_posts_today', JSON.stringify(todayPosts));
+    saveTodayPost(newPostRef.key);
 
     document.getElementById('postText').value = '';
     document.getElementById('preview').style.display = 'none';
@@ -295,8 +331,7 @@ window.createPost = async function(){
     alert('Error: ' + error.message);
   }
 
-  document.getElementById('postBtn').disabled = true;
-  document.getElementById('postBtn').textContent = 'Post';
+  updateRewardBanner();
 }
 
 // REAL-TIME LISTEN - REALTIME DB
@@ -312,8 +347,10 @@ onValue(ref(db, 'posts'), (snapshot) => {
     }
   });
 
+  localStorage.setItem('ruppy_last_posts', JSON.stringify(posts));
   updateStats(posts.length, totalLikes);
   renderFeed(posts);
+  updateRewardBanner();
 });
 
 function updateStats(postCount, likeCount){
@@ -323,6 +360,7 @@ function updateStats(postCount, likeCount){
 
 function renderFeed(posts){
   let feed = document.getElementById('feed');
+  let todayPosts = getTodayPosts();
 
   if(posts.length === 0){
     feed.innerHTML = `
@@ -349,14 +387,22 @@ function renderFeed(posts){
     let isLiked = post.likedBy && post.likedBy[currentUser];
     let commentsToShow = post.showAllComments? (post.comments || []) : (post.comments || []).slice(-2);
     let hiddenCount = (post.comments || []).length - commentsToShow.length;
-    let showBadge =!hasClaimedToday() && getTodayPostCount() >= 3 && post.user === currentUser;
+
+    // Claim Button Logic
+    let claimBtnHTML = '';
+    let localPost = todayPosts.find(p => p.id === post.id);
+    if(post.user === currentUser && localPost &&!localPost.claimed){
+      claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +10 रुपए</button>`;
+    } else if(post.user === currentUser && localPost && localPost.claimed){
+      claimBtnHTML = `<button class="claim-btn claimed" disabled>Claimed</button>`;
+    }
 
     feed.innerHTML += `
     <div class="post-card" id="post-${post.id}">
       <div class="post-card-head">
         <div class="post-avatar">${post.user[0].toUpperCase()}</div>
         <div class="post-info">
-          <h4>${post.user}${showBadge? '<span class="unclaimed-badge">Unclaimed</span>' : ''}</h4>
+          <h4>${post.user}</h4>
           <p>${timeAgo}</p>
         </div>
         <button class="post-more" onclick="reportPost('${post.id}')">⋯</button>
@@ -364,8 +410,7 @@ function renderFeed(posts){
 
       ${post.text? `<div class="post-content">${post.text}</div>` : ''}
       ${mediaHTML}
-
-      ${post.user === currentUser? getClaimButtonHTML() : ''}
+      ${claimBtnHTML}
 
       <div class="post-footer">
         <div class="post-stats">
