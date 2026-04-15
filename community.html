@@ -137,7 +137,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .comment-input input{flex:1;background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:10px 14px;color:#fff;font-size:14px;outline:none}
 .comment-input button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer}
 
-/* Bottom Nav - MATCH MAIN APP: 5 ICONS */
+/* Bottom Nav */
 .ruppy-nav{position:fixed;bottom:0;left:0;right:0;background:#0a0a0a;border-top:1px solid #222;height:60px;display:flex;justify-content:space-around;align-items:center;z-index:999;padding:0 10px}
 .nav-btn{background:none;border:none;color:#555;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px 10px;border-radius:12px;transition:0.2s}
 .nav-btn.active{color:#FFD700;background:#1a1a1a}
@@ -151,6 +151,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .empty-hub button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:14px 28px;color:#000;font-weight:700;font-size:15px;cursor:pointer}
 
 #fileInput{display:none}
+.loading{text-align:center;padding:40px;color:#666}
 </style>
 </head>
 <body>
@@ -200,9 +201,9 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <!-- Feed -->
-<div class="feed" id="feed"></div>
+<div class="feed" id="feed"><div class="loading">Loading posts...</div></div>
 
-<!-- Bottom Nav - SAME AS MAIN APP -->
+<!-- Bottom Nav -->
 <div class="ruppy-nav">
   <button class="nav-btn" onclick="location.href='app.html'">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
@@ -221,12 +222,33 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <span>Ranking</span>
   </button>
   <button class="nav-btn" onclick="location.href='settings.html'">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37a1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
     <span>Settings</span>
   </button>
 </div>
 
-<script>
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, onSnapshot, doc, updateDoc, arrayUnion, arrayRemove, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+// Your Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
+  authDomain: "ruppynetwork-50362.firebaseapp.com",
+  databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
+  projectId: "ruppynetwork-50362",
+  storageBucket: "ruppynetwork-50362.firebasestorage.app",
+  messagingSenderId: "132064610854",
+  appId: "1:132064610854:web:3c217eaf3618007f5934e7"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
 // FILTER
 const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
 function checkContent(text){
@@ -234,12 +256,9 @@ function checkContent(text){
   return bannedWords.some(word => lower.includes(word));
 }
 
-// DATA
-let posts = JSON.parse(localStorage.getItem('ruppy_posts') || '[]');
+// USER
 let currentUser = localStorage.getItem('ruppy_username') || 'User'+Math.floor(Math.random()*999);
 document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
-
-updateStats();
 
 let selectedFile = null;
 document.getElementById('postText').oninput = function(){
@@ -254,7 +273,7 @@ document.getElementById('fileInput').onchange = function(e){
       let preview = document.getElementById('preview');
       preview.style.display = 'block';
       preview.innerHTML = selectedFile.type.includes('video')
-? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
+       ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
         : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
       document.getElementById('postBtn').disabled = false;
     }
@@ -262,16 +281,17 @@ document.getElementById('fileInput').onchange = function(e){
   }
 }
 
-function openCreate(){
+window.openCreate = function(){
   document.getElementById('postText').focus();
 }
 
-function addEmoji(){
+window.addEmoji = function(){
   document.getElementById('postText').value += ' 🔥';
   document.getElementById('postBtn').disabled = false;
 }
 
-function createPost(){
+// CREATE POST WITH FIREBASE
+window.createPost = async function(){
   let text = document.getElementById('postText').value.trim();
   if(!text &&!selectedFile) return;
   if(checkContent(text)){
@@ -279,54 +299,76 @@ function createPost(){
     return;
   }
 
-  let post = {
-    id: Date.now(),
-    user: currentUser,
-    text: text,
-    time: Date.now(),
-    likes: 0,
-    liked: false,
-    comments: [],
-    reports: 0,
-    showAllComments: false
-  };
-
-  if(selectedFile){
-    let reader = new FileReader();
-    reader.onload = function(e){
-      post.media = e.target.result;
-      post.mediaType = selectedFile.type.includes('video')? 'video' : 'image';
-      savePost(post);
-    }
-    reader.readAsDataURL(selectedFile);
-  } else {
-    savePost(post);
-  }
-}
-
-function savePost(post){
-  posts.unshift(post);
-  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
-  document.getElementById('postText').value = '';
-  document.getElementById('preview').style.display = 'none';
-  document.getElementById('preview').innerHTML = '';
-  document.getElementById('fileInput').value = '';
   document.getElementById('postBtn').disabled = true;
-  selectedFile = null;
-  renderFeed();
-  updateStats();
+  document.getElementById('postBtn').textContent = 'Posting...';
+
+  let mediaUrl = null;
+  let mediaType = null;
+
+  try {
+    // Upload media to Firebase Storage if exists
+    if(selectedFile){
+      const storageRef = ref(storage, `posts/${Date.now()}_${selectedFile.name}`);
+      await uploadBytes(storageRef, selectedFile);
+      mediaUrl = await getDownloadURL(storageRef);
+      mediaType = selectedFile.type.includes('video')? 'video' : 'image';
+    }
+
+    // Add post to Firestore
+    await addDoc(collection(db, 'posts'), {
+      user: currentUser,
+      text: text,
+      media: mediaUrl,
+      mediaType: mediaType,
+      time: Date.now(),
+      likes: 0,
+      likedBy: [],
+      comments: [],
+      reports: 0
+    });
+
+    // Reset form
+    document.getElementById('postText').value = '';
+    document.getElementById('preview').style.display = 'none';
+    document.getElementById('preview').innerHTML = '';
+    document.getElementById('fileInput').value = '';
+    selectedFile = null;
+
+  } catch (error) {
+    alert('Error posting: ' + error.message);
+  }
+
+  document.getElementById('postBtn').disabled = true;
+  document.getElementById('postBtn').textContent = 'Post';
 }
 
-function updateStats(){
-  document.getElementById('totalPosts').textContent = posts.filter(p => p.reports < 3).length;
-  document.getElementById('totalLikes').textContent = posts.reduce((sum,p) => sum + p.likes, 0);
+// REAL-TIME POSTS FROM FIREBASE
+const postsQuery = query(collection(db, 'posts'), orderBy('time', 'desc'));
+onSnapshot(postsQuery, (snapshot) => {
+  let posts = [];
+  let totalLikes = 0;
+
+  snapshot.forEach((doc) => {
+    let post = { id: doc.id,...doc.data(), showAllComments: false };
+    if(post.reports < 3) {
+      posts.push(post);
+      totalLikes += post.likes || 0;
+    }
+  });
+
+  updateStats(posts.length, totalLikes);
+  renderFeed(posts);
+});
+
+function updateStats(postCount, likeCount){
+  document.getElementById('totalPosts').textContent = postCount;
+  document.getElementById('totalLikes').textContent = likeCount;
 }
 
-function renderFeed(){
+function renderFeed(posts){
   let feed = document.getElementById('feed');
-  let validPosts = posts.filter(p => p.reports < 3);
 
-  if(validPosts.length === 0){
+  if(posts.length === 0){
     feed.innerHTML = `
       <div class="empty-hub">
         <h3>Welcome to RUPPY Hub</h3>
@@ -337,20 +379,20 @@ function renderFeed(){
   }
 
   feed.innerHTML = '';
-  validPosts.forEach(post => {
+  posts.forEach(post => {
     let mediaHTML = '';
     if(post.media){
       if(post.mediaType === 'video'){
         mediaHTML = `<div class="post-media"><video src="${post.media}" controls></video></div>`;
       } else {
-        mediaHTML = `<div class="post-media"><img src="${post.media}" ondblclick="likePost(${post.id})"></div>`;
+        mediaHTML = `<div class="post-media"><img src="${post.media}" ondblclick="likePost('${post.id}')"></div>`;
       }
     }
 
     let timeAgo = getTimeAgo(post.time);
-
-    let commentsToShow = post.showAllComments? post.comments : post.comments.slice(-2);
-    let hiddenCount = post.comments.length - commentsToShow.length;
+    let isLiked = post.likedBy && post.likedBy.includes(currentUser);
+    let commentsToShow = post.showAllComments? post.comments : (post.comments || []).slice(-2);
+    let hiddenCount = (post.comments || []).length - commentsToShow.length;
 
     feed.innerHTML += `
     <div class="post-card" id="post-${post.id}">
@@ -358,9 +400,9 @@ function renderFeed(){
         <div class="post-avatar">${post.user[0].toUpperCase()}</div>
         <div class="post-info">
           <h4>${post.user}</h4>
-          ${post.time? `<p>${timeAgo}</p>` : ''}
+          <p>${timeAgo}</p>
         </div>
-        <button class="post-more" onclick="reportPost(${post.id})">⋯</button>
+        <button class="post-more" onclick="reportPost('${post.id}')">⋯</button>
       </div>
 
       ${post.text? `<div class="post-content">${post.text}</div>` : ''}
@@ -368,20 +410,20 @@ function renderFeed(){
 
       <div class="post-footer">
         <div class="post-stats">
-          <button class="stat-btn ${post.liked?'liked':''}" onclick="likePost(${post.id})">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 0 00-6.364-6.364L12 7.636l-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-            <span>${post.likes}</span>
+          <button class="stat-btn ${isLiked? 'liked' : ''}" onclick="likePost('${post.id}')">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 0 00-6.364L12 7.636l-1.318a4.5 0 00-6.364 0z"></path></svg>
+            <span>${post.likes || 0}</span>
           </button>
-          <button class="stat-btn" onclick="toggleComments(${post.id})">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-            <span>${post.comments.length}</span>
+          <button class="stat-btn" onclick="toggleComments('${post.id}')">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+            <span>${(post.comments || []).length}</span>
           </button>
         </div>
-        <button class="share-btn" onclick="sharePost(${post.id})">Share</button>
+        <button class="share-btn" onclick="sharePost('${post.id}')">Share</button>
       </div>
 
       <div class="comments-box" id="comments-${post.id}">
-        ${hiddenCount > 0 &&!post.showAllComments? `<div class="view-more" onclick="showAllComments(${post.id})">View ${hiddenCount} more comments</div>` : ''}
+        ${hiddenCount > 0 &&!post.showAllComments? `<div class="view-more" onclick="showAllComments('${post.id}')">View ${hiddenCount} more comments</div>` : ''}
 
         ${commentsToShow.map(c => `
           <div class="comment">
@@ -393,8 +435,8 @@ function renderFeed(){
           </div>`).join('')}
 
         <div class="comment-input">
-          <input type="text" placeholder="Add a comment..." id="commentInput-${post.id}" onkeypress="if(event.key==='Enter') addComment(${post.id})">
-          <button onclick="addComment(${post.id})">Send</button>
+          <input type="text" placeholder="Add a comment..." id="commentInput-${post.id}" onkeypress="if(event.key==='Enter') addComment('${post.id}')">
+          <button onclick="addComment('${post.id}')">Send</button>
         </div>
       </div>
     </div>`;
@@ -414,29 +456,43 @@ function getTimeAgo(time){
   return new Date(time).toLocaleDateString();
 }
 
-function likePost(id){
-  let post = posts.find(p => p.id === id);
-  post.liked =!post.liked;
-  post.likes += post.liked? 1 : -1;
-  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
-  renderFeed();
-  updateStats();
+// LIKE POST - FIREBASE
+window.likePost = async function(id){
+  const postRef = doc(db, 'posts', id);
+  const postDoc = await getDocs(query(collection(db, 'posts')));
+  let postData;
+  postDoc.forEach(d => { if(d.id === id) postData = d.data(); });
+
+  let isLiked = postData.likedBy && postData.likedBy.includes(currentUser);
+
+  if(isLiked){
+    await updateDoc(postRef, {
+      likes: increment(-1),
+      likedBy: arrayRemove(currentUser)
+    });
+  } else {
+    await updateDoc(postRef, {
+      likes: increment(1),
+      likedBy: arrayUnion(currentUser)
+    });
+  }
 }
 
-function toggleComments(id){
+window.toggleComments = function(id){
   let box = document.getElementById(`comments-${id}`);
   box.style.display = box.style.display === 'block'? 'none' : 'block';
 }
 
-function showAllComments(id){
-  let post = posts.find(p => p.id === id);
-  post.showAllComments = true;
-  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
-  renderFeed();
-  document.getElementById(`comments-${id}`).style.display = 'block';
+window.showAllComments = function(id){
+  document.querySelectorAll('.post-card').forEach(card => {
+    if(card.id === `post-${id}`) {
+      card.querySelector('.comments-box').style.display = 'block';
+    }
+  });
 }
 
-function addComment(id){
+// ADD COMMENT - FIREBASE
+window.addComment = async function(id){
   let input = document.getElementById(`commentInput-${id}`);
   let text = input.value.trim();
   if(!text) return;
@@ -445,19 +501,18 @@ function addComment(id){
     return;
   }
 
-  let post = posts.find(p => p.id === id);
-  post.comments.push({user: currentUser, text: text, time: Date.now()});
-  localStorage.setItem('ruppy_posts', JSON.stringify(posts));
+  const postRef = doc(db, 'posts', id);
+  await updateDoc(postRef, {
+    comments: arrayUnion({user: currentUser, text: text, time: Date.now()})
+  });
+
   input.value = '';
-  renderFeed();
-  document.getElementById(`comments-${id}`).style.display = 'block';
 }
 
-function sharePost(id){
-  let post = posts.find(p => p.id === id);
+window.sharePost = function(id){
   let shareData = {
     title: 'RUPPY Hub Post',
-    text: post.text || 'Check this post on RUPPY Hub',
+    text: 'Check this post on RUPPY Hub',
     url: window.location.href
   };
 
@@ -469,18 +524,17 @@ function sharePost(id){
   }
 }
 
-function reportPost(id){
+// REPORT POST - FIREBASE
+window.reportPost = async function(id){
   if(confirm('Report this post?')){
-    let post = posts.find(p => p.id === id);
-    post.reports++;
-    localStorage.setItem('ruppy_posts', JSON.stringify(posts));
+    const postRef = doc(db, 'posts', id);
+    await updateDoc(postRef, {
+      reports: increment(1)
+    });
     alert('Reported');
-    renderFeed();
-    updateStats();
   }
 }
 
-renderFeed();
 </script>
 </body>
 </html>
