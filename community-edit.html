@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Edit Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
+body{background:#0a0a0a;color:#fff;padding:20px}
+.edit-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.edit-header h3{font-size:20px;font-weight:700}
+.edit-field{margin-bottom:15px}
+.edit-field label{display:block;color:#666;font-size:12px;margin-bottom:5px;text-transform:uppercase}
+.edit-field input,.edit-field textarea{width:100%;background:#111;border:1px solid #222;padding:12px;color:#fff;border-radius:10px;outline:none}
+.save-btn{width:100%;padding:15px;background:#FFD700;border:none;border-radius:12px;font-weight:800;margin-top:10px;color:#000}
+</style>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+  const firebaseConfig = {apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",authDomain: "ruppynetwork-50362.firebaseapp.com",databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",projectId: "ruppynetwork-50362",storageBucket: "ruppynetwork-50362.firebasestorage.app",messagingSenderId: "132064610854",appId: "1:132064610854:web:3c217eaf3618007f5934e7"};
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  window.db=db;window.fbRef=ref;window.fbUpdate=update;
+</script>
+</head>
+<body>
+<div class="edit-header"><h3>Edit Profile</h3><button onclick="location.href='community-profile.html'" style="color:#fff;background:none;border:none;font-size:20px">✕</button></div>
+<div class="edit-field"><label>Profile Photo</label><input type="file" id="in-photo" accept="image/*"></div>
+<div class="edit-field"><label>Name</label><input type="text" id="in-name"></div>
+<div class="edit-field"><label>Bio</label><textarea id="in-bio"></textarea></div>
+<div class="edit-field"><label>Current City</label><input type="text" id="in-city"></div>
+<div class="edit-field"><label>Hometown</label><input type="text" id="in-hometown"></div>
+<div class="edit-field"><label>Relationship</label><input type="text" id="in-rel"></div>
+<div class="edit-field"><label>Work</label><input type="text" id="in-work"></div>
+<div class="edit-field"><label>Education</label><input type="text" id="in-edu"></div>
+<div class="edit-field"><label>Hobbies</label><input type="text" id="in-hobbies"></div>
+<button onclick="saveProfile()" class="save-btn">Save Changes</button>
+<script type="module">
+let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {name:'User'};
+const uid = userData.name;
+document.getElementById('in-name').value=userData.name;document.getElementById('in-bio').value=userData.bio||'';document.getElementById('in-city').value=userData.city||'';document.getElementById('in-hometown').value=userData.hometown||'';document.getElementById('in-rel').value=userData.rel||'';document.getElementById('in-work').value=userData.work||'';document.getElementById('in-edu').value=userData.edu||'';document.getElementById('in-hobbies').value=userData.hobbies||'';
+window.saveProfile=function(){userData.name=document.getElementById('in-name').value;userData.bio=document.getElementById('in-bio').value;userData.city=document.getElementById('in-city').value;userData.hometown=document.getElementById('in-hometown').value;userData.rel=document.getElementById('in-rel').value;userData.work=document.getElementById('in-work').value;userData.edu=document.getElementById('in-edu').value;userData.hobbies=document.getElementById('in-hobbies').value;const file=document.getElementById('in-photo').files[0];if(file){const r=new FileReader();r.onload=(e)=>{userData.dp=e.target.result;finish()};r.readAsDataURL(file)}else finish()}
+function finish(){fbUpdate(fbRef(db,'users/'+uid),userData);localStorage.setItem('ruppy_user',JSON.stringify(userData));location.href='community-profile.html'}
+</script>
+</body>
+</html>
