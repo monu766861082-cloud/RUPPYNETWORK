@@ -193,26 +193,19 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   boostResetTime: Date.now(),
   firstRewardTime: 0,
   ultraRewardTime: 0
-};
-
-// Safe conversion
-userData.balance = Number(userData.balance) || 0;
-userData.taskBalance = Number(userData.taskBalance) || 0;
-userData.lastMine = Number(userData.lastMine) || 0;
-userData.lastGift = Number(userData.lastGift) || 0;
-userData.boostCount = Number(userData.boostCount) || 0;
-userData.boostResetTime = Number(userData.boostResetTime) || Date.now();
-userData.firstRewardTime = Number(userData.firstRewardTime) || 0;
-userData.ultraRewardTime = Number(userData.ultraRewardTime) || 0;
+});
 
 let currentUser = userData.name || 'User'+Math.floor(Math.random()*999);
 
-// AUTO DP SYNC - अगर DP है तो दिखाओ
-if(userData.dp) {
-  document.getElementById('userAvatar').innerHTML = '<img src="' + userData.dp + '" alt="DP">';
-} else {
-  document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
+// AUTO DP SYNC - अगर DP है तो दिखाओ, वरना Letter
+function updateUserProfile(){
+  if(userData.dp) {
+    document.getElementById('userAvatar').innerHTML = '<img src="' + userData.dp + '" alt="DP">';
+  } else {
+    document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
+  }
 }
+updateUserProfile();
 
 // DAILY LIMIT + CLAIM SYSTEM
 function getTodayKey(){
@@ -235,8 +228,9 @@ function getTodayPostCount(){
 
 // AUTO BALANCE UPDATE - Main App Balance + Task Balance
 function updateBalanceBox(){
-  document.getElementById('taskBalance').textContent = userData.taskBalance || 0;
-  document.getElementById('totalBalance').textContent = userData.balance || 0;
+  userData = JSON.parse(localStorage.getItem('ruppy_user')) || userData;
+  document.getElementById('taskBalance').textContent = Number(userData.taskBalance) || 0;
+  document.getElementById('totalBalance').textContent = Number(userData.balance) || 0;
 }
 
 function saveTodayPost(postId){
@@ -257,6 +251,7 @@ function markPostClaimed(postId){
       userData.balance = Number(userData.balance) || 0;
       userData.balance += 10;
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
+      updateBalanceBox();
     }
     localStorage.setItem('ruppy_daily_posts', JSON.stringify(data));
   }
@@ -577,6 +572,17 @@ window.reportPost = async function(id){
   }
 }
 
+// AUTO SYNC LISTENER - दूसरी Tab में Data Change हो तो यहाँ Auto Update
+window.addEventListener('storage', function(e) {
+  if(e.key === 'ruppy_user') {
+    userData = JSON.parse(e.newValue) || userData;
+    currentUser = userData.name || 'User';
+    updateUserProfile();
+    updateBalanceBox();
+  }
+});
+
 // INIT - Load everything on page load
 updateBalanceBox();
+updateRewardBanner();
 </script>
