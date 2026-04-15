@@ -18,6 +18,13 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .stat-card{background:linear-gradient(135deg,#1a1a1a,#0d0d0d);border:1px solid #252525;border-radius:16px;padding:12px 16px;min-width:110px;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,0.5)}
 .stat-card h3{font-size:20px;font-weight:700;color:#FFD700;margin-bottom:2px}
 .stat-card p{font-size:11px;color:#888}
+.stat-card.reward-card{min-width:160px;padding:14px 16px}
+.stat-card.reward-card.reward-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.stat-card.reward-card.reward-top p{font-size:11px;color:#888}
+.stat-card.reward-card.reward-top h3{font-size:20px;font-weight:700;color:#FFD700;margin:0}
+.stat-card.reward-card.reward-bottom p{font-size:10px;color:#666;margin-bottom:2px}
+.stat-card.reward-card.reward-bottom h3{font-size:24px;font-weight:800;color:#FFD700;line-height:1;margin-bottom:2px}
+.stat-card.reward-card.reward-bottom span{font-size:11px;color:#FFD700;font-weight:700}
 .reward-banner{margin:0 20px 16px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:10px}
 .reward-banner span{font-size:14px;color:#92400E;font-weight:700}
 .create-card{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:20px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
@@ -89,17 +96,16 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <div class="stats-bar">
-  <div class="stat-card">
-    <h3 id="totalPosts">0</h3>
-    <p>Total Posts</p>
-  </div>
-  <div class="stat-card">
-    <h3 id="totalLikes">0</h3>
-    <p>Total Likes</p>
-  </div>
-  <div class="stat-card">
-    <h3 id="activeUsers">1</h3>
-    <p>Active Now</p>
+  <div class="stat-card reward-card">
+    <div class="reward-top">
+      <p>My Reward:</p>
+      <h3 id="myReward">0</h3>
+    </div>
+    <div class="reward-bottom">
+      <p>TOTAL BALANCE</p>
+      <h3 id="totalBalance">30</h3>
+      <span>RUPPY</span>
+    </div>
   </div>
 </div>
 
@@ -196,6 +202,21 @@ function getTodayPostCount(){
   return getTodayPosts().length;
 }
 
+function getMyReward(){
+  let posts = getTodayPosts();
+  let claimedCount = posts.filter(p => p.claimed).length;
+  return claimedCount * 10;
+}
+
+function getTotalBalance(){
+  return parseInt(localStorage.getItem('ruppy_total_balance') || '30');
+}
+
+function updateRewardBox(){
+  document.getElementById('myReward').textContent = getMyReward();
+  document.getElementById('totalBalance').textContent = getTotalBalance();
+}
+
 function saveTodayPost(postId){
   let data = JSON.parse(localStorage.getItem('ruppy_daily_posts') || '{}');
   let today = getTodayKey();
@@ -209,7 +230,11 @@ function markPostClaimed(postId){
   let today = getTodayKey();
   if(data[today]){
     let post = data[today].find(p => p.id === postId);
-    if(post) post.claimed = true;
+    if(post) {
+      post.claimed = true;
+      let currentBal = getTotalBalance();
+      localStorage.setItem('ruppy_total_balance', currentBal + 10);
+    }
     localStorage.setItem('ruppy_daily_posts', JSON.stringify(data));
   }
 }
@@ -226,12 +251,12 @@ function updateRewardBanner(){
     postBtn.disabled = true;
   } else if(unclaimed){
     let left = 3 - count;
-    banner.innerHTML = `<span>⚠️ Claim करो पहले | ${left}/3 left</span>`;
+    banner.innerHTML = `<span>⚠️ Claim Post | ${left}/3 left</span>`;
     postBtn.textContent = `Post ${count+1}/3`;
     postBtn.disabled = true;
   } else {
     let left = 3 - count;
-    banner.innerHTML = `<span>🎁 +10 RUPPY रुपए per post | ${left}/3 left</span>`;
+    banner.innerHTML = `<span>🎁 +10 RUPPY Coin reword par post | ${left}/3 left</span>`;
     postBtn.textContent = `Post ${count+1}/3`;
     postBtn.disabled =!document.getElementById('postText').value.trim() &&!selectedFile;
   }
@@ -250,7 +275,7 @@ document.getElementById('fileInput').onchange = function(e){
       let preview = document.getElementById('preview');
       preview.style.display = 'block';
       preview.innerHTML = selectedFile.type.includes('video')
-   ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
+  ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
         : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
       updateRewardBanner();
     }
@@ -271,18 +296,19 @@ window.claimPost = function(postId){
   markPostClaimed(postId);
   alert('10 Ruppy coin Claimed! 🎉');
   updateRewardBanner();
+  updateRewardBox();
   renderFeed(JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]'));
 }
 
 // CREATE POST - REALTIME DB
 window.createPost = async function(){
   if(getTodayPostCount() >= 3){
-    alert('Daily limit reached. कल आना');
+    alert('Daily limit reached. Come back tomorrow');
     return;
   }
 
   if(getUnclaimedPost()){
-    alert('Claim Post ');
+    alert('Claim Post');
     return;
   }
 
@@ -337,26 +363,19 @@ window.createPost = async function(){
 // REAL-TIME LISTEN - REALTIME DB
 onValue(ref(db, 'posts'), (snapshot) => {
   let posts = [];
-  let totalLikes = 0;
 
   snapshot.forEach((childSnapshot) => {
     let post = { id: childSnapshot.key,...childSnapshot.val(), showAllComments: false };
     if(post.reports < 3) {
       posts.unshift(post);
-      totalLikes += post.likes || 0;
     }
   });
 
   localStorage.setItem('ruppy_last_posts', JSON.stringify(posts));
-  updateStats(posts.length, totalLikes);
   renderFeed(posts);
   updateRewardBanner();
+  updateRewardBox();
 });
-
-function updateStats(postCount, likeCount){
-  document.getElementById('totalPosts').textContent = postCount;
-  document.getElementById('totalLikes').textContent = likeCount;
-}
 
 function renderFeed(posts){
   let feed = document.getElementById('feed');
