@@ -1,151 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RUPPY Hub</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
-body{background:#0a0a0a;color:#fff;padding-bottom:70px}
-.hub-header{position:sticky;top:0;background:linear-gradient(180deg,#0a0a0a 0%,#0a0a0a 80%,transparent 100%);backdrop-filter:blur(10px);padding:16px 20px;z-index:100;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a1a1a}
-.hub-logo{display:flex;align-items:center;gap:8px}
-.hub-logo h1{font-size:24px;font-weight:800;background:linear-gradient(90deg,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hub-logo span{font-size:12px;color:#666;background:#1a1a1a;padding:2px 8px;border-radius:10px}
-.create-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 4px 15px rgba(255,215,0,0.3)}
-.stats-bar{display:flex;gap:10px;padding:16px 20px;overflow-x:auto}
-.stats-bar::-webkit-scrollbar{display:none}
-.stat-card{background:linear-gradient(135deg,#1a1a1a,#0d0d0d);border:1px solid #252525;border-radius:16px;padding:12px 16px;min-width:110px;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,0.5)}
-.stat-card h3{font-size:20px;font-weight:700;color:#FFD700;margin-bottom:2px}
-.stat-card p{font-size:11px;color:#888}
-.create-card{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:20px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
-.create-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
-.create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px}
-.create-card textarea{width:100%;background:#0a0a0a;border:1px solid #222;border-radius:12px;padding:12px;color:#fff;font-size:15px;resize:none;font-family:inherit;min-height:60px}
-.create-card textarea::placeholder{color:#555}
-.create-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
-.create-actions.left{display:flex;gap:12px}
-.icon-btn{background:#1a1a1a;border:1px solid #333;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer}
-.post-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 24px;color:#000;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 15px rgba(255,215,0,0.3)}
-.post-btn:disabled{opacity:0.3;cursor:not-allowed}
-.feed{padding:0 20px}
-.post-card{background:#111;border:1px solid #222;border-radius:24px;margin-bottom:16px;overflow:hidden;transition:0.3s;box-shadow:0 8px 25px rgba(0,0,0,0.6)}
-.post-card:active{transform:scale(0.98)}
-.post-card-head{padding:16px;display:flex;align-items:center;gap:12px}
-.post-avatar{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px}
-.post-info{flex:1}
-.post-info h4{font-size:15px;font-weight:600;margin-bottom:2px}
-.post-info p{font-size:12px;color:#666}
-.post-more{background:#1a1a1a;border:none;border-radius:8px;width:32px;height:32px;color:#888;font-size:20px;cursor:pointer}
-.post-content{padding:0 16px 16px;font-size:15px;line-height:1.5;color:#ddd}
-.post-media{width:100%;max-height:400px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.post-media img,.post-media video{width:100%;height:auto;display:block}
-.post-footer{padding:12px 16px;border-top:1px solid #252525;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,#161616,#101010);box-shadow:inset 0 1px 0 rgba(255,215,0,0.15)}
-.post-stats{display:flex;gap:10px}
-.stat-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;color:#000;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;cursor:pointer;padding:9px 16px;border-radius:12px;transition:0.2s;box-shadow:0 3px 12px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3)}
-.stat-btn:active{transform:scale(0.92);box-shadow:0 1px 5px rgba(255,215,0,0.4)}
-.stat-btn.liked{background:linear-gradient(135deg,#FF6B6B,#FF4757);color:#fff;box-shadow:0 3px 12px rgba(255,107,107,0.5), inset 0 1px 0 rgba(255,255,255,0.3)}
-.stat-btn.liked span{color:#fff}
-.stat-btn svg{width:18px;height:18px;stroke:#000;fill:none;stroke-width:2.5}
-.stat-btn.liked svg{stroke:#fff;fill:#fff}
-.share-btn{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:9px 16px;color:#FFD700;font-size:13px;font-weight:700;cursor:pointer;transition:0.2s}
-.share-btn:active{transform:scale(0.92);background:#222}
-.comments-box{display:none;padding:16px;border-top:1px solid #1a1a1a;background:#0d0d0d;max-height:300px;overflow-y:auto}
-.view-more{color:#FFD700;font-size:13px;font-weight:600;padding:8px 0;cursor:pointer;text-align:center;margin-bottom:10px}
-.view-more:active{opacity:0.6}
-.comment{display:flex;gap:10px;margin-bottom:14px}
-.comment-avatar{width:32px;height:32px;border-radius:10px;background:#FFD700;color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
-.comment-body{flex:1;background:#1a1a1a;border-radius:12px;padding:10px 12px}
-.comment-body b{font-size:13px;font-weight:600;display:block;margin-bottom:2px}
-.comment-body span{font-size:14px;line-height:1.4;color:#ddd}
-.comment-input{display:flex;gap:10px;padding:12px 16px;border-top:1px solid #1a1a1a}
-.comment-input input{flex:1;background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:10px 14px;color:#fff;font-size:14px;outline:none}
-.comment-input button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer}
-.ruppy-nav{position:fixed;bottom:0;left:0;right:0;background:#0a0a0a;border-top:1px solid #222;height:60px;display:flex;justify-content:space-around;align-items:center;z-index:999;padding:0 10px}
-.nav-btn{background:none;border:none;color:#555;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px 10px;border-radius:12px;transition:0.2s}
-.nav-btn.active{color:#FFD700;background:#1a1a1a}
-.nav-btn svg{width:22px;height:22px}
-.nav-btn span{font-size:9px;font-weight:600}
-.empty-hub{text-align:center;padding:80px 40px}
-.empty-hub h3{font-size:24px;font-weight:800;margin-bottom:8px;background:linear-gradient(90deg,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.empty-hub p{font-size:14px;color:#666;margin-bottom:20px}
-.empty-hub button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:14px 28px;color:#000;font-weight:700;font-size:15px;cursor:pointer}
-#fileInput{display:none}
-.loading{text-align:center;padding:40px;color:#666}
-</style>
-</head>
-<body>
-
-<div class="hub-header">
-  <div class="hub-logo">
-    <h1>RUPPY</h1>
-    <span>HUB</span>
-  </div>
-  <button class="create-btn" onclick="openCreate()">
-    <span>✨</span> Create
-  </button>
-</div>
-
-<div class="stats-bar">
-  <div class="stat-card">
-    <h3 id="totalPosts">0</h3>
-    <p>Total Posts</p>
-  </div>
-  <div class="stat-card">
-    <h3 id="totalLikes">0</h3>
-    <p>Total Likes</p>
-  </div>
-  <div class="stat-card">
-    <h3 id="activeUsers">1</h3>
-    <p>Active Now</p>
-  </div>
-</div>
-
-<div class="create-card">
-  <div class="create-top">
-    <div class="create-avatar" id="userAvatar">U</div>
-    <textarea id="postText" placeholder="Share your RUPPY update..." rows="2"></textarea>
-  </div>
-  <div class="create-actions">
-    <div class="left">
-      <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📷</button>
-      <button class="icon-btn" onclick="addEmoji()">😊</button>
-    </div>
-    <button class="post-btn" id="postBtn" onclick="createPost()" disabled>Post</button>
-  </div>
-  <input type="file" id="fileInput" accept="image/*,video/*">
-  <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
-</div>
-
-<div class="feed" id="feed"><div class="loading">Loading posts...</div></div>
-
-<div class="ruppy-nav">
-  <button class="nav-btn" onclick="location.href='app.html'">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-    <span>Home</span>
-  </button>
-  <button class="nav-btn" onclick="location.href='tasks.html'">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-    <span>Tasks</span>
-  </button>
-  <button class="nav-btn" onclick="location.href='referral.html'">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-    <span>Referral</span>
-  </button>
-  <button class="nav-btn" onclick="location.href='ranking.html'">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-    <span>Ranking</span>
-  </button>
-  <button class="nav-btn" onclick="location.href='settings.html'">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37a1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-    <span>Settings</span>
-  </button>
-</div>
-
-<!-- Firebase SDK - REALTIME DATABASE -->
+<!-- Firebase SDK - REALTIME DATABASE + 4 SYSTEM -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, push, onValue, update, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, update, get, set, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
 const firebaseConfig = {
@@ -184,7 +40,7 @@ document.getElementById('fileInput').onchange = function(e){
       let preview = document.getElementById('preview');
       preview.style.display = 'block';
       preview.innerHTML = selectedFile.type.includes('video')
-      ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
+     ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
         : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
       document.getElementById('postBtn').disabled = false;
     }
@@ -201,12 +57,23 @@ window.addEmoji = function(){
   document.getElementById('postBtn').disabled = false;
 }
 
-// CREATE POST - REALTIME DB
+// ===== SYSTEM 1: TOKEN + 3 POST LIMIT =====
 window.createPost = async function(){
   let text = document.getElementById('postText').value.trim();
   if(!text &&!selectedFile) return;
   if(checkContent(text)){
     alert('Inappropriate content detected');
+    return;
+  }
+
+  // 3 POST LIMIT CHECK
+  let today = new Date().toDateString();
+  const userRef = ref(db, `users/${currentUser}`);
+  const userSnap = await get(userRef);
+  let userData = userSnap.val() || {};
+
+  if(userData.lastPostDate === today && (userData.postsToday || 0) >= 3){
+    alert('You can only post 3 times per day. Try again tomorrow!');
     return;
   }
 
@@ -233,7 +100,17 @@ window.createPost = async function(){
       likes: 0,
       likedBy: {},
       comments: [],
-      reports: 0
+      reports: 0,
+      tokens: 0,
+      tokenGivenBy: {}
+    });
+
+    // Update 3 Post Count
+    let newCount = userData.lastPostDate === today? (userData.postsToday || 0) + 1 : 1;
+    await update(userRef, {
+      postsToday: newCount,
+      lastPostDate: today,
+      username: currentUser
     });
 
     document.getElementById('postText').value = '';
@@ -298,15 +175,17 @@ function renderFeed(posts){
 
     let timeAgo = getTimeAgo(post.time);
     let isLiked = post.likedBy && post.likedBy[currentUser];
+    let tokenGiven = post.tokenGivenBy && post.tokenGivenBy[currentUser];
     let commentsToShow = post.showAllComments? (post.comments || []) : (post.comments || []).slice(-2);
     let hiddenCount = (post.comments || []).length - commentsToShow.length;
+    let glowClass = tokenGiven? 'style="box-shadow:0 0 20px rgba(255,215,0,0.6);border-color:#FFD700"' : '';
 
     feed.innerHTML += `
-    <div class="post-card" id="post-${post.id}">
+    <div class="post-card" id="post-${post.id}" ${glowClass}>
       <div class="post-card-head">
-        <div class="post-avatar">${post.user[0].toUpperCase()}</div>
+        <div class="post-avatar" onclick="openProfile('${post.user}')" style="cursor:pointer">${post.user[0].toUpperCase()}</div>
         <div class="post-info">
-          <h4>${post.user}</h4>
+          <h4 onclick="openProfile('${post.user}')" style="cursor:pointer">${post.user}</h4>
           <p>${timeAgo}</p>
         </div>
         <button class="post-more" onclick="reportPost('${post.id}')">⋯</button>
@@ -325,11 +204,15 @@ function renderFeed(posts){
             <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
             <span>${(post.comments || []).length}</span>
           </button>
+          <button class="stat-btn ${tokenGiven? 'liked' : ''}" onclick="giveToken('${post.id}')" ${tokenGiven? 'disabled' : ''}>
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3.895-3 2s1.343 2 3 2 3.895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>${post.tokens || 0}</span>
+          </button>
         </div>
         <button class="share-btn" onclick="sharePost('${post.id}')">Share</button>
       </div>
 
-      <div class="comments-box" id="comments-${post.id}">
+      <div class="comments-box" id="comments-${post.id}" style="${tokenGiven? 'display:block' : 'display:none'}">
         ${hiddenCount > 0 &&!post.showAllComments? `<div class="view-more" onclick="showAllComments('${post.id}')">View ${hiddenCount} more comments</div>` : ''}
 
         ${commentsToShow.map(c => `
@@ -381,6 +264,26 @@ window.likePost = async function(id){
   }
 
   await update(ref(db), updates);
+}
+
+// ===== SYSTEM 2: TOKEN + GLOW/THREAD =====
+window.giveToken = async function(id){
+  const postRef = ref(db, `posts/${id}`);
+  const snapshot = await get(postRef);
+  const post = snapshot.val();
+
+  if(post.tokenGivenBy && post.tokenGivenBy[currentUser]){
+    alert('You already gave token to this post');
+    return;
+  }
+
+  await update(ref(db), {
+    [`posts/${id}/tokens`]: (post.tokens || 0) + 10,
+    [`posts/${id}/tokenGivenBy/${currentUser}`]: true
+  });
+
+  // Auto open thread
+  document.getElementById(`comments-${id}`).style.display = 'block';
 }
 
 window.toggleComments = function(id){
@@ -440,7 +343,187 @@ window.reportPost = async function(id){
   }
 }
 
+// ===== SYSTEM 3: PROFILE EDIT + FRIEND REQUEST =====
+window.openProfile = async function(username){
+  // Profile Modal बनाओ
+  let modalHTML = `
+  <div id="profileModal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);z-index:2000;overflow-y:auto;padding:20px;display:block">
+    <div style="max-width:600px;margin:0 auto;background:#111;border:1px solid #222;border-radius:20px;overflow:hidden">
+      <div style="background:linear-gradient(135deg,#FFD700,#FFA500);height:120px;position:relative">
+        <button onclick="closeProfile()" style="position:absolute;top:16px;right:16px;background:rgba(0,0,0,0.5);border:none;border-radius:10px;width:36px;height:36px;color:#fff;font-size:20px;cursor:pointer">×</button>
+      </div>
+      <div style="padding:0 20px 20px;text-align:center;margin-top:-40px">
+        <div id="profileAvatar" style="width:80px;height:80px;border-radius:20px;background:linear-gradient(135deg,#FFD700,#FFA500);display:inline-flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:32px;border:4px solid #111;margin-bottom:12px">${username[0].toUpperCase()}</div>
+        <h2 id="profileName" style="font-size:24px;font-weight:700;margin-bottom:4px">${username}</h2>
+        <p id="profileBio" style="font-size:14px;color:#888;margin-bottom:16px">@${username}</p>
+        <div id="profileActions"></div>
+      </div>
+      <div style="display:flex;justify-content:space-around;padding:16px 0;border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a">
+        <div style="text-align:center"><div id="profilePostsCount" style="font-size:20px;font-weight:700;color:#FFD700">0</div><div style="font-size:12px;color:#666">Posts</div></div>
+        <div style="text-align:center"><div id="profileLikes" style="font-size:20px;font-weight:700;color:#FFD700">0</div><div style="font-size:12px;color:#666">Likes</div></div>
+        <div style="text-align:center"><div id="profileFriends" style="font-size:20px;font-weight:700;color:#FFD700">0</div><div style="font-size:12px;color:#666">Friends</div></div>
+      </div>
+      <div id="profilePostsContent" style="padding:20px"></div>
+    </div>
+  </div>`;
+
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+  const userRef = ref(db, `users/${username}`);
+  const snapshot = await get(userRef);
+  let userData = snapshot.val();
+
+  if(!userData){
+    userData = {
+      username: username,
+      name: username,
+      bio: "RUPPY Member",
+      dateOfBirth: "",
+      gender: "MALE",
+      hometown: "",
+      language: "Hindi",
+      friends: {},
+      joinedAt: Date.now()
+    };
+    await set(userRef, userData);
+  }
+
+  document.getElementById('profileName').textContent = userData.name || username;
+
+  const postsSnapshot = await get(ref(db, 'posts'));
+  let userPosts = [];
+  let totalLikes = 0;
+  postsSnapshot.forEach(child => {
+    let post = child.val();
+    if(post.user === username){
+      userPosts.push({id: child.key,...post});
+      totalLikes += post.likes || 0;
+    }
+  });
+
+  document.getElementById('profilePostsCount').textContent = userPosts.length;
+  document.getElementById('profileLikes').textContent = totalLikes;
+  document.getElementById('profileFriends').textContent = Object.keys(userData.friends || {}).length;
+
+  let actionsHTML = '';
+  if(username === currentUser){
+    actionsHTML = `<button onclick="openEditProfile('${username}')" style="background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:12px 24px;color:#000;font-weight:700;font-size:14px;cursor:pointer;margin:0 6px">Edit Profile</button>`;
+  } else {
+    let friendStatus = userData.friends && userData.friends[currentUser]? userData.friends[currentUser] : null;
+    if(friendStatus === 'accepted'){
+      actionsHTML = `<button style="background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:12px 24px;color:#FFD700;font-weight:700;font-size:14px">Friends ✓</button>`;
+    } else if(friendStatus === 'pending'){
+      actionsHTML = `<button style="background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:12px 24px;color:#888;font-weight:700;font-size:14px">Request Sent</button>`;
+    } else {
+      actionsHTML = `<button onclick="sendFriendRequest('${username}')" style="background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:12px 24px;color:#000;font-weight:700;font-size:14px;cursor:pointer">Send Request</button>`;
+    }
+  }
+  document.getElementById('profileActions').innerHTML = actionsHTML;
+
+  let postsHTML = '';
+  userPosts.reverse().forEach(post => {
+    postsHTML += `
+    <div class="post-card" style="margin-bottom:16px">
+      <div class="post-card-head">
+        <div class="post-avatar">${post.user[0].toUpperCase()}</div>
+        <div class="post-info">
+          <h4>${post.user}</h4>
+          <p>${getTimeAgo(post.time)}</p>
+        </div>
+      </div>
+      ${post.text? `<div class="post-content">${post.text}</div>` : ''}
+      ${post.media? `<div class="post-media"><img src="${post.media}" style="width:100%;border-radius:12px"></div>` : ''}
+    </div>`;
+  });
+  document.getElementById('profilePostsContent').innerHTML = postsHTML || '<p style="text-align:center;color:#666;padding:40px">No posts yet</p>';
+}
+
+window.closeProfile = function(){
+  document.getElementById('profileModal')?.remove();
+}
+
+window.openEditProfile = async function(username){
+  const userRef = ref(db, `users/${username}`);
+  const snapshot = await get(userRef);
+  const userData = snapshot.val();
+
+  let editHTML = `
+  <div id="editProfileModal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);z-index:3000;overflow-y:auto;padding:20px">
+    <div style="max-width:500px;margin:0 auto;background:#111;border:1px solid #222;border-radius:20px;padding:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <h2 style="font-size:20px">Edit Profile</h2>
+        <button onclick="closeEditModal()" style="background:#1a1a1a;border:none;border-radius:10px;width:36px;height:36px;color:#fff;font-size:20px;cursor:pointer">×</button>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <label style="font-size:13px;color:#888;display:block;margin-bottom:6px">NAME</label>
+          <input id="editName" type="text" value="${userData.name || username}" style="width:100%;background:#0a0a0a;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;font-size:15px">
+        </div>
+
+        <div>
+          <label style="font-size:13px;color:#888;display:block;margin-bottom:6px">BIO</label>
+          <textarea id="editBio" rows="3" style="width:100%;background:#0a0a0a;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;font-size:15px;resize:none">${userData.bio || ''}</textarea>
+        </div>
+
+        <div>
+          <label style="font-size:13px;color:#888;display:block;margin-bottom:6px">Date of BIRTH</label>
+          <input id="editDOB" type="date" value="${userData.dateOfBirth || ''}" style="width:100%;background:#0a0a0a;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;font-size:15px">
+        </div>
+
+        <div>
+          <label style="font-size:13px;color:#888;display:block;margin-bottom:6px">MALE / FEMALE</label>
+          <select id="editGender" style="width:100%;background:#0a0a0a;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;font-size:15px">
+            <option value="MALE" ${userData.gender==='MALE'?'selected':''}>MALE</option>
+            <option value="FEMALE" ${userData.gender==='FEMALE'?'selected':''}>FEMALE</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="font-size:13px;color:#888;display:block;margin-bottom:6px">HOMETOWN</label>
+          <input id="editHometown" type="text" value="${userData.hometown || ''}" style="width:100%;background:#0a0a0a;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;font-size:15px">
+        </div>
+
+        <div>
+          <label style="font-size:13px;color:#888;display:block;margin-bottom:6px">LANGUAGE</label>
+          <input id="editLanguage" type="text" value="${userData.language || ''}" style="width:100%;background:#0a0a0a;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;font-size:15px">
+        </div>
+
+        <button onclick="saveProfile('${username}')" style="background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:14px;color:#000;font-weight:700;font-size:15px;cursor:pointer;margin-top:10px">Save Changes</button>
+      </div>
+    </div>
+  </div>`;
+
+  document.body.insertAdjacentHTML('beforeend', editHTML);
+}
+
+window.closeEditModal = function(){
+  document.getElementById('editProfileModal')?.remove();
+}
+
+window.saveProfile = async function(username){
+  const updates = {
+    name: document.getElementById('editName').value,
+    bio: document.getElementById('editBio').value,
+    dateOfBirth: document.getElementById('editDOB').value,
+    gender: document.getElementById('editGender').value,
+    hometown: document.getElementById('editHometown').value,
+    language: document.getElementById('editLanguage').value
+  };
+
+  await update(ref(db, `users/${username}`), updates);
+  closeEditModal();
+  closeProfile();
+  openProfile(username);
+  alert('Profile Updated!');
+}
+
+// ===== SYSTEM 4: FRIEND REQUEST =====
+window.sendFriendRequest = async function(username){
+  await update(ref(db, `users/${username}/friends/${currentUser}`), 'pending');
+  await update(ref(db, `users/${currentUser}/friends/${username}`), 'sent');
+  alert('Request Sent!');
+  closeProfile();
+  openProfile(username);
+}
 </script>
-
-
-
