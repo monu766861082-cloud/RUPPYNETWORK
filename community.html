@@ -8,22 +8,16 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
 body{background:#0a0a0a;color:#fff;padding-bottom:70px}
-
-/* Header - RUPPY Style */
 .hub-header{position:sticky;top:0;background:linear-gradient(180deg,#0a0a0a 0%,#0a0a0a 80%,transparent 100%);backdrop-filter:blur(10px);padding:16px 20px;z-index:100;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a1a1a}
 .hub-logo{display:flex;align-items:center;gap:8px}
 .hub-logo h1{font-size:24px;font-weight:800;background:linear-gradient(90deg,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hub-logo span{font-size:12px;color:#666;background:#1a1a1a;padding:2px 8px;border-radius:10px}
 .create-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 4px 15px rgba(255,215,0,0.3)}
-
-/* Stats Bar */
 .stats-bar{display:flex;gap:10px;padding:16px 20px;overflow-x:auto}
 .stats-bar::-webkit-scrollbar{display:none}
 .stat-card{background:linear-gradient(135deg,#1a1a1a,#0d0d0d);border:1px solid #252525;border-radius:16px;padding:12px 16px;min-width:110px;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,0.5)}
 .stat-card h3{font-size:20px;font-weight:700;color:#FFD700;margin-bottom:2px}
 .stat-card p{font-size:11px;color:#888}
-
-/* Create Post Card */
 .create-card{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:20px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
 .create-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
 .create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px}
@@ -34,8 +28,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .icon-btn{background:#1a1a1a;border:1px solid #333;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer}
 .post-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 24px;color:#000;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 15px rgba(255,215,0,0.3)}
 .post-btn:disabled{opacity:0.3;cursor:not-allowed}
-
-/* Feed */
 .feed{padding:0 20px}
 .post-card{background:#111;border:1px solid #222;border-radius:24px;margin-bottom:16px;overflow:hidden;transition:0.3s;box-shadow:0 8px 25px rgba(0,0,0,0.6)}
 .post-card:active{transform:scale(0.98)}
@@ -45,88 +37,21 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-info h4{font-size:15px;font-weight:600;margin-bottom:2px}
 .post-info p{font-size:12px;color:#666}
 .post-more{background:#1a1a1a;border:none;border-radius:8px;width:32px;height:32px;color:#888;font-size:20px;cursor:pointer}
-
 .post-content{padding:0 16px 16px;font-size:15px;line-height:1.5;color:#ddd}
 .post-media{width:100%;max-height:400px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .post-media img,.post-media video{width:100%;height:auto;display:block}
-
-/* ROYAL LIKE COMMENT SHARE BAR */
-.post-footer{
-  padding:12px 16px;
-  border-top:1px solid #252525;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:linear-gradient(180deg,#161616,#101010);
-  box-shadow:inset 0 1px 0 rgba(255,215,0,0.15)
-}
-
+.post-footer{padding:12px 16px;border-top:1px solid #252525;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,#161616,#101010);box-shadow:inset 0 1px 0 rgba(255,215,0,0.15)}
 .post-stats{display:flex;gap:10px}
-
-.stat-btn{
-  background:linear-gradient(135deg,#FFD700,#FFA500);
-  border:none;
-  color:#000;
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-size:13px;
-  font-weight:800;
-  cursor:pointer;
-  padding:9px 16px;
-  border-radius:12px;
-  transition:0.2s;
-  box-shadow:0 3px 12px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3)
-}
-
+.stat-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;color:#000;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;cursor:pointer;padding:9px 16px;border-radius:12px;transition:0.2s;box-shadow:0 3px 12px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3)}
 .stat-btn:active{transform:scale(0.92);box-shadow:0 1px 5px rgba(255,215,0,0.4)}
-
-.stat-btn.liked{
-  background:linear-gradient(135deg,#FF6B6B,#FF4757);
-  color:#fff;
-  box-shadow:0 3px 12px rgba(255,107,107,0.5), inset 0 1px 0 rgba(255,255,255,0.3)
-}
-
+.stat-btn.liked{background:linear-gradient(135deg,#FF6B6B,#FF4757);color:#fff;box-shadow:0 3px 12px rgba(255,107,107,0.5), inset 0 1px 0 rgba(255,255,255,0.3)}
 .stat-btn.liked span{color:#fff}
-
-.stat-btn svg{
-  width:18px;
-  height:18px;
-  stroke:#000;
-  fill:none;
-  stroke-width:2.5
-}
-
-.stat-btn.liked svg{
-  stroke:#fff;
-  fill:#fff
-}
-
-.share-btn{
-  background:#1a1a1a;
-  border:1px solid #333;
-  border-radius:12px;
-  padding:9px 16px;
-  color:#FFD700;
-  font-size:13px;
-  font-weight:700;
-  cursor:pointer;
-  transition:0.2s
-}
-
+.stat-btn svg{width:18px;height:18px;stroke:#000;fill:none;stroke-width:2.5}
+.stat-btn.liked svg{stroke:#fff;fill:#fff}
+.share-btn{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:9px 16px;color:#FFD700;font-size:13px;font-weight:700;cursor:pointer;transition:0.2s}
 .share-btn:active{transform:scale(0.92);background:#222}
-
-/* Comments */
 .comments-box{display:none;padding:16px;border-top:1px solid #1a1a1a;background:#0d0d0d;max-height:300px;overflow-y:auto}
-.view-more{
-  color:#FFD700;
-  font-size:13px;
-  font-weight:600;
-  padding:8px 0;
-  cursor:pointer;
-  text-align:center;
-  margin-bottom:10px
-}
+.view-more{color:#FFD700;font-size:13px;font-weight:600;padding:8px 0;cursor:pointer;text-align:center;margin-bottom:10px}
 .view-more:active{opacity:0.6}
 .comment{display:flex;gap:10px;margin-bottom:14px}
 .comment-avatar{width:32px;height:32px;border-radius:10px;background:#FFD700;color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
@@ -136,27 +61,21 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .comment-input{display:flex;gap:10px;padding:12px 16px;border-top:1px solid #1a1a1a}
 .comment-input input{flex:1;background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:10px 14px;color:#fff;font-size:14px;outline:none}
 .comment-input button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer}
-
-/* Bottom Nav */
 .ruppy-nav{position:fixed;bottom:0;left:0;right:0;background:#0a0a0a;border-top:1px solid #222;height:60px;display:flex;justify-content:space-around;align-items:center;z-index:999;padding:0 10px}
 .nav-btn{background:none;border:none;color:#555;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px 10px;border-radius:12px;transition:0.2s}
 .nav-btn.active{color:#FFD700;background:#1a1a1a}
 .nav-btn svg{width:22px;height:22px}
 .nav-btn span{font-size:9px;font-weight:600}
-
-/* Empty */
 .empty-hub{text-align:center;padding:80px 40px}
 .empty-hub h3{font-size:24px;font-weight:800;margin-bottom:8px;background:linear-gradient(90deg,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .empty-hub p{font-size:14px;color:#666;margin-bottom:20px}
 .empty-hub button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:14px 28px;color:#000;font-weight:700;font-size:15px;cursor:pointer}
-
 #fileInput{display:none}
 .loading{text-align:center;padding:40px;color:#666}
 </style>
 </head>
 <body>
 
-<!-- Header -->
 <div class="hub-header">
   <div class="hub-logo">
     <h1>RUPPY</h1>
@@ -167,7 +86,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </button>
 </div>
 
-<!-- Stats -->
 <div class="stats-bar">
   <div class="stat-card">
     <h3 id="totalPosts">0</h3>
@@ -183,7 +101,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </div>
 </div>
 
-<!-- Create Card -->
 <div class="create-card">
   <div class="create-top">
     <div class="create-avatar" id="userAvatar">U</div>
@@ -200,10 +117,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
 </div>
 
-<!-- Feed -->
 <div class="feed" id="feed"><div class="loading">Loading posts...</div></div>
 
-<!-- Bottom Nav -->
 <div class="ruppy-nav">
   <button class="nav-btn" onclick="location.href='app.html'">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
@@ -222,18 +137,17 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <span>Ranking</span>
   </button>
   <button class="nav-btn" onclick="location.href='settings.html'">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37a1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37a1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
     <span>Settings</span>
   </button>
 </div>
 
-<!-- Firebase SDK -->
+<!-- Firebase SDK - REALTIME DATABASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, onSnapshot, doc, updateDoc, arrayUnion, arrayRemove, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+import { getDatabase, ref, push, onValue, update, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-// Your Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
   authDomain: "ruppynetwork-50362.firebaseapp.com",
@@ -244,19 +158,16 @@ const firebaseConfig = {
   appId: "1:132064610854:web:3c217eaf3618007f5934e7"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = getDatabase(app);
 const storage = getStorage(app);
 
-// FILTER
 const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
 function checkContent(text){
   let lower = text.toLowerCase();
   return bannedWords.some(word => lower.includes(word));
 }
 
-// USER
 let currentUser = localStorage.getItem('ruppy_username') || 'User'+Math.floor(Math.random()*999);
 document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
 
@@ -273,7 +184,7 @@ document.getElementById('fileInput').onchange = function(e){
       let preview = document.getElementById('preview');
       preview.style.display = 'block';
       preview.innerHTML = selectedFile.type.includes('video')
-       ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
+      ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
         : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
       document.getElementById('postBtn').disabled = false;
     }
@@ -290,7 +201,7 @@ window.addEmoji = function(){
   document.getElementById('postBtn').disabled = false;
 }
 
-// CREATE POST WITH FIREBASE
+// CREATE POST - REALTIME DB
 window.createPost = async function(){
   let text = document.getElementById('postText').value.trim();
   if(!text &&!selectedFile) return;
@@ -306,28 +217,25 @@ window.createPost = async function(){
   let mediaType = null;
 
   try {
-    // Upload media to Firebase Storage if exists
     if(selectedFile){
-      const storageRef = ref(storage, `posts/${Date.now()}_${selectedFile.name}`);
+      const storageRef = sRef(storage, `posts/${Date.now()}_${selectedFile.name}`);
       await uploadBytes(storageRef, selectedFile);
       mediaUrl = await getDownloadURL(storageRef);
       mediaType = selectedFile.type.includes('video')? 'video' : 'image';
     }
 
-    // Add post to Firestore
-    await addDoc(collection(db, 'posts'), {
+    await push(ref(db, 'posts'), {
       user: currentUser,
       text: text,
       media: mediaUrl,
       mediaType: mediaType,
       time: Date.now(),
       likes: 0,
-      likedBy: [],
+      likedBy: {},
       comments: [],
       reports: 0
     });
 
-    // Reset form
     document.getElementById('postText').value = '';
     document.getElementById('preview').style.display = 'none';
     document.getElementById('preview').innerHTML = '';
@@ -335,23 +243,22 @@ window.createPost = async function(){
     selectedFile = null;
 
   } catch (error) {
-    alert('Error posting: ' + error.message);
+    alert('Error: ' + error.message);
   }
 
   document.getElementById('postBtn').disabled = true;
   document.getElementById('postBtn').textContent = 'Post';
 }
 
-// REAL-TIME POSTS FROM FIREBASE
-const postsQuery = query(collection(db, 'posts'), orderBy('time', 'desc'));
-onSnapshot(postsQuery, (snapshot) => {
+// REAL-TIME LISTEN - REALTIME DB
+onValue(ref(db, 'posts'), (snapshot) => {
   let posts = [];
   let totalLikes = 0;
 
-  snapshot.forEach((doc) => {
-    let post = { id: doc.id,...doc.data(), showAllComments: false };
+  snapshot.forEach((childSnapshot) => {
+    let post = { id: childSnapshot.key,...childSnapshot.val(), showAllComments: false };
     if(post.reports < 3) {
-      posts.push(post);
+      posts.unshift(post);
       totalLikes += post.likes || 0;
     }
   });
@@ -390,8 +297,8 @@ function renderFeed(posts){
     }
 
     let timeAgo = getTimeAgo(post.time);
-    let isLiked = post.likedBy && post.likedBy.includes(currentUser);
-    let commentsToShow = post.showAllComments? post.comments : (post.comments || []).slice(-2);
+    let isLiked = post.likedBy && post.likedBy[currentUser];
+    let commentsToShow = post.showAllComments? (post.comments || []) : (post.comments || []).slice(-2);
     let hiddenCount = (post.comments || []).length - commentsToShow.length;
 
     feed.innerHTML += `
@@ -456,26 +363,24 @@ function getTimeAgo(time){
   return new Date(time).toLocaleDateString();
 }
 
-// LIKE POST - FIREBASE
+// LIKE POST - REALTIME DB
 window.likePost = async function(id){
-  const postRef = doc(db, 'posts', id);
-  const postDoc = await getDocs(query(collection(db, 'posts')));
-  let postData;
-  postDoc.forEach(d => { if(d.id === id) postData = d.data(); });
+  const postRef = ref(db, `posts/${id}`);
+  const snapshot = await get(postRef);
+  const post = snapshot.val();
 
-  let isLiked = postData.likedBy && postData.likedBy.includes(currentUser);
+  let isLiked = post.likedBy && post.likedBy[currentUser];
+  let updates = {};
 
   if(isLiked){
-    await updateDoc(postRef, {
-      likes: increment(-1),
-      likedBy: arrayRemove(currentUser)
-    });
+    updates[`posts/${id}/likes`] = (post.likes || 0) - 1;
+    updates[`posts/${id}/likedBy/${currentUser}`] = null;
   } else {
-    await updateDoc(postRef, {
-      likes: increment(1),
-      likedBy: arrayUnion(currentUser)
-    });
+    updates[`posts/${id}/likes`] = (post.likes || 0) + 1;
+    updates[`posts/${id}/likedBy/${currentUser}`] = true;
   }
+
+  await update(ref(db), updates);
 }
 
 window.toggleComments = function(id){
@@ -484,14 +389,10 @@ window.toggleComments = function(id){
 }
 
 window.showAllComments = function(id){
-  document.querySelectorAll('.post-card').forEach(card => {
-    if(card.id === `post-${id}`) {
-      card.querySelector('.comments-box').style.display = 'block';
-    }
-  });
+  document.getElementById(`comments-${id}`).style.display = 'block';
 }
 
-// ADD COMMENT - FIREBASE
+// ADD COMMENT - REALTIME DB
 window.addComment = async function(id){
   let input = document.getElementById(`commentInput-${id}`);
   let text = input.value.trim();
@@ -501,11 +402,14 @@ window.addComment = async function(id){
     return;
   }
 
-  const postRef = doc(db, 'posts', id);
-  await updateDoc(postRef, {
-    comments: arrayUnion({user: currentUser, text: text, time: Date.now()})
-  });
+  const postRef = ref(db, `posts/${id}`);
+  const snapshot = await get(postRef);
+  const post = snapshot.val();
+  const comments = post.comments || [];
 
+  comments.push({user: currentUser, text: text, time: Date.now()});
+
+  await update(postRef, { comments: comments });
   input.value = '';
 }
 
@@ -524,13 +428,14 @@ window.sharePost = function(id){
   }
 }
 
-// REPORT POST - FIREBASE
+// REPORT POST - REALTIME DB
 window.reportPost = async function(id){
   if(confirm('Report this post?')){
-    const postRef = doc(db, 'posts', id);
-    await updateDoc(postRef, {
-      reports: increment(1)
-    });
+    const postRef = ref(db, `posts/${id}`);
+    const snapshot = await get(postRef);
+    const post = snapshot.val();
+
+    await update(postRef, { reports: (post.reports || 0) + 1 });
     alert('Reported');
   }
 }
