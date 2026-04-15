@@ -98,12 +98,12 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 <div class="stats-bar">
   <div class="stat-card reward-card">
     <div class="reward-top">
-      <p>My Reward:</p>
-      <h3 id="myReward">0</h3>
+      <p>Task Balance:</p>
+      <h3 id="taskBalance">0</h3>
     </div>
     <div class="reward-bottom">
       <p>TOTAL BALANCE</p>
-      <h3 id="totalBalance">30</h3>
+      <h3 id="totalBalance">0</h3>
       <span>RUPPY</span>
     </div>
   </div>
@@ -180,7 +180,31 @@ function checkContent(text){
   return bannedWords.some(word => lower.includes(word));
 }
 
-let currentUser = localStorage.getItem('ruppy_username') || 'User'+Math.floor(Math.random()*999);
+// AUTO SYNC - Load userData from localStorage
+let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
+  name: 'User',
+  dp: null,
+  balance: 0,
+  taskBalance: 0,
+  lastMine: 0,
+  lastGift: 0,
+  boostCount: 0,
+  boostResetTime: Date.now(),
+  firstRewardTime: 0,
+  ultraRewardTime: 0
+};
+
+// Safe conversion
+userData.balance = Number(userData.balance) || 0;
+userData.taskBalance = Number(userData.taskBalance) || 0;
+userData.lastMine = Number(userData.lastMine) || 0;
+userData.lastGift = Number(userData.lastGift) || 0;
+userData.boostCount = Number(userData.boostCount) || 0;
+userData.boostResetTime = Number(userData.boostResetTime) || Date.now();
+userData.firstRewardTime = Number(userData.firstRewardTime) || 0;
+userData.ultraRewardTime = Number(userData.ultraRewardTime) || 0;
+
+let currentUser = userData.name || 'User'+Math.floor(Math.random()*999);
 document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
 
 // DAILY LIMIT + CLAIM SYSTEM
@@ -202,19 +226,10 @@ function getTodayPostCount(){
   return getTodayPosts().length;
 }
 
-function getMyReward(){
-  let posts = getTodayPosts();
-  let claimedCount = posts.filter(p => p.claimed).length;
-  return claimedCount * 10;
-}
-
-function getTotalBalance(){
-  return parseInt(localStorage.getItem('ruppy_total_balance') || '30');
-}
-
-function updateRewardBox(){
-  document.getElementById('myReward').textContent = getMyReward();
-  document.getElementById('totalBalance').textContent = getTotalBalance();
+// AUTO BALANCE UPDATE - Main App Balance + Task Balance
+function updateBalanceBox(){
+  document.getElementById('taskBalance').textContent = userData.taskBalance || 0;
+  document.getElementById('totalBalance').textContent = userData.balance || 0;
 }
 
 function saveTodayPost(postId){
@@ -232,8 +247,9 @@ function markPostClaimed(postId){
     let post = data[today].find(p => p.id === postId);
     if(post) {
       post.claimed = true;
-      let currentBal = getTotalBalance();
-      localStorage.setItem('ruppy_total_balance', currentBal + 10);
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += 10;
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
     }
     localStorage.setItem('ruppy_daily_posts', JSON.stringify(data));
   }
@@ -275,7 +291,7 @@ document.getElementById('fileInput').onchange = function(e){
       let preview = document.getElementById('preview');
       preview.style.display = 'block';
       preview.innerHTML = selectedFile.type.includes('video')
-  ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
+? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
         : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
       updateRewardBanner();
     }
@@ -296,7 +312,7 @@ window.claimPost = function(postId){
   markPostClaimed(postId);
   alert('10 Ruppy coin Claimed! 🎉');
   updateRewardBanner();
-  updateRewardBox();
+  updateBalanceBox();
   renderFeed(JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]'));
 }
 
@@ -374,7 +390,7 @@ onValue(ref(db, 'posts'), (snapshot) => {
   localStorage.setItem('ruppy_last_posts', JSON.stringify(posts));
   renderFeed(posts);
   updateRewardBanner();
-  updateRewardBox();
+  updateBalanceBox();
 });
 
 function renderFeed(posts){
@@ -554,4 +570,6 @@ window.reportPost = async function(id){
   }
 }
 
+// INIT - Load everything on page load
+updateBalanceBox();
 </script>
