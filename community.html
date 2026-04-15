@@ -153,7 +153,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 #fileInput{display:none}
 </style>
 
-<!-- Firebase SDK - CHANGE 1: Added -->
+<!-- सिर्फ ये Firebase वाला हिस्सा जोड़ा है - बाकी कुछ नहीं छेड़ा -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -171,7 +171,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // Make Firebase available globally
+  // Firebase को Global बना दिया ताकि नीचे वाले Script में Use हो सके
   window.fbDB = db;
   window.fbRef = ref;
   window.fbPush = push;
@@ -261,12 +261,12 @@ function checkContent(text){
   return bannedWords.some(word => lower.includes(word));
 }
 
-// DATA - CHANGE 2: localStorage हटाया, Firebase से आएगा
+// DATA - अब Firebase से आएगा
 let posts = [];
 let currentUser = localStorage.getItem('ruppy_username') || 'User'+Math.floor(Math.random()*999);
 document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
 
-// CHANGE 3: Firebase से Real-time Post सुनो - यही Line सब User तक Post पहुंचाएगी
+// Firebase से Real-time Post सुनो - यही सब User तक Post पहुंचाएगा
 fbOnValue(fbRef(fbDB, 'posts'), (snapshot) => {
   posts = [];
   if(snapshot.exists()){
@@ -344,7 +344,7 @@ function createPost(){
 }
 
 function savePost(post){
-  // CHANGE 4: Firebase में Push करो - यही Line सब User तक Post भेजती है
+  // बस ये 1 Line बदली है - Firebase में Save करो ताकि सबको दिखे
   fbPush(fbRef(fbDB, 'posts'), post);
 
   document.getElementById('postText').value = '';
@@ -356,7 +356,7 @@ function savePost(post){
 }
 
 function updateStats(){
-  document.getElementById('totalPosts').textContent = posts.filter(p => p.reports < 3).length;
+  document.getElementById('totalPosts').textContent = posts.filter(p => (p.reports||0) < 3).length;
   document.getElementById('totalLikes').textContent = posts.reduce((sum,p) => sum + (p.likes||0), 0);
 }
 
@@ -408,7 +408,7 @@ function renderFeed(){
       <div class="post-footer">
         <div class="post-stats">
           <button class="stat-btn ${isLiked?'liked':''}" onclick="likePost('${post.id}')">
-            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364L12 7.636l-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 0 00-6.364L12 7.636l-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
             <span>${post.likes||0}</span>
           </button>
           <button class="stat-btn" onclick="toggleComments('${post.id}')">
@@ -453,7 +453,7 @@ function getTimeAgo(time){
   return new Date(time).toLocaleDateString();
 }
 
-window.likePost = function(id){
+function likePost(id){
   let post = posts.find(p => p.id === id);
   if(!post) return;
   let likedBy = post.likedBy || [];
@@ -467,23 +467,22 @@ window.likePost = function(id){
       newLikes -= 1;
       likedBy.splice(userIndex, 1);
   }
-  // CHANGE 5: Firebase में Update करो
   fbUpdate(fbRef(fbDB, 'posts/' + id), {likes: newLikes, likedBy: likedBy});
 }
 
-window.toggleComments = function(id){
+function toggleComments(id){
   let box = document.getElementById(`comments-${id}`);
   box.style.display = box.style.display === 'block'? 'none' : 'block';
 }
 
-window.showAllComments = function(id){
+function showAllComments(id){
   let post = posts.find(p => p.id === id);
   post.showAllComments = true;
   renderFeed();
   document.getElementById(`comments-${id}`).style.display = 'block';
 }
 
-window.addComment = function(id){
+function addComment(id){
   let input = document.getElementById(`commentInput-${id}`);
   let text = input.value.trim();
   if(!text) return;
@@ -495,12 +494,11 @@ window.addComment = function(id){
   let post = posts.find(p => p.id === id);
   let comments = post.comments || [];
   comments.push({user: currentUser, text: text, time: Date.now()});
-  // CHANGE 6: Firebase में Comment Save करो
   fbUpdate(fbRef(fbDB, 'posts/' + id), {comments: comments});
   input.value = '';
 }
 
-window.sharePost = function(id){
+function sharePost(id){
   let post = posts.find(p => p.id === id);
   let shareData = {
     title: 'RUPPY Hub Post',
@@ -516,11 +514,10 @@ window.sharePost = function(id){
   }
 }
 
-window.reportPost = function(id){
+function reportPost(id){
   if(confirm('Report this post?')){
     let post = posts.find(p => p.id === id);
     let reports = (post.reports||0) + 1;
-    // CHANGE 7: Firebase में Report Update करो
     fbUpdate(fbRef(fbDB, 'posts/' + id), {reports: reports});
     alert('Reported');
   }
