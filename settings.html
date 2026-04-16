@@ -7,6 +7,9 @@
 <!-- Monetag Verification Meta Tag -->
 <meta name="monetag" content="21dbbe26571c9c62250f84692bff67fc">
 
+<!-- <<< CHANGE 1: config.js Add किया >>> -->
+<script src="config.js"></script>
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0B0B0C;--card:#161617;--border:#2A2A2C;--gold:#F3C774;--green:#24C464;--red:#E53E3E;--muted:#9CA3AF}
@@ -143,26 +146,11 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ2p1YnhmeGpha2dpY3VweXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzk4NTIsImV4cCI6MjA5MTIxNTg1Mn0.QST9mZ7uup-H-s9P6DznbOVO14kJTCgYIIZxyTP1T24';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
-  userId: '',
-  name: 'Guest',
-  balance: 0,
-  birthday: '',
-  photo: '',
-  team: [],
-  lastTeamRewardCheck: 0,
-  teamRewardEarned: 0
-};
-
-// Fix: Generate User ID if missing - same logic as referral.html
-if(!userData.userId || userData.userId === 'undefined' || userData.userId === ''){
-  userData.userId = 'ab' + Math.floor(Math.random()*9000000+1000000);
-  localStorage.setItem('ruppy_user', JSON.stringify(userData));
-}
+// <<< CHANGE 2: userData वाला Block Delete किया - config.js से आएगा >>>
 
 function loadProfile(){
-  if(userData.photo){
-    document.getElementById('avatarBox').innerHTML = `<img src="${userData.photo}" alt="Profile">`;
+  if(userData.dp){
+    document.getElementById('avatarBox').innerHTML = `<img src="${userData.dp}" alt="Profile">`;
   } else {
     document.getElementById('avatarBox').innerHTML = `<span>${userData.name.charAt(0).toUpperCase()}</span>`;
   }
@@ -196,7 +184,7 @@ function closeEditProfile(){
   document.getElementById('editModal').classList.remove('active');
 }
 
-// नया SaveProfile Function - Base64 Compress के साथ
+// <<< CHANGE 3: saveProfile Fix किया - अब userData.dp में Save होगा >>>
 window.saveProfile = async function(){
   const saveBtn = document.getElementById('saveBtn');
   saveBtn.disabled = true;
@@ -209,24 +197,20 @@ window.saveProfile = async function(){
 
     if(file){
       saveBtn.textContent = 'Compressing...';
-
       // Photo को 400px और 60% Quality पे Compress करो
       const base64Photo = await compressToBase64(file, 400, 0.6);
 
-      // Size Check - 900KB से बड़ी नहीं
-      console.log('Photo Size:', Math.round(base64Photo.length/1024) + 'KB');
       if(base64Photo.length > 900000){
         alert('Photo बहुत बड़ी है भाई। Camera से खींची हुई छोटी Photo डाल, Screenshot मत डाल');
         saveBtn.disabled = false;
         saveBtn.textContent = 'Save';
         return;
       }
-
-      userData.photo = base64Photo;
+      userData.dp = base64Photo; // <<< यही Line असली Photo Save करती है
     }
 
     saveBtn.textContent = 'Saving...';
-    localStorage.setItem('ruppy_user', JSON.stringify(userData));
+    saveRuppyData(userData); // <<< config.js वाला Function
     await loadProfile();
     closeEditProfile();
     showToast('Profile Updated!');
@@ -272,17 +256,11 @@ function compressToBase64(file, maxWidth, quality){
   });
 }
 
-// LOGOUT FUNCTION FIXED - अब Main Screen पे जाएगा
 async function logout(){
   if(confirm('Are you sure you want to logout?')){
-    // 1. Supabase Session Clear करो
     await supabase.auth.signOut();
-
-    // 2. LocalStorage Clear करो
     localStorage.removeItem('ruppy_user');
     localStorage.removeItem('notif_enabled');
-
-    // 3. Main Screen पे भेज दो - / यूज़ करो, index.html नहीं
     window.location.href = '/';
   }
 }
