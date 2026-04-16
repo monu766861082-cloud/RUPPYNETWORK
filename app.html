@@ -8,6 +8,9 @@
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
   
+  <!-- <<< CHANGE 1: config.js Add किया >>> -->
+  <script src="config.js"></script>
+  
   <style>
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
     body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
@@ -157,34 +160,11 @@
 <script>
   const MINING_REWARD = 40;
   
-  let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
-    name: 'User',
-    dp: null,
-    balance: 0,
-    lastMine: 0,
-    lastGift: 0,
-    boostCount: 0,
-    boostResetTime: Date.now(),
-    firstRewardTime: 0,
-    ultraRewardTime: 0
-  };
+  // <<< CHANGE 2: पुराना userData वाला Block Delete कर दिया - अब config.js से आएगा >>>
 
-  // Safe conversion - अगर NaN है तो 0 कर दो, वरना रहने दो
-  userData.balance = Number(userData.balance);
-  if (isNaN(userData.balance)) userData.balance = 0;
-  
-  userData.lastMine = Number(userData.lastMine) || 0;
-  userData.lastGift = Number(userData.lastGift) || 0;
-  userData.boostCount = Number(userData.boostCount) || 0;
-  userData.boostResetTime = Number(userData.boostResetTime) || Date.now();
-  userData.firstRewardTime = Number(userData.firstRewardTime) || 0;
-  userData.ultraRewardTime = Number(userData.ultraRewardTime) || 0;
-
-  // FIXED: अब Balance नहीं उड़ेगा + Button भी चलेंगे
+  // <<< CHANGE 3: saveUser() Function Update कर दिया >>>
   function saveUser() {
-    userData.balance = Number(userData.balance);
-    if (isNaN(userData.balance)) userData.balance = 0;
-    localStorage.setItem('ruppy_user', JSON.stringify(userData));
+    saveRuppyData(userData);
   }
 
   function handleMiningClick() {
@@ -213,10 +193,7 @@
   }
 
   function init() {
-    document.getElementById('userName').innerText = 'Welcome back, ' + userData.name;
-    if(userData.dp) {
-      document.getElementById('userDp').innerHTML = '<img src="' + userData.dp + '" alt="DP">';
-    }
+    loadProfileEverywhere(); // <<< CHANGE 4: Photo-Name Load करने वाली Line Add की >>>
     
     if(Date.now() - userData.boostResetTime > 10800000) {
       userData.boostCount = 0;
@@ -459,6 +436,20 @@
     if(page === 'ranking') window.location.href = 'ranking.html';
     if(page === 'community') window.location.href = 'community.html';
     if(page === 'settings') window.location.href = 'settings.html';
+  }
+
+  // <<< CHANGE 4: नया Function Add किया Photo-Name के लिए >>>
+  function loadProfileEverywhere() {
+    const profileDp = document.getElementById('userDp');
+    const profileName = document.getElementById('userName');
+    
+    if (userData.dp) {
+      profileDp.innerHTML = '<img src="' + userData.dp + '" alt="DP">';
+    } else {
+      profileDp.innerHTML = '👤';
+    }
+    
+    profileName.innerText = 'Welcome back, ' + (userData.name || 'User');
   }
 
   init();
