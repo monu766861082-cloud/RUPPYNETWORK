@@ -8,7 +8,6 @@
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
   
-  <!-- <<< CHANGE 1: config.js Add किया >>> -->
   <script src="config.js"></script>
   
   <style>
@@ -160,9 +159,12 @@
 <script>
   const MINING_REWARD = 40;
   
-  // <<< CHANGE 2: पुराना userData वाला Block Delete कर दिया - अब config.js से आएगा >>>
+  // MOBILE TEST: अगर dp खाली है तो Test Photo डाल दे
+  if(!userData.dp) {
+    userData.dp = 'https://i.pravatar.cc/150';
+    saveRuppyData(userData);
+  }
 
-  // <<< CHANGE 3: saveUser() Function Update कर दिया >>>
   function saveUser() {
     saveRuppyData(userData);
   }
@@ -193,7 +195,7 @@
   }
 
   function init() {
-    loadProfileEverywhere(); // <<< CHANGE 4: Photo-Name Load करने वाली Line Add की >>>
+    loadProfileEverywhere();
     
     if(Date.now() - userData.boostResetTime > 10800000) {
       userData.boostCount = 0;
@@ -438,7 +440,6 @@
     if(page === 'settings') window.location.href = 'settings.html';
   }
 
-  // <<< CHANGE 4: नया Function Add किया Photo-Name के लिए >>>
   function loadProfileEverywhere() {
     const profileDp = document.getElementById('userDp');
     const profileName = document.getElementById('userName');
