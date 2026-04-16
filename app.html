@@ -181,7 +181,17 @@
   const MINING_REWARD = 40;
   let currentUID = null;
   
-  let userData = getUserData();
+  let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
+    name: 'User',
+    dp: null,
+    balance: 0,
+    lastMine: 0,
+    lastGift: 0,
+    boostCount: 0,
+    boostResetTime: Date.now(),
+    firstRewardTime: 0,
+    ultraRewardTime: 0
+  };
 
   // <<< ADD: Login Check + Firebase Load
   auth.onAuthStateChanged(async (user) => {
@@ -190,7 +200,7 @@
       const snapshot = await db.ref('users/' + currentUID).get();
       if(snapshot.exists()){
         userData = snapshot.val();
-        updateUserData(userData);
+        localStorage.setItem('ruppy_user', JSON.stringify(userData));
       }
       init();
     } else {
@@ -213,7 +223,7 @@
   function saveUser() {
     userData.balance = Number(userData.balance);
     if (isNaN(userData.balance)) userData.balance = 0;
-    updateUserData(userData);
+    localStorage.setItem('ruppy_user', JSON.stringify(userData));
     // <<< ADD: Firebase में भी Save
     if(currentUID) db.ref('users/' + currentUID).set(userData);
   }
@@ -244,7 +254,10 @@
   }
 
   function init() {
-    document.getElementById('userName').innerText = userData.name ? 'Welcome back, ' + userData.name : 'Welcome back, User';
+    document.getElementById('userName').innerText = userData.name && userData.name !== 'User' ? 'Welcome back, ' + userData.name : 'Welcome back, User';
+    if(userData.dp) {
+      document.getElementById('userDp').innerHTML = '<img src="' + userData.dp + '" alt="DP">';
+    }
     if(userData.photo) {
       document.getElementById('userDp').innerHTML = '<img src="' + userData.photo + '" alt="DP">';
     }
