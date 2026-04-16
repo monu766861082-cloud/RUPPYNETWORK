@@ -157,6 +157,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 <!-- Firebase SDK - REALTIME DATABASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"; // <<< ADD
 import { getDatabase, ref, push, onValue, update, get, child, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
@@ -171,6 +172,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app); // <<< ADD
 const db = getDatabase(app);
 const storage = getStorage(app);
 
@@ -205,7 +207,27 @@ userData.firstRewardTime = Number(userData.firstRewardTime) || 0;
 userData.ultraRewardTime = Number(userData.ultraRewardTime) || 0;
 
 let currentUser = userData.name || 'User'+Math.floor(Math.random()*999);
+let currentUID = null; // <<< ADD
 document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
+
+// <<< ADD: Login Check + UID Get
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    currentUID = user.uid;
+    const snapshot = await get(ref(db, 'users/' + currentUID));
+    if(snapshot.exists()){
+      userData = snapshot.val();
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
+      currentUser = userData.name;
+      document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
+    }
+    updateBalanceBox();
+    await getTodayPosts();
+    updateRewardBanner();
+  } else {
+    window.location.replace('index.html');
+  }
+});
 
 // Global Variable for Daily Count
 let todayPostCount = 0;
@@ -249,7 +271,7 @@ function updateBalanceBox(){
   document.getElementById('totalBalance').textContent = userData.balance || 0;
 }
 
-// Firebase में claimed update करेंगे
+// <<< CHANGED: Firebase में Balance Update करेंगे
 async function markPostClaimed(postId){
   const postRef = ref(db, `posts/${postId}`);
   await update(postRef, { claimed: true });
@@ -257,6 +279,11 @@ async function markPostClaimed(postId){
   userData.balance = Number(userData.balance) || 0;
   userData.balance += 10;
   localStorage.setItem('ruppy_user', JSON.stringify(userData));
+
+  // <<< ADD: Firebase User Balance Update
+  if(currentUID) {
+    await update(ref(db, 'users/' + currentUID), { balance: userData.balance });
+  }
 }
 
 // अब todayPostCount use करेंगे
@@ -559,28 +586,4 @@ window.sharePost = function(id){
   if(navigator.share){
     navigator.share(shareData).catch(err => console.log('Share failed'));
   } else {
-    let whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`;
-    window.open(whatsappUrl, '_blank');
-  }
-}
-
-// REPORT POST - REALTIME DB
-window.reportPost = async function(id){
-  if(confirm('Report this post?')){
-    const postRef = ref(db, `posts/${id}`);
-    const snapshot = await get(postRef);
-    const post = snapshot.val();
-
-    await update(postRef, { reports: (post.reports || 0) + 1 });
-    alert('Reported');
-  }
-}
-
-// INIT - Load everything on page load
-updateBalanceBox();
-getTodayPosts().then(() => {
-  updateRewardBanner();
-});
-</script>
-</body>
-</html>
+    let whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareData.text
