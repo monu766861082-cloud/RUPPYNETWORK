@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RUPPY Hub</title>
+<script src="config.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
@@ -29,7 +30,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .reward-banner span{font-size:14px;color:#92400E;font-weight:700}
 .create-card{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:20px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
 .create-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
-.create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px}
+.create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden}
+.create-avatar img{width:100%;height:100%;object-fit:cover}
 .create-card textarea{width:100%;background:#0a0a0a;border:1px solid #222;border-radius:12px;padding:12px;color:#fff;font-size:15px;resize:none;font-family:inherit;min-height:60px}
 .create-card textarea::placeholder{color:#555}
 .create-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
@@ -41,7 +43,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-card{background:#111;border:1px solid #222;border-radius:24px;margin-bottom:16px;overflow:hidden;transition:0.3s;box-shadow:0 8px 25px rgba(0,0,0,0.6)}
 .post-card:active{transform:scale(0.98)}
 .post-card-head{padding:16px;display:flex;align-items:center;gap:12px}
-.post-avatar{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px}
+.post-avatar{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden}
+.post-avatar img{width:100%;height:100%;object-fit:cover}
 .post-info{flex:1}
 .post-info h4{font-size:15px;font-weight:600;margin-bottom:2px}
 .post-info p{font-size:12px;color:#666}
@@ -63,7 +66,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .view-more{color:#FFD700;font-size:13px;font-weight:600;padding:8px 0;cursor:pointer;text-align:center;margin-bottom:10px}
 .view-more:active{opacity:0.6}
 .comment{display:flex;gap:10px;margin-bottom:14px}
-.comment-avatar{width:32px;height:32px;border-radius:10px;background:#FFD700;color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.comment-avatar{width:32px;height:32px;border-radius:10px;background:#FFD700;color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;overflow:hidden}
+.comment-avatar img{width:100%;height:100%;object-fit:cover}
 .comment-body{flex:1;background:#1a1a1a;border-radius:12px;padding:10px 12px}
 .comment-body b{font-size:13px;font-weight:600;display:block;margin-bottom:2px}
 .comment-body span{font-size:14px;line-height:1.4;color:#ddd}
@@ -180,32 +184,8 @@ function checkContent(text){
   return bannedWords.some(word => lower.includes(word));
 }
 
-// AUTO SYNC - Load userData from localStorage
-let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
-  name: 'User',
-  dp: null,
-  balance: 0,
-  taskBalance: 0,
-  lastMine: 0,
-  lastGift: 0,
-  boostCount: 0,
-  boostResetTime: Date.now(),
-  firstRewardTime: 0,
-  ultraRewardTime: 0
-};
-
-// Safe conversion
-userData.balance = Number(userData.balance) || 0;
-userData.taskBalance = Number(userData.taskBalance) || 0;
-userData.lastMine = Number(userData.lastMine) || 0;
-userData.lastGift = Number(userData.lastGift) || 0;
-userData.boostCount = Number(userData.boostCount) || 0;
-userData.boostResetTime = Number(userData.boostResetTime) || Date.now();
-userData.firstRewardTime = Number(userData.firstRewardTime) || 0;
-userData.ultraRewardTime = Number(userData.ultraRewardTime) || 0;
-
+// AUTO SYNC - Load userData from config.js
 let currentUser = userData.name || 'User'+Math.floor(Math.random()*999);
-document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
 
 // Global Variable for Daily Count
 let todayPostCount = 0;
@@ -256,7 +236,7 @@ async function markPostClaimed(postId){
 
   userData.balance = Number(userData.balance) || 0;
   userData.balance += 10;
-  localStorage.setItem('ruppy_user', JSON.stringify(userData));
+  saveRuppyData(userData);
 }
 
 // अब todayPostCount use करेंगे
@@ -358,6 +338,7 @@ window.createPost = async function(){
 
     const newPostRef = await push(ref(db, 'posts'), {
       user: currentUser,
+      userDp: userData.dp,
       text: text,
       media: mediaUrl,
       mediaType: mediaType,
@@ -438,10 +419,13 @@ function renderFeed(posts){
       claimBtnHTML = `<button class="claim-btn claimed" disabled>Claimed</button>`;
     }
 
+    let postUserDp = post.userDp || post.user[0].toUpperCase();
+    let postUserDpHTML = post.userDp? `<img src="${post.userDp}">` : post.user[0].toUpperCase();
+
     feed.innerHTML += `
     <div class="post-card" id="post-${post.id}">
       <div class="post-card-head">
-        <div class="post-avatar">${post.user[0].toUpperCase()}</div>
+        <div class="post-avatar">${postUserDpHTML}</div>
         <div class="post-info">
           <h4>${post.user}</h4>
           <p>${timeAgo}</p>
@@ -470,7 +454,7 @@ function renderFeed(posts){
 
         ${commentsToShow.map(c => `
           <div class="comment">
-            <div class="comment-avatar">${c.user[0].toUpperCase()}</div>
+            <div class="comment-avatar">${c.userDp? `<img src="${c.userDp}">` : c.user[0].toUpperCase()}</div>
             <div class="comment-body">
               <b>${c.user}</b>
               <span>${c.text}</span>
@@ -543,7 +527,7 @@ window.addComment = async function(id){
   const post = snapshot.val();
   const comments = post.comments || [];
 
-  comments.push({user: currentUser, text: text, time: Date.now()});
+  comments.push({user: currentUser, userDp: userData.dp, text: text, time: Date.now()});
 
   await update(postRef, { comments: comments });
   input.value = '';
@@ -577,6 +561,7 @@ window.reportPost = async function(id){
 }
 
 // INIT - Load everything on page load
+loadProfileEverywhere();
 updateBalanceBox();
 getTodayPosts().then(() => {
   updateRewardBanner();
