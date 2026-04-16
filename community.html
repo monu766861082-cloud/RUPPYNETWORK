@@ -157,7 +157,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 <!-- Firebase SDK - REALTIME DATABASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, push, onValue, update, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, update, get, child, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"; // <<< CHANGED: query, orderByChild, equalTo add kiya
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
 const firebaseConfig = {
@@ -207,23 +207,40 @@ userData.ultraRewardTime = Number(userData.ultraRewardTime) || 0;
 let currentUser = userData.name || 'User'+Math.floor(Math.random()*999);
 document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
 
-// DAILY LIMIT + CLAIM SYSTEM
+// <<< ADD: Global Variable for Daily Count
+let todayPostCount = 0;
+let todayPostsData = [];
+
+// <<< ADD: Date Helper
 function getTodayKey(){
   return new Date().toDateString();
 }
 
-function getTodayPosts(){
-  let data = JSON.parse(localStorage.getItem('ruppy_daily_posts') || '{}');
-  return data[getTodayKey()] || [];
+// <<< CHANGED: अब Firebase से Count लेंगे, localStorage से नहीं
+async function getTodayPosts(){
+  const today = new Date();
+  today.setHours(0,0,0);
+  const todayTimestamp = today.getTime();
+
+  const postsRef = ref(db, 'posts');
+  const userPostsQuery = query(postsRef, orderByChild('user'), equalTo(currentUser));
+  const snapshot = await get(userPostsQuery);
+
+  todayPostsData = [];
+  if(snapshot.exists()){
+    snapshot.forEach(child => {
+      let post = {id: child.key,...child.val()};
+      if(post.time >= todayTimestamp){
+        todayPostsData.push(post);
+      }
+    });
+  }
+  todayPostCount = todayPostsData.length;
+  return todayPostsData;
 }
 
 function getUnclaimedPost(){
-  let posts = getTodayPosts();
-  return posts.find(p =>!p.claimed);
-}
-
-function getTodayPostCount(){
-  return getTodayPosts().length;
+  return todayPostsData.find(p =>!p.claimed);
 }
 
 // AUTO BALANCE UPDATE - Main App Balance + Task Balance
@@ -232,31 +249,24 @@ function updateBalanceBox(){
   document.getElementById('totalBalance').textContent = userData.balance || 0;
 }
 
-function saveTodayPost(postId){
-  let data = JSON.parse(localStorage.getItem('ruppy_daily_posts') || '{}');
-  let today = getTodayKey();
-  if(!data[today]) data[today] = [];
-  data[today].push({id: postId, claimed: false, time: Date.now()});
-  localStorage.setItem('ruppy_daily_posts', JSON.stringify(data));
+// <<< DELETED: saveTodayPost localStorage वाला हटा दिया
+
+// <<< CHANGED: Firebase में claimed update करेंगे
+async function markPostClaimed(postId){
+  const postRef = ref(db, `posts/${postId}`);
+  await update(postRef, { claimed: true });
+
+  userData.balance = Number(userData.balance) || 0;
+  userData.balance += 10;
+  localStorage.setItem('ruppy_user', JSON.stringify(userData));
+
+  // <<< ADD: User का Balance भी Firebase में Save करो
+  // await update(ref(db, 'users/' + currentUID), { balance: userData.balance }); // Agar uid hai to
 }
 
-function markPostClaimed(postId){
-  let data = JSON.parse(localStorage.getItem('ruppy_daily_posts') || '{}');
-  let today = getTodayKey();
-  if(data[today]){
-    let post = data[today].find(p => p.id === postId);
-    if(post) {
-      post.claimed = true;
-      userData.balance = Number(userData.balance) || 0;
-      userData.balance += 10;
-      localStorage.setItem('ruppy_user', JSON.stringify(userData));
-    }
-    localStorage.setItem('ruppy_daily_posts', JSON.stringify(data));
-  }
-}
-
+// <<< CHANGED: अब todayPostCount use करेंगे
 function updateRewardBanner(){
-  let count = getTodayPostCount();
+  let count = todayPostCount;
   let unclaimed = getUnclaimedPost();
   let banner = document.getElementById('rewardBanner');
   let postBtn = document.getElementById('postBtn');
@@ -308,9 +318,10 @@ window.addEmoji = function(){
   updateRewardBanner();
 }
 
-window.claimPost = function(postId){
-  markPostClaimed(postId);
+window.claimPost = async function(postId){ // <<< CHANGED: async
+  await markPostClaimed(postId);
   alert('10 Ruppy coin Claimed! 🎉');
+  await getTodayPosts(); // <<< ADD: Count Refresh
   updateRewardBanner();
   updateBalanceBox();
   renderFeed(JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]'));
@@ -318,7 +329,8 @@ window.claimPost = function(postId){
 
 // CREATE POST - REALTIME DB
 window.createPost = async function(){
-  if(getTodayPostCount() >= 3){
+  await getTodayPosts(); // <<< ADD: Fresh Count लो
+  if(todayPostCount >= 3){
     alert('Daily limit reached. Come back tomorrow');
     return;
   }
@@ -358,10 +370,11 @@ window.createPost = async function(){
       likes: 0,
       likedBy: {},
       comments: [],
-      reports: 0
+      reports: 0,
+      claimed: false // <<< ADD: Claimed Field
     });
 
-    saveTodayPost(newPostRef.key);
+    // <<< DELETED: saveTodayPost localStorage वाला हटा दिया
 
     document.getElementById('postText').value = '';
     document.getElementById('preview').style.display = 'none';
@@ -373,11 +386,12 @@ window.createPost = async function(){
     alert('Error: ' + error.message);
   }
 
+  await getTodayPosts(); // <<< ADD: Count Refresh
   updateRewardBanner();
 }
 
 // REAL-TIME LISTEN - REALTIME DB
-onValue(ref(db, 'posts'), (snapshot) => {
+onValue(ref(db, 'posts'), async (snapshot) => {
   let posts = [];
 
   snapshot.forEach((childSnapshot) => {
@@ -388,6 +402,7 @@ onValue(ref(db, 'posts'), (snapshot) => {
   });
 
   localStorage.setItem('ruppy_last_posts', JSON.stringify(posts));
+  await getTodayPosts(); // <<< ADD: Count भी Refresh करो
   renderFeed(posts);
   updateRewardBanner();
   updateBalanceBox();
@@ -395,7 +410,6 @@ onValue(ref(db, 'posts'), (snapshot) => {
 
 function renderFeed(posts){
   let feed = document.getElementById('feed');
-  let todayPosts = getTodayPosts();
 
   if(posts.length === 0){
     feed.innerHTML = `
@@ -423,12 +437,11 @@ function renderFeed(posts){
     let commentsToShow = post.showAllComments? (post.comments || []) : (post.comments || []).slice(-2);
     let hiddenCount = (post.comments || []).length - commentsToShow.length;
 
-    // Claim Button Logic
+    // Claim Button Logic - <<< CHANGED: Firebase claimed field check
     let claimBtnHTML = '';
-    let localPost = todayPosts.find(p => p.id === post.id);
-    if(post.user === currentUser && localPost &&!localPost.claimed){
+    if(post.user === currentUser && post.claimed === false){
       claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +10 रुपए</button>`;
-    } else if(post.user === currentUser && localPost && localPost.claimed){
+    } else if(post.user === currentUser && post.claimed === true){
       claimBtnHTML = `<button class="claim-btn claimed" disabled>Claimed</button>`;
     }
 
@@ -563,13 +576,4 @@ window.reportPost = async function(id){
   if(confirm('Report this post?')){
     const postRef = ref(db, `posts/${id}`);
     const snapshot = await get(postRef);
-    const post = snapshot.val();
-
-    await update(postRef, { reports: (post.reports || 0) + 1 });
-    alert('Reported');
-  }
-}
-
-// INIT - Load everything on page load
-updateBalanceBox();
-</script>
+    const
