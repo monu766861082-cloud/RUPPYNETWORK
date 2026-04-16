@@ -4,17 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruppy Network - App</title>
-
-  <!-- Google AdSense -->
-  <script async src="https://p...
-
-  <!-- <<< ADD: Firebase Scrip -->
-  <script src="https://www.gst...
-  <script src="https://www.gst...
-  <script src="https://www.gst...
   
-  <script src="config.js"></script>  <!-- <<< यहाँ डाल दे ये Line -->
-
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
+  
   <style>
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
     body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
@@ -162,41 +155,23 @@
   </div>
 
 <script>
-  // <<< ADD: Firebase Config - तेरा वाला, छुआ नहीं
-  const firebaseConfig = {
-    apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
-    authDomain: "ruppynetwork-50362.firebaseapp.com",
-    databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
-    projectId: "ruppynetwork-50362",
-    storageBucket: "ruppynetwork-50362.firebasestorage.app",
-    messagingSenderId: "132064610854",
-    appId: "1:132064610854:web:3c217eaf3618007f5934e7"
-  };
-  // <<< ADD: Firebase Initialize
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.database();
-  
   const MINING_REWARD = 40;
-  let currentUID = null;
   
   let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
     name: 'User',
-    
+    dp: null,
+    balance: 0,
+    lastMine: 0,
+    lastGift: 0,
+    boostCount: 0,
+    boostResetTime: Date.now(),
+    firstRewardTime: 0,
+    ultraRewardTime: 0
+  };
 
-  // <<< ADD: Login Check + Firebase Load
-  auth.onAuthStateChanged(async (user) => {
-    if(snapshot.exists()){
-  Object.assign(userData, snapshot.val());
-  saveRuppyData(userData);
-}
-      init();
-    } else {
-      window.location.replace('index.html');
-    }
-  });
-
-  
+  // Safe conversion - अगर NaN है तो 0 कर दो, वरना रहने दो
+  userData.balance = Number(userData.balance);
+  if (isNaN(userData.balance)) userData.balance = 0;
   
   userData.lastMine = Number(userData.lastMine) || 0;
   userData.lastGift = Number(userData.lastGift) || 0;
@@ -205,13 +180,11 @@
   userData.firstRewardTime = Number(userData.firstRewardTime) || 0;
   userData.ultraRewardTime = Number(userData.ultraRewardTime) || 0;
 
-  // FIXED: अब Balance नहीं उड़ेगा + Button भी चलेंगे + Firebase Save
+  // FIXED: अब Balance नहीं उड़ेगा + Button भी चलेंगे
   function saveUser() {
     userData.balance = Number(userData.balance);
     if (isNaN(userData.balance)) userData.balance = 0;
     localStorage.setItem('ruppy_user', JSON.stringify(userData));
-    // <<< ADD: Firebase में भी Save
-    if(currentUID) db.ref('users/' + currentUID).set(userData);
   }
 
   function handleMiningClick() {
@@ -488,7 +461,7 @@
     if(page === 'settings') window.location.href = 'settings.html';
   }
 
-  // <<< DELETED: init() Call हटाया क्योंकि अब onAuthStateChanged करेगा
+  init();
 </script>
 </body>
 </html>
