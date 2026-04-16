@@ -25,6 +25,12 @@ a{color:#aaa;text-decoration:none}
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444"
      crossorigin="anonymous"></script>
+<!-- <<< ADD THIS LINE -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<!-- <<< ADD THIS LINE -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<!-- <<< ADD THIS LINE -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -74,9 +80,8 @@ By continuing, you agree to our Terms & Privacy Policy.
 </div>
 </div>
 
-<script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
+<script> <!-- <<< CHANGED: type="module" हटाया -->
+  // <<< DELETED: import वाली 2 Line हटा दी
 
   const firebaseConfig = {
     apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
@@ -88,8 +93,12 @@ By continuing, you agree to our Terms & Privacy Policy.
     appId: "1:132064610854:web:3c217eaf3618007f5934e7"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+  // <<< ADD THIS LINE
+  firebase.initializeApp(firebaseConfig);
+  // <<< ADD THIS LINE
+  const auth = firebase.auth();
+  // <<< ADD THIS LINE
+  const db = firebase.database();
 
   (function() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -123,9 +132,11 @@ By continuing, you agree to our Terms & Privacy Policy.
     btn.disabled = true;
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      // <<< CHANGED: auth.createUserWithEmailAndPassword
+      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
       let userData = {
         name: email.split('@')[0],
+        email: email,
         balance: 0,
         lastMine: 0,
         lastGift: 0,
@@ -133,8 +144,11 @@ By continuing, you agree to our Terms & Privacy Policy.
         boostResetTime: Date.now(),
         team: [],
         firstRewardTime: 0,
-        ultraRewardTime: 0
+        ultraRewardTime: 0,
+        createdAt: Date.now()
       };
+      // <<< ADD THIS LINE: Firebase DB में Save
+      await db.ref('users/' + auth.currentUser.uid).set(userData);
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
       window.location.replace('app.html');
     } catch (error) {
@@ -156,9 +170,13 @@ By continuing, you agree to our Terms & Privacy Policy.
     btn.disabled = true;
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
+      // <<< CHANGED: auth.signInWithEmailAndPassword
+      await auth.signInWithEmailAndPassword(email, password);
+      // <<< ADD THIS LINE: Firebase DB से Load
+      const snapshot = await db.ref('users/' + auth.currentUser.uid).get();
+      let userData = snapshot.exists()? snapshot.val() : {
         name: email.split('@')[0],
+        email: email,
         balance: 0,
         lastMine: 0,
         lastGift: 0,
@@ -166,7 +184,8 @@ By continuing, you agree to our Terms & Privacy Policy.
         boostResetTime: Date.now(),
         team: [],
         firstRewardTime: 0,
-        ultraRewardTime: 0
+        ultraRewardTime: 0,
+        createdAt: Date.now()
       };
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
       window.location.replace('app.html');
