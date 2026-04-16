@@ -157,7 +157,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 <!-- Firebase SDK - REALTIME DATABASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"; // <<< ADD
 import { getDatabase, ref, push, onValue, update, get, child, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
@@ -172,7 +171,6 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app); // <<< ADD
 const db = getDatabase(app);
 const storage = getStorage(app);
 
@@ -207,27 +205,7 @@ userData.firstRewardTime = Number(userData.firstRewardTime) || 0;
 userData.ultraRewardTime = Number(userData.ultraRewardTime) || 0;
 
 let currentUser = userData.name || 'User'+Math.floor(Math.random()*999);
-let currentUID = null; // <<< ADD
 document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
-
-// <<< ADD: Login Check + UID Get
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    currentUID = user.uid;
-    const snapshot = await get(ref(db, 'users/' + currentUID));
-    if(snapshot.exists()){
-      userData = snapshot.val();
-      localStorage.setItem('ruppy_user', JSON.stringify(userData));
-      currentUser = userData.name;
-      document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
-    }
-    updateBalanceBox();
-    await getTodayPosts();
-    updateRewardBanner();
-  } else {
-    window.location.replace('index.html');
-  }
-});
 
 // Global Variable for Daily Count
 let todayPostCount = 0;
@@ -236,6 +214,19 @@ let todayPostsData = [];
 // Date Helper
 function getTodayKey(){
   return new Date().toDateString();
+}
+
+// <<< CHANGED: Firebase से Balance भी Load करो
+async function loadUserBalance(){
+  try {
+    const snapshot = await get(ref(db, 'users/' + currentUser));
+    if(snapshot.exists()){
+      let dbUser = snapshot.val();
+      userData.balance = Number(dbUser.balance) || 0;
+      userData.taskBalance = Number(dbUser.taskBalance) || 0;
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
+    }
+  } catch(e){ console.log(e); }
 }
 
 // अब Firebase से Count लेंगे
@@ -280,10 +271,13 @@ async function markPostClaimed(postId){
   userData.balance += 10;
   localStorage.setItem('ruppy_user', JSON.stringify(userData));
 
-  // <<< ADD: Firebase User Balance Update
-  if(currentUID) {
-    await update(ref(db, 'users/' + currentUID), { balance: userData.balance });
-  }
+  // Firebase User Balance Update - Name को ही UID मान रहे
+  try {
+    await update(ref(db, 'users/' + currentUser), {
+      balance: userData.balance,
+      name: currentUser
+    });
+  } catch(e){ console.log('Balance update error:', e); }
 }
 
 // अब todayPostCount use करेंगे
@@ -586,4 +580,5 @@ window.sharePost = function(id){
   if(navigator.share){
     navigator.share(shareData).catch(err => console.log('Share failed'));
   } else {
-    let whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareData.text
+    let whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`;
+    window.open(whatsappUrl,
