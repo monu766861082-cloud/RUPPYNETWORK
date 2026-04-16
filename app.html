@@ -186,22 +186,17 @@
 
   // <<< ADD: Login Check + Firebase Load
   auth.onAuthStateChanged(async (user) => {
-    if (user) {
-      currentUID = user.uid;
-      const snapshot = await db.ref('users/' + currentUID).get();
-      if(snapshot.exists()){
-        userData = snapshot.val();
-        localStorage.setItem('ruppy_user', JSON.stringify(userData));
-      }
+    if(snapshot.exists()){
+  Object.assign(userData, snapshot.val());
+  saveRuppyData(userData);
+}
       init();
     } else {
       window.location.replace('index.html');
     }
   });
 
-  // Safe conversion - अगर NaN है तो 0 कर दो, वरना रहने दो
-  userData.balance = Number(userData.balance);
-  if (isNaN(userData.balance)) userData.balance = 0;
+  
   
   userData.lastMine = Number(userData.lastMine) || 0;
   userData.lastGift = Number(userData.lastGift) || 0;
