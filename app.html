@@ -182,15 +182,7 @@
   
   let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
     name: 'User',
-    dp: null,
-    balance: 0,
-    lastMine: 0,
-    lastGift: 0,
-    boostCount: 0,
-    boostResetTime: Date.now(),
-    firstRewardTime: 0,
-    ultraRewardTime: 0
-  };
+    
 
   // <<< ADD: Login Check + Firebase Load
   auth.onAuthStateChanged(async (user) => {
