@@ -216,19 +216,6 @@ function getTodayKey(){
   return new Date().toDateString();
 }
 
-// <<< CHANGED: Firebase से Balance भी Load करो
-async function loadUserBalance(){
-  try {
-    const snapshot = await get(ref(db, 'users/' + currentUser));
-    if(snapshot.exists()){
-      let dbUser = snapshot.val();
-      userData.balance = Number(dbUser.balance) || 0;
-      userData.taskBalance = Number(dbUser.taskBalance) || 0;
-      localStorage.setItem('ruppy_user', JSON.stringify(userData));
-    }
-  } catch(e){ console.log(e); }
-}
-
 // अब Firebase से Count लेंगे
 async function getTodayPosts(){
   const today = new Date();
@@ -262,7 +249,7 @@ function updateBalanceBox(){
   document.getElementById('totalBalance').textContent = userData.balance || 0;
 }
 
-// <<< CHANGED: Firebase में Balance Update करेंगे
+// Firebase में claimed update करेंगे
 async function markPostClaimed(postId){
   const postRef = ref(db, `posts/${postId}`);
   await update(postRef, { claimed: true });
@@ -270,14 +257,6 @@ async function markPostClaimed(postId){
   userData.balance = Number(userData.balance) || 0;
   userData.balance += 10;
   localStorage.setItem('ruppy_user', JSON.stringify(userData));
-
-  // Firebase User Balance Update - Name को ही UID मान रहे
-  try {
-    await update(ref(db, 'users/' + currentUser), {
-      balance: userData.balance,
-      name: currentUser
-    });
-  } catch(e){ console.log('Balance update error:', e); }
 }
 
 // अब todayPostCount use करेंगे
@@ -581,4 +560,27 @@ window.sharePost = function(id){
     navigator.share(shareData).catch(err => console.log('Share failed'));
   } else {
     let whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`;
-    window.open(whatsappUrl,
+    window.open(whatsappUrl, '_blank');
+  }
+}
+
+// REPORT POST - REALTIME DB
+window.reportPost = async function(id){
+  if(confirm('Report this post?')){
+    const postRef = ref(db, `posts/${id}`);
+    const snapshot = await get(postRef);
+    const post = snapshot.val();
+
+    await update(postRef, { reports: (post.reports || 0) + 1 });
+    alert('Reported');
+  }
+}
+
+// INIT - Load everything on page load
+updateBalanceBox();
+getTodayPosts().then(() => {
+  updateRewardBanner();
+});
+</script>
+</body>
+</html>
