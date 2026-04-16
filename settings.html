@@ -52,7 +52,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .ft-links{font-size:11px;color:#666;text-align:center;margin-top:30px;padding-bottom:20px}
 .ft-links a{color:#aaa;text-decoration:none}
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:9999}
-/* <<< ADD: 3 Line Menu + Posts CSS */
 .accordion-content{display:none}
 .accordion-content.active{display:block}
 .menu-header{padding:20px 18px;border-top:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
@@ -78,7 +77,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <div class="bal" id="userBalance">0 RUPPY</div>
 <div class="id-box" id="userId">ID: Loading...</div>
 
-<!-- <<< ADD: 3 Line Accordion Menu -->
 <div class="card">
   <div class="menu-header" onclick="toggleAccordion('profile')">
     <div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>
@@ -109,7 +107,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   </div>
 </div>
 
-<!-- <<< ADD: My Posts Section -->
 <div class="sec">MY POSTS</div>
 <div class="card" id="myPosts">
   <div class="no-posts">Loading your posts...</div>
@@ -195,13 +192,6 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const storage = getStorage(app);
 
-const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
-function checkContent(text){
-  let lower = text.toLowerCase();
-  return bannedWords.some(word => lower.includes(word));
-}
-
-// AUTO SYNC - Load userData from localStorage
 let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   userId: '',
   name: 'Guest',
@@ -213,15 +203,12 @@ let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
   teamRewardEarned: 0
 };
 
-// Fix: Generate User ID if missing - same logic as referral.html
 if(!userData.userId || userData.userId === 'undefined' || userData.userId === ''){
   userData.userId = 'ab' + Math.floor(Math.random()*9000000+1000000);
   localStorage.setItem('ruppy_user', JSON.stringify(userData));
 }
 
-// <<< CHANGED: Load Firebase Data भी
 async function loadProfile(){
-  // Firebase से Fresh Data लो
   try {
     const snapshot = await get(ref(db, 'users/' + userData.name));
     if(snapshot.exists()){
@@ -246,7 +233,6 @@ async function loadProfile(){
 
 loadProfile();
 
-// <<< ADD: My Posts Load करो
 async function loadMyPosts(){
   const postsRef = ref(db, 'posts');
   const userPostsQuery = query(postsRef, orderByChild('user'), equalTo(userData.name));
@@ -288,7 +274,7 @@ function getTimeAgo(time){
   return new Date(time).toLocaleDateString();
 }
 
-// <<< ADD: Accordion Toggle
+// <<< FIX: window. लगाके Global बनाया
 window.toggleAccordion = function(id){
   let content = document.getElementById(id + '-content');
   let header = content.previousElementSibling;
@@ -302,7 +288,7 @@ window.toggleAccordion = function(id){
   header.classList.toggle('active');
 }
 
-function copyRefCode(){
+window.copyRefCode = function(){
   navigator.clipboard.writeText(userData.userId);
   showToast('Referral Code Copied!');
 }
@@ -314,30 +300,27 @@ function showToast(msg){
   setTimeout(() => t.style.display = 'none', 2500);
 }
 
-function openEditProfile(){
+window.openEditProfile = function(){
   document.getElementById('editName').value = userData.name;
   document.getElementById('editBirthday').value = userData.birthday || '';
   document.getElementById('editModal').classList.add('active');
 }
 
-function closeEditProfile(){
+window.closeEditProfile = function(){
   document.getElementById('editModal').classList.remove('active');
 }
 
-// <<< CHANGED: Firebase में भी Save करो
-async function saveProfile(){
+window.saveProfile = async function(){
   userData.name = document.getElementById('editName').value || 'Guest';
   userData.birthday = document.getElementById('editBirthday').value;
   const file = document.getElementById('editPhoto').files[0];
   
   if(file){
-    // Firebase Storage में Upload
     const storageRef = sRef(storage, `profiles/${userData.name}_${Date.now()}`);
     await uploadBytes(storageRef, file);
     const photoUrl = await getDownloadURL(storageRef);
     userData.photo = photoUrl;
     
-    // Firebase Database में Update
     await update(ref(db, 'users/' + userData.name), {
       name: userData.name,
       birthday: userData.birthday,
@@ -345,7 +328,6 @@ async function saveProfile(){
       balance: userData.balance || 0
     });
   } else {
-    // सिर्फ Name/Birthday Update
     await update(ref(db, 'users/' + userData.name), {
       name: userData.name,
       birthday: userData.birthday,
@@ -359,8 +341,7 @@ async function saveProfile(){
   showToast('Profile Updated!');
 }
 
-// LOGOUT FUNCTION FIXED - अब Main Screen पे जाएगा
-function logout(){
+window.logout = function(){
   if(confirm('Are you sure you want to logout?')){
     localStorage.removeItem('ruppy_user');
     localStorage.removeItem('notif_enabled');
@@ -368,7 +349,7 @@ function logout(){
   }
 }
 
-function goPage(page){ window.location.href = page; }
+window.goPage = function(page){ window.location.href = page; }
 
 let notifEnabled = localStorage.getItem('notif_enabled') === 'true';
 
@@ -378,7 +359,7 @@ function updateNotifStatus(){
 }
 updateNotifStatus();
 
-async function toggleNotification(){
+window.toggleNotification = async function(){
   if(!notifEnabled){
     if('Notification' in window){
       const permission = await Notification.requestPermission();
@@ -392,18 +373,6 @@ async function toggleNotification(){
     notifEnabled = false;
     localStorage.setItem('notif_enabled', 'false');
     updateNotifStatus();
-  }
-}
-
-window.sendMiningNotif = function(){
-  if(localStorage.getItem('notif_enabled') === 'true'){
-    if('Notification' in window && Notification.permission === 'granted'){
-      new Notification('Rewards Ready!', {
-        body: 'Your RUPPY is ready to collect!',
-        icon: 'https://ruppynetwork.vercel.app/icon.png'
-      });
-      new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play();
-    }
   }
 }
 </script>
