@@ -76,8 +76,7 @@ By continuing, you agree to our Terms & Privacy Policy.
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
-  import { getDatabase, ref, set, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js'
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
 
   const firebaseConfig = {
     apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
@@ -91,23 +90,12 @@ By continuing, you agree to our Terms & Privacy Policy.
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const db = getDatabase(app);
 
-  // Referral Code Save
   (function() {
     const urlParams = new URLSearchParams(window.location.search);
     const refCode = urlParams.get('ref');
     if(refCode) localStorage.setItem('ruppy_referredBy', refCode);
   })();
-
-  // Auto redirect if already logged in
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      // User already logged in, load data from DB and go to app
-      await loadUserDataFromDB(user.uid);
-      window.location.replace('app.html');
-    }
-  });
 
   window.showRegister = function() {
     document.getElementById('loginForm').style.display = 'none';
@@ -121,7 +109,6 @@ By continuing, you agree to our Terms & Privacy Policy.
     document.getElementById('regErrorMsg').style.display = 'none';
   }
 
-  // नया User बनाते समय Firebase DB में Entry बनाओ
   window.handleRegister = async function() {
     const email = document.getElementById('regEmail').value.trim();
     const password = document.getElementById('regPassword').value;
@@ -136,29 +123,19 @@ By continuing, you agree to our Terms & Privacy Policy.
     btn.disabled = true;
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const uid = userCredential.user.uid;
-
-      // Default User Data
-      const userData = {
+      await createUserWithEmailAndPassword(auth, email, password);
+      let userData = {
         name: email.split('@')[0],
-        email: email,
         balance: 0,
-        taskBalance: 0,
         lastMine: 0,
         lastGift: 0,
         boostCount: 0,
         boostResetTime: Date.now(),
         team: [],
         firstRewardTime: 0,
-        ultraRewardTime: 0,
-        createdAt: Date.now()
+        ultraRewardTime: 0
       };
-
-      // Firebase DB में Save करो - यही Fix है
-      await set(ref(db, 'users/' + uid), userData);
-
-      // app.html में जाने के लिए
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
       window.location.replace('app.html');
     } catch (error) {
       showError('regErrorMsg', error.message);
@@ -167,7 +144,6 @@ By continuing, you agree to our Terms & Privacy Policy.
     }
   }
 
-  // Login करते समय Firebase DB से Data Load करो
   window.handleLogin = async function() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
@@ -180,44 +156,24 @@ By continuing, you agree to our Terms & Privacy Policy.
     btn.disabled = true;
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const uid = userCredential.user.uid;
-
-      // Firebase से पुराना Data Load करो - यही Fix है
-      await loadUserDataFromDB(uid);
-
-      window.location.replace('app.html');
-    } catch (error) {
-      showError('errorMsg', 'Invalid email or password');
-      btn.disabled = false;
-      btn.innerText = 'LOGIN';
-    }
-  }
-
-  // Firebase से Data Load करने का Function
-  async function loadUserDataFromDB(uid){
-    const snapshot = await get(ref(db, 'users/' + uid));
-    if(snapshot.exists()){
-      // पुराना User है, उसका Data localStorage में डाल दो app.html के लिए
-      localStorage.setItem('ruppy_user', JSON.stringify(snapshot.val()));
-    } else {
-      // अगर DB में Data नहीं मिला तो नया बना दो
-      const userData = {
-        name: auth.currentUser.email.split('@')[0],
-        email: auth.currentUser.email,
+      await signInWithEmailAndPassword(auth, email, password);
+      let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
+        name: email.split('@')[0],
         balance: 0,
-        taskBalance: 0,
         lastMine: 0,
         lastGift: 0,
         boostCount: 0,
         boostResetTime: Date.now(),
         team: [],
         firstRewardTime: 0,
-        ultraRewardTime: 0,
-        createdAt: Date.now()
+        ultraRewardTime: 0
       };
-      await set(ref(db, 'users/' + uid), userData);
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
+      window.location.replace('app.html');
+    } catch (error) {
+      showError('errorMsg', 'Invalid email or password');
+      btn.disabled = false;
+      btn.innerText = 'LOGIN';
     }
   }
 
