@@ -8,6 +8,9 @@
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
   
+  <!-- <<< ADD: Config JS for Auto Sync -->
+  <script src="config.js"></script>
+  
   <!-- <<< ADD: Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -178,17 +181,8 @@
   const MINING_REWARD = 40;
   let currentUID = null;
   
-  let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
-    name: 'User',
-    dp: null,
-    balance: 0,
-    lastMine: 0,
-    lastGift: 0,
-    boostCount: 0,
-    boostResetTime: Date.now(),
-    firstRewardTime: 0,
-    ultraRewardTime: 0
-  };
+  // <<< CHANGED: अब config.js से Data आएगा
+  let userData = getUserData();
 
   // <<< ADD: Login Check + Firebase Load
   auth.onAuthStateChanged(async (user) => {
@@ -197,7 +191,7 @@
       const snapshot = await db.ref('users/' + currentUID).get();
       if(snapshot.exists()){
         userData = snapshot.val();
-        localStorage.setItem('ruppy_user', JSON.stringify(userData));
+        updateUserData(userData); // config.js वाला function
       }
       init();
     } else {
@@ -220,7 +214,7 @@
   function saveUser() {
     userData.balance = Number(userData.balance);
     if (isNaN(userData.balance)) userData.balance = 0;
-    localStorage.setItem('ruppy_user', JSON.stringify(userData));
+    updateUserData(userData); // <<< CHANGED: config.js वाला function
     // <<< ADD: Firebase में भी Save
     if(currentUID) db.ref('users/' + currentUID).set(userData);
   }
@@ -251,9 +245,11 @@
   }
 
   function init() {
-    document.getElementById('userName').innerText = 'Welcome back, ' + userData.name;
-    if(userData.dp) {
-      document.getElementById('userDp').innerHTML = '<img src="' + userData.dp + '" alt="DP">';
+    // <<< CHANGED: नाम खाली नहीं होगा तो Welcome back दिखेगा
+    document.getElementById('userName').innerText = userData.name ? 'Welcome back, ' + userData.name : 'Welcome back, User';
+    
+    if(userData.photo) {
+      document.getElementById('userDp').innerHTML = '<img src="' + userData.photo + '" alt="DP">';
     }
     
     if(Date.now() - userData.boostResetTime > 10800000) {
@@ -499,7 +495,6 @@
     if(page === 'settings') window.location.href = 'settings.html';
   }
 
-  // <<< DELETED: init() Call हटाया क्योंकि अब onAuthStateChanged करेगा
 </script>
 </body>
 </html>
