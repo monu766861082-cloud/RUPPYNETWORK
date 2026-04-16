@@ -8,9 +8,6 @@
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
   
-  <!-- <<< ADD: Config JS for Auto Sync -->
-  <script src="config.js"></script>
-  
   <!-- <<< ADD: Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -181,8 +178,17 @@
   const MINING_REWARD = 40;
   let currentUID = null;
   
-  // <<< CHANGED: अब config.js से Data आएगा
-  let userData = getUserData();
+  let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
+    name: 'User',
+    dp: null,
+    balance: 0,
+    lastMine: 0,
+    lastGift: 0,
+    boostCount: 0,
+    boostResetTime: Date.now(),
+    firstRewardTime: 0,
+    ultraRewardTime: 0
+  };
 
   // <<< ADD: Login Check + Firebase Load
   auth.onAuthStateChanged(async (user) => {
@@ -191,7 +197,7 @@
       const snapshot = await db.ref('users/' + currentUID).get();
       if(snapshot.exists()){
         userData = snapshot.val();
-        updateUserData(userData); // config.js वाला function
+        localStorage.setItem('ruppy_user', JSON.stringify(userData));
       }
       init();
     } else {
@@ -214,7 +220,7 @@
   function saveUser() {
     userData.balance = Number(userData.balance);
     if (isNaN(userData.balance)) userData.balance = 0;
-    updateUserData(userData); // <<< CHANGED: config.js वाला function
+    localStorage.setItem('ruppy_user', JSON.stringify(userData));
     // <<< ADD: Firebase में भी Save
     if(currentUID) db.ref('users/' + currentUID).set(userData);
   }
@@ -245,11 +251,9 @@
   }
 
   function init() {
-    // <<< CHANGED: नाम खाली नहीं होगा तो Welcome back दिखेगा
-    document.getElementById('userName').innerText = userData.name ? 'Welcome back, ' + userData.name : 'Welcome back, User';
-    
-    if(userData.photo) {
-      document.getElementById('userDp').innerHTML = '<img src="' + userData.photo + '" alt="DP">';
+    document.getElementById('userName').innerText = 'Welcome back, ' + userData.name;
+    if(userData.dp) {
+      document.getElementById('userDp').innerHTML = '<img src="' + userData.dp + '" alt="DP">';
     }
     
     if(Date.now() - userData.boostResetTime > 10800000) {
@@ -495,6 +499,7 @@
     if(page === 'settings') window.location.href = 'settings.html';
   }
 
+  // <<< DELETED: init() Call onAuthStateChanged करेगा
 </script>
 </body>
 </html>
