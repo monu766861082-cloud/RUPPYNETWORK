@@ -43,9 +43,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-card{background:#111;border:1px solid #222;border-radius:24px;margin-bottom:16px;overflow:hidden;transition:0.3s;box-shadow:0 8px 25px rgba(0,0,0,0.6)}
 .post-card:active{transform:scale(0.98)}
 .post-card-head{padding:16px;display:flex;align-items:center;gap:12px}
-.post-avatar{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden;cursor:pointer}
+.post-avatar{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden}
 .post-avatar img{width:100%;height:100%;object-fit:cover}
-.post-avatar:active{transform:scale(0.9)}
 .post-info{flex:1}
 .post-info h4{font-size:15px;font-weight:600;margin-bottom:2px}
 .post-info p{font-size:12px;color:#666}
@@ -157,32 +156,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37a1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
     <span>Settings</span>
   </button>
-</div>
-
-<!-- User Profile Modal -->
-<div id="userProfileModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:9999;backdrop-filter:blur(10px)" onclick="closeUserProfile()">
-  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#111;border:1px solid #333;border-radius:24px;padding:24px;width:90%;max-width:340px" onclick="event.stopPropagation()">
-    <button onclick="closeUserProfile()" style="position:absolute;top:12px;right:12px;background:#1a1a1a;border:none;border-radius:8px;width:32px;height:32px;color:#888;font-size:20px;cursor:pointer">×</button>
-
-    <div style="text-align:center;margin-bottom:20px">
-      <div id="profileModalDp" style="width:80px;height:80px;border-radius:20px;background:linear-gradient(135deg,#FFD700,#FFA500);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:32px;overflow:hidden"></div>
-      <h3 id="profileModalName" style="font-size:20px;font-weight:700;margin-bottom:4px"></h3>
-      <p id="profileModalId" style="font-size:12px;color:#666"></p>
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-      <div style="background:#1a1a1a;border:1px solid #252525;border-radius:12px;padding:12px;text-align:center">
-        <p style="font-size:11px;color:#888;margin-bottom:4px">Total Balance</p>
-        <h4 id="profileModalBalance" style="font-size:18px;color:#FFD700;font-weight:700">0</h4>
-      </div>
-      <div style="background:#1a1a1a;border:1px solid #252525;border-radius:12px;padding:12px;text-align:center">
-        <p style="font-size:11px;color:#888;margin-bottom:4px">Posts</p>
-        <h4 id="profileModalPosts" style="font-size:18px;color:#FFD700;font-weight:700">0</h4>
-      </div>
-    </div>
-
-    <button style="width:100%;background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:12px;color:#000;font-weight:700;font-size:14px;cursor:pointer" onclick="closeUserProfile()">Close</button>
-  </div>
 </div>
 
 <!-- Firebase SDK - REALTIME DATABASE -->
@@ -452,7 +425,7 @@ function renderFeed(posts){
     feed.innerHTML += `
     <div class="post-card" id="post-${post.id}">
       <div class="post-card-head">
-        <div class="post-avatar" onclick="showUserProfile('${post.user}');event.stopPropagation()">${postUserDpHTML}</div>
+        <div class="post-avatar">${postUserDpHTML}</div>
         <div class="post-info">
           <h4>${post.user}</h4>
           <p>${timeAgo}</p>
@@ -549,4 +522,50 @@ window.addComment = async function(id){
     return;
   }
 
-  const postRef =
+  const postRef = ref(db, `posts/${id}`);
+  const snapshot = await get(postRef);
+  const post = snapshot.val();
+  const comments = post.comments || [];
+
+  comments.push({user: currentUser, userDp: userData.dp, text: text, time: Date.now()});
+
+  await update(postRef, { comments: comments });
+  input.value = '';
+}
+
+window.sharePost = function(id){
+  let shareData = {
+    title: 'RUPPY Hub Post',
+    text: 'Check this post on RUPPY Hub',
+    url: window.location.href
+  };
+
+  if(navigator.share){
+    navigator.share(shareData).catch(err => console.log('Share failed'));
+  } else {
+    let whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`;
+    window.open(whatsappUrl, '_blank');
+  }
+}
+
+// REPORT POST - REALTIME DB
+window.reportPost = async function(id){
+  if(confirm('Report this post?')){
+    const postRef = ref(db, `posts/${id}`);
+    const snapshot = await get(postRef);
+    const post = snapshot.val();
+
+    await update(postRef, { reports: (post.reports || 0) + 1 });
+    alert('Reported');
+  }
+}
+
+// INIT - Load everything on page load
+loadProfileEverywhere();
+updateBalanceBox();
+getTodayPosts().then(() => {
+  updateRewardBanner();
+});
+</script>
+</body>
+</html>
