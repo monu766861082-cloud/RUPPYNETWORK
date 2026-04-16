@@ -154,8 +154,27 @@
     </div>
   </div>
 
-<script>
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
+  import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
+  import { getDatabase, ref, set, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js'
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
+    authDomain: "ruppynetwork-50362.firebaseapp.com",
+    databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
+    projectId: "ruppynetwork-50362",
+    storageBucket: "ruppynetwork-50362.firebasestorage.app",
+    messagingSenderId: "132064610854",
+    appId: "1:132064610854:web:3c217eaf3618007f5934e7"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
   const MINING_REWARD = 40;
+  let currentUID = null;
   
   let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
     name: 'User',
@@ -169,32 +188,53 @@
     ultraRewardTime: 0
   };
 
-  // Safe conversion - अगर NaN है तो 0 कर दो, वरना रहने दो
-  userData.balance = Number(userData.balance);
-  if (isNaN(userData.balance)) userData.balance = 0;
-  
-  userData.lastMine = Number(userData.lastMine) || 0;
-  userData.lastGift = Number(userData.lastGift) || 0;
-  userData.boostCount = Number(userData.boostCount) || 0;
-  userData.boostResetTime = Number(userData.boostResetTime) || Date.now();
-  userData.firstRewardTime = Number(userData.firstRewardTime) || 0;
-  userData.ultraRewardTime = Number(userData.ultraRewardTime) || 0;
+  // Firebase Auth Check - अगर Login नहीं है तो Login Page भेज दो
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUID = user.uid;
+      // Firebase से Fresh Data Load करो
+      const snapshot = await get(ref(db, 'users/' + currentUID));
+      if(snapshot.exists()){
+        userData = snapshot.val();
+        localStorage.setItem('ruppy_user', JSON.stringify(userData));
+      }
+      init();
+    } else {
+      // Login नहीं है तो वापस भेज दो
+      window.location.replace('index.html');
+    }
+  });
 
-  // FIXED: अब Balance नहीं उड़ेगा + Button भी चलेंगे
-  function saveUser() {
+  // Safe conversion - अगर NaN है तो 0 कर दो
+  function cleanUserData(){
     userData.balance = Number(userData.balance);
     if (isNaN(userData.balance)) userData.balance = 0;
-    localStorage.setItem('ruppy_user', JSON.stringify(userData));
+    userData.lastMine = Number(userData.lastMine) || 0;
+    userData.lastGift = Number(userData.lastGift) || 0;
+    userData.boostCount = Number(userData.boostCount) || 0;
+    userData.boostResetTime = Number(userData.boostResetTime) || Date.now();
+    userData.firstRewardTime = Number(userData.firstRewardTime) || 0;
+    userData.ultraRewardTime = Number(userData.ultraRewardTime) || 0;
   }
 
-  function handleMiningClick() {
+  // यही है Main Fix - अब Firebase में भी Save होगा
+  window.saveUser = function() {
+    cleanUserData();
+    localStorage.setItem('ruppy_user', JSON.stringify(userData));
+    // Firebase में भी Save करो अगर UID है
+    if(currentUID){
+      set(ref(db, 'users/' + currentUID), userData);
+    }
+  }
+
+  window.handleMiningClick = function() {
     let now = Date.now();
     let lastMine = Number(userData.lastMine) || 0;
     if(now - lastMine < 10800000 && lastMine !== 0) return;
     startMining();
   }
 
-  function handleBoostClick() {
+  window.handleBoostClick = function() {
     if(userData.boostCount >= 3) {
       alert('You watched 3 ads already. Try again after 3 hours.');
       return;
@@ -202,7 +242,7 @@
     openBoostModal();
   }
 
-  function handleGiftClick() {
+  window.handleGiftClick = function() {
     let now = Date.now();
     let lastGift = Number(userData.lastGift) || 0;
     if(now - lastGift < 7200000 && lastGift !== 0) {
@@ -213,6 +253,7 @@
   }
 
   function init() {
+    cleanUserData();
     document.getElementById('userName').innerText = 'Welcome back, ' + userData.name;
     if(userData.dp) {
       document.getElementById('userDp').innerHTML = '<img src="' + userData.dp + '" alt="DP">';
@@ -310,7 +351,7 @@
     }
   }
 
-  function openBoostModal() {
+  window.openBoostModal = function() {
     if(userData.boostCount >= 3) {
       alert('You watched 3 ads already. Try again after 3 hours.');
       return;
@@ -319,11 +360,11 @@
     document.getElementById('boostModal').classList.add('active');
   }
 
-  function closeBoostModal() {
+  window.closeBoostModal = function() {
     document.getElementById('boostModal').classList.remove('active');
   }
 
-  function watchBoostAd() {
+  window.watchBoostAd = function() {
     if(userData.boostCount >= 3) return;
     
     let boostAmount = Math.floor(MINING_REWARD * 0.05);
@@ -365,103 +406,4 @@
       let hrs = Math.floor(remaining / 3600000);
       let mins = Math.floor((remaining % 3600000) / 60000);
       let secs = Math.floor((remaining % 60000) / 1000);
-      document.getElementById('giftTimer').innerText = 'Next in ' + String(hrs).padStart(2,'0') + ':' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
-      document.getElementById('giftBadge').innerText = '⏱';
-      document.getElementById('giftBadge').style.background = '#666';
-      
-      let percent = ((cooldown - remaining) / cooldown) * 100;
-      document.getElementById('giftBar').style.width = percent + '%';
-    }
-  }
-
-  function openGift() {
-    let now = Date.now();
-    let lastGift = Number(userData.lastGift) || 0;
-    if(now - lastGift < 7200000 && lastGift !== 0) {
-      alert('Please wait. Come back after 2 hours.');
-      return;
-    }
-    
-    userData.balance = Number(userData.balance) || 0;
-    userData.balance += 15;
-    userData.lastGift = now;
-    saveUser();
-    updateBalance();
-    updateGift();
-    alert('+15 RUPPY Added!');
-  }
-
-  function updateFirstReward() {
-    let now = Date.now();
-    let diff = userData.firstRewardTime - now;
-    
-    if(diff <= 0 || userData.firstRewardTime === 0){
-      document.getElementById('firstRewardTimer').innerText = 'Claim 20 RUPPY';
-      document.getElementById('firstRewardBadge').style.display = 'block';
-      document.getElementById('firstRewardBar').style.width = '100%';
-    } else {
-      let h = Math.floor(diff/3600000);
-      let m = Math.floor((diff%3600000)/60000);
-      let s = Math.floor((diff%60000)/1000);
-      document.getElementById('firstRewardTimer').innerText = 'Next in ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-      document.getElementById('firstRewardBadge').style.display = 'none';
-      let progress = ((3600000 - diff) / 3600000) * 100;
-      document.getElementById('firstRewardBar').style.width = progress + '%';
-    }
-  }
-
-  function claimFirstReward(){
-    if(Date.now() >= userData.firstRewardTime || userData.firstRewardTime === 0){
-      userData.balance = Number(userData.balance) || 0;
-      userData.balance += 20;
-      userData.firstRewardTime = Date.now() + 3600000;
-      saveUser();
-      updateBalance();
-      updateFirstReward();
-      alert('You earned 20 RUPPY!');
-    }
-  }
-
-  function updateUltraReward() {
-    let now = Date.now();
-    let diff = userData.ultraRewardTime - now;
-    
-    if(diff <= 0 || userData.ultraRewardTime === 0){
-      document.getElementById('ultraRewardTimer').innerText = 'Claim 50 RUPPY';
-      document.getElementById('ultraRewardBadge').style.display = 'block';
-      document.getElementById('ultraRewardBar').style.width = '100%';
-    } else {
-      let h = Math.floor(diff/3600000);
-      let m = Math.floor((diff%3600000)/60000);
-      let s = Math.floor((diff%60000)/1000);
-      document.getElementById('ultraRewardTimer').innerText = 'Next in ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-      document.getElementById('ultraRewardBadge').style.display = 'none';
-      let progress = ((3600000 - diff) / 3600000) * 100;
-      document.getElementById('ultraRewardBar').style.width = progress + '%';
-    }
-  }
-
-  function claimUltraReward(){
-    if(Date.now() >= userData.ultraRewardTime || userData.ultraRewardTime === 0){
-      userData.balance = Number(userData.balance) || 0;
-      userData.balance += 50;
-      userData.ultraRewardTime = Date.now() + 3600000;
-      saveUser();
-      updateBalance();
-      updateUltraReward();
-      alert('You earned 50 RUPPY!');
-    }
-  }
-
-  function navClick(page) {
-    if(page === 'tasks') window.location.href = 'tasks.html';
-    if(page === 'referral') window.location.href = 'referral.html';
-    if(page === 'ranking') window.location.href = 'ranking.html';
-    if(page === 'community') window.location.href = 'community.html';
-    if(page === 'settings') window.location.href = 'settings.html';
-  }
-
-  init();
-</script>
-</body>
-</html>
+      document.getElementById('giftTimer').innerText = 'Next in ' + String(hrs).padStart(2,'0') + ':' + String(mins).padStart(2,'0')
