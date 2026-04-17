@@ -159,7 +159,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <!-- Firebase SDK - REALTIME DATABASE -->
-<script type="module">
+<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+  <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, push, onValue, update, get, child, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
@@ -591,6 +592,6 @@ getTodayPosts().then(() => {
   updateRewardBanner();
 });
 </script>
-  <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+  
 </body>
 </html>
