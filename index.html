@@ -23,6 +23,8 @@ h1{color:#f9a825;margin:12px 0 20px;font-size:28px}
 .input-box input:focus{outline:none;border-color:#f9a825}
 .btn{margin:18px auto;padding:12px 24px;background:#f9a825;color:#000;border:none;border-radius:24px;font-weight:bold;width:100%;cursor:pointer;font-size:15px}
 .btn:disabled{background:#333;color:#666;cursor:not-allowed}
+.btn-guest{background:transparent;color:#888;border:1px solid #333;margin-top:10px} /* नया Add किया */
+.btn-google{background:#fff;color:#000;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px} /* नया Add किया */
 .toggle{color:#aaa;font-size:13px;margin-top:15px;cursor:pointer}
 .toggle span{color:#f9a825;text-decoration:underline}
 .ft{font-size:11px;color:#666;margin-top:25px}
@@ -31,11 +33,8 @@ a{color:#aaa;text-decoration:none}
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444"
      crossorigin="anonymous"></script>
-<!-- <<< ADD THIS LINE -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<!-- <<< ADD THIS LINE -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<!-- <<< ADD THIS LINE -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 </head>
 <body>
@@ -56,6 +55,15 @@ a{color:#aaa;text-decoration:none}
   </div>
   <div class="error" id="errorMsg"></div>
   <button class="btn" onclick="handleLogin()" id="loginBtn">LOGIN</button>
+
+  <!-
+
+  <!-- नया Add किया: Google Button -->
+  <button class="btn btn-google" onclick="signInWithGoogle()">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18">
+    Sign in with Google
+  </button>
+
   <div class="toggle">New user? <span onclick="showRegister()">Create Account</span></div>
 </div>
 
@@ -82,13 +90,12 @@ a{color:#aaa;text-decoration:none}
 <a href="contact.html">Contact</a> •
 <a href="privacy.html">Privacy</a> •
 <a href="terms.html">Terms</a><br>
-By continuing, you agree to our Terms & Privacy Policy.
+<!-- नया Add किया: Clickable Links -->
+By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Terms</a> & <a href="privacy.html" style="color:#f9a825;">Privacy Policy</a>.
 </div>
 </div>
 
-<script> <!-- <<< CHANGED: type="module" हटाया -->
-  // <<< DELETED: import वाली 2 Line हटा दी
-
+<script>
   const firebaseConfig = {
     apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
     authDomain: "ruppynetwork-50362.firebaseapp.com",
@@ -99,18 +106,64 @@ By continuing, you agree to our Terms & Privacy Policy.
     appId: "1:132064610854:web:3c217eaf3618007f5934e7"
   };
 
-  // <<< ADD THIS LINE
   firebase.initializeApp(firebaseConfig);
-  // <<< ADD THIS LINE
   const auth = firebase.auth();
-  // <<< ADD THIS LINE
   const db = firebase.database();
+  // नया Add किया: Google Provider
+  const provider = new firebase.auth.GoogleAuthProvider();
 
   (function() {
     const urlParams = new URLSearchParams(window.location.search);
     const refCode = urlParams.get('ref');
     if(refCode) localStorage.setItem('ruppy_referredBy', refCode);
   })();
+
+  // नया Function: Guest Login
+  window.continueAsGuest = function() {
+    let guestData = {
+      name: "Guest User",
+      email: "guest@ruppynetwork.com",
+      balance: 0,
+      lastMine: 0,
+      lastGift: 0,
+      boostCount: 0,
+      boostResetTime: Date.now(),
+      team: [],
+      firstRewardTime: 0,
+      ultraRewardTime: 0,
+      createdAt: Date.now(),
+      isGuest: true
+    };
+    localStorage.setItem('ruppy_user', JSON.stringify(guestData));
+    window.location.replace('app.html');
+  }
+
+  // नया Function: Google Sign In
+  window.signInWithGoogle = async function() {
+    try {
+      const result = await auth.signInWithPopup(provider);
+      const user = result.user;
+      const snapshot = await db.ref('users/' + user.uid).get();
+      let userData = snapshot.exists()? snapshot.val() : {
+        name: user.displayName || user.email.split('@')[0],
+        email: user.email,
+        balance: 0,
+        lastMine: 0,
+        lastGift: 0,
+        boostCount: 0,
+        boostResetTime: Date.now(),
+        team: [],
+        firstRewardTime: 0,
+        ultraRewardTime: 0,
+        createdAt: Date.now()
+      };
+      await db.ref('users/' + user.uid).set(userData);
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
+      window.location.replace('app.html');
+    } catch (error) {
+      showError('errorMsg', error.message);
+    }
+  }
 
   window.showRegister = function() {
     document.getElementById('loginForm').style.display = 'none';
@@ -138,7 +191,6 @@ By continuing, you agree to our Terms & Privacy Policy.
     btn.disabled = true;
 
     try {
-      // <<< CHANGED: auth.createUserWithEmailAndPassword
       const userCredential = await auth.createUserWithEmailAndPassword(email, password);
       let userData = {
         name: email.split('@')[0],
@@ -153,7 +205,6 @@ By continuing, you agree to our Terms & Privacy Policy.
         ultraRewardTime: 0,
         createdAt: Date.now()
       };
-      // <<< ADD THIS LINE: Firebase DB में Save
       await db.ref('users/' + auth.currentUser.uid).set(userData);
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
       window.location.replace('app.html');
@@ -176,9 +227,7 @@ By continuing, you agree to our Terms & Privacy Policy.
     btn.disabled = true;
 
     try {
-      // <<< CHANGED: auth.signInWithEmailAndPassword
       await auth.signInWithEmailAndPassword(email, password);
-      // <<< ADD THIS LINE: Firebase DB से Load
       const snapshot = await db.ref('users/' + auth.currentUser.uid).get();
       let userData = snapshot.exists()? snapshot.val() : {
         name: email.split('@')[0],
