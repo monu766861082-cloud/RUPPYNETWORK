@@ -23,8 +23,8 @@ h1{color:#f9a825;margin:12px 0 20px;font-size:28px}
 .input-box input:focus{outline:none;border-color:#f9a825}
 .btn{margin:18px auto;padding:12px 24px;background:#f9a825;color:#000;border:none;border-radius:24px;font-weight:bold;width:100%;cursor:pointer;font-size:15px}
 .btn:disabled{background:#333;color:#666;cursor:not-allowed}
-.btn-guest{background:transparent;color:#888;border:1px solid #333;margin-top:10px} /* नया Add किया */
-.btn-google{background:#fff;color:#000;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px} /* नया Add किया */
+.btn-guest{background:transparent;color:#888;border:1px solid #333;margin-top:10px}
+.btn-google{background:#fff;color:#000;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px}
 .toggle{color:#aaa;font-size:13px;margin-top:15px;cursor:pointer}
 .toggle span{color:#f9a825;text-decoration:underline}
 .ft{font-size:11px;color:#666;margin-top:25px}
@@ -56,7 +56,6 @@ a{color:#aaa;text-decoration:none}
   <div class="error" id="errorMsg"></div>
   <button class="btn" onclick="handleLogin()" id="loginBtn">LOGIN</button>
 
-  <!-- नया Add किया: Google Button -->
   <button class="btn btn-google" onclick="signInWithGoogle()">
     <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18">
     Sign in with Google
@@ -88,7 +87,6 @@ a{color:#aaa;text-decoration:none}
 <a href="contact.html">Contact</a> •
 <a href="privacy.html">Privacy</a> •
 <a href="terms.html">Terms</a><br>
-<!-- नया Add किया: Clickable Links -->
 By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Terms</a> & <a href="privacy.html" style="color:#f9a825;">Privacy Policy</a>.
 </div>
 </div>
@@ -107,7 +105,6 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.database();
-  // नया Add किया: Google Provider
   const provider = new firebase.auth.GoogleAuthProvider();
 
   (function() {
@@ -116,11 +113,36 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     if(refCode) localStorage.setItem('ruppy_referredBy', refCode);
   })();
 
-  // नया Function: Guest Login
-  window.continueAsGuest = function() {
-    let guestData = {
-      name: "Guest User",
-      email: "guest@ruppynetwork.com",
+  // FIX 1: Google Sign In - Popup fail हो तो Redirect
+  window.signInWithGoogle = async function() {
+    try {
+      const result = await auth.signInWithPopup(provider);
+      await handleGoogleUser(result.user);
+    } catch (error) {
+      if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+        auth.signInWithRedirect(provider); // Mobile पे Redirect Use कर
+      } else {
+        showError('errorMsg', 'Google Error: ' + error.message);
+      }
+    }
+  }
+
+  // Redirect से वापस आए तो User Check कर
+  auth.getRedirectResult().then(async (result) => {
+    if (result.user) {
+      await handleGoogleUser(result.user);
+    }
+  }).catch((error) => {
+    showError('errorMsg', 'Google Error: ' + error.message);
+  });
+
+  async function handleGoogleUser(user) {
+    const uid = user.uid;
+    const snapshot = await db.ref('users/' + uid).get();
+    let userData = snapshot.exists()? snapshot.val() : {
+      userId: uid,
+      name: user.displayName || user.email.split('@')[0],
+      email: user.email,
       balance: 0,
       lastMine: 0,
       lastGift: 0,
@@ -129,39 +151,11 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
       team: [],
       firstRewardTime: 0,
       ultraRewardTime: 0,
-      createdAt: Date.now(),
-      isGuest: true
+      createdAt: Date.now()
     };
-    localStorage.setItem('ruppy_user', JSON.stringify(guestData));
+    await db.ref('users/' + uid).set(userData);
+    localStorage.setItem('ruppy_user', JSON.stringify(userData));
     window.location.replace('app.html');
-  }
-
-  // नया Function: Google Sign In
-  window.signInWithGoogle = async function() {
-    try {
-      const result = await auth.signInWithPopup(provider);
-      const user = result.user;
-      const snapshot = await db.ref('users/' + user.uid).get();
-      let userData = snapshot.exists()? snapshot.val() : {
-        userId: user.uid,
-        name: user.displayName || user.email.split('@')[0],
-        email: user.email,
-        balance: 0,
-        lastMine: 0,
-        lastGift: 0,
-        boostCount: 0,
-        boostResetTime: Date.now(),
-        team: [],
-        firstRewardTime: 0,
-        ultraRewardTime: 0,
-        createdAt: Date.now()
-      };
-      await db.ref('users/' + user.uid).set(userData);
-      localStorage.setItem('ruppy_user', JSON.stringify(userData));
-      window.location.replace('app.html');
-    } catch (error) {
-      showError('errorMsg', error.message);
-    }
   }
 
   window.showRegister = function() {
@@ -176,6 +170,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     document.getElementById('regErrorMsg').style.display = 'none';
   }
 
+  // FIX 2: Register में auth.currentUser की जगह userCredential.user
   window.handleRegister = async function() {
     const email = document.getElementById('regEmail').value.trim();
     const password = document.getElementById('regPassword').value;
@@ -191,8 +186,9 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
 
     try {
       const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+      const uid = userCredential.user.uid; // 👈 यही Fix है
       let userData = {
-        userId: auth.currentUser.uid,
+        userId: uid,
         name: email.split('@')[0],
         email: email,
         balance: 0,
@@ -205,7 +201,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
         ultraRewardTime: 0,
         createdAt: Date.now()
       };
-      await db.ref('users/' + auth.currentUser.uid).set(userData);
+      await db.ref('users/' + uid).set(userData);
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
       window.location.replace('app.html');
     } catch (error) {
@@ -227,10 +223,11 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     btn.disabled = true;
 
     try {
-      await auth.signInWithEmailAndPassword(email, password);
-      const snapshot = await db.ref('users/' + auth.currentUser.uid).get();
+      const userCredential = await auth.signInWithEmailAndPassword(email, password);
+      const uid = userCredential.user.uid;
+      const snapshot = await db.ref('users/' + uid).get();
       let userData = snapshot.exists()? snapshot.val() : {
-        userId: auth.currentUser.uid,
+        userId: uid,
         name: email.split('@')[0],
         email: email,
         balance: 0,
