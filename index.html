@@ -143,6 +143,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
       const user = result.user;
       const snapshot = await db.ref('users/' + user.uid).get();
       let userData = snapshot.exists()? snapshot.val() : {
+        userId: user.uid,
         name: user.displayName || user.email.split('@')[0],
         email: user.email,
         balance: 0,
@@ -191,6 +192,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     try {
       const userCredential = await auth.createUserWithEmailAndPassword(email, password);
       let userData = {
+        userId: auth.currentUser.uid,
         name: email.split('@')[0],
         email: email,
         balance: 0,
@@ -228,6 +230,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
       await auth.signInWithEmailAndPassword(email, password);
       const snapshot = await db.ref('users/' + auth.currentUser.uid).get();
       let userData = snapshot.exists()? snapshot.val() : {
+        userId: auth.currentUser.uid,
         name: email.split('@')[0],
         email: email,
         balance: 0,
