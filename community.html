@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RUPPY Hub</title>
 <script src="config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
@@ -273,48 +272,20 @@ document.getElementById('postText').oninput = function(){
   updateRewardBanner();
 }
 
-document.getElementById('fileInput').onchange = async function(e){
-  let file = e.target.files[0];
-  if(!file) return;
-
-  selectedFile = null;
-  document.getElementById('preview').style.display = 'none';
-  document.getElementById('preview').innerHTML = '';
-
-  // सिर्फ Image को 50KB बनाएगा, Video को नहीं छुएगा
-  if(file.type.includes('image')){
-    document.getElementById('postBtn').textContent = 'Compressing...';
-    document.getElementById('postBtn').disabled = true;
-
-    const options = {
-      maxSizeMB: 0.05,
-      maxWidthOrHeight: 800,
-      useWebWorker: true,
-      fileType: 'image/webp'
-    }
-
-    try {
-      file = await imageCompression(file, options);
-    } catch (error) {
-      alert('Photo compress नहीं हो पाई');
-      document.getElementById('fileInput').value = '';
-      updateRewardBanner();
-      return;
-    }
-  }
-
-  selectedFile = file;
-
-  let reader = new FileReader();
-  reader.onload = function(e){
-    let preview = document.getElementById('preview');
-    preview.style.display = 'block';
-    preview.innerHTML = selectedFile.type.includes('video')
+document.getElementById('fileInput').onchange = function(e){
+  selectedFile = e.target.files[0];
+  if(selectedFile){
+    let reader = new FileReader();
+    reader.onload = function(e){
+      let preview = document.getElementById('preview');
+      preview.style.display = 'block';
+      preview.innerHTML = selectedFile.type.includes('video')
 ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
-      : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
-    updateRewardBanner();
+        : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
+      updateRewardBanner();
+    }
+    reader.readAsDataURL(selectedFile);
   }
-  reader.readAsDataURL(selectedFile);
 }
 
 window.openCreate = function(){
@@ -584,4 +555,24 @@ window.sharePost = function(id){
 
 // REPORT POST - REALTIME DB
 window.reportPost = async function(id){
-  if(confirm('Report this
+  if(confirm('Report this post?')){
+    const postRef = ref(db, `posts/${id}`);
+    const snapshot = await get(postRef);
+    const post = snapshot.val();
+
+    await update(postRef, { reports: (post.reports || 0) + 1 });
+    alert('Reported');
+  }
+}
+
+// INIT - Load everything on page load
+if(typeof loadProfileEverywhere!== 'undefined'){
+  loadProfileEverywhere();
+}
+updateBalanceBox();
+getTodayPosts().then(() => {
+  updateRewardBanner();
+});
+</script>
+</body>
+</html>
