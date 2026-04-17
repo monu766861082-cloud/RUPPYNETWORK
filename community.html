@@ -333,6 +333,23 @@ window.createPost = async function(){
   let mediaType = null;
 
   try {
+        if(selectedFile && selectedFile.type.includes('image')){
+      document.getElementById('postBtn').textContent = 'Compressing...';
+      try {
+        selectedFile = await window.imageCompression(selectedFile, {
+          maxSizeMB: 0.05,
+          maxWidthOrHeight: 800,
+          useWebWorker: true,
+          fileType: 'image/webp'
+        });
+      } catch (err) {
+        alert('Photo compress नहीं हुई');
+        document.getElementById('postBtn').textContent = 'Post';
+        await getTodayPosts();
+        updateRewardBanner();
+        return;
+      }
+    }
     if(selectedFile){
       const storageRef = sRef(storage, `posts/${Date.now()}_${selectedFile.name}`);
       await uploadBytes(storageRef, selectedFile);
