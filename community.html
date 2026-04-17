@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RUPPY Hub</title>
 <script src="config.js"></script>
-<!-- बस ये 1 Line नई जोड़ी है Compress के लिए 👇 -->
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -274,28 +273,30 @@ document.getElementById('postText').oninput = function(){
   updateRewardBanner();
 }
 
-// ===== बस ये वाला Function बदला है 500MB को 50KB बनाने के लिए 👇 =====
 document.getElementById('fileInput').onchange = async function(e){
   let file = e.target.files[0];
   if(!file) return;
 
-  // Video को Compress नहीं करेंगे, सिर्फ Image को
+  selectedFile = null;
+  document.getElementById('preview').style.display = 'none';
+  document.getElementById('preview').innerHTML = '';
+
+  // सिर्फ Image को 50KB बनाएगा, Video को नहीं छुएगा
   if(file.type.includes('image')){
     document.getElementById('postBtn').textContent = 'Compressing...';
     document.getElementById('postBtn').disabled = true;
 
     const options = {
-      maxSizeMB: 0.05, // 50KB = 0.05MB
-      maxWidthOrHeight: 800, // 800px से बड़ी नहीं
+      maxSizeMB: 0.05,
+      maxWidthOrHeight: 800,
       useWebWorker: true,
-      fileType: 'image/webp' // WebP सबसे छोटी Quality
+      fileType: 'image/webp'
     }
 
     try {
       file = await imageCompression(file, options);
-      console.log('Compressed:', (file.size/1024).toFixed(2) + ' KB');
     } catch (error) {
-      alert('Photo compress नहीं हो पाई, दूसरी Try कर');
+      alert('Photo compress नहीं हो पाई');
       document.getElementById('fileInput').value = '';
       updateRewardBanner();
       return;
@@ -303,6 +304,7 @@ document.getElementById('fileInput').onchange = async function(e){
   }
 
   selectedFile = file;
+
   let reader = new FileReader();
   reader.onload = function(e){
     let preview = document.getElementById('preview');
@@ -314,7 +316,6 @@ document.getElementById('fileInput').onchange = async function(e){
   }
   reader.readAsDataURL(selectedFile);
 }
-// ===== बस ऊपर तक बदला है, बाकी सब Same है 👆 =====
 
 window.openCreate = function(){
   document.getElementById('postText').focus();
@@ -583,10 +584,4 @@ window.sharePost = function(id){
 
 // REPORT POST - REALTIME DB
 window.reportPost = async function(id){
-  if(confirm('Report this post?')){
-    const postRef = ref(db, `posts/${id}`);
-    const snapshot = await get(postRef);
-    const post = snapshot.val();
-
-    await update(postRef, { reports: (post.reports || 0) + 1 });
-    alert('Reported
+  if(confirm('Report this
