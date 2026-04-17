@@ -162,6 +162,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, push, onValue, update, get, child, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
@@ -175,6 +176,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const storage = getStorage(app);
 
 const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
 function checkContent(text){
@@ -304,7 +306,7 @@ window.claimPost = async function(postId){
   renderFeed(JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]'));
 }
 
-// CREATE POST - CLOUDINARY UPLOAD - KB COMPRESSION हटा दी ✅
+// CREATE POST - FIREBASE STORAGE - COMPRESSION हटाया ✅
 window.createPost = async function(){
   await getTodayPosts();
   if(todayPostCount >= 3){
@@ -331,26 +333,18 @@ window.createPost = async function(){
   let mediaType = null;
 
   try {
-    // ✅ KB Compression वाला Code हटा दिया - अब Direct Full Quality Upload
+    // ✅ बस Compression वाला Code हटा दिया - अब Direct Original File Upload
     if(selectedFile){
       document.getElementById('postBtn').textContent = 'Uploading...';
-      const data = new FormData();
-      data.append("file", selectedFile);
-      data.append("upload_preset", "ruppy_posts");
-
-      const res = await fetch(`https://api.cloudinary.com/v1_1/dr12i9orc/image/upload`, {
-        method: "POST",
-        body: data
-      });
-
-      const result = await res.json();
-      mediaUrl = result.secure_url;
+      const storageRef = sRef(storage, `posts/${Date.now()}_${selectedFile.name}`);
+      await uploadBytes(storageRef, selectedFile);
+      mediaUrl = await getDownloadURL(storageRef);
       mediaType = selectedFile.type.includes('video')? 'video' : 'image';
     }
 
     const newPostRef = await push(ref(db, 'posts'), {
       user: currentUser,
-      userDp: (typeof userData!== 'undefined')? userData.dp : null,
+      userDp: (typeof userData!== 'undefined' && userData.dp)? userData.dp : null,
       text: text,
       media: mediaUrl,
       mediaType: mediaType,
@@ -540,7 +534,7 @@ window.addComment = async function(id){
   const post = snapshot.val();
   const comments = post.comments || [];
 
-  comments.push({user: currentUser, userDp: (typeof userData!== 'undefined')? userData.dp : null, text: text, time: Date.now()});
+  comments.push({user: currentUser, userDp: (typeof userData!== 'undefined' && userData.dp)? userData.dp : null, text: text, time: Date.now()});
 
   await update(postRef, { comments: comments });
   input.value = '';
