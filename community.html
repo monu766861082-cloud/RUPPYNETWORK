@@ -137,7 +137,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
 <div class="ruppy-nav">
   <button class="nav-btn" onclick="location.href='app.html'">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
     <span>Home</span>
   </button>
   <button class="nav-btn" onclick="location.href='tasks.html'">
@@ -145,7 +145,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <span>Tasks</span>
   </button>
   <button class="nav-btn" onclick="location.href='referral.html'">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
     <span>Referral</span>
   </button>
   <button class="nav-btn" onclick="location.href='ranking.html'">
@@ -169,7 +169,7 @@ const firebaseConfig = {
   authDomain: "ruppynetwork-50362.firebaseapp.com",
   databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
   projectId: "ruppynetwork-50362",
-  storageBucket: "ruppynetwork-50362.firebasestorage.app",
+  storageBucket: "ruppynetwork-50362.appspot.com",
   messagingSenderId: "132064610854",
   appId: "1:132064610854:web:3c217eaf3618007f5934e7"
 };
@@ -185,7 +185,7 @@ function checkContent(text){
 }
 
 // AUTO SYNC - Load userData from config.js
-let currentUser = userData.name || 'User'+Math.floor(Math.random()*999);
+let currentUser = (typeof userData!== 'undefined' && userData.name)? userData.name : 'User'+Math.floor(Math.random()*999);
 
 // Global Variable for Daily Count
 let todayPostCount = 0;
@@ -225,8 +225,10 @@ function getUnclaimedPost(){
 
 // AUTO BALANCE UPDATE - Main App Balance + Task Balance
 function updateBalanceBox(){
-  document.getElementById('taskBalance').textContent = userData.taskBalance || 0;
-  document.getElementById('totalBalance').textContent = userData.balance || 0;
+  if(typeof userData!== 'undefined'){
+    document.getElementById('taskBalance').textContent = userData.taskBalance || 0;
+    document.getElementById('totalBalance').textContent = userData.balance || 0;
+  }
 }
 
 // Firebase में claimed update करेंगे
@@ -234,9 +236,11 @@ async function markPostClaimed(postId){
   const postRef = ref(db, `posts/${postId}`);
   await update(postRef, { claimed: true });
 
-  userData.balance = Number(userData.balance) || 0;
-  userData.balance += 10;
-  saveRuppyData(userData);
+  if(typeof userData!== 'undefined' && typeof saveRuppyData!== 'undefined'){
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += 10;
+    saveRuppyData(userData);
+  }
 }
 
 // अब todayPostCount use करेंगे
@@ -338,7 +342,7 @@ window.createPost = async function(){
 
     const newPostRef = await push(ref(db, 'posts'), {
       user: currentUser,
-      userDp: userData.dp,
+      userDp: (typeof userData!== 'undefined')? userData.dp : null,
       text: text,
       media: mediaUrl,
       mediaType: mediaType,
@@ -358,6 +362,7 @@ window.createPost = async function(){
 
   } catch (error) {
     alert('Error: ' + error.message);
+    console.error(error);
   }
 
   await getTodayPosts();
@@ -527,7 +532,7 @@ window.addComment = async function(id){
   const post = snapshot.val();
   const comments = post.comments || [];
 
-  comments.push({user: currentUser, userDp: userData.dp, text: text, time: Date.now()});
+  comments.push({user: currentUser, userDp: (typeof userData!== 'undefined')? userData.dp : null, text: text, time: Date.now()});
 
   await update(postRef, { comments: comments });
   input.value = '';
@@ -561,7 +566,9 @@ window.reportPost = async function(id){
 }
 
 // INIT - Load everything on page load
-loadProfileEverywhere();
+if(typeof loadProfileEverywhere!== 'undefined'){
+  loadProfileEverywhere();
+}
 updateBalanceBox();
 getTodayPosts().then(() => {
   updateRewardBanner();
