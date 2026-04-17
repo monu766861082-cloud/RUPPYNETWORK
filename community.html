@@ -159,7 +159,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <!-- Firebase SDK - REALTIME DATABASE -->
-<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
   <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, push, onValue, update, get, child, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -305,7 +304,7 @@ window.claimPost = async function(postId){
   renderFeed(JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]'));
 }
 
-// CREATE POST - CLOUDINARY UPLOAD
+// CREATE POST - CLOUDINARY UPLOAD - KB COMPRESSION हटा दी ✅
 window.createPost = async function(){
   await getTodayPosts();
   if(todayPostCount >= 3){
@@ -332,25 +331,7 @@ window.createPost = async function(){
   let mediaType = null;
 
   try {
-    if(selectedFile && selectedFile.type.includes('image')){
-      document.getElementById('postBtn').textContent = 'Compressing...';
-      try {
-        selectedFile = await window.imageCompression(selectedFile, {
-          maxSizeMB: 0.05,
-          maxWidthOrHeight: 800,
-          useWebWorker: true,
-          fileType: 'image/webp'
-        });
-      } catch (err) {
-        alert('Photo compress नहीं हुई');
-        document.getElementById('postBtn').textContent = 'Post';
-        await getTodayPosts();
-        updateRewardBanner();
-        return;
-      }
-    }
-
-    // ✅ CLOUDINARY UPLOAD - Firebase Storage Delete कर दिया
+    // ✅ KB Compression वाला Code हटा दिया - अब Direct Full Quality Upload
     if(selectedFile){
       document.getElementById('postBtn').textContent = 'Uploading...';
       const data = new FormData();
