@@ -163,7 +163,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, push, onValue, update, get, child, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
@@ -177,7 +176,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const storage = getStorage(app);
 
 const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
 function checkContent(text){
@@ -307,7 +305,7 @@ window.claimPost = async function(postId){
   renderFeed(JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]'));
 }
 
-// CREATE POST - REALTIME DB
+// CREATE POST - CLOUDINARY UPLOAD
 window.createPost = async function(){
   await getTodayPosts();
   if(todayPostCount >= 3){
@@ -334,7 +332,7 @@ window.createPost = async function(){
   let mediaType = null;
 
   try {
-        if(selectedFile && selectedFile.type.includes('image')){
+    if(selectedFile && selectedFile.type.includes('image')){
       document.getElementById('postBtn').textContent = 'Compressing...';
       try {
         selectedFile = await window.imageCompression(selectedFile, {
@@ -351,10 +349,21 @@ window.createPost = async function(){
         return;
       }
     }
+
+    // ✅ CLOUDINARY UPLOAD - Firebase Storage Delete कर दिया
     if(selectedFile){
-      const storageRef = sRef(storage, `posts/${Date.now()}_${selectedFile.name}`);
-      await uploadBytes(storageRef, selectedFile);
-      mediaUrl = await getDownloadURL(storageRef);
+      document.getElementById('postBtn').textContent = 'Uploading...';
+      const data = new FormData();
+      data.append("file", selectedFile);
+      data.append("upload_preset", "ruppy_posts");
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/dr12i9orc/image/upload`, {
+        method: "POST",
+        body: data
+      });
+
+      const result = await res.json();
+      mediaUrl = result.secure_url;
       mediaType = selectedFile.type.includes('video')? 'video' : 'image';
     }
 
@@ -592,6 +601,6 @@ getTodayPosts().then(() => {
   updateRewardBanner();
 });
 </script>
-  
+
 </body>
 </html>
