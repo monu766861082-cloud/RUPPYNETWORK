@@ -147,7 +147,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
 var userData = window.userData;
 
-// ✅ FIX: Wait for userData + Global Functions
 async function loadProfile(){
   let attempts = 0;
   while(!window.userData?.uid && attempts < 50) {
@@ -310,7 +309,6 @@ window.sendMiningNotif = function(){
 }
 </script>
 
-<!-- Monetag Multitag Script -->
-<script src="https://quge5.com/88/tag.min.js" data-zone="228902" async data-cfasync="false"></script>
+<!-- ✅ Monetag Script हटा दिया - अब Popup नहीं आएगा -->
 </body>
 </html>
