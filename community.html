@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RUPPY Hub</title>
 <script src="config.js"></script>
+
+<!-- ✅ FIX 1: Global Sync Script Add किया - सबसे ऊपर -->
+<script type="module" src="global.js"></script>
+
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
@@ -158,23 +162,12 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </button>
 </div>
 
-<!-- Firebase SDK - REALTIME DATABASE -->
+<!-- ✅ FIX 2: Firebase वाला Code हटाया, सिर्फ Post वाला रखा -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, push, onValue, update, get, child, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
-  authDomain: "ruppynetwork-50362.firebaseapp.com",
-  databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
-  projectId: "ruppynetwork-50362",
-  storageBucket: "ruppynetwork-50362.appspot.com",
-  messagingSenderId: "132064610854",
-  appId: "1:132064610854:web:3c217eaf3618007f5934e7"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+// ✅ FIX 3: global.js से db आएगा, यहाँ initialize नहीं करेंगे
+const db = window.firebaseDb || getDatabase();
 
 const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
 function checkContent(text){
@@ -182,19 +175,17 @@ function checkContent(text){
   return bannedWords.some(word => lower.includes(word));
 }
 
-// AUTO SYNC - Load userData from config.js
-let currentUser = (typeof userData!== 'undefined' && userData.name)? userData.name : 'User'+Math.floor(Math.random()*999);
+// ✅ FIX 4: window.userData use करो, global.js से आएगा
+let currentUser = window.userData?.name || 'User'+Math.floor(Math.random()*999);
 
 // Global Variable for Daily Count
 let todayPostCount = 0;
 let todayPostsData = [];
 
-// Date Helper
 function getTodayKey(){
   return new Date().toDateString();
 }
 
-// अब Firebase से Count लेंगे
 async function getTodayPosts(){
   const today = new Date();
   today.setHours(0,0,0,0);
@@ -221,27 +212,20 @@ function getUnclaimedPost(){
   return todayPostsData.find(p =>!p.claimed);
 }
 
-// AUTO BALANCE UPDATE - Main App Balance + Task Balance
-function updateBalanceBox(){
-  if(typeof userData!== 'undefined'){
-    document.getElementById('taskBalance').textContent = userData.taskBalance || 0;
-    document.getElementById('totalBalance').textContent = userData.balance || 0;
-  }
-}
+// ✅ FIX 5: updateBalanceBox Delete कर दिया - global.js वाला चलेगा
 
-// Firebase में claimed update करेंगे
 async function markPostClaimed(postId){
   const postRef = ref(db, `posts/${postId}`);
   await update(postRef, { claimed: true });
 
-  if(typeof userData!== 'undefined' && typeof saveRuppyData!== 'undefined'){
-    userData.balance = Number(userData.balance) || 0;
-    userData.balance += 10;
-    saveRuppyData(userData);
+  // ✅ FIX 6: global.js का saveRuppyData use करो
+  if(window.userData && window.saveRuppyData){
+    window.userData.balance = Number(window.userData.balance) || 0;
+    window.userData.balance += 10;
+    await window.saveRuppyData(window.userData);
   }
 }
 
-// अब todayPostCount use करेंगे
 function updateRewardBanner(){
   let count = todayPostCount;
   let unclaimed = getUnclaimedPost();
@@ -300,11 +284,11 @@ window.claimPost = async function(postId){
   alert('10 Ruppy coin Claimed! 🎉');
   await getTodayPosts();
   updateRewardBanner();
-  updateBalanceBox();
+  // ✅ FIX 7: global.js का updateBalanceBox call करो
+  if(window.updateBalanceBox) window.updateBalanceBox();
   renderFeed(JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]'));
 }
 
-// CREATE POST - CLOUDINARY UPLOAD - Fixed userDp undefined ✅
 window.createPost = async function(){
   await getTodayPosts();
   if(todayPostCount >= 3){
@@ -331,7 +315,6 @@ window.createPost = async function(){
   let mediaType = null;
 
   try {
-    // ✅ Direct Upload - 1MB = 1MB जाएगा Cloudinary पे, 50KB नहीं बनेगी
     if(selectedFile){
       document.getElementById('postBtn').textContent = 'Uploading...';
       const data = new FormData();
@@ -350,7 +333,7 @@ window.createPost = async function(){
 
     const newPostRef = await push(ref(db, 'posts'), {
       user: currentUser,
-      userDp: (typeof userData!== 'undefined' && userData.dp)? userData.dp : null,
+      userDp: window.userData?.dp || null,
       text: text,
       media: mediaUrl,
       mediaType: mediaType,
@@ -377,7 +360,6 @@ window.createPost = async function(){
   updateRewardBanner();
 }
 
-// REAL-TIME LISTEN - REALTIME DB
 onValue(ref(db, 'posts'), async (snapshot) => {
   let posts = [];
 
@@ -392,7 +374,8 @@ onValue(ref(db, 'posts'), async (snapshot) => {
   await getTodayPosts();
   renderFeed(posts);
   updateRewardBanner();
-  updateBalanceBox();
+  // ✅ FIX 8: global.js का updateBalanceBox call करो
+  if(window.updateBalanceBox) window.updateBalanceBox();
 });
 
 function renderFeed(posts){
@@ -424,7 +407,6 @@ function renderFeed(posts){
     let commentsToShow = post.showAllComments? (post.comments || []) : (post.comments || []).slice(-2);
     let hiddenCount = (post.comments || []).length - commentsToShow.length;
 
-    // Claim Button Logic - Firebase claimed field check
     let claimBtnHTML = '';
     if(post.user === currentUser && post.claimed === false){
       claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +10 रुपए</button>`;
@@ -496,7 +478,6 @@ function getTimeAgo(time){
   return new Date(time).toLocaleDateString();
 }
 
-// LIKE POST - REALTIME DB
 window.likePost = async function(id){
   const postRef = ref(db, `posts/${id}`);
   const snapshot = await get(postRef);
@@ -525,7 +506,6 @@ window.showAllComments = function(id){
   document.getElementById(`comments-${id}`).style.display = 'block';
 }
 
-// ADD COMMENT - REALTIME DB - Fixed userDp undefined ✅
 window.addComment = async function(id){
   let input = document.getElementById(`commentInput-${id}`);
   let text = input.value.trim();
@@ -540,7 +520,7 @@ window.addComment = async function(id){
   const post = snapshot.val();
   const comments = post.comments || [];
 
-  comments.push({user: currentUser, userDp: (typeof userData!== 'undefined' && userData.dp)? userData.dp : null, text: text, time: Date.now()});
+  comments.push({user: currentUser, userDp: window.userData?.dp || null, text: text, time: Date.now()});
 
   await update(postRef, { comments: comments });
   input.value = '';
@@ -561,7 +541,6 @@ window.sharePost = function(id){
   }
 }
 
-// REPORT POST - REALTIME DB
 window.reportPost = async function(id){
   if(confirm('Report this post?')){
     const postRef = ref(db, `posts/${id}`);
@@ -573,13 +552,21 @@ window.reportPost = async function(id){
   }
 }
 
-// INIT - Load everything on page load
-if(typeof loadProfileEverywhere!== 'undefined'){
-  loadProfileEverywhere();
-}
-updateBalanceBox();
-getTodayPosts().then(() => {
-  updateRewardBanner();
+// ✅ FIX 9: INIT - global.js Load होने का Wait
+document.addEventListener('DOMContentLoaded', async () => {
+  // Wait for global.js to load userData
+  let attempts = 0;
+  while(!window.userData?.uid && attempts < 50) {
+    await new Promise(r => setTimeout(r, 100));
+    attempts++;
+  }
+  currentUser = window.userData?.name || currentUser;
+
+  getTodayPosts().then(() => {
+    updateRewardBanner();
+  });
+
+  if(window.updateBalanceBox) window.updateBalanceBox();
 });
 </script>
 
