@@ -8,8 +8,7 @@
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
   
-  <!-- ✅ ये Line Fix कर दी - type="module" लगा दिया -->
-  <script type="module" src="config.js"></script>
+  <script src="config.js"></script>
   
   <style>
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
@@ -160,7 +159,6 @@
 <script>
   const MINING_REWARD = 40;
 
-  // ✅ ये अब Firebase में Save करेगा क्योंकि config.js बदल गई
   function saveUser() {
     saveRuppyData(userData);
   }
