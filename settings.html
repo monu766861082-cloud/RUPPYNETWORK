@@ -7,7 +7,6 @@
 <!-- Monetag Verification Meta Tag -->
 <meta name="monetag" content="21dbbe26571c9c62250f84692bff67fc">
 
-<!-- ✅ FIXED: type="module" लगा दिया -->
 <script type="module" src="config.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -146,9 +145,17 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ2p1YnhmeGpha2dpY3VweXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzk4NTIsImV4cCI6MjA5MTIxNTg1Mn0.QST9mZ7uup-H-s9P6DznbOVO14kJTCgYIIZxyTP1T24';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// userData अब config.js से आएगा
+var userData = window.userData;
 
-function loadProfile(){
+// ✅ FIX: Wait for userData + Global Functions
+async function loadProfile(){
+  let attempts = 0;
+  while(!window.userData?.uid && attempts < 50) {
+    await new Promise(r => setTimeout(r, 100));
+    attempts++;
+  }
+  userData = window.userData;
+
   if(userData.dp){
     document.getElementById('avatarBox').innerHTML = `<img src="${userData.dp}" alt="Profile">`;
   } else {
@@ -162,25 +169,25 @@ function loadProfile(){
 
 loadProfile();
 
-function copyRefCode(){
+window.copyRefCode = function(){
   navigator.clipboard.writeText(userData.uid);
   showToast('Referral Code Copied!');
 }
 
-function showToast(msg){
+window.showToast = function(msg){
   let t = document.getElementById('toast');
   t.innerText = msg;
   t.style.display = 'block';
   setTimeout(() => t.style.display = 'none', 2500);
 }
 
-function openEditProfile(){
+window.openEditProfile = function(){
   document.getElementById('editName').value = userData.name;
   document.getElementById('editBirthday').value = userData.birthday || '';
   document.getElementById('editModal').classList.add('active');
 }
 
-function closeEditProfile(){
+window.closeEditProfile = function(){
   document.getElementById('editModal').classList.remove('active');
 }
 
@@ -208,7 +215,7 @@ window.saveProfile = async function(){
     }
 
     saveBtn.textContent = 'Saving...';
-    await saveRuppyData(userData); // config.js वाला Function
+    await saveRuppyData(userData);
     await loadProfile();
     closeEditProfile();
     showToast('Profile Updated!');
@@ -253,7 +260,7 @@ function compressToBase64(file, maxWidth, quality){
   });
 }
 
-async function logout(){
+window.logout = async function(){
   if(confirm('Are you sure you want to logout?')){
     await supabase.auth.signOut();
     localStorage.removeItem('ruppy_user');
@@ -263,7 +270,7 @@ async function logout(){
   }
 }
 
-function goPage(page){ window.location.href = page; }
+window.goPage = function(page){ window.location.href = page; }
 
 let notifEnabled = localStorage.getItem('notif_enabled') === 'true';
 
@@ -273,7 +280,7 @@ function updateNotifStatus(){
 }
 updateNotifStatus();
 
-async function toggleNotification(){
+window.toggleNotification = async function(){
   if(!notifEnabled){
     if('Notification' in window){
       const permission = await Notification.requestPermission();
