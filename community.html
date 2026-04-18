@@ -5,10 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RUPPY Hub</title>
 <script src="config.js"></script>
-
-<!-- ✅ FIX 1: Global Sync Script Add किया - सबसे ऊपर -->
-<script type="module" src="global.js"></script>
-
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
@@ -162,12 +158,22 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
   </button>
 </div>
 
-<!-- ✅ FIX 2: Firebase वाला Code हटाया, सिर्फ Post वाला रखा -->
 <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, push, onValue, update, get, child, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// ✅ FIX 3: global.js से db आएगा, यहाँ initialize नहीं करेंगे
-const db = window.firebaseDb || getDatabase();
+const firebaseConfig = {
+  apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
+  authDomain: "ruppynetwork-50362.firebaseapp.com",
+  databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
+  projectId: "ruppynetwork-50362",
+  storageBucket: "ruppynetwork-50362.appspot.com",
+  messagingSenderId: "132064610854",
+  appId: "1:132064610854:web:3c217eaf3618007f5934e7"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
 const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
 function checkContent(text){
@@ -175,10 +181,52 @@ function checkContent(text){
   return bannedWords.some(word => lower.includes(word));
 }
 
-// ✅ FIX 4: window.userData use करो, global.js से आएगा
-let currentUser = window.userData?.name || 'User'+Math.floor(Math.random()*999);
+// ✅ FINAL FIX: Auto Balance Sync - app.html वाला Balance यहाँ दिखेगा
+// Config.js से userData Load होने का Wait
+let currentUser = 'User';
+let userDataLoaded = false;
 
-// Global Variable for Daily Count
+async function waitForUserData(){
+  let attempts = 0;
+  while(typeof userData === 'undefined' && attempts < 50){
+    await new Promise(r => setTimeout(r, 100));
+    attempts++;
+  }
+  if(typeof userData!== 'undefined'){
+    currentUser = userData.name || 'User';
+    updateBalanceDisplay();
+    loadUserAvatar();
+    userDataLoaded = true;
+  }
+}
+
+// ✅ Balance Display Function - app.html के Same Logic
+function updateBalanceDisplay(){
+  if(typeof userData!== 'undefined'){
+    document.getElementById('taskBalance').textContent = Number(userData.taskBalance) || 0;
+    document.getElementById('totalBalance').textContent = Number(userData.balance) || 0;
+  }
+}
+
+// ✅ Profile Avatar Update
+function loadUserAvatar(){
+  const avatar = document.getElementById('userAvatar');
+  if(typeof userData!== 'undefined' && userData.dp){
+    avatar.innerHTML = `<img src="${userData.dp}">`;
+  } else {
+    avatar.textContent = (typeof userData!== 'undefined' && userData.name)? userData.name[0].toUpperCase() : 'U';
+  }
+}
+
+// ✅ Config.js के Save Function को Hook करो Balance Update के लिए
+if(typeof saveRuppyData!== 'undefined'){
+  const originalSave = window.saveRuppyData;
+  window.saveRuppyData = async function(data){
+    await originalSave(data);
+    updateBalanceDisplay(); // Save के बाद Balance Update
+  }
+}
+
 let todayPostCount = 0;
 let todayPostsData = [];
 
@@ -212,17 +260,15 @@ function getUnclaimedPost(){
   return todayPostsData.find(p =>!p.claimed);
 }
 
-// ✅ FIX 5: updateBalanceBox Delete कर दिया - global.js वाला चलेगा
-
 async function markPostClaimed(postId){
   const postRef = ref(db, `posts/${postId}`);
   await update(postRef, { claimed: true });
 
-  // ✅ FIX 6: global.js का saveRuppyData use करो
-  if(window.userData && window.saveRuppyData){
-    window.userData.balance = Number(window.userData.balance) || 0;
-    window.userData.balance += 10;
-    await window.saveRuppyData(window.userData);
+  if(typeof userData!== 'undefined' && typeof saveRuppyData!== 'undefined'){
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += 10;
+    await saveRuppyData(userData);
+    updateBalanceDisplay();
   }
 }
 
@@ -284,8 +330,6 @@ window.claimPost = async function(postId){
   alert('10 Ruppy coin Claimed! 🎉');
   await getTodayPosts();
   updateRewardBanner();
-  // ✅ FIX 7: global.js का updateBalanceBox call करो
-  if(window.updateBalanceBox) window.updateBalanceBox();
   renderFeed(JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]'));
 }
 
@@ -333,7 +377,7 @@ window.createPost = async function(){
 
     const newPostRef = await push(ref(db, 'posts'), {
       user: currentUser,
-      userDp: window.userData?.dp || null,
+      userDp: (typeof userData!== 'undefined' && userData.dp)? userData.dp : null,
       text: text,
       media: mediaUrl,
       mediaType: mediaType,
@@ -374,8 +418,6 @@ onValue(ref(db, 'posts'), async (snapshot) => {
   await getTodayPosts();
   renderFeed(posts);
   updateRewardBanner();
-  // ✅ FIX 8: global.js का updateBalanceBox call करो
-  if(window.updateBalanceBox) window.updateBalanceBox();
 });
 
 function renderFeed(posts){
@@ -520,7 +562,7 @@ window.addComment = async function(id){
   const post = snapshot.val();
   const comments = post.comments || [];
 
-  comments.push({user: currentUser, userDp: window.userData?.dp || null, text: text, time: Date.now()});
+  comments.push({user: currentUser, userDp: (typeof userData!== 'undefined' && userData.dp)? userData.dp : null, text: text, time: Date.now()});
 
   await update(postRef, { comments: comments });
   input.value = '';
@@ -552,21 +594,10 @@ window.reportPost = async function(id){
   }
 }
 
-// ✅ FIX 9: INIT - global.js Load होने का Wait
-document.addEventListener('DOMContentLoaded', async () => {
-  // Wait for global.js to load userData
-  let attempts = 0;
-  while(!window.userData?.uid && attempts < 50) {
-    await new Promise(r => setTimeout(r, 100));
-    attempts++;
-  }
-  currentUser = window.userData?.name || currentUser;
-
-  getTodayPosts().then(() => {
-    updateRewardBanner();
-  });
-
-  if(window.updateBalanceBox) window.updateBalanceBox();
+// ✅ INIT - Page Load पे Balance Load करो
+waitForUserData();
+getTodayPosts().then(() => {
+  updateRewardBanner();
 });
 </script>
 
