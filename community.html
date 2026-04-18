@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RUPPY Hub</title>
-<script src="config.js"></script>
+<script type="module" src="config.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
@@ -175,53 +175,31 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+// ✅ CHANGE 1: Config.js से Balance Sync - 253 दिखेगा
+async function syncBalanceFromConfig(){
+  let attempts = 0;
+  while((!window.userData || window.userData.uid === null) && attempts < 50){
+    await new Promise(r => setTimeout(r, 100));
+    attempts++;
+  }
+  if(window.userData){
+    document.getElementById('taskBalance').textContent = window.userData.taskBalance || 0;
+    document.getElementById('totalBalance').textContent = window.userData.balance || 0;
+    document.getElementById('userAvatar').textContent = (window.userData.name || 'U')[0].toUpperCase();
+    if(window.userData.dp){
+      document.getElementById('userAvatar').innerHTML = `<img src="${window.userData.dp}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">`;
+    }
+  }
+}
+syncBalanceFromConfig();
+
 const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
 function checkContent(text){
   let lower = text.toLowerCase();
   return bannedWords.some(word => lower.includes(word));
 }
 
-// ✅ FIX 1: Config.js से userData आने का Wait + Balance Auto Update
 let currentUser = 'User';
-
-async function waitForUserData(){
-  let attempts = 0;
-  while(typeof userData === 'undefined' && attempts < 50){
-    await new Promise(r => setTimeout(r, 100));
-    attempts++;
-  }
-  if(typeof userData!== 'undefined'){
-    currentUser = userData.name || 'User';
-    updateBalanceDisplay();
-    loadUserAvatar();
-  }
-}
-
-// ✅ FIX 2: Balance Display - app.html वाला 253 यहाँ दिखेगा
-function updateBalanceDisplay(){
-  if(typeof userData!== 'undefined'){
-    document.getElementById('taskBalance').textContent = Number(userData.taskBalance) || 0;
-    document.getElementById('totalBalance').textContent = Number(userData.balance) || 0;
-  }
-}
-
-function loadUserAvatar(){
-  const avatar = document.getElementById('userAvatar');
-  if(typeof userData!== 'undefined' && userData.dp){
-    avatar.innerHTML = `<img src="${userData.dp}">`;
-  } else {
-    avatar.textContent = (typeof userData!== 'undefined' && userData.name)? userData.name[0].toUpperCase() : 'U';
-  }
-}
-
-// ✅ FIX 3: saveRuppyData को Hook करो ताकि Balance Update हो
-if(typeof saveRuppyData!== 'undefined'){
-  const originalSave = window.saveRuppyData;
-  window.saveRuppyData = async function(data){
-    await originalSave(data);
-    updateBalanceDisplay();
-  }
-}
 
 let todayPostCount = 0;
 let todayPostsData = [];
@@ -260,10 +238,10 @@ async function markPostClaimed(postId){
   const postRef = ref(db, `posts/${postId}`);
   await update(postRef, { claimed: true });
 
-  if(typeof userData!== 'undefined' && typeof saveRuppyData!== 'undefined'){
-    userData.balance = Number(userData.balance) || 0;
-    userData.balance += 10;
-    await saveRuppyData(userData);
+  if(typeof window.userData!== 'undefined' && typeof window.saveRuppyData!== 'undefined'){
+    window.userData.balance = Number(window.userData.balance) || 0;
+    window.userData.balance += 10;
+    await window.saveRuppyData(window.userData);
   }
 }
 
@@ -372,7 +350,7 @@ window.createPost = async function(){
 
     const newPostRef = await push(ref(db, 'posts'), {
       user: currentUser,
-      userDp: (typeof userData!== 'undefined' && userData.dp)? userData.dp : null,
+      userDp: (typeof window.userData!== 'undefined' && window.userData.dp)? window.userData.dp : null,
       text: text,
       media: mediaUrl,
       mediaType: mediaType,
@@ -557,7 +535,7 @@ window.addComment = async function(id){
   const post = snapshot.val();
   const comments = post.comments || [];
 
-  comments.push({user: currentUser, userDp: (typeof userData!== 'undefined' && userData.dp)? userData.dp : null, text: text, time: Date.now()});
+  comments.push({user: currentUser, userDp: (typeof window.userData!== 'undefined' && window.userData.dp)? window.userData.dp : null, text: text, time: Date.now()});
 
   await update(postRef, { comments: comments });
   input.value = '';
@@ -589,8 +567,6 @@ window.reportPost = async function(id){
   }
 }
 
-// ✅ INIT - Page Load पे Balance Auto Load
-waitForUserData();
 getTodayPosts().then(() => {
   updateRewardBanner();
 });
