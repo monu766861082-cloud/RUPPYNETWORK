@@ -159,8 +159,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <!-- Firebase SDK - REALTIME DATABASE -->
-<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
-  <script type="module">
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, push, onValue, update, get, child, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
@@ -305,7 +304,7 @@ window.claimPost = async function(postId){
   renderFeed(JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]'));
 }
 
-// CREATE POST - CLOUDINARY UPLOAD
+// CREATE POST - CLOUDINARY UPLOAD - Fixed userDp undefined ✅
 window.createPost = async function(){
   await getTodayPosts();
   if(todayPostCount >= 3){
@@ -332,25 +331,7 @@ window.createPost = async function(){
   let mediaType = null;
 
   try {
-    if(selectedFile && selectedFile.type.includes('image')){
-      document.getElementById('postBtn').textContent = 'Compressing...';
-      try {
-        selectedFile = await window.imageCompression(selectedFile, {
-          maxSizeMB: 0.05,
-          maxWidthOrHeight: 800,
-          useWebWorker: true,
-          fileType: 'image/webp'
-        });
-      } catch (err) {
-        alert('Photo compress नहीं हुई');
-        document.getElementById('postBtn').textContent = 'Post';
-        await getTodayPosts();
-        updateRewardBanner();
-        return;
-      }
-    }
-
-    // ✅ CLOUDINARY UPLOAD - Firebase Storage Delete कर दिया
+    // ✅ Direct Upload - 1MB = 1MB जाएगा Cloudinary पे, 50KB नहीं बनेगी
     if(selectedFile){
       document.getElementById('postBtn').textContent = 'Uploading...';
       const data = new FormData();
@@ -369,7 +350,7 @@ window.createPost = async function(){
 
     const newPostRef = await push(ref(db, 'posts'), {
       user: currentUser,
-      userDp: (typeof userData!== 'undefined')? userData.dp : null,
+      userDp: (typeof userData!== 'undefined' && userData.dp)? userData.dp : null,
       text: text,
       media: mediaUrl,
       mediaType: mediaType,
@@ -544,7 +525,7 @@ window.showAllComments = function(id){
   document.getElementById(`comments-${id}`).style.display = 'block';
 }
 
-// ADD COMMENT - REALTIME DB
+// ADD COMMENT - REALTIME DB - Fixed userDp undefined ✅
 window.addComment = async function(id){
   let input = document.getElementById(`commentInput-${id}`);
   let text = input.value.trim();
@@ -559,7 +540,7 @@ window.addComment = async function(id){
   const post = snapshot.val();
   const comments = post.comments || [];
 
-  comments.push({user: currentUser, userDp: (typeof userData!== 'undefined')? userData.dp : null, text: text, time: Date.now()});
+  comments.push({user: currentUser, userDp: (typeof userData!== 'undefined' && userData.dp)? userData.dp : null, text: text, time: Date.now()});
 
   await update(postRef, { comments: comments });
   input.value = '';
