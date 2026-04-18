@@ -181,10 +181,8 @@ function checkContent(text){
   return bannedWords.some(word => lower.includes(word));
 }
 
-// ✅ FINAL FIX: Auto Balance Sync - app.html वाला Balance यहाँ दिखेगा
-// Config.js से userData Load होने का Wait
+// ✅ FIX 1: Config.js से userData आने का Wait + Balance Auto Update
 let currentUser = 'User';
-let userDataLoaded = false;
 
 async function waitForUserData(){
   let attempts = 0;
@@ -196,11 +194,10 @@ async function waitForUserData(){
     currentUser = userData.name || 'User';
     updateBalanceDisplay();
     loadUserAvatar();
-    userDataLoaded = true;
   }
 }
 
-// ✅ Balance Display Function - app.html के Same Logic
+// ✅ FIX 2: Balance Display - app.html वाला 253 यहाँ दिखेगा
 function updateBalanceDisplay(){
   if(typeof userData!== 'undefined'){
     document.getElementById('taskBalance').textContent = Number(userData.taskBalance) || 0;
@@ -208,7 +205,6 @@ function updateBalanceDisplay(){
   }
 }
 
-// ✅ Profile Avatar Update
 function loadUserAvatar(){
   const avatar = document.getElementById('userAvatar');
   if(typeof userData!== 'undefined' && userData.dp){
@@ -218,12 +214,12 @@ function loadUserAvatar(){
   }
 }
 
-// ✅ Config.js के Save Function को Hook करो Balance Update के लिए
+// ✅ FIX 3: saveRuppyData को Hook करो ताकि Balance Update हो
 if(typeof saveRuppyData!== 'undefined'){
   const originalSave = window.saveRuppyData;
   window.saveRuppyData = async function(data){
     await originalSave(data);
-    updateBalanceDisplay(); // Save के बाद Balance Update
+    updateBalanceDisplay();
   }
 }
 
@@ -268,7 +264,6 @@ async function markPostClaimed(postId){
     userData.balance = Number(userData.balance) || 0;
     userData.balance += 10;
     await saveRuppyData(userData);
-    updateBalanceDisplay();
   }
 }
 
@@ -594,7 +589,7 @@ window.reportPost = async function(id){
   }
 }
 
-// ✅ INIT - Page Load पे Balance Load करो
+// ✅ INIT - Page Load पे Balance Auto Load
 waitForUserData();
 getTodayPosts().then(() => {
   updateRewardBanner();
