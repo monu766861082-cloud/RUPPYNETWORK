@@ -67,11 +67,13 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
-    if(typeof updateBalanceBox!== 'undefined') updateBalanceBox();
-    if(typeof loadProfileEverywhere!== 'undefined') loadProfileEverywhere();
+    updateBalanceBox();
+    loadProfileEverywhere();
   } else {
     localStorage.removeItem(RUPPY_STORAGE_KEY);
     window.userData = { name: 'Guest', dp: null, balance: 0, taskBalance: 0, uid: null };
+    updateBalanceBox();
+    loadProfileEverywhere();
   }
 });
 
@@ -94,6 +96,7 @@ window.saveRuppyData = async function(data){
     ultraRewardTime: data.ultraRewardTime || 0
   });
   window.userData = data;
+  updateBalanceBox();
 }
 
 window.loadProfileEverywhere = function(){
@@ -104,3 +107,41 @@ window.loadProfileEverywhere = function(){
     avatar.textContent = window.userData.name[0].toUpperCase();
   }
 }
+
+// 4. Balance को HTML में दिखाने वाला Function - FIXED
+window.updateBalanceBox = function(){
+  const totalEl = document.getElementById('totalBalance');
+  const taskEl = document.getElementById('taskBalance');
+
+  if(totalEl) {
+    totalEl.innerText = window.userData.balance || 0;
+  }
+  if(taskEl) {
+    taskEl.innerText = window.userData.taskBalance || 0;
+  }
+}
+
+// 5. Post करने पे +10 RUPPY Add करने का Function
+window.addPostReward = async function() {
+  if(!window.userData.uid) return alert("पहले Login करो");
+
+  const todayPosts = window.userData.posts.filter(p => {
+    return new Date(p.time).toDateString() === new Date().toDateString();
+  });
+
+  if(todayPosts.length >= 3) {
+    return alert("आज के 3 Post पूरे हो गए");
+  }
+
+  window.userData.balance = (window.userData.balance || 0) + 10;
+  window.userData.posts.push({time: Date.now()});
+
+  await window.saveRuppyData(window.userData);
+  alert("+10 RUPPY Added");
+}
+
+// Page Load होते ही Balance दिखा दो
+document.addEventListener('DOMContentLoaded', () => {
+  updateBalanceBox();
+  loadProfileEverywhere();
+});
