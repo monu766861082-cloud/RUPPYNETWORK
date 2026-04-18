@@ -1,4 +1,4 @@
-// RUPPY GLOBAL SYNC - Firebase वाला System
+// RUPPY GLOBAL SYNC - Firebase + LocalStorage वाला System
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -17,23 +17,31 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
 
-// Global userData - अब Firebase से आएगा
-window.userData = {
-  name: 'Guest',
-  dp: null,
-  balance: 0,
-  taskBalance: 0,
-  uid: null,
-  posts: [],
-  lastMine: 0,
-  lastGift: 0,
-  boostCount: 0,
-  boostResetTime: Date.now(),
-  firstRewardTime: 0,
-  ultraRewardTime: 0
-};
+const RUPPY_STORAGE_KEY = 'ruppy_user_cache';
 
-// Gmail Login होते ही Balance Firebase से Load करो
+// 1. पहले LocalStorage से Load करो ताकि Button तुरंत चलें
+function getLocalData() {
+  let stored = localStorage.getItem(RUPPY_STORAGE_KEY);
+  if (stored) return JSON.parse(stored);
+  return {
+    name: 'Guest',
+    dp: null,
+    balance: 0,
+    taskBalance: 0,
+    uid: null,
+    posts: [],
+    lastMine: 0,
+    lastGift: 0,
+    boostCount: 0,
+    boostResetTime: Date.now(),
+    firstRewardTime: 0,
+    ultraRewardTime: 0
+  };
+}
+
+window.userData = getLocalData();
+
+// 2. Gmail Login होते ही Firebase से Fresh Data लाओ
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     window.userData.uid = user.uid;
@@ -55,20 +63,22 @@ onAuthStateChanged(auth, async (user) => {
       window.userData.firstRewardTime = data.firstRewardTime || 0;
       window.userData.ultraRewardTime = data.ultraRewardTime || 0;
     } else {
-      // नया User - Firebase में Entry बना दो
       await set(userRef, window.userData);
     }
 
+    localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
     if(typeof updateBalanceBox!== 'undefined') updateBalanceBox();
     if(typeof loadProfileEverywhere!== 'undefined') loadProfileEverywhere();
   } else {
+    localStorage.removeItem(RUPPY_STORAGE_KEY);
     window.userData = { name: 'Guest', dp: null, balance: 0, taskBalance: 0, uid: null };
   }
 });
 
-// Balance Firebase में Save करने का Function
+// 3. Balance Firebase + Local दोनों में Save करो
 window.saveRuppyData = async function(data){
-  if(!data.uid) return; // UID नहीं तो Save मत कर
+  localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(data));
+  if(!data.uid) return;
   const userRef = ref(db, `users/${data.uid}`);
   await update(userRef, {
     balance: Number(data.balance) || 0,
