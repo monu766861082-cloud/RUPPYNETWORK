@@ -7,8 +7,8 @@
 <!-- Monetag Verification Meta Tag -->
 <meta name="monetag" content="21dbbe26571c9c62250f84692bff67fc">
 
-<!-- <<< CHANGE 1: config.js Add किया >>> -->
-<script src="config.js"></script>
+<!-- ✅ FIXED: type="module" लगा दिया -->
+<script type="module" src="config.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -146,7 +146,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ2p1YnhmeGpha2dpY3VweXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzk4NTIsImV4cCI6MjA5MTIxNTg1Mn0.QST9mZ7uup-H-s9P6DznbOVO14kJTCgYIIZxyTP1T24';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// <<< CHANGE 2: userData वाला Block Delete किया - config.js से आएगा >>>
+// userData अब config.js से आएगा
 
 function loadProfile(){
   if(userData.dp){
@@ -156,14 +156,14 @@ function loadProfile(){
   }
   document.getElementById('userName').innerText = userData.name;
   document.getElementById('userBalance').innerText = (userData.balance || 0) + ' RUPPY';
-  document.getElementById('userId').innerText = 'ID: ' + userData.userId;
-  document.getElementById('refCode').innerText = userData.userId;
+  document.getElementById('userId').innerText = 'ID: ' + (userData.uid || 'Guest');
+  document.getElementById('refCode').innerText = userData.uid || '-';
 }
 
 loadProfile();
 
 function copyRefCode(){
-  navigator.clipboard.writeText(userData.userId);
+  navigator.clipboard.writeText(userData.uid);
   showToast('Referral Code Copied!');
 }
 
@@ -184,7 +184,6 @@ function closeEditProfile(){
   document.getElementById('editModal').classList.remove('active');
 }
 
-// <<< CHANGE 3: saveProfile Fix किया - अब userData.dp में Save होगा >>>
 window.saveProfile = async function(){
   const saveBtn = document.getElementById('saveBtn');
   saveBtn.disabled = true;
@@ -197,7 +196,6 @@ window.saveProfile = async function(){
 
     if(file){
       saveBtn.textContent = 'Compressing...';
-      // Photo को 400px और 60% Quality पे Compress करो
       const base64Photo = await compressToBase64(file, 400, 0.6);
 
       if(base64Photo.length > 900000){
@@ -206,11 +204,11 @@ window.saveProfile = async function(){
         saveBtn.textContent = 'Save';
         return;
       }
-      userData.dp = base64Photo; // <<< यही Line असली Photo Save करती है
+      userData.dp = base64Photo;
     }
 
     saveBtn.textContent = 'Saving...';
-    saveRuppyData(userData); // <<< config.js वाला Function
+    await saveRuppyData(userData); // config.js वाला Function
     await loadProfile();
     closeEditProfile();
     showToast('Profile Updated!');
@@ -224,7 +222,6 @@ window.saveProfile = async function(){
   saveBtn.textContent = 'Save';
 }
 
-// Photo Compress Function
 function compressToBase64(file, maxWidth, quality){
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -260,6 +257,7 @@ async function logout(){
   if(confirm('Are you sure you want to logout?')){
     await supabase.auth.signOut();
     localStorage.removeItem('ruppy_user');
+    localStorage.removeItem('ruppy_user_cache');
     localStorage.removeItem('notif_enabled');
     window.location.href = '/';
   }
