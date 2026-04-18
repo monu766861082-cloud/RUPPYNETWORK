@@ -8,7 +8,6 @@
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
   
-  <!-- ✅ ये Line Fix कर दी - type="module" लगा दिया -->
   <script type="module" src="config.js"></script>
   
   <style>
@@ -158,21 +157,23 @@
   </div>
 
 <script>
+  // ✅ FIX 1: userData को Global बना
+  var userData = window.userData;
   const MINING_REWARD = 40;
 
-  // ✅ ये अब Firebase में Save करेगा क्योंकि config.js बदल गई
-  function saveUser() {
-    saveRuppyData(userData);
+  // ✅ FIX 2: सब Functions को window पे चढ़ाया
+  window.saveUser = async function() {
+    await saveRuppyData(userData);
   }
 
-  function handleMiningClick() {
+  window.handleMiningClick = function() {
     let now = Date.now();
     let lastMine = Number(userData.lastMine) || 0;
     if(now - lastMine < 10800000 && lastMine !== 0) return;
     startMining();
   }
 
-  function handleBoostClick() {
+  window.handleBoostClick = function() {
     if(userData.boostCount >= 3) {
       alert('You watched 3 ads already. Try again after 3 hours.');
       return;
@@ -180,7 +181,7 @@
     openBoostModal();
   }
 
-  function handleGiftClick() {
+  window.handleGiftClick = function() {
     let now = Date.now();
     let lastGift = Number(userData.lastGift) || 0;
     if(now - lastGift < 7200000 && lastGift !== 0) {
@@ -190,7 +191,87 @@
     openGift();
   }
 
-  function init() {
+  window.claimFirstReward = function(){
+    if(Date.now() >= userData.firstRewardTime || userData.firstRewardTime === 0){
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += 20;
+      userData.firstRewardTime = Date.now() + 3600000;
+      saveUser();
+      updateBalance();
+      updateFirstReward();
+      alert('You earned 20 RUPPY!');
+    }
+  }
+
+  window.claimUltraReward = function(){
+    if(Date.now() >= userData.ultraRewardTime || userData.ultraRewardTime === 0){
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += 50;
+      userData.ultraRewardTime = Date.now() + 3600000;
+      saveUser();
+      updateBalance();
+      updateUltraReward();
+      alert('You earned 50 RUPPY!');
+    }
+  }
+
+  window.watchBoostAd = function() {
+    if(userData.boostCount >= 3) return;
+    
+    let boostAmount = Math.floor(MINING_REWARD * 0.05);
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += boostAmount;
+    userData.boostCount++;
+    
+    saveUser();
+    updateBalance();
+    updateBoost();
+    
+    if(userData.boostCount >= 3) {
+      document.getElementById('boostBtn').innerText = 'All Claimed!';
+      document.getElementById('boostBtn').disabled = true;
+      setTimeout(function() {
+        closeBoostModal();
+        document.getElementById('boostBtn').innerText = 'Watch Ad for Bonus';
+        document.getElementById('boostBtn').disabled = false;
+      }, 1500);
+    } else {
+      document.getElementById('boostStep').innerText = userData.boostCount + 1;
+      alert('+' + boostAmount + ' RUPPY Claimed! (' + userData.boostCount + '/3)');
+    }
+  }
+
+  window.openBoostModal = function() {
+    if(userData.boostCount >= 3) {
+      alert('You watched 3 ads already. Try again after 3 hours.');
+      return;
+    }
+    document.getElementById('boostStep').innerText = userData.boostCount + 1;
+    document.getElementById('boostModal').classList.add('active');
+  }
+
+  window.closeBoostModal = function() {
+    document.getElementById('boostModal').classList.remove('active');
+  }
+
+  window.navClick = function(page) {
+    if(page === 'tasks') window.location.href = 'tasks.html';
+    if(page === 'referral') window.location.href = 'referral.html';
+    if(page === 'ranking') window.location.href = 'ranking.html';
+    if(page === 'community') window.location.href = 'community.html';
+    if(page === 'settings') window.location.href = 'settings.html';
+  }
+
+  // ✅ FIX 3: init को Async + Wait लगाया
+  async function init() {
+    // Firebase से userData Load होने का Wait
+    let attempts = 0;
+    while(!window.userData?.uid && attempts < 50) {
+      await new Promise(r => setTimeout(r, 100));
+      attempts++;
+    }
+    userData = window.userData; // Update कर दे
+    
     loadProfileEverywhere();
     
     if(Date.now() - userData.boostResetTime > 10800000) {
@@ -285,45 +366,6 @@
     }
   }
 
-  function openBoostModal() {
-    if(userData.boostCount >= 3) {
-      alert('You watched 3 ads already. Try again after 3 hours.');
-      return;
-    }
-    document.getElementById('boostStep').innerText = userData.boostCount + 1;
-    document.getElementById('boostModal').classList.add('active');
-  }
-
-  function closeBoostModal() {
-    document.getElementById('boostModal').classList.remove('active');
-  }
-
-  function watchBoostAd() {
-    if(userData.boostCount >= 3) return;
-    
-    let boostAmount = Math.floor(MINING_REWARD * 0.05);
-    userData.balance = Number(userData.balance) || 0;
-    userData.balance += boostAmount;
-    userData.boostCount++;
-    
-    saveUser();
-    updateBalance();
-    updateBoost();
-    
-    if(userData.boostCount >= 3) {
-      document.getElementById('boostBtn').innerText = 'All Claimed!';
-      document.getElementById('boostBtn').disabled = true;
-      setTimeout(function() {
-        closeBoostModal();
-        document.getElementById('boostBtn').innerText = 'Watch Ad for Bonus';
-        document.getElementById('boostBtn').disabled = false;
-      }, 1500);
-    } else {
-      document.getElementById('boostStep').innerText = userData.boostCount + 1;
-      alert('+' + boostAmount + ' RUPPY Claimed! (' + userData.boostCount + '/3)');
-    }
-  }
-
   function updateGift() {
     let now = Date.now();
     let lastGift = Number(userData.lastGift) || 0;
@@ -385,18 +427,6 @@
     }
   }
 
-  function claimFirstReward(){
-    if(Date.now() >= userData.firstRewardTime || userData.firstRewardTime === 0){
-      userData.balance = Number(userData.balance) || 0;
-      userData.balance += 20;
-      userData.firstRewardTime = Date.now() + 3600000;
-      saveUser();
-      updateBalance();
-      updateFirstReward();
-      alert('You earned 20 RUPPY!');
-    }
-  }
-
   function updateUltraReward() {
     let now = Date.now();
     let diff = userData.ultraRewardTime - now;
@@ -414,26 +444,6 @@
       let progress = ((3600000 - diff) / 3600000) * 100;
       document.getElementById('ultraRewardBar').style.width = progress + '%';
     }
-  }
-
-  function claimUltraReward(){
-    if(Date.now() >= userData.ultraRewardTime || userData.ultraRewardTime === 0){
-      userData.balance = Number(userData.balance) || 0;
-      userData.balance += 50;
-      userData.ultraRewardTime = Date.now() + 3600000;
-      saveUser();
-      updateBalance();
-      updateUltraReward();
-      alert('You earned 50 RUPPY!');
-    }
-  }
-
-  function navClick(page) {
-    if(page === 'tasks') window.location.href = 'tasks.html';
-    if(page === 'referral') window.location.href = 'referral.html';
-    if(page === 'ranking') window.location.href = 'ranking.html';
-    if(page === 'community') window.location.href = 'community.html';
-    if(page === 'settings') window.location.href = 'settings.html';
   }
 
   function loadProfileEverywhere() {
