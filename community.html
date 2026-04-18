@@ -159,10 +159,10 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <!-- Firebase SDK - REALTIME DATABASE -->
+<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
   <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, push, onValue, update, get, child, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
@@ -176,7 +176,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const storage = getStorage(app);
 
 const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
 function checkContent(text){
@@ -306,7 +305,7 @@ window.claimPost = async function(postId){
   renderFeed(JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]'));
 }
 
-// CREATE POST - FIREBASE STORAGE - COMPRESSION हटाया ✅
+// CREATE POST - CLOUDINARY UPLOAD
 window.createPost = async function(){
   await getTodayPosts();
   if(todayPostCount >= 3){
@@ -333,18 +332,44 @@ window.createPost = async function(){
   let mediaType = null;
 
   try {
-    // ✅ बस Compression वाला Code हटा दिया - अब Direct Original File Upload
+    if(selectedFile && selectedFile.type.includes('image')){
+      document.getElementById('postBtn').textContent = 'Compressing...';
+      try {
+        selectedFile = await window.imageCompression(selectedFile, {
+          maxSizeMB: 0.05,
+          maxWidthOrHeight: 800,
+          useWebWorker: true,
+          fileType: 'image/webp'
+        });
+      } catch (err) {
+        alert('Photo compress नहीं हुई');
+        document.getElementById('postBtn').textContent = 'Post';
+        await getTodayPosts();
+        updateRewardBanner();
+        return;
+      }
+    }
+
+    // ✅ CLOUDINARY UPLOAD - Firebase Storage Delete कर दिया
     if(selectedFile){
       document.getElementById('postBtn').textContent = 'Uploading...';
-      const storageRef = sRef(storage, `posts/${Date.now()}_${selectedFile.name}`);
-      await uploadBytes(storageRef, selectedFile);
-      mediaUrl = await getDownloadURL(storageRef);
+      const data = new FormData();
+      data.append("file", selectedFile);
+      data.append("upload_preset", "ruppy_posts");
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/dr12i9orc/image/upload`, {
+        method: "POST",
+        body: data
+      });
+
+      const result = await res.json();
+      mediaUrl = result.secure_url;
       mediaType = selectedFile.type.includes('video')? 'video' : 'image';
     }
 
     const newPostRef = await push(ref(db, 'posts'), {
       user: currentUser,
-      userDp: (typeof userData!== 'undefined' && userData.dp)? userData.dp : null,
+      userDp: (typeof userData!== 'undefined')? userData.dp : null,
       text: text,
       media: mediaUrl,
       mediaType: mediaType,
@@ -534,7 +559,7 @@ window.addComment = async function(id){
   const post = snapshot.val();
   const comments = post.comments || [];
 
-  comments.push({user: currentUser, userDp: (typeof userData!== 'undefined' && userData.dp)? userData.dp : null, text: text, time: Date.now()});
+  comments.push({user: currentUser, userDp: (typeof userData!== 'undefined')? userData.dp : null, text: text, time: Date.now()});
 
   await update(postRef, { comments: comments });
   input.value = '';
