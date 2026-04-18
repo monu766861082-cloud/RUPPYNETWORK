@@ -241,6 +241,12 @@ async function markPostClaimed(postId){
   if(typeof window.userData!== 'undefined' && typeof window.saveRuppyData!== 'undefined'){
     window.userData.balance = Number(window.userData.balance) || 0;
     window.userData.balance += 10;
+
+    // ✅ Task Balance भी +10 करो - यही नया Add है
+    window.userData.taskBalance = Number(window.userData.taskBalance) || 0;
+    window.userData.taskBalance += 10;
+    document.getElementById('taskBalance').textContent = window.userData.taskBalance;
+
     await window.saveRuppyData(window.userData);
   }
 }
