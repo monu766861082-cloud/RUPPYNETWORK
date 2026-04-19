@@ -9,13 +9,13 @@
 
 <script type="module" src="config.js"></script>
 
-<!-- ✅ ADD: QR Code Libraries -->
+<!-- QR Code Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0B0B0C;--card:#161617;--border:#2A2A2C;--gold:#F3C774;--green:#24C464;--red:#E53E3E;--muted:#9CA3AF}
+:root{--bg:#0B0B0C;--card:#161617;--border:#2A2A2C;--gold:#F3C774;--green:#24C464;--red:#E53E3E;--muted:#9CA3AF;--blue:#3B82F6}
 *{box-sizing:border-box;margin:0;padding:0;font-family:Poppins,sans-serif}
 body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
@@ -28,8 +28,9 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .bal{display:block;width:max-content;margin:12px auto;padding:6px 18px;border:1px solid var(--green);border-radius:999px;color:var(--green);font-weight:600;font-size:15px}
 .id-box{display:block;width:max-content;margin:8px auto;padding:4px 14px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font-size:13px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:24px;overflow:hidden;margin:26px 0}
-.row{display:flex;align-items:center;justify-content:space-between;padding:20px 18px;border-top:1px solid var(--border);cursor:pointer}
+.row{display:flex;align-items:center;justify-content:space-between;padding:20px 18px;border-top:1px solid var(--border);cursor:pointer;transition:all 0.2s}
 .row:first-child{border:0}
+.row:active{background:rgba(243,199,116,0.05)}
 .l{display:flex;align-items:center}
 .icon{width:44px;height:44px;border-radius:12px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-right:16px;font-size:20px}
 .txt{font-size:18px}
@@ -41,28 +42,36 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .nav-item.icon{font-size:20px;line-height:1}
 .nav-item.active{color:#FFA500}
 .nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:1000;flex-direction:column;backdrop-filter:blur(4px)}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:1000;flex-direction:column;backdrop-filter:blur(8px)}
 .modal.active{display:flex;align-items:center;justify-content:center}
-.modal-content{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:24px;width:90%;max-width:400px;max-height:90vh;overflow-y:auto}
-.modal-title{font-size:20px;font-weight:600;margin-bottom:20px;text-align:center}
+.modal-content{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:24px;width:90%;max-width:400px;max-height:90vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,0.5)}
+.modal-title{font-size:20px;font-weight:700;margin-bottom:20px;text-align:center;background:linear-gradient(135deg, var(--gold), #FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .input-group{margin-bottom:16px}
-.input-group label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
-.input-group input{width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:#fff;font-size:15px}
+.input-group label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px;font-weight:500}
+.input-group input{width:100%;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:#fff;font-size:15px;transition:all 0.2s}
+.input-group input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(243,199,116,0.1)}
 .file-input{display:none}
-.file-label{display:block;padding:12px;border:1px solid var(--border);border-radius:12px;text-align:center;cursor:pointer}
+.file-label{display:block;padding:14px;border:1px solid var(--border);border-radius:12px;text-align:center;cursor:pointer;transition:all 0.2s}
+.file-label:active{background:rgba(243,199,116,0.05)}
 .btn-group{display:flex;gap:12px;margin-top:20px}
-.btn{flex:1;padding:12px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer}
+.btn{flex:1;padding:14px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;border:none}
+.btn:active{transform:scale(0.98)}
 .btn-cancel{background:transparent;border:1px solid var(--border);color:var(--muted)}
-.btn-save{background:var(--gold);border:none;color:#000}
+.btn-save{background:linear-gradient(135deg, var(--gold), #FFA500);color:#000;box-shadow:0 4px 15px rgba(243,199,116,0.3)}
 .btn-save:disabled{opacity:0.5;cursor:not-allowed}
 .sp{height:96px}
 .ft-links{font-size:11px;color:#666;text-align:center;margin-top:30px;padding-bottom:20px}
 .ft-links a{color:#aaa;text-decoration:none}
-.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:9999}
-#qr-reader{width:100%;border:2px solid var(--gold);border-radius:12px;overflow:hidden}
-#qrcode{display:flex;justify-content:center;padding:20px;background:#fff;border-radius:12px;margin:15px 0}
-.scan-box{padding:12px;border:1px solid var(--gold);border-radius:12px;text-align:center;margin:15px 0;cursor:pointer}
-.scan-box:active{background:rgba(243,199,116,0.1)}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:14px 24px;border-radius:12px;font-size:14px;display:none;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);font-weight:500}
+#qr-reader{width:100%;border:2px solid var(--gold);border-radius:16px;overflow:hidden;margin:15px 0}
+#qrcode{display:flex;justify-content:center;padding:20px;background:#fff;border-radius:16px;margin:15px 0;box-shadow:0 4px 20px rgba(243,199,116,0.2)}
+.scan-option{padding:16px;border:1px solid var(--border);border-radius:16px;text-align:center;margin:12px 0;cursor:pointer;transition:all 0.2s;background:linear-gradient(135deg, transparent, rgba(243,199,116,0.03))}
+.scan-option:active{background:rgba(243,199,116,0.1);transform:scale(0.98)}
+.scan-option-icon{font-size:36px;margin-bottom:8px}
+.scan-option-title{font-weight:600;font-size:15px;margin-bottom:4px}
+.scan-option-desc{font-size:12px;color:var(--muted)}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
 </style>
 </head>
 <body>
@@ -77,7 +86,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <div class="id-box" id="userId">ID: Loading...</div>
 
 <div class="card">
-<!-- ✅ ADD: Send & Receive RUPPY Options -->
 <div class="row" onclick="openSendModal()"><div class="l"><div class="icon">📤</div><div class="txt">Send RUPPY</div></div>›</div>
 <div class="row" onclick="openReceiveModal()"><div class="l"><div class="icon">📥</div><div class="txt">Receive RUPPY</div></div>›</div>
 <div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">-</span>›</div>
@@ -124,21 +132,31 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   </div>
 </div>
 
-<!-- ✅ ADD: Send RUPPY Modal -->
+<!-- ✅ UPDATED: Send RUPPY Modal with Gallery Scan -->
 <div class="modal" id="sendModal">
   <div class="modal-content">
     <div class="modal-title">Send RUPPY</div>
 
-    <div class="scan-box" onclick="startScan()">
-      <div style="font-size:32px;margin-bottom:8px">📷</div>
-      <div style="font-weight:600">Scan QR Code</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:4px">Camera से Scan करो</div>
+    <div class="scan-option" onclick="startScan()">
+      <div class="scan-option-icon">📷</div>
+      <div class="scan-option-title">Scan with Camera</div>
+      <div class="scan-option-desc">Live Camera से QR Scan करो</div>
     </div>
+
+    <div class="scan-option" onclick="document.getElementById('qrFileInput').click()">
+      <div class="scan-option-icon">🖼️</div>
+      <div class="scan-option-title">Upload from Gallery</div>
+      <div class="scan-option-desc">Gallery से Photo चुन के Scan करो</div>
+    </div>
+
+    <input type="file" id="qrFileInput" accept="image/*" style="display:none" onchange="scanFromGallery(event)">
 
     <div id="qr-reader" style="display:none;"></div>
 
+    <div class="divider">OR</div>
+
     <div class="input-group">
-      <label>Or Enter User ID Manually</label>
+      <label>Enter User ID Manually</label>
       <input type="text" id="receiverId" placeholder="Enter Receiver UID">
     </div>
 
@@ -154,7 +172,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   </div>
 </div>
 
-<!-- ✅ ADD: Receive RUPPY Modal -->
+<!-- Receive RUPPY Modal -->
 <div class="modal" id="receiveModal">
   <div class="modal-content">
     <div class="modal-title">Receive RUPPY</div>
@@ -164,7 +182,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
     <div class="input-group">
       <label>Your User ID</label>
-      <input type="text" id="myUserId" readonly style="text-align:center;font-weight:600;color:var(--gold)">
+      <input type="text" id="myUserId" readonly style="text-align:center;font-weight:600;color:var(--gold);font-size:16px">
     </div>
 
     <button class="btn btn-save" onclick="copyUserId()" style="width:100%">Copy My ID</button>
@@ -323,7 +341,7 @@ function compressToBase64(file, maxWidth, quality){
   });
 }
 
-// ✅ ADD: Send RUPPY Functions
+// ✅ UPDATED: Send RUPPY Functions with Gallery Scan
 window.openSendModal = function(){
   document.getElementById('sendModal').classList.add('active');
   document.getElementById('receiverId').value = '';
@@ -357,6 +375,25 @@ window.startScan = function(){
   });
 }
 
+// ✅ NEW: Gallery से QR Scan करो
+window.scanFromGallery = function(event){
+  const file = event.target.files[0];
+  if(!file) return;
+
+  const html5QrCodeScanner = new Html5Qrcode("qr-reader");
+
+  html5QrCodeScanner.scanFile(file, true)
+   .then(decodedText => {
+      document.getElementById('receiverId').value = decodedText;
+      showToast('QR Scanned from Gallery!');
+      event.target.value = ''; // Reset input
+    })
+   .catch(err => {
+      alert('QR नहीं मिला इस Photo में! साफ QR वाली Photo डालो');
+      event.target.value = '';
+    });
+}
+
 window.sendRuppy = async function(){
   const receiverId = document.getElementById('receiverId').value.trim();
   const amount = parseInt(document.getElementById('sendAmount').value);
@@ -388,10 +425,10 @@ window.sendRuppy = async function(){
   try {
     // Receiver का Data Fetch करो
     const { data: receiverData, error } = await supabase
-     .from('ruppy_users')
-     .select('*')
-     .eq('uid', receiverId)
-     .single();
+    .from('ruppy_users')
+    .select('*')
+    .eq('uid', receiverId)
+    .single();
 
     if(error ||!receiverData){
       alert('User नहीं मिला! ID Check करो');
@@ -407,9 +444,9 @@ window.sendRuppy = async function(){
     // Receiver का Balance Plus
     receiverData.balance = (receiverData.balance || 0) + amount;
     await supabase
-     .from('ruppy_users')
-     .update({ balance: receiverData.balance })
-     .eq('uid', receiverId);
+    .from('ruppy_users')
+    .update({ balance: receiverData.balance })
+    .eq('uid', receiverId);
 
     await loadProfile();
     closeSendModal();
@@ -424,7 +461,7 @@ window.sendRuppy = async function(){
   sendBtn.textContent = 'Send Now';
 }
 
-// ✅ ADD: Receive RUPPY Functions
+// Receive RUPPY Functions
 window.openReceiveModal = function(){
   document.getElementById('receiveModal').classList.add('active');
   document.getElementById('myUserId').value = userData.uid;
@@ -500,6 +537,5 @@ window.sendMiningNotif = function(){
 }
 </script>
 
-<!-- ✅ Monetag Script हटा दिया - अब Popup नहीं आएगा -->
 </body>
 </html>
