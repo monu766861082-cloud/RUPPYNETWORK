@@ -13,24 +13,32 @@
 
 <style>
 body{margin:0;background:#000;color:#fff;font-family:Arial;min-height:100vh}
-.wrap{padding:22px;width:100%;max-width:360px;text-align:center;margin:0 auto;display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column}
+.wrap{padding:22px;width:100%;max-width:380px;text-align:center;margin:0 auto;display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column}
 .pill{border:1px solid #c28840;color:#c28840;padding:4px 12px;border-radius:14px;display:inline-block;font-size:12px;margin-bottom:18px}
-.coin{width:220px;height:220px;margin:10px auto;border-radius:50%;background:transparent;box-shadow:0 0 40px #f9a825;display:flex;align-items:center;justify-content:center}
-.coin img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-h1{color:#f9a825;margin:12px 0 20px;font-size:28px}
-.input-box{margin:12px 0;text-align:left}
-.input-box label{color:#aaa;font-size:13px;display:block;margin-bottom:6px}
-.input-box input{width:100%;padding:12px;border:1px solid #333;border-radius:10px;background:#111;color:#fff;font-size:15px;box-sizing:border-box}
-.input-box input:focus{outline:none;border-color:#f9a825}
-.btn{margin:18px auto;padding:12px 24px;background:#f9a825;color:#000;border:none;border-radius:24px;font-weight:bold;width:100%;cursor:pointer;font-size:15px}
+
+/* FIX 1: Logo Size 220px + Square */
+.coin{width:220px;height:220px;margin:10px auto 20px;border-radius:16px;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.coin img{width:100%;height:100%;object-fit:cover}
+
+h1{color:#f9a825;margin:12px 0 20px;font-size:30px;font-weight:900}
+
+/* FIX 2: Input Box बड़े किए */
+.input-box{margin:16px 0;text-align:left}
+.input-box label{color:#bbb;font-size:16px;display:block;margin-bottom:8px;font-weight:600}
+.input-box input{width:100%;padding:18px;border:2px solid #333;border-radius:14px;background:#111;color:#fff;font-size:17px;box-sizing:border-box}
+.input-box input:focus{outline:none;border-color:#f9a825;box-shadow:0 0 10px rgba(249,168,37,0.4)}
+.input-box input::placeholder{color:#666;font-size:16px}
+
+/* FIX 3: Button बड़ा किया */
+.btn{margin:22px auto;padding:18px 24px;background:#f9a825;color:#000;border:none;border-radius:14px;font-weight:bold;width:100%;cursor:pointer;font-size:18px;letter-spacing:1px}
 .btn:disabled{background:#333;color:#666;cursor:not-allowed}
-.btn-guest{background:transparent;color:#888;border:1px solid #333;margin-top:10px}
-.btn-google{background:#fff;color:#000;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px}
-.toggle{color:#aaa;font-size:13px;margin-top:15px;cursor:pointer}
-.toggle span{color:#f9a825;text-decoration:underline}
-.ft{font-size:11px;color:#666;margin-top:25px}
+.btn-guest{background:transparent;color:#888;border:1px solid #333;margin-top:12px}
+.btn-google{background:#fff;color:#000;margin-top:14px;display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 24px;font-size:17px}
+.toggle{color:#aaa;font-size:16px;margin-top:18px;cursor:pointer}
+.toggle span{color:#f9a825;text-decoration:underline;font-weight:700}
+.ft{font-size:12px;color:#666;margin-top:30px}
 a{color:#aaa;text-decoration:none}
-.error{color:#f33;font-size:13px;margin-top:10px;display:none}
+.error{color:#f33;font-size:15px;margin-top:12px;display:none;font-weight:600}
 
 /* ADDED: AdSense Content Section CSS */
 .content-section{max-width:800px;margin:60px auto;padding:0 20px;color:#ccc;line-height:1.7;text-align:left}
@@ -48,23 +56,25 @@ a{color:#aaa;text-decoration:none}
 
 <div class="wrap">
 <div class="pill">VIP PREMIUM</div>
-<div class="coin"><img src="cropped_circle_image.png" alt="Ruppy Logo"></div>
+
+<!-- FIX 4: Logo IMG_7999.jpeg लगा दिया -->
+<div class="coin"><img src="IMG_7999.jpeg" alt="Ruppy Logo"></div>
 <h1>RUPPY NETWORK</h1>
 
 <div id="loginForm">
   <div class="input-box">
-    <label>Email</label>
+    <label>Email Address</label>
     <input type="email" id="email" placeholder="Enter your email">
   </div>
   <div class="input-box">
     <label>Password</label>
-    <input type="password" id="password" placeholder="Enter password">
+    <input type="password" id="password" placeholder="Enter your password">
   </div>
   <div class="error" id="errorMsg"></div>
   <button class="btn" onclick="handleLogin()" id="loginBtn">LOGIN</button>
 
   <button class="btn btn-google" onclick="signInWithGoogle()">
-    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22" height="22">
     Sign in with Google
   </button>
 
@@ -73,7 +83,7 @@ a{color:#aaa;text-decoration:none}
 
 <div id="registerForm" style="display:none">
   <div class="input-box">
-    <label>Email</label>
+    <label>Email Address</label>
     <input type="email" id="regEmail" placeholder="Enter your email">
   </div>
   <div class="input-box">
