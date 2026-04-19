@@ -74,6 +74,14 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .scan-option-desc{font-size:12px;color:var(--muted)}
 .divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:12px}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+/* ✅ NEW: Balance Display Box */
+.balance-box{background:linear-gradient(135deg, rgba(36,196,100,0.1), rgba(243,199,116,0.1));border:1px solid var(--border);border-radius:16px;padding:16px;margin:15px 0}
+.balance-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.balance-row:last-child{margin-bottom:0}
+.balance-label{font-size:13px;color:var(--muted);font-weight:500}
+.balance-value{font-size:18px;font-weight:700;color:var(--green)}
+.balance-value.remaining{color:var(--gold)}
+.balance-value.insufficient{color:var(--red)}
 </style>
 </head>
 <body>
@@ -139,6 +147,18 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   <div class="modal-content">
     <div class="modal-title">Send RUPPY</div>
 
+    <!-- ✅ NEW: Live Balance Display -->
+    <div class="balance-box">
+      <div class="balance-row">
+        <span class="balance-label">Your Balance</span>
+        <span class="balance-value" id="sendCurrentBalance">0 RUPPY</span>
+      </div>
+      <div class="balance-row">
+        <span class="balance-label">Remaining After Send</span>
+        <span class="balance-value remaining" id="sendRemainingBalance">0 RUPPY</span>
+      </div>
+    </div>
+
     <div class="scan-option" onclick="startScan()">
       <div class="scan-option-icon">📷</div>
       <div class="scan-option-title">Scan with Camera</div>
@@ -164,7 +184,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
     <div class="input-group">
       <label>Amount (RUPPY)</label>
-      <input type="number" id="sendAmount" placeholder="Enter Amount" min="1">
+      <input type="number" id="sendAmount" placeholder="Enter Amount" min="1" oninput="updateRemainingBalance()">
     </div>
 
     <div class="btn-group">
@@ -253,6 +273,11 @@ async function loadProfile(){
   }
   userData = window.userData;
 
+  if(!userData.uid){
+    userData.uid = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    await saveRuppyData(userData);
+  }
+
   if(userData.dp){
     document.getElementById('avatarBox').innerHTML = `<img src="${userData.dp}" alt="Profile">`;
   } else {
@@ -260,8 +285,8 @@ async function loadProfile(){
   }
   document.getElementById('userName').innerText = userData.name;
   document.getElementById('userBalance').innerText = (userData.balance || 0) + ' RUPPY';
-  document.getElementById('userId').innerText = 'ID: ' + (userData.uid || 'Guest');
-  document.getElementById('refCode').innerText = userData.uid || '-';
+  document.getElementById('userId').innerText = 'ID: ' + userData.uid;
+  document.getElementById('refCode').innerText = userData.uid;
 }
 
 loadProfile();
@@ -358,11 +383,30 @@ function compressToBase64(file, maxWidth, quality){
   });
 }
 
+// ✅ NEW: Live Balance Update Function
+window.updateRemainingBalance = function(){
+  const amount = parseInt(document.getElementById('sendAmount').value) || 0;
+  const currentBal = userData.balance || 0;
+  const remaining = currentBal - amount;
+  const remainingEl = document.getElementById('sendRemainingBalance');
+
+  remainingEl.innerText = remaining + ' RUPPY';
+
+  if(remaining < 0){
+    remainingEl.className = 'balance-value insufficient';
+  } else {
+    remainingEl.className = 'balance-value remaining';
+  }
+}
+
 // Send RUPPY Functions
 window.openSendModal = function(){
   document.getElementById('sendModal').classList.add('active');
   document.getElementById('receiverId').value = '';
   document.getElementById('sendAmount').value = '';
+  document.getElementById('sendCurrentBalance').innerText = (userData.balance || 0) + ' RUPPY';
+  document.getElementById('sendRemainingBalance').innerText = (userData.balance || 0) + ' RUPPY';
+  document.getElementById('sendRemainingBalance').className = 'balance-value remaining';
 }
 
 window.closeSendModal = function(){
@@ -410,7 +454,6 @@ window.scanFromGallery = function(event){
     });
 }
 
-// ✅ FINAL FIX: Firebase DB + Auto Create User
 window.sendRuppy = async function(){
   const receiverId = document.getElementById('receiverId').value.trim();
   const amount = parseInt(document.getElementById('sendAmount').value);
@@ -442,7 +485,6 @@ window.sendRuppy = async function(){
   try {
     const { database, ref, get, set, update } = window.firebaseDB;
 
-    // Firebase से Receiver Check करो
     const receiverRef = ref(database, 'users/' + receiverId);
     const receiverSnap = await get(receiverRef);
 
@@ -450,7 +492,6 @@ window.sendRuppy = async function(){
     if(receiverSnap.exists()){
       receiverData = receiverSnap.val();
     } else {
-      // User नहीं मिला → Auto Create करो
       receiverData = {
         uid: receiverId,
         name: 'User_' + receiverId.slice(-4),
@@ -463,11 +504,9 @@ window.sendRuppy = async function(){
       showToast('New user created', 'success');
     }
 
-    // Sender का Balance Minus
     userData.balance = (userData.balance || 0) - amount;
     await saveRuppyData(userData);
 
-    // Receiver का Balance Plus - Firebase में
     receiverData.balance = (receiverData.balance || 0) + amount;
     await update(receiverRef, { balance: receiverData.balance });
 
@@ -511,7 +550,6 @@ window.copyUserId = function(){
 
 window.logout = async function(){
   if(confirm('Are you sure you want to logout?')){
-    await supabase.auth.signOut();
     localStorage.removeItem('ruppy_user');
     localStorage.removeItem('ruppy_user_cache');
     localStorage.removeItem('notif_enabled');
