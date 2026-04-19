@@ -9,52 +9,72 @@
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
     body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
 
-  .header {padding:20px 15px 10px; display:flex; align-items:center; justify-content:space-between;}
-  .header.title h3 {font-size:18px; font-weight:600;}
-  .header.title p {font-size:12px; color:#888; margin-top:2px;}
-  .header.back-btn {width:36px; height:36px; border:1px solid #333; border-radius:8px; background:#0d0d0d; display:flex; align-items:center; justify-content:center; cursor:pointer;}
+ .header {padding:20px 15px 10px; display:flex; align-items:center; justify-content:space-between;}
+ .header.title h3 {font-size:18px; font-weight:600;}
+ .header.title p {font-size:12px; color:#888; margin-top:2px;}
+ .header.back-btn {width:36px; height:36px; border:1px solid #333; border-radius:8px; background:#0d0d0d; display:flex; align-items:center; justify-content:center; cursor:pointer;}
 
-  .position-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-  .position-card p:first-child {color:#888; font-size:11px; letter-spacing:0.5px; margin-bottom:10px;}
-  .position-row {display:flex; justify-content:space-between; align-items:center;}
-  .position-left {display:flex; align-items:center; gap:12px;}
-  .position-rank {width:36px; height:36px; border:2px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#FFA500;}
-  .position-name {font-size:15px; font-weight:600;}
-  .position-right {text-align:right;}
-  .position-right.label {color:#888; font-size:11px;}
-  .position-right.points {color:#FFA500; font-weight:700; font-size:20px;}
+  /* ADD: Winner Banner */
+ .winner-banner {margin:15px; background:linear-gradient(135deg, #FFA500, #FF6B00); border-radius:12px; padding:16px; display:none;}
+ .winner-banner.show {display:block;}
+ .winner-banner h3 {font-size:16px; color:#000; font-weight:700; margin-bottom:8px;}
+ .winner-banner p {font-size:13px; color:#000; margin-bottom:12px;}
+ .btn-claim {width:100%; padding:12px; background:#000; border:none; border-radius:8px; color:#FFA500; font-weight:700; font-size:14px; cursor:pointer;}
+ .btn-claim:disabled {opacity:0.5;}
 
-   /* ADD करा: Leaderboard List */
-  .leaderboard-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-  .leaderboard-list h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
-  .leader-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
-  .leader-row:last-child {border-bottom:none;}
-  .leader-left {display:flex; align-items:center; gap:10px;}
-  .leader-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
-  .leader-name {font-size:14px;}
-  .leader-points {color:#FFA500; font-weight:700; font-size:14px;}
+ .position-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+ .position-card p:first-child {color:#888; font-size:11px; letter-spacing:0.5px; margin-bottom:10px;}
+ .position-row {display:flex; justify-content:space-between; align-items:center;}
+ .position-left {display:flex; align-items:center; gap:12px;}
+ .position-rank {width:36px; height:36px; border:2px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#FFA500;}
+ .position-name {font-size:15px; font-weight:600;}
+ .position-right {text-align:right;}
+ .position-right.label {color:#888; font-size:11px;}
+ .position-right.points {color:#FFA500; font-weight:700; font-size:20px;}
 
-  .campaign-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:18px;}
-  .campaign-card.tag {color:#888; font-size:11px; display:flex; align-items:center; gap:5px; margin-bottom:10px;}
-  .campaign-card h2 {font-size:20px; font-weight:700; line-height:1.3;}
-  .campaign-card h2 span {color:#FFA500;}
-  .campaign-card p {color:#666; font-size:12px; margin:10px 0 15px; line-height:1.5;}
-  .btn-refer {width:100%; padding:14px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:700; font-size:14px; cursor:pointer;}
-  .btn-refer:active {transform:scale(0.98);}
-  .btn-refer:disabled {opacity:0.6;}
+  /* ADD: Last Week Winners List */
+ .winners-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+ .winners-list h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
+ .winner-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
+ .winner-row:last-child {border-bottom:none;}
+ .winner-left {display:flex; align-items:center; gap:10px;}
+ .winner-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
+ .winner-name {font-size:14px;}
+ .winner-right {text-align:right;}
+ .winner-token {color:#FFA500; font-weight:700; font-size:13px;}
+ .winner-status {font-size:10px; color:#4CAF50;}
+ .winner-status.pending {color:#888;}
 
-  .reward-structure {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-  .reward-structure h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
-  .reward-row {display:flex; justify-content:space-between; padding:8px 0; font-size:13px; border-bottom:1px solid #1a1a1a;}
-  .reward-row:last-child {border-bottom:none;}
-  .reward-row.rank {color:#888;}
-  .reward-row.token {color:#fff; font-weight:600;}
+ .leaderboard-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+ .leaderboard-list h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
+ .leader-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
+ .leader-row:last-child {border-bottom:none;}
+ .leader-left {display:flex; align-items:center; gap:10px;}
+ .leader-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
+ .leader-name {font-size:14px;}
+ .leader-points {color:#FFA500; font-weight:700; font-size:14px;}
 
-  .nav {position:fixed; bottom:0; left:0; right:0; background:#0d0d0d; border-top:1px solid #222; display:flex; justify-content:space-around; padding:8px 0;}
-  .nav-item {display:flex; flex-direction:column; align-items:center; gap:3px; color:#666; text-decoration:none; font-size:11px; cursor:pointer; padding:5px 15px;}
-  .nav-item.active {color:#FFA500;}
-  .nav-item.active::after {content:''; width:30px; height:2px; background:#FFA500; margin-top:2px;}
-  .nav-item.icon {font-size:20px;}
+ .campaign-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:18px;}
+ .campaign-card.tag {color:#888; font-size:11px; display:flex; align-items:center; gap:5px; margin-bottom:10px;}
+ .campaign-card h2 {font-size:20px; font-weight:700; line-height:1.3;}
+ .campaign-card h2 span {color:#FFA500;}
+ .campaign-card p {color:#666; font-size:12px; margin:10px 0 15px; line-height:1.5;}
+ .btn-refer {width:100%; padding:14px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:700; font-size:14px; cursor:pointer;}
+ .btn-refer:active {transform:scale(0.98);}
+ .btn-refer:disabled {opacity:0.6;}
+
+ .reward-structure {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+ .reward-structure h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
+ .reward-row {display:flex; justify-content:space-between; padding:8px 0; font-size:13px; border-bottom:1px solid #1a1a1a;}
+ .reward-row:last-child {border-bottom:none;}
+ .reward-row.rank {color:#888;}
+ .reward-row.token {color:#fff; font-weight:600;}
+
+ .nav {position:fixed; bottom:0; left:0; right:0; background:#0d0d0d; border-top:1px solid #222; display:flex; justify-content:space-around; padding:8px 0;}
+ .nav-item {display:flex; flex-direction:column; align-items:center; gap:3px; color:#666; text-decoration:none; font-size:11px; cursor:pointer; padding:5px 15px;}
+ .nav-item.active {color:#FFA500;}
+ .nav-item.active::after {content:''; width:30px; height:2px; background:#FFA500; margin-top:2px;}
+ .nav-item.icon {font-size:20px;}
   </style>
 
 </head>
@@ -66,6 +86,13 @@
       <p>Updates Daily • 1 Share = 10 pts</p>
     </div>
     <div class="back-btn" onclick="window.location.href='app.html'">←</div>
+  </div>
+
+  <!-- ADD: Winner Claim Banner -->
+  <div class="winner-banner" id="winnerBanner">
+    <h3>🏆 Congratulations!</h3>
+    <p id="winnerText">You ranked #0 last week</p>
+    <button class="btn-claim" id="claimBtn" onclick="claimReward()">CLAIM REWARD</button>
   </div>
 
   <div class="position-card">
@@ -82,7 +109,14 @@
     </div>
   </div>
 
-  <!-- ADD करा: Top 100 List -->
+  <!-- ADD: Last Week Winners Public List -->
+  <div class="winners-list">
+    <h4>🏆 LAST WEEK TOP 10 WINNERS</h4>
+    <div id="winnersList">
+      <p style="color:#666; text-align:center; padding:20px 0;">No winners yet. Check back Monday!</p>
+    </div>
+  </div>
+
   <div class="leaderboard-list">
     <h4>🔥 TODAY'S TOP 100</h4>
     <div id="leaderboardList">
@@ -93,7 +127,7 @@
   <div class="campaign-card">
     <div class="tag">📊 DAILY CAMPAIGN</div>
     <h2>Share More. Rank Higher.<br><span>Earn Bigger Rewards.</span></h2>
-    <p>Ranking resets every 24 hours. Top rank = biggest reward every week. Share now!</p>
+    <p>Ranking resets every 24 hours. Winners can claim rewards every Monday!</p>
     <button class="btn-refer" onclick="handleReferNow()">REFER NOW</button>
   </div>
 
@@ -169,31 +203,44 @@
   let currentUser = null;
   let userRef = null;
   const allUsersRef = ref(database, 'users');
+  const winnersRef = ref(database, 'winners/thisWeek');
 
-  // Step 1: Anonymous Login for Firebase Rules
+  // Reward Structure
+  const REWARDS = {1: 1000, 10: 800, 50: 600, 100: 500, 500: 300};
+
+  function getRewardByRank(rank) {
+    if (rank === 1) return 1000;
+    if (rank <= 10) return 800;
+    if (rank <= 50) return 600;
+    if (rank <= 100) return 500;
+    if (rank <= 500) return 300;
+    return 0;
+  }
+
   signInAnonymously(auth).catch((error) => {
     console.error("Auth Error:", error);
     alert("Login failed. Check Firebase Auth settings.");
   });
 
-  // Step 2: Jab Login ho jaye tabhi Database kaam karo
   onAuthStateChanged(auth, (user) => {
     if (user) {
       currentUser = user;
       userRef = ref(database, 'users/' + user.uid);
-      checkDailyReset(); // ADD करा: 24 घंटे वाला Reset Check
+      checkDailyReset();
+      checkWeeklySnapshot(); // ADD: Sunday को Winners Save करो
       checkReferral();
       loadUserPosition();
+      loadWinnersList(); // ADD: Winner Board Load करो
+      checkClaimStatus(); // ADD: Claim Button दिखाओ
       setupRealtimeListener();
     }
   });
 
-  // ADD करा: हर 24 घंटे में Daily Shares 0 करो
   async function checkDailyReset() {
     const snap = await get(userRef);
     if (snap.exists()) {
       const data = snap.val();
-      const today = new Date().toDateString(); // "Sun Apr 20 2026"
+      const today = new Date().toDateString();
       if (data.lastReset!== today) {
         await update(userRef, {
           dailyShares: 0,
@@ -203,7 +250,54 @@
     }
   }
 
-  // Step 3: Agar URL me?ref=uid hai to Referral Count badhao
+  // ADD: हर Sunday Winners का Snapshot बनाओ
+  async function checkWeeklySnapshot() {
+    const now = new Date();
+    const day = now.getDay(); // 0 = Sunday
+    const weekId = getWeekId(now);
+
+    const snap = await get(winnersRef);
+    if (day === 0 && (!snap.exists() || snap.val().weekId!== weekId)) {
+      // Sunday है और इस हफ्ते का Snapshot नहीं बना
+      const usersSnap = await get(allUsersRef);
+      const allUsers = [];
+      if (usersSnap.exists()) {
+        usersSnap.forEach((child) => {
+          const data = child.val();
+          allUsers.push({
+            uid: child.key,
+            name: data.name || 'User',
+            dailyShares: data.dailyShares || 0,
+            points: (data.dailyShares || 0) * 10
+          });
+        });
+      }
+      allUsers.sort((a, b) => b.points - a.points);
+      const top100 = allUsers.slice(0, 100).map((u, i) => ({
+        rank: i + 1,
+        uid: u.uid,
+        name: u.name,
+        points: u.points,
+        reward: getRewardByRank(i + 1),
+        claimed: false
+      }));
+
+      await set(winnersRef, {
+        weekId: weekId,
+        date: now.toISOString(),
+        winners: top100
+      });
+    }
+  }
+
+  function getWeekId(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+    return d.getUTCFullYear() + '-W' + weekNo;
+  }
+
   async function checkReferral() {
     const urlParams = new URLSearchParams(window.location.search);
     const referrerUid = urlParams.get('ref');
@@ -231,7 +325,6 @@
     if (snapshot.exists()) {
       snapshot.forEach((child) => {
         const data = child.val();
-        // CHANGE करा: dailyShares से Points बन रहे अब
         allUsers.push({
           uid: child.key,
           name: data.name || 'User',
@@ -251,7 +344,6 @@
     document.getElementById('userPoints').innerText = userPoints;
     document.getElementById('userRank').innerText = userRank === '-'? '#-' : '#' + userRank;
 
-    // ADD करा: Top 100 List दिखाओ
     renderLeaderboard(allUsers.slice(0, 100));
 
     const userSnap = await get(userRef);
@@ -260,15 +352,81 @@
         name: userData.name,
         referralCount: userData.referralCount || 0,
         balance: userData.balance || 0,
-        dailyShares: 0, // ADD करा
-        lastReset: new Date().toDateString(), // ADD करा
+        dailyShares: 0,
+        lastReset: new Date().toDateString(),
         uid: currentUser.uid,
         joinedAt: Date.now()
       });
     }
   }
 
-  // ADD करा: Top 100 Render Function
+  // ADD: Winners List दिखाओ
+  async function loadWinnersList() {
+    const snap = await get(winnersRef);
+    const listDiv = document.getElementById('winnersList');
+    if (!snap.exists() ||!snap.val().winners) {
+      listDiv.innerHTML = '<p style="color:#666; text-align:center; padding:20px 0;">No winners yet. Check back Monday!</p>';
+      return;
+    }
+
+    const winners = snap.val().winners.slice(0, 10);
+    listDiv.innerHTML = winners.map(w => `
+      <div class="winner-row">
+        <div class="winner-left">
+          <div class="winner-rank">#${w.rank}</div>
+          <div class="winner-name">${w.name}</div>
+        </div>
+        <div class="winner-right">
+          <div class="winner-token">${w.reward} RUPPY</div>
+          <div class="winner-status ${w.claimed? '' : 'pending'}">${w.claimed? 'Claimed ✅' : 'Pending ⏳'}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ADD: Claim Button Check
+  async function checkClaimStatus() {
+    if (!currentUser) return;
+    const snap = await get(winnersRef);
+    if (!snap.exists() ||!snap.val().winners) return;
+
+    const winner = snap.val().winners.find(w => w.uid === currentUser.uid);
+    if (winner &&!winner.claimed) {
+      document.getElementById('winnerBanner').classList.add('show');
+      document.getElementById('winnerText').innerText = `You ranked #${winner.rank} last week! Claim your ${winner.reward} RUPPY now.`;
+      window.currentReward = winner.reward;
+      window.currentRank = winner.rank;
+    }
+  }
+
+  // ADD: Claim Reward Function
+  window.claimReward = async function() {
+    if (!currentUser ||!window.currentReward) return;
+    const btn = document.getElementById('claimBtn');
+    btn.disabled = true;
+    btn.innerText = 'CLAIMING...';
+
+    // 1. Balance में Add करो
+    const userSnap = await get(userRef);
+    const bal = userSnap.val().balance || 0;
+    await update(userRef, { balance: bal + window.currentReward });
+
+    // 2. Winner में Claimed = true करो
+    const snap = await get(winnersRef);
+    const winners = snap.val().winners;
+    const idx = winners.findIndex(w => w.uid === currentUser.uid);
+    if (idx >= 0) {
+      winners[idx].claimed = true;
+      await set(winnersRef, {...snap.val(), winners: winners});
+    }
+
+    btn.innerText = 'CLAIMED ✅';
+    setTimeout(() => {
+      document.getElementById('winnerBanner').classList.remove('show');
+      loadWinnersList();
+    }, 2000);
+  }
+
   function renderLeaderboard(users) {
     const listDiv = document.getElementById('leaderboardList');
     if (users.length === 0) {
@@ -291,6 +449,10 @@
     onValue(allUsersRef, () => {
       loadUserPosition();
     });
+    onValue(winnersRef, () => {
+      loadWinnersList();
+      checkClaimStatus();
+    });
   }
 
   window.handleReferNow = async function() {
@@ -299,7 +461,6 @@
     const btn = document.querySelector('.btn-refer');
     btn.disabled = true;
 
-    // ADD करा: Share करने पे dailyShares +1
     const snap = await get(userRef);
     if (snap.exists()) {
       const data = snap.val();
