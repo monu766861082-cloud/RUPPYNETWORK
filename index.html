@@ -16,38 +16,38 @@
 html,body{background:#000;color:#fff;height:100%;overflow:hidden}
 
 /* 100vh में सब Fit - No Scroll */
-.login-screen{width:100%;height:100vh;display:flex;align-items:center;justify-content:center;padding:8px}
+.login-screen{width:100%;height:100vh;display:flex;align-items:center;justify-content:center;padding:10px}
 
 .wrap{width:100%;max-width:480px;text-align:center}
-.pill{border:1px solid #c28840;color:#c28840;padding:3px 12px;border-radius:14px;display:inline-block;font-size:10px;margin-bottom:6px;font-weight:700}
+.pill{border:1px solid #c28840;color:#c28840;padding:3px 12px;border-radius:14px;display:inline-block;font-size:10px;margin-bottom:8px;font-weight:700}
 
-/* Logo चौड़ा किया - लंबाई Same 160px, चौड़ाई 100% */
-.coin{width:100%;height:160px;margin:0 auto 8px;border-radius:18px;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(249,168,37,0.3)}
-.coin img{width:100%;height:100%;object-fit:contain}
+/* Logo 150px - Screenshot में Fit करने के लिए */
+.coin{width:150px;height:150px;margin:0 auto 10px;border-radius:18px;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(249,168,37,0.3)}
+.coin img{width:100%;height:100%;object-fit:cover}
 
-/* RUP NETWORK */
-h1{color:#f9a825;margin:0 0 12px;font-size:30px;font-weight:900;letter-spacing:8px;line-height:1}
+/* RUP NETWORK - Screenshot जैसा Space */
+h1{color:#f9a825;margin:0 0 14px;font-size:30px;font-weight:900;letter-spacing:8px;line-height:1.1}
 
-/* Input 46px Height - लंबाई कम की */
-.input-box{margin:8px 0;text-align:left}
-.input-box label{color:#bbb;font-size:13px;display:block;margin-bottom:4px;font-weight:700}
-.input-box input{width:100%;padding:0 14px;border:2px solid #333;border-radius:12px;background:#111;color:#fff;font-size:15px;box-sizing:border-box;height:46px}
+/* Input 48px Height - Screenshot जैसा लंबा */
+.input-box{margin:10px 0;text-align:left}
+.input-box label{color:#bbb;font-size:14px;display:block;margin-bottom:5px;font-weight:700}
+.input-box input{width:100%;padding:0 16px;border:2px solid #333;border-radius:14px;background:#111;color:#fff;font-size:16px;box-sizing:border-box;height:48px}
 .input-box input:focus{outline:none;border-color:#f9a825;box-shadow:0 0 12px rgba(249,168,37,0.4)}
-.input-box input::placeholder{color:#555;font-size:14px}
+.input-box input::placeholder{color:#555;font-size:15px}
 
-/* Button 46px Height - ऊपर लाया */
-.btn{margin:10px auto 0;padding:0 24px;background:#f9a825;color:#000;border:none;border-radius:12px;font-weight:900;width:100%;cursor:pointer;font-size:16px;letter-spacing:1px;height:46px}
+/* Button 48px Height - Screenshot जैसा */
+.btn{margin:12px auto 0;padding:0 24px;background:#f9a825;color:#000;border:none;border-radius:14px;font-weight:900;width:100%;cursor:pointer;font-size:17px;letter-spacing:1px;height:48px}
 .btn:disabled{background:#333;color:#666;cursor:not-allowed}
 .btn:active{transform:scale(0.97)}
 
-/* Google बटन 46px - ऊपर लाया, पूरा चौड़ा */
-.btn-google{background:#fff;color:#000;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:700;height:46px}
+/* Google बटन 48px - अब पूरा दिखेगा */
+.btn-google{background:#fff;color:#000;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:16px;font-weight:700;height:48px}
 
-.toggle{color:#aaa;font-size:12px;margin-top:10px;cursor:pointer}
+.toggle{color:#aaa;font-size:13px;margin-top:12px;cursor:pointer}
 .toggle span{color:#f9a825;text-decoration:underline;font-weight:700}
-.ft{font-size:9px;color:#666;margin-top:10px;line-height:1.4}
+.ft{font-size:9px;color:#666;margin-top:12px;line-height:1.4}
 a{color:#aaa;text-decoration:none}
-.error{color:#f33;font-size:12px;margin-top:5px;display:none;font-weight:600}
+.error{color:#f33;font-size:13px;margin-top:6px;display:none;font-weight:600}
 
 /* Content Section नीचे रहेगा */
 .content-section{max-width:800px;margin:60px auto;padding:0 20px;color:#ccc;line-height:1.7;text-align:left}
@@ -83,7 +83,7 @@ a{color:#aaa;text-decoration:none}
   <button class="btn" onclick="handleLogin()" id="loginBtn">LOGIN</button>
 
   <button class="btn btn-google" onclick="signInWithGoogle()">
-    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22" height="22">
     Sign in with Google
   </button>
 
