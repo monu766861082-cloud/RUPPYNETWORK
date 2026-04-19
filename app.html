@@ -22,8 +22,11 @@
     
     .balance-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:20px;}
     .balance-card p:first-child {color:#888; font-size:13px;}
-    .balance-card h2 {font-size:32px; margin:5px 0; color:#FFA500;}
+    .balance-card h2 {font-size:32px; margin:5px 0; color:#FFA500; display:flex; align-items:center; gap:8px;}
     .balance-card h2 span {color:#fff; font-size:20px;}
+    
+    .r-coin {width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#000;box-shadow:0 0 12px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500;position:relative;flex-shrink:0}
+    .r-coin::after {content:'';position:absolute;inset:-2px;border-radius:50%;background:radial-gradient(circle,#FF6B00 0%,transparent 70%);opacity:0.4;filter:blur(3px);z-index:-1}
     
     .mining-section {margin:30px 0; text-align:center;}
     .mining-circle {width:180px; height:180px; margin:0 auto; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:0.3s; border:2px solid #FFA500;}
@@ -74,14 +77,14 @@
 
   <div class="balance-card">
     <p>TOTAL BALANCE</p>
-    <h2 id="balance">0 <span>RUPPY</span></h2>
+    <h2 id="balance"><div class="r-coin">R</div> 0 <span>RUP COIN</span></h2>
   </div>
 
   <div class="mining-section">
     <div class="mining-circle ready" id="miningCircle" onclick="handleMiningClick()">
       <h3 id="miningText">WATCH AD FOR BONUS</h3>
     </div>
-    <p class="mining-text">Watch ad to collect 40 RUPPY • Available every 3 hours</p>
+    <p class="mining-text">Watch ad to collect 40 RUP COIN • Available every 3 hours</p>
   </div>
 
   <div class="grid">
@@ -96,7 +99,7 @@
       <div class="badge" id="giftBadge">✓</div>
       <div class="icon" style="background:#6a5acd;">🎁</div>
       <h4 style="color:#fff;">ULTRA GIFT</h4>
-      <p id="giftTimer">Ready → +15 RUPPY</p>
+      <p id="giftTimer">Ready → +15 RUP COIN</p>
       <div class="timer-bar"><div class="timer-fill" id="giftBar"></div></div>
     </div>
     <div class="grid-item" onclick="claimFirstReward()">
@@ -119,7 +122,7 @@
   <div class="modal" id="boostModal">
     <div class="modal-content">
       <h3>🚀 COLLECT BONUS</h3>
-      <p>Watch ads to collect extra RUPPY</p>
+      <p>Watch ads to collect extra RUP COIN</p>
       <div class="boost-step">
         <h4>Step <span id="boostStep">1</span>/3</h4>
         <p id="boostStepText">Watch ad for 5% bonus</p>
@@ -199,7 +202,7 @@
       saveUser();
       updateBalance();
       updateFirstReward();
-      alert('You earned 20 RUPPY!');
+      alert('You earned 20 RUP COIN!');
     }
   }
 
@@ -211,7 +214,7 @@
       saveUser();
       updateBalance();
       updateUltraReward();
-      alert('You earned 50 RUPPY!');
+      alert('You earned 50 RUP COIN!');
     }
   }
 
@@ -237,7 +240,7 @@
       }, 1500);
     } else {
       document.getElementById('boostStep').innerText = userData.boostCount + 1;
-      alert('+' + boostAmount + ' RUPPY Claimed! (' + userData.boostCount + '/3)');
+      alert('+' + boostAmount + ' RUP COIN Claimed! (' + userData.boostCount + '/3)');
     }
   }
 
@@ -297,7 +300,7 @@
   }
 
   function updateBalance() {
-    document.getElementById('balance').innerHTML = Number(userData.balance) + ' <span>RUPPY</span>';
+    document.getElementById('balance').innerHTML = '<div class="r-coin">R</div> ' + Number(userData.balance) + ' <span>RUP COIN</span>';
   }
 
   function updateMiningCircle() {
@@ -373,7 +376,7 @@
     let cooldown = 7200000;
     
     if(diff >= cooldown || lastGift === 0) {
-      document.getElementById('giftTimer').innerText = 'Ready → +15 RUPPY';
+      document.getElementById('giftTimer').innerText = 'Ready → +15 RUP COIN';
       document.getElementById('giftBadge').innerText = '✓';
       document.getElementById('giftBadge').style.background = '#00ff00';
       document.getElementById('giftBar').style.width = '100%';
@@ -405,7 +408,7 @@
     saveUser();
     updateBalance();
     updateGift();
-    alert('+15 RUPPY Added!');
+    alert('+15 RUP COIN Added!');
   }
 
   function updateFirstReward() {
@@ -413,7 +416,7 @@
     let diff = userData.firstRewardTime - now;
     
     if(diff <= 0 || userData.firstRewardTime === 0){
-      document.getElementById('firstRewardTimer').innerText = 'Claim 20 RUPPY';
+      document.getElementById('firstRewardTimer').innerText = 'Claim 20 RUP COIN';
       document.getElementById('firstRewardBadge').style.display = 'block';
       document.getElementById('firstRewardBar').style.width = '100%';
     } else {
@@ -432,7 +435,7 @@
     let diff = userData.ultraRewardTime - now;
     
     if(diff <= 0 || userData.ultraRewardTime === 0){
-      document.getElementById('ultraRewardTimer').innerText = 'Claim 50 RUPPY';
+      document.getElementById('ultraRewardTimer').innerText = 'Claim 50 RUP COIN';
       document.getElementById('ultraRewardBadge').style.display = 'block';
       document.getElementById('ultraRewardBar').style.width = '100%';
     } else {
