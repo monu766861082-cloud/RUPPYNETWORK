@@ -17,12 +17,17 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .hdr h1{margin:0;font-size:28px}
 .hdr p{margin:4px 0 0;color:#FFA500;font-weight:bold}
 .hdr small{color:#888}
-.tokenBal{background:#0d0d0d;border:1px solid #FFA500;border-radius:12px;padding:15px;margin:0 15px;text-align:center;font-size:14px}
+.tokenBal{background:#0d0d0d;border:1px solid #FFA500;border-radius:12px;padding:15px;margin:0 15px;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
 .tokenBal b{color:#FFA500;font-size:24px}
+
+.r-coin {width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;box-shadow:0 0 10px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500;position:relative;flex-shrink:0}
+.r-coin::after {content:'';position:absolute;inset:-2px;border-radius:50%;background:radial-gradient(circle,#FF6B00 0%,transparent 70%);opacity:0.4;filter:blur(3px);z-index:-1}
+
 .card{border:1px solid #333;border-radius:12px;padding:14px;margin:12px 15px;display:flex;align-items:center;background:#0d0d0d}
 .ic{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:20px}
 .tg{background:#0088cc}.fb{background:#1877f2}.x{background:#fff;color:#000}
-.txt{flex:1}.txt b{display:block;font-size:15px}.txt span{color:#FFA500;font-size:12px}
+.txt{flex:1}.txt b{display:block;font-size:15px}.txt span{color:#FFA500;font-size:12px;display:flex;align-items:center;gap:4px}
+.txt .mini-coin {width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:8px;color:#000}
 .bt{border:1px solid #FFA500;color:#FFA500;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;min-width:70px;text-align:center;font-weight:600}
 .bt.claim{background:#FFA500;color:#000}
 .bt.done{background:#333;color:#666;border-color:#333;cursor:not-allowed}
@@ -37,27 +42,27 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 <body>
 <div class="hdr">
   <h1>DAILY TASKS</h1>
-  <p>EARN RUPPY</p>
+  <p>RUP COIN</p>
   <small id="userId">ID: Loading...</small>
 </div>
 
-<div class="tokenBal">Your Balance: <b id="bal">0</b> RUPPY</div>
+<div class="tokenBal">Your Balance: <div class="r-coin">R</div> <b id="bal">0</b> RUP COIN</div>
 
 <div class="card">
   <div class="ic tg">✈️</div>
-  <div class="txt"><b>Join Telegram</b><span>Reward: +20 RUPPY</span></div>
+  <div class="txt"><b>Join Telegram</b><span>Reward: <div class="mini-coin">R</div> 20 RUP COIN</span></div>
   <a class="bt" id="tgBtn">JOIN</a>
 </div>
 
 <div class="card">
   <div class="ic fb">f</div>
-  <div class="txt"><b>Follow on Facebook</b><span>Reward: +20 RUPPY</span></div>
+  <div class="txt"><b>Follow on Facebook</b><span>Reward: <div class="mini-coin">R</div> 20 RUP COIN</span></div>
   <a class="bt" id="fbBtn">FOLLOW</a>
 </div>
 
 <div class="card">
   <div class="ic x">X</div>
-  <div class="txt"><b>Follow on X</b><span>Reward: +20 RUPPY</span></div>
+  <div class="txt"><b>Follow on X</b><span>Reward: <div class="mini-coin">R</div> 20 RUP COIN</span></div>
   <a class="bt" id="xBtn">FOLLOW</a>
 </div>
 
@@ -141,7 +146,7 @@ async function claimReward(task) {
     
     document.getElementById('bal').innerText = userData.balance;
     updateButtons();
-    alert('+20 RUPPY Claimed!');
+    alert('+20 RUP COIN Claimed!');
   }
 }
 
