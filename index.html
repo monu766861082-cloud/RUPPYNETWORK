@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>R U P Network - Daily Rewards App</title>
 <meta name="description" content="Join R U P Network to earn reward points daily. Complete tasks, refer friends, and unlock bonuses. 100% free rewards platform.">
 
@@ -12,35 +12,44 @@
 <link rel="apple-touch-icon" href="/IMG_7725.png">
 
 <style>
-body{margin:0;background:#000;color:#fff;font-family:Arial;min-height:100vh}
-.wrap{padding:22px;width:100%;max-width:380px;text-align:center;margin:0 auto;display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column}
-.pill{border:1px solid #c28840;color:#c28840;padding:4px 12px;border-radius:14px;display:inline-block;font-size:12px;margin-bottom:18px}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
+html,body{background:#000;color:#fff;height:100%;overflow-x:hidden}
 
-/* Logo Square + Glow हटाया */
-.coin{width:220px;height:220px;margin:10px auto 20px;border-radius:16px;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center}
+/* 👇 Login Screen - Full Mobile Height */
+.login-screen{width:100%;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+
+.wrap{width:100%;max-width:480px;text-align:center}
+.pill{border:1px solid #c28840;color:#c28840;padding:6px 16px;border-radius:14px;display:inline-block;font-size:12px;margin-bottom:24px;font-weight:700}
+
+/* Logo 300px - सबसे बड़ा */
+.coin{width:300px;height:300px;margin:0 auto 28px;border-radius:24px;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 0 50px rgba(249,168,37,0.2)}
 .coin img{width:100%;height:100%;object-fit:cover}
 
-h1{color:#f9a825;margin:12px 0 20px;font-size:30px;font-weight:900}
+/* RUP NETWORK 42px */
+h1{color:#f9a825;margin:0 0 32px;font-size:42px;font-weight:900;letter-spacing:3px}
 
-/* Input Box बड़े किए */
-.input-box{margin:16px 0;text-align:left}
-.input-box label{color:#bbb;font-size:16px;display:block;margin-bottom:8px;font-weight:600}
-.input-box input{width:100%;padding:18px;border:2px solid #333;border-radius:14px;background:#111;color:#fff;font-size:17px;box-sizing:border-box}
-.input-box input:focus{outline:none;border-color:#f9a825;box-shadow:0 0 10px rgba(249,168,37,0.4)}
-.input-box input::placeholder{color:#666;font-size:16px}
+/* Input Box Full Screen Wide + 70px Height */
+.input-box{margin:22px 0;text-align:left}
+.input-box label{color:#bbb;font-size:17px;display:block;margin-bottom:12px;font-weight:700}
+.input-box input{width:100%;padding:0 22px;border:3px solid #333;border-radius:20px;background:#111;color:#fff;font-size:19px;box-sizing:border-box;height:70px}
+.input-box input:focus{outline:none;border-color:#f9a825;box-shadow:0 0 20px rgba(249,168,37,0.5)}
+.input-box input::placeholder{color:#555;font-size:18px}
 
-/* Button बड़ा किया */
-.btn{margin:22px auto;padding:18px 24px;background:#f9a825;color:#000;border:none;border-radius:14px;font-weight:bold;width:100%;cursor:pointer;font-size:18px;letter-spacing:1px}
+/* Button 70px Height - Input जितना लंबा */
+.btn{margin:28px auto;padding:0 24px;background:#f9a825;color:#000;border:none;border-radius:20px;font-weight:900;width:100%;cursor:pointer;font-size:20px;letter-spacing:1px;height:70px}
 .btn:disabled{background:#333;color:#666;cursor:not-allowed}
-.btn-guest{background:transparent;color:#888;border:1px solid #333;margin-top:12px}
-.btn-google{background:#fff;color:#000;margin-top:14px;display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 24px;font-size:17px}
-.toggle{color:#aaa;font-size:16px;margin-top:18px;cursor:pointer}
-.toggle span{color:#f9a825;text-decoration:underline;font-weight:700}
-.ft{font-size:12px;color:#666;margin-top:30px}
-a{color:#aaa;text-decoration:none}
-.error{color:#f33;font-size:15px;margin-top:12px;display:none;font-weight:600}
+.btn:active{transform:scale(0.97)}
 
-/* ADDED: AdSense Content Section CSS */
+/* Google बटन Login के ठीक नीचे + 70px */
+.btn-google{background:#fff;color:#000;margin-top:18px;display:flex;align-items:center;justify-content:center;gap:14px;font-size:19px;font-weight:700;height:70px}
+
+.toggle{color:#aaa;font-size:17px;margin-top:24px;cursor:pointer}
+.toggle span{color:#f9a825;text-decoration:underline;font-weight:700}
+.ft{font-size:13px;color:#666;margin-top:40px;line-height:1.8}
+a{color:#aaa;text-decoration:none}
+.error{color:#f33;font-size:16px;margin-top:14px;display:none;font-weight:600}
+
+/* Content Section नीचे रहेगा, Login नहीं छुपेगा */
 .content-section{max-width:800px;margin:60px auto;padding:0 20px;color:#ccc;line-height:1.7;text-align:left}
 .content-section h2{color:#f9a825;font-size:22px;margin:30px 0 15px}
 .content-section h3{color:#f9a825;font-size:18px;margin:25px 0 10px}
@@ -54,10 +63,11 @@ a{color:#aaa;text-decoration:none}
 </head>
 <body>
 
+<div class="login-screen">
 <div class="wrap">
 <div class="pill">VIP PREMIUM</div>
 
-<!-- Logo IMG_7999.jpeg -->
+<!-- Logo 300px दिखेगा अब -->
 <div class="coin"><img src="IMG_7999.jpeg" alt="R U P Logo"></div>
 <h1>R U P NETWORK</h1>
 
@@ -74,7 +84,7 @@ a{color:#aaa;text-decoration:none}
   <button class="btn" onclick="handleLogin()" id="loginBtn">LOGIN</button>
 
   <button class="btn btn-google" onclick="signInWithGoogle()">
-    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22" height="22">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="26" height="26">
     Sign in with Google
   </button>
 
@@ -106,6 +116,7 @@ a{color:#aaa;text-decoration:none}
 <a href="privacy.html">Privacy</a> •
 <a href="terms.html">Terms</a><br>
 By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Terms</a> & <a href="privacy.html" style="color:#f9a825;">Privacy Policy</a>.
+</div>
 </div>
 </div>
 
