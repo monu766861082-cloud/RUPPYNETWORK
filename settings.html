@@ -221,13 +221,27 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
 <div class="toast" id="toast">Copied!</div>
 
-<!-- Supabase Script Added -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script>
-  const SUPABASE_URL = 'https://scgjubxfxjakgicupyuo.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjZ2p1YnhmeGpha2dpY3VweXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Mzk4NTIsImV4cCI6MjA5MTIxNTg1Mn0.QST9mZ7uup-H-s9P6DznbOVO14kJTCgYIIZxyTP1T24';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+<!-- Firebase Import -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+  import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
+    authDomain: "ruppynetwork-50362.firebaseapp.com",
+    databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
+    projectId: "ruppynetwork-50362",
+    storageBucket: "ruppynetwork-50362.firebasestorage.app",
+    messagingSenderId: "132064610854",
+    appId: "1:132064610854:web:3c217eaf3618007f5934e7"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+  window.firebaseDB = { database, ref, get, set, update };
+</script>
+
+<script>
 var userData = window.userData;
 let html5QrCode;
 
@@ -252,7 +266,6 @@ async function loadProfile(){
 
 loadProfile();
 
-// ✅ FIX: Toast with Type (success/error)
 window.showToast = function(msg, type = 'success'){
   let t = document.getElementById('toast');
   t.innerText = msg;
@@ -386,18 +399,18 @@ window.scanFromGallery = function(event){
   const html5QrCodeScanner = new Html5Qrcode("qr-reader");
 
   html5QrCodeScanner.scanFile(file, true)
- .then(decodedText => {
+.then(decodedText => {
       document.getElementById('receiverId').value = decodedText;
       showToast('QR Scanned from Gallery!', 'success');
       event.target.value = '';
     })
- .catch(err => {
+.catch(err => {
       showToast('QR not found in image! Use clear QR photo', 'error');
       event.target.value = '';
     });
 }
 
-// ✅ FIX: All Alerts Changed to Toast + English Messages
+// ✅ FINAL FIX: Firebase DB + Auto Create User
 window.sendRuppy = async function(){
   const receiverId = document.getElementById('receiverId').value.trim();
   const amount = parseInt(document.getElementById('sendAmount').value);
@@ -427,30 +440,36 @@ window.sendRuppy = async function(){
   sendBtn.textContent = 'Sending...';
 
   try {
-    // Receiver का Data Fetch करो
-    const { data: receiverData, error } = await supabase
-   .from('ruppy_users')
-   .select('*')
-   .eq('uid', receiverId)
-   .single();
+    const { database, ref, get, set, update } = window.firebaseDB;
 
-    if(error ||!receiverData){
-      showToast('User not found! Check the ID', 'error');
-      sendBtn.disabled = false;
-      sendBtn.textContent = 'Send Now';
-      return;
+    // Firebase से Receiver Check करो
+    const receiverRef = ref(database, 'users/' + receiverId);
+    const receiverSnap = await get(receiverRef);
+
+    let receiverData;
+    if(receiverSnap.exists()){
+      receiverData = receiverSnap.val();
+    } else {
+      // User नहीं मिला → Auto Create करो
+      receiverData = {
+        uid: receiverId,
+        name: 'User_' + receiverId.slice(-4),
+        balance: 0,
+        referralCount: 0,
+        dailyShares: 0,
+        joinedAt: Date.now()
+      };
+      await set(receiverRef, receiverData);
+      showToast('New user created', 'success');
     }
 
     // Sender का Balance Minus
     userData.balance = (userData.balance || 0) - amount;
     await saveRuppyData(userData);
 
-    // Receiver का Balance Plus
+    // Receiver का Balance Plus - Firebase में
     receiverData.balance = (receiverData.balance || 0) + amount;
-    await supabase
-   .from('ruppy_users')
-   .update({ balance: receiverData.balance })
-   .eq('uid', receiverId);
+    await update(receiverRef, { balance: receiverData.balance });
 
     await loadProfile();
     closeSendModal();
@@ -470,7 +489,6 @@ window.openReceiveModal = function(){
   document.getElementById('receiveModal').classList.add('active');
   document.getElementById('myUserId').value = userData.uid;
 
-  // QR Code Generate करो
   document.getElementById('qrcode').innerHTML = '';
   new QRCode(document.getElementById('qrcode'), {
     text: userData.uid,
