@@ -24,13 +24,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .stat-card.reward-card.reward-top p{font-size:11px;color:#888}
 .stat-card.reward-card.reward-top h3{font-size:20px;font-weight:700;color:#FFD700;margin:0}
 .stat-card.reward-card.reward-bottom p{font-size:10px;color:#666;margin-bottom:2px}
-.stat-card.reward-card.reward-bottom h3{font-size:24px;font-weight:800;color:#FFD700;line-height:1;margin-bottom:2px;display:flex;align-items:center;gap:6px}
+.stat-card.reward-card.reward-bottom h3{font-size:24px;font-weight:800;color:#FFD700;line-height:1;margin-bottom:2px}
 .stat-card.reward-card.reward-bottom span{font-size:11px;color:#FFD700;font-weight:700}
-
-.r-coin {width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#000;box-shadow:0 0 8px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500;position:relative;flex-shrink:0}
-.r-coin::after {content:'';position:absolute;inset:-2px;border-radius:50%;background:radial-gradient(circle,#FF6B00 0%,transparent 70%);opacity:0.4;filter:blur(3px);z-index:-1}
-.r-coin-lg {width:24px;height:24px;font-size:13px}
-
 .reward-banner{margin:0 20px 16px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:10px}
 .reward-banner span{font-size:14px;color:#92400E;font-weight:700}
 .create-card{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:20px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
@@ -112,19 +107,20 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     </div>
     <div class="reward-bottom">
       <p>TOTAL BALANCE</p>
-      <h3><div class="r-coin r-coin-lg">R</div> <span id="totalBalance">0</span> RUP COIN</h3>
+      <h3 id="totalBalance">0</h3>
+      <span>RUPPY</span>
     </div>
   </div>
 </div>
 
 <div class="reward-banner" id="rewardBanner">
-  <span>🎁 +10 RUP COIN reward per post | 3/3 left</span>
+  <span>🎁 +10 RUPPY Coin reward per post | 3/3 left</span>
 </div>
 
 <div class="create-card">
   <div class="create-top">
     <div class="create-avatar" id="userAvatar">U</div>
-    <textarea id="postText" placeholder="Share your RUP COIN update..." rows="2"></textarea>
+    <textarea id="postText" placeholder="Share your RUPPY update..." rows="2"></textarea>
   </div>
   <div class="create-actions">
     <div class="left">
@@ -141,7 +137,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
 <div class="ruppy-nav">
   <button class="nav-btn" onclick="location.href='app.html'">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
     <span>Home</span>
   </button>
   <button class="nav-btn" onclick="location.href='tasks.html'">
@@ -149,7 +145,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <span>Tasks</span>
   </button>
   <button class="nav-btn" onclick="location.href='referral.html'">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
     <span>Referral</span>
   </button>
   <button class="nav-btn" onclick="location.href='ranking.html'">
@@ -157,7 +153,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <span>Ranking</span>
   </button>
   <button class="nav-btn" onclick="location.href='settings.html'">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37a1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
     <span>Settings</span>
   </button>
 </div>
@@ -179,9 +175,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-var userData = window.userData;
-let currentUser = 'User';
-
+// ✅ CHANGE 1: Config.js से Balance Sync - 253 दिखेगा
 async function syncBalanceFromConfig(){
   let attempts = 0;
   while((!window.userData || window.userData.uid === null) && attempts < 50){
@@ -189,8 +183,6 @@ async function syncBalanceFromConfig(){
     attempts++;
   }
   if(window.userData){
-    userData = window.userData;
-    currentUser = window.userData.name || window.userData.uid || 'User';
     document.getElementById('taskBalance').textContent = window.userData.taskBalance || 0;
     document.getElementById('totalBalance').textContent = window.userData.balance || 0;
     document.getElementById('userAvatar').textContent = (window.userData.name || 'U')[0].toUpperCase();
@@ -206,6 +198,8 @@ function checkContent(text){
   let lower = text.toLowerCase();
   return bannedWords.some(word => lower.includes(word));
 }
+
+let currentUser = 'User';
 
 let todayPostCount = 0;
 let todayPostsData = [];
@@ -247,10 +241,12 @@ async function markPostClaimed(postId){
   if(typeof window.userData!== 'undefined' && typeof window.saveRuppyData!== 'undefined'){
     window.userData.balance = Number(window.userData.balance) || 0;
     window.userData.balance += 10;
+
+    // ✅ Task Balance भी +10 करो - यही नया Add है
     window.userData.taskBalance = Number(window.userData.taskBalance) || 0;
     window.userData.taskBalance += 10;
     document.getElementById('taskBalance').textContent = window.userData.taskBalance;
-    document.getElementById('totalBalance').textContent = window.userData.balance;
+
     await window.saveRuppyData(window.userData);
   }
 }
@@ -272,7 +268,7 @@ function updateRewardBanner(){
     postBtn.disabled = true;
   } else {
     let left = 3 - count;
-    banner.innerHTML = `<span>🎁 +10 RUP COIN reward per post | ${left}/3 left</span>`;
+    banner.innerHTML = `<span>🎁 +10 RUPPY Coin reward per post | ${left}/3 left</span>`;
     postBtn.textContent = `Post ${count+1}/3`;
     postBtn.disabled =!document.getElementById('postText').value.trim() &&!selectedFile;
   }
@@ -310,7 +306,7 @@ window.addEmoji = function(){
 
 window.claimPost = async function(postId){
   await markPostClaimed(postId);
-  alert('10 RUP COIN Claimed! 🎉');
+  alert('10 Ruppy coin Claimed! 🎉');
   await getTodayPosts();
   updateRewardBanner();
   renderFeed(JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]'));
@@ -434,7 +430,7 @@ function renderFeed(posts){
 
     let claimBtnHTML = '';
     if(post.user === currentUser && post.claimed === false){
-      claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +10 RUP COIN</button>`;
+      claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +10 रुपए</button>`;
     } else if(post.user === currentUser && post.claimed === true){
       claimBtnHTML = `<button class="claim-btn claimed" disabled>Claimed</button>`;
     }
@@ -498,4 +494,89 @@ function getTimeAgo(time){
   if(minutes < 60) return `${minutes}m ago`;
   let hours = Math.floor(minutes / 60);
   if(hours < 24) return `${hours}h ago`;
-  let days = Math.floor(hours
+  let days = Math.floor(hours / 24);
+  if(days < 7) return `${days}d ago`;
+  return new Date(time).toLocaleDateString();
+}
+
+window.likePost = async function(id){
+  const postRef = ref(db, `posts/${id}`);
+  const snapshot = await get(postRef);
+  const post = snapshot.val();
+
+  let isLiked = post.likedBy && post.likedBy[currentUser];
+  let updates = {};
+
+  if(isLiked){
+    updates[`posts/${id}/likes`] = (post.likes || 0) - 1;
+    updates[`posts/${id}/likedBy/${currentUser}`] = null;
+  } else {
+    updates[`posts/${id}/likes`] = (post.likes || 0) + 1;
+    updates[`posts/${id}/likedBy/${currentUser}`] = true;
+  }
+
+  await update(ref(db), updates);
+}
+
+window.toggleComments = function(id){
+  let box = document.getElementById(`comments-${id}`);
+  box.style.display = box.style.display === 'block'? 'none' : 'block';
+}
+
+window.showAllComments = function(id){
+  document.getElementById(`comments-${id}`).style.display = 'block';
+}
+
+window.addComment = async function(id){
+  let input = document.getElementById(`commentInput-${id}`);
+  let text = input.value.trim();
+  if(!text) return;
+  if(checkContent(text)){
+    alert('Inappropriate content');
+    return;
+  }
+
+  const postRef = ref(db, `posts/${id}`);
+  const snapshot = await get(postRef);
+  const post = snapshot.val();
+  const comments = post.comments || [];
+
+  comments.push({user: currentUser, userDp: (typeof window.userData!== 'undefined' && window.userData.dp)? window.userData.dp : null, text: text, time: Date.now()});
+
+  await update(postRef, { comments: comments });
+  input.value = '';
+}
+
+window.sharePost = function(id){
+  let shareData = {
+    title: 'RUPPY Hub Post',
+    text: 'Check this post on RUPPY Hub',
+    url: window.location.href
+  };
+
+  if(navigator.share){
+    navigator.share(shareData).catch(err => console.log('Share failed'));
+  } else {
+    let whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`;
+    window.open(whatsappUrl, '_blank');
+  }
+}
+
+window.reportPost = async function(id){
+  if(confirm('Report this post?')){
+    const postRef = ref(db, `posts/${id}`);
+    const snapshot = await get(postRef);
+    const post = snapshot.val();
+
+    await update(postRef, { reports: (post.reports || 0) + 1 });
+    alert('Reported');
+  }
+}
+
+getTodayPosts().then(() => {
+  updateRewardBanner();
+});
+</script>
+
+</body>
+</html>
