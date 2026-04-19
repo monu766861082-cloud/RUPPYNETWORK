@@ -62,7 +62,9 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .sp{height:96px}
 .ft-links{font-size:11px;color:#666;text-align:center;margin-top:30px;padding-bottom:20px}
 .ft-links a{color:#aaa;text-decoration:none}
-.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:14px 24px;border-radius:12px;font-size:14px;display:none;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);font-weight:500}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:14px 24px;border-radius:12px;font-size:14px;display:none;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);font-weight:500}
+.toast.success{background:#1a5c1a;color:#4ade80}
+.toast.error{background:#5c1a1a;color:#f87171}
 #qr-reader{width:100%;border:2px solid var(--gold);border-radius:16px;overflow:hidden;margin:15px 0}
 #qrcode{display:flex;justify-content:center;padding:20px;background:#fff;border-radius:16px;margin:15px 0;box-shadow:0 4px 20px rgba(243,199,116,0.2)}
 .scan-option{padding:16px;border:1px solid var(--border);border-radius:16px;text-align:center;margin:12px 0;cursor:pointer;transition:all 0.2s;background:linear-gradient(135deg, transparent, rgba(243,199,116,0.03))}
@@ -132,7 +134,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   </div>
 </div>
 
-<!-- ✅ UPDATED: Send RUPPY Modal with Gallery Scan -->
+<!-- Send RUPPY Modal -->
 <div class="modal" id="sendModal">
   <div class="modal-content">
     <div class="modal-title">Send RUPPY</div>
@@ -140,13 +142,13 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     <div class="scan-option" onclick="startScan()">
       <div class="scan-option-icon">📷</div>
       <div class="scan-option-title">Scan with Camera</div>
-      <div class="scan-option-desc">Live Camera से QR Scan करो</div>
+      <div class="scan-option-desc">Scan QR Code using Camera</div>
     </div>
 
     <div class="scan-option" onclick="document.getElementById('qrFileInput').click()">
       <div class="scan-option-icon">🖼️</div>
       <div class="scan-option-title">Upload from Gallery</div>
-      <div class="scan-option-desc">Gallery से Photo चुन के Scan करो</div>
+      <div class="scan-option-desc">Select QR Image from Gallery</div>
     </div>
 
     <input type="file" id="qrFileInput" accept="image/*" style="display:none" onchange="scanFromGallery(event)">
@@ -176,7 +178,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <div class="modal" id="receiveModal">
   <div class="modal-content">
     <div class="modal-title">Receive RUPPY</div>
-    <p style="text-align:center;color:var(--muted);font-size:13px;margin-bottom:10px">दूसरे को ये QR दिखाओ या ID दो</p>
+    <p style="text-align:center;color:var(--muted);font-size:13px;margin-bottom:10px">Show this QR or share your ID</p>
 
     <div id="qrcode"></div>
 
@@ -250,16 +252,18 @@ async function loadProfile(){
 
 loadProfile();
 
-window.copyRefCode = function(){
-  navigator.clipboard.writeText(userData.uid);
-  showToast('Referral Code Copied!');
-}
-
-window.showToast = function(msg){
+// ✅ FIX: Toast with Type (success/error)
+window.showToast = function(msg, type = 'success'){
   let t = document.getElementById('toast');
   t.innerText = msg;
+  t.className = 'toast ' + type;
   t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 2500);
+  setTimeout(() => t.style.display = 'none', 3000);
+}
+
+window.copyRefCode = function(){
+  navigator.clipboard.writeText(userData.uid);
+  showToast('Referral Code Copied!', 'success');
 }
 
 window.openEditProfile = function(){
@@ -287,7 +291,7 @@ window.saveProfile = async function(){
       const base64Photo = await compressToBase64(file, 400, 0.6);
 
       if(base64Photo.length > 900000){
-        alert('Photo बहुत बड़ी है भाई। Camera से खींची हुई छोटी Photo डाल, Screenshot मत डाल');
+        showToast('Photo too large! Use smaller image', 'error');
         saveBtn.disabled = false;
         saveBtn.textContent = 'Save';
         return;
@@ -299,11 +303,11 @@ window.saveProfile = async function(){
     await saveRuppyData(userData);
     await loadProfile();
     closeEditProfile();
-    showToast('Profile Updated!');
+    showToast('Profile Updated!', 'success');
 
   } catch(error){
     console.error('Save Error:', error);
-    alert('Failed: ' + error.message);
+    showToast('Failed: ' + error.message, 'error');
   }
 
   saveBtn.disabled = false;
@@ -341,7 +345,7 @@ function compressToBase64(file, maxWidth, quality){
   });
 }
 
-// ✅ UPDATED: Send RUPPY Functions with Gallery Scan
+// Send RUPPY Functions
 window.openSendModal = function(){
   document.getElementById('sendModal').classList.add('active');
   document.getElementById('receiverId').value = '';
@@ -367,15 +371,14 @@ window.startScan = function(){
       document.getElementById('receiverId').value = decodedText;
       html5QrCode.stop();
       document.getElementById('qr-reader').style.display = 'none';
-      showToast('QR Scanned Successfully!');
+      showToast('QR Scanned Successfully!', 'success');
     },
     (error) => {}
   ).catch(err => {
-    alert('Camera Permission दो भाई');
+    showToast('Please allow Camera Permission', 'error');
   });
 }
 
-// ✅ NEW: Gallery से QR Scan करो
 window.scanFromGallery = function(event){
   const file = event.target.files[0];
   if(!file) return;
@@ -383,39 +386,40 @@ window.scanFromGallery = function(event){
   const html5QrCodeScanner = new Html5Qrcode("qr-reader");
 
   html5QrCodeScanner.scanFile(file, true)
-   .then(decodedText => {
+ .then(decodedText => {
       document.getElementById('receiverId').value = decodedText;
-      showToast('QR Scanned from Gallery!');
-      event.target.value = ''; // Reset input
+      showToast('QR Scanned from Gallery!', 'success');
+      event.target.value = '';
     })
-   .catch(err => {
-      alert('QR नहीं मिला इस Photo में! साफ QR वाली Photo डालो');
+ .catch(err => {
+      showToast('QR not found in image! Use clear QR photo', 'error');
       event.target.value = '';
     });
 }
 
+// ✅ FIX: All Alerts Changed to Toast + English Messages
 window.sendRuppy = async function(){
   const receiverId = document.getElementById('receiverId').value.trim();
   const amount = parseInt(document.getElementById('sendAmount').value);
   const sendBtn = document.getElementById('sendBtn');
 
   if(!receiverId){
-    alert('Receiver ID डालो या QR Scan करो');
+    showToast('Please enter Receiver ID or Scan QR', 'error');
     return;
   }
 
   if(!amount || amount <= 0){
-    alert('Valid Amount डालो');
+    showToast('Please enter valid amount', 'error');
     return;
   }
 
   if(amount > (userData.balance || 0)){
-    alert('इतना Balance नहीं है भाई! तेरे पास ' + userData.balance + ' RUPPY है');
+    showToast(`Insufficient Balance! You have ${userData.balance} RUPPY`, 'error');
     return;
   }
 
   if(receiverId === userData.uid){
-    alert('खुद को नहीं भेज सकते भाई 😅');
+    showToast('Cannot send to yourself', 'error');
     return;
   }
 
@@ -425,13 +429,13 @@ window.sendRuppy = async function(){
   try {
     // Receiver का Data Fetch करो
     const { data: receiverData, error } = await supabase
-    .from('ruppy_users')
-    .select('*')
-    .eq('uid', receiverId)
-    .single();
+   .from('ruppy_users')
+   .select('*')
+   .eq('uid', receiverId)
+   .single();
 
     if(error ||!receiverData){
-      alert('User नहीं मिला! ID Check करो');
+      showToast('User not found! Check the ID', 'error');
       sendBtn.disabled = false;
       sendBtn.textContent = 'Send Now';
       return;
@@ -444,17 +448,17 @@ window.sendRuppy = async function(){
     // Receiver का Balance Plus
     receiverData.balance = (receiverData.balance || 0) + amount;
     await supabase
-    .from('ruppy_users')
-    .update({ balance: receiverData.balance })
-    .eq('uid', receiverId);
+   .from('ruppy_users')
+   .update({ balance: receiverData.balance })
+   .eq('uid', receiverId);
 
     await loadProfile();
     closeSendModal();
-    showToast(`${amount} RUPPY Sent Successfully!`);
+    showToast(`${amount} RUPPY Sent Successfully!`, 'success');
 
   } catch(error){
     console.error('Send Error:', error);
-    alert('Transfer Failed: ' + error.message);
+    showToast('Transfer Failed: ' + error.message, 'error');
   }
 
   sendBtn.disabled = false;
@@ -484,7 +488,7 @@ window.closeReceiveModal = function(){
 
 window.copyUserId = function(){
   navigator.clipboard.writeText(userData.uid);
-  showToast('Your ID Copied!');
+  showToast('Your ID Copied!', 'success');
 }
 
 window.logout = async function(){
