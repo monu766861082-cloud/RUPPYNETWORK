@@ -157,7 +157,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <span>Ranking</span>
   </button>
   <button class="nav-btn" onclick="location.href='settings.html'">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37a1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
     <span>Settings</span>
   </button>
 </div>
@@ -498,4 +498,51 @@ function getTimeAgo(time){
   if(minutes < 60) return `${minutes}m ago`;
   let hours = Math.floor(minutes / 60);
   if(hours < 24) return `${hours}h ago`;
-  let days = Math.floor(hours
+  let days = Math.floor(hours / 24);
+  if(days < 7) return `${days}d ago`;
+  return new Date(time).toLocaleDateString();
+}
+
+window.likePost = async function(id){
+  const postRef = ref(db, `posts/${id}`);
+  const snapshot = await get(postRef);
+  const post = snapshot.val();
+
+  let isLiked = post.likedBy && post.likedBy[currentUser];
+  let updates = {};
+
+  if(isLiked){
+    updates[`posts/${id}/likes`] = (post.likes || 0) - 1;
+    updates[`posts/${id}/likedBy/${currentUser}`] = null;
+  } else {
+    updates[`posts/${id}/likes`] = (post.likes || 0) + 1;
+    updates[`posts/${id}/likedBy/${currentUser}`] = true;
+  }
+
+  await update(ref(db), updates);
+}
+
+window.toggleComments = function(id){
+  let box = document.getElementById(`comments-${id}`);
+  box.style.display = box.style.display === 'block'? 'none' : 'block';
+}
+
+window.showAllComments = function(id){
+  document.getElementById(`comments-${id}`).style.display = 'block';
+}
+
+window.addComment = async function(id){
+  let input = document.getElementById(`commentInput-${id}`);
+  let text = input.value.trim();
+  if(!text) return;
+  if(checkContent(text)){
+    alert('Inappropriate content');
+    return;
+  }
+
+  const postRef = ref(db, `posts/${id}`);
+  const snapshot = await get(postRef);
+  const post = snapshot.val();
+  const comments = post.comments || [];
+
+  comments.push({user: currentUser, userDp: (typeof window.userData!== 'undefined' && window.userData.dp)? window.userData.dp : null,
