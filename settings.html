@@ -9,9 +9,9 @@
 
 <script type="module" src="config.js"></script>
 
-<!-- QR Code Libraries -->
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<!-- QR Code Libraries - Commented for now -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script> -->
+<!-- <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script> -->
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -31,10 +31,13 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .row{display:flex;align-items:center;justify-content:space-between;padding:20px 18px;border-top:1px solid var(--border);cursor:pointer;transition:all 0.2s}
 .row:first-child{border:0}
 .row:active{background:rgba(243,199,116,0.05)}
+.row.disabled{opacity:0.5;cursor:not-allowed}
+.row.disabled:active{background:transparent}
 .l{display:flex;align-items:center}
 .icon{width:44px;height:44px;border-radius:12px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-right:16px;font-size:20px}
 .txt{font-size:18px}
 .val{color:var(--muted);font-size:16px;margin-right:10px}
+.coming-soon{font-size:11px;color:var(--gold);background:rgba(243,199,116,0.1);padding:2px 8px;border-radius:6px;margin-left:8px}
 .sec{color:var(--muted);letter-spacing:1px;font-size:13px;margin:24px 0 12px}
 .logout{width:100%;padding:16px;border:1px solid var(--red);border-radius:16px;background:transparent;color:var(--red);font-size:16px;font-weight:600;margin-top:24px;cursor:pointer}
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0;z-index:999}
@@ -65,22 +68,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:14px 24px;border-radius:12px;font-size:14px;display:none;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);font-weight:500}
 .toast.success{background:#1a5c1a;color:#4ade80}
 .toast.error{background:#5c1a1a;color:#f87171}
-#qr-reader{width:100%;border:2px solid var(--gold);border-radius:16px;overflow:hidden;margin:15px 0}
-#qrcode{display:flex;justify-content:center;padding:20px;background:#fff;border-radius:16px;margin:15px 0;box-shadow:0 4px 20px rgba(243,199,116,0.2)}
-.scan-option{padding:16px;border:1px solid var(--border);border-radius:16px;text-align:center;margin:12px 0;cursor:pointer;transition:all 0.2s;background:linear-gradient(135deg, transparent, rgba(243,199,116,0.03))}
-.scan-option:active{background:rgba(243,199,116,0.1);transform:scale(0.98)}
-.scan-option-icon{font-size:36px;margin-bottom:8px}
-.scan-option-title{font-weight:600;font-size:15px;margin-bottom:4px}
-.scan-option-desc{font-size:12px;color:var(--muted)}
-.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:12px}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.balance-box{background:linear-gradient(135deg, rgba(36,196,100,0.1), rgba(243,199,116,0.1));border:1px solid var(--border);border-radius:16px;padding:16px;margin:15px 0}
-.balance-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.balance-row:last-child{margin-bottom:0}
-.balance-label{font-size:13px;color:var(--muted);font-weight:500}
-.balance-value{font-size:18px;font-weight:700;color:var(--green)}
-.balance-value.remaining{color:var(--gold)}
-.balance-value.insufficient{color:var(--red)}
+.toast.info{background:#1a3c5c;color:#60a5fa}
 </style>
 </head>
 <body>
@@ -91,12 +79,12 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
 <div class="avatar" id="avatarBox"><span id="avatarLetter">R</span></div>
 <div class="name" id="userName">Loading...</div>
-<div class="bal" id="userBalance">0 RUPPY</div>
+<div class="bal" id="userBalance">0 RUP COIN</div>
 <div class="id-box" id="userId">ID: Loading...</div>
 
 <div class="card">
-<div class="row" onclick="openSendModal()"><div class="l"><div class="icon">📤</div><div class="txt">Send RUPPY</div></div>›</div>
-<div class="row" onclick="openReceiveModal()"><div class="l"><div class="icon">📥</div><div class="txt">Receive RUPPY</div></div>›</div>
+<div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📤</div><div class="txt">Send RUP COIN <span class="coming-soon">Coming Soon</span></div></div>›</div>
+<div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📥</div><div class="txt">Receive RUP COIN <span class="coming-soon">Coming Soon</span></div></div>›</div>
 <div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">-</span>›</div>
 <div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
 <div class="row" onclick="goPage('security.html')"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
@@ -113,6 +101,10 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   <a href="contact.html">Contact</a> •
   <a href="privacy.html">Privacy</a> •
   <a href="terms.html">Terms</a>
+</div>
+
+<div style="font-size:9px;color:#666;text-align:center;padding:15px;line-height:1.4">
+*RUP COIN are virtual points for entertainment & leaderboard ranking only. They have no monetary value and cannot be exchanged for real cash, prizes, or cryptocurrency.
 </div>
 
 <div class="sp"></div>
@@ -138,75 +130,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
       <button class="btn btn-cancel" onclick="closeEditProfile()">Cancel</button>
       <button class="btn btn-save" id="saveBtn" onclick="saveProfile()">Save</button>
     </div>
-  </div>
-</div>
-
-<!-- Send RUPPY Modal -->
-<div class="modal" id="sendModal">
-  <div class="modal-content">
-    <div class="modal-title">Send RUPPY</div>
-
-    <div class="balance-box">
-      <div class="balance-row">
-        <span class="balance-label">Your Balance</span>
-        <span class="balance-value" id="sendCurrentBalance">0 RUPPY</span>
-      </div>
-      <div class="balance-row">
-        <span class="balance-label">Remaining After Send</span>
-        <span class="balance-value remaining" id="sendRemainingBalance">0 RUPPY</span>
-      </div>
-    </div>
-
-    <div class="scan-option" onclick="startScan()">
-      <div class="scan-option-icon">📷</div>
-      <div class="scan-option-title">Scan with Camera</div>
-      <div class="scan-option-desc">Scan QR Code using Camera</div>
-    </div>
-
-    <div class="scan-option" onclick="document.getElementById('qrFileInput').click()">
-      <div class="scan-option-icon">🖼️</div>
-      <div class="scan-option-title">Upload from Gallery</div>
-      <div class="scan-option-desc">Select QR Image from Gallery</div>
-    </div>
-
-    <input type="file" id="qrFileInput" accept="image/*" style="display:none" onchange="scanFromGallery(event)">
-
-    <div id="qr-reader" style="display:none;"></div>
-
-    <div class="divider">OR</div>
-
-    <div class="input-group">
-      <label>Enter User ID Manually</label>
-      <input type="text" id="receiverId" placeholder="Enter Receiver UID">
-    </div>
-
-    <div class="input-group">
-      <label>Amount (RUPPY)</label>
-      <input type="number" id="sendAmount" placeholder="Enter Amount" min="1" oninput="updateRemainingBalance()">
-    </div>
-
-    <div class="btn-group">
-      <button class="btn btn-cancel" onclick="closeSendModal()">Cancel</button>
-      <button class="btn btn-save" id="sendBtn" onclick="sendRuppy()">Send Now</button>
-    </div>
-  </div>
-</div>
-
-<!-- Receive RUPPY Modal -->
-<div class="modal" id="receiveModal">
-  <div class="modal-content">
-    <div class="modal-title">Receive RUPPY</div>
-    <p style="text-align:center;color:var(--muted);font-size:13px;margin-bottom:10px">Show this QR or share your ID</p>
-
-    <div id="qrcode"></div>
-
-    <div class="input-group">
-      <label>Your User ID</label>
-      <input type="text" id="myUserId" readonly style="text-align:center;font-weight:600;color:var(--gold);font-size:16px">
-    </div>
-
-    <button class="btn btn-save" onclick="copyUserId()" style="width:100%">Copy My ID</button>
-    <button class="btn btn-cancel" onclick="closeReceiveModal()" style="width:100%;margin-top:10px">Close</button>
   </div>
 </div>
 
@@ -261,11 +184,8 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
 <script>
 var userData = window.userData;
-let html5QrCode;
 
-// ✅ NEW: Short Referral Code Generate
 function generateRefCode(uid){
-  // UID के Last 8 Characters + Random 2 Digit = 10 Digit Code
   const short = uid.slice(-6).toUpperCase();
   const random = Math.floor(10 + Math.random() * 90);
   return short + random;
@@ -279,13 +199,11 @@ async function loadProfile(){
   }
   userData = window.userData;
 
-  // UID Lock
   if(!userData.uid){
     userData.uid = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     await saveRuppyData(userData);
   }
 
-  // ✅ NEW: Referral Code Lock - एक बार बन गया तो कभी नहीं बदलेगा
   if(!userData.refCode){
     userData.refCode = generateRefCode(userData.uid);
     await saveRuppyData(userData);
@@ -297,9 +215,9 @@ async function loadProfile(){
     document.getElementById('avatarBox').innerHTML = `<span>${userData.name.charAt(0).toUpperCase()}</span>`;
   }
   document.getElementById('userName').innerText = userData.name;
-  document.getElementById('userBalance').innerText = (userData.balance || 0) + ' RUPPY';
+  document.getElementById('userBalance').innerText = (userData.balance || 0) + ' RUP COIN';
   document.getElementById('userId').innerText = 'ID: ' + userData.uid;
-  document.getElementById('refCode').innerText = userData.refCode; // ✅ FIX: Short Code दिखाओ
+  document.getElementById('refCode').innerText = userData.refCode;
 }
 
 loadProfile();
@@ -312,9 +230,12 @@ window.showToast = function(msg, type = 'success'){
   setTimeout(() => t.style.display = 'none', 3000);
 }
 
-// ✅ FIX: Share करने पे Short Code + Link भेजो
+window.showComingSoon = function(){
+  showToast('This feature is Coming Soon! 🚀', 'info');
+}
+
 window.copyRefCode = function(){
-  const shareText = `Join RUPPY Network & start playing! 💰\nUse my code: ${userData.refCode}\nhttps://ruppynetwork.vercel.app?ref=${userData.refCode}`;
+  const shareText = `Join Ruppy Network & start playing! 🎮\nUse my code: ${userData.refCode}\nhttps://ruppynetwork.com?ref=${userData.refCode}`;
   navigator.clipboard.writeText(shareText);
   showToast('Referral Link Copied!', 'success');
 }
@@ -398,169 +319,6 @@ function compressToBase64(file, maxWidth, quality){
   });
 }
 
-window.updateRemainingBalance = function(){
-  const amount = parseInt(document.getElementById('sendAmount').value) || 0;
-  const currentBal = userData.balance || 0;
-  const remaining = currentBal - amount;
-  const remainingEl = document.getElementById('sendRemainingBalance');
-
-  remainingEl.innerText = remaining + ' RUPPY';
-
-  if(remaining < 0){
-    remainingEl.className = 'balance-value insufficient';
-  } else {
-    remainingEl.className = 'balance-value remaining';
-  }
-}
-
-window.openSendModal = function(){
-  document.getElementById('sendModal').classList.add('active');
-  document.getElementById('receiverId').value = '';
-  document.getElementById('sendAmount').value = '';
-  document.getElementById('sendCurrentBalance').innerText = (userData.balance || 0) + ' RUPPY';
-  document.getElementById('sendRemainingBalance').innerText = (userData.balance || 0) + ' RUPPY';
-  document.getElementById('sendRemainingBalance').className = 'balance-value remaining';
-}
-
-window.closeSendModal = function(){
-  document.getElementById('sendModal').classList.remove('active');
-  if(html5QrCode){
-    html5QrCode.stop().catch(err => console.log(err));
-    document.getElementById('qr-reader').style.display = 'none';
-  }
-}
-
-window.startScan = function(){
-  document.getElementById('qr-reader').style.display = 'block';
-  html5QrCode = new Html5Qrcode("qr-reader");
-
-  html5QrCode.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: { width: 250, height: 250 } },
-    (decodedText) => {
-      document.getElementById('receiverId').value = decodedText;
-      html5QrCode.stop();
-      document.getElementById('qr-reader').style.display = 'none';
-      showToast('QR Scanned Successfully!', 'success');
-    },
-    (error) => {}
-  ).catch(err => {
-    showToast('Please allow Camera Permission', 'error');
-  });
-}
-
-window.scanFromGallery = function(event){
-  const file = event.target.files[0];
-  if(!file) return;
-
-  const html5QrCodeScanner = new Html5Qrcode("qr-reader");
-
-  html5QrCodeScanner.scanFile(file, true)
-.then(decodedText => {
-      document.getElementById('receiverId').value = decodedText;
-      showToast('QR Scanned from Gallery!', 'success');
-      event.target.value = '';
-    })
-.catch(err => {
-      showToast('QR not found in image! Use clear QR photo', 'error');
-      event.target.value = '';
-    });
-}
-
-window.sendRuppy = async function(){
-  const receiverId = document.getElementById('receiverId').value.trim();
-  const amount = parseInt(document.getElementById('sendAmount').value);
-  const sendBtn = document.getElementById('sendBtn');
-
-  if(!receiverId){
-    showToast('Please enter Receiver ID or Scan QR', 'error');
-    return;
-  }
-
-  if(!amount || amount <= 0){
-    showToast('Please enter valid amount', 'error');
-    return;
-  }
-
-  if(amount > (userData.balance || 0)){
-    showToast(`Insufficient Balance! You have ${userData.balance} RUPPY`, 'error');
-    return;
-  }
-
-  if(receiverId === userData.uid){
-    showToast('Cannot send to yourself', 'error');
-    return;
-  }
-
-  sendBtn.disabled = true;
-  sendBtn.textContent = 'Sending...';
-
-  try {
-    const { database, ref, get, set, update } = window.firebaseDB;
-
-    const receiverRef = ref(database, 'users/' + receiverId);
-    const receiverSnap = await get(receiverRef);
-
-    let receiverData;
-    if(receiverSnap.exists()){
-      receiverData = receiverSnap.val();
-    } else {
-      receiverData = {
-        uid: receiverId,
-        name: 'User_' + receiverId.slice(-4),
-        balance: 0,
-        refCode: generateRefCode(receiverId),
-        referralCount: 0,
-        dailyShares: 0,
-        joinedAt: Date.now()
-      };
-      await set(receiverRef, receiverData);
-      showToast('New user created', 'success');
-    }
-
-    userData.balance = (userData.balance || 0) - amount;
-    await saveRuppyData(userData);
-
-    receiverData.balance = (receiverData.balance || 0) + amount;
-    await update(receiverRef, { balance: receiverData.balance });
-
-    await loadProfile();
-    closeSendModal();
-    showToast(`${amount} RUPPY Sent Successfully!`, 'success');
-
-  } catch(error){
-    console.error('Send Error:', error);
-    showToast('Transfer Failed: ' + error.message, 'error');
-  }
-
-  sendBtn.disabled = false;
-  sendBtn.textContent = 'Send Now';
-}
-
-window.openReceiveModal = function(){
-  document.getElementById('receiveModal').classList.add('active');
-  document.getElementById('myUserId').value = userData.uid;
-
-  document.getElementById('qrcode').innerHTML = '';
-  new QRCode(document.getElementById('qrcode'), {
-    text: userData.uid,
-    width: 200,
-    height: 200,
-    colorDark: "#000000",
-    colorLight: "#ffffff",
-    correctLevel: QRCode.CorrectLevel.H
-  });
-}
-
-window.closeReceiveModal = function(){
-  document.getElementById('receiveModal').classList.remove('active');
-}
-
-window.copyUserId = function(){
-  navigator.clipboard.writeText(userData.uid);
-  showToast('Your ID Copied!', 'success');
-}
-
 window.logout = async function(){
   if(confirm('Are you sure you want to logout?')){
     localStorage.removeItem('ruppy_user');
@@ -601,8 +359,8 @@ window.sendMiningNotif = function(){
   if(localStorage.getItem('notif_enabled') === 'true'){
     if('Notification' in window && Notification.permission === 'granted'){
       new Notification('Rewards Ready!', {
-        body: 'Your RUPPY is ready to collect!',
-        icon: 'https://ruppynetwork.vercel.app/icon.png'
+        body: 'Your RUP COIN is ready to collect!',
+        icon: 'https://ruppynetwork.com/icon.png'
       });
       new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play();
     }
