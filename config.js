@@ -1,4 +1,4 @@
-// config.js - RUPPY GLOBAL SYNC - LOGOUT FIX + AUTO BALANCE
+// config.js - RUPPY GLOBAL SYNC - LOGOUT FIX + AUTO BALANCE + NAME/DP FIX
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -82,7 +82,7 @@ window.loadProfileEverywhere = function(){
   if(nameEl) nameEl.textContent = 'Welcome back, ' + (window.userData.name || 'User');
 }
 
-// 5. ✅ LOGOUT/LOGIN FIX - Firebase = Truth
+// 5. ✅ LOGOUT/LOGIN FIX - Firebase = Truth + NAME/DP FIX
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     // User Logged In
@@ -92,11 +92,11 @@ onAuthStateChanged(auth, async (user) => {
       const snapshot = await get(userRef);
 
       if (snapshot.exists()) {
-        // ✅ पुराना User - Firebase से Balance लाओ
+        // ✅ पुराना User - Firebase से सब लाओ, Google से Overwrite मत करो
         const data = snapshot.val();
         window.userData.uid = user.uid;
-        window.userData.name = user.displayName || user.email.split('@')[0];
-        window.userData.dp = user.photoURL || data.dp || null;
+        window.userData.name = data.name || user.displayName || user.email.split('@')[0];
+        window.userData.dp = data.dp || user.photoURL || null;
         window.userData.balance = Number(data.balance) || 0;
         window.userData.taskBalance = Number(data.taskBalance) || 0;
         window.userData.posts = data.posts || [];
@@ -117,7 +117,7 @@ onAuthStateChanged(auth, async (user) => {
       console.error('Firebase Load Error:', error);
     }
 
-    // ✅ Firebase से आया Balance LocalStorage में Save - Logout के बाद भी वापस आएगा
+    // ✅ Firebase से आया Data LocalStorage में Save - Logout के बाद भी वापस आएगा
     localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
     updateBalanceBox();
     loadProfileEverywhere();
