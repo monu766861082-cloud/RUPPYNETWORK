@@ -9,6 +9,10 @@
 
 <script type="module" src="config.js"></script>
 
+<!-- ✅ ADD: QR Code Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0B0B0C;--card:#161617;--border:#2A2A2C;--gold:#F3C774;--green:#24C464;--red:#E53E3E;--muted:#9CA3AF}
@@ -39,7 +43,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:1000;flex-direction:column;backdrop-filter:blur(4px)}
 .modal.active{display:flex;align-items:center;justify-content:center}
-.modal-content{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:24px;width:90%;max-width:400px}
+.modal-content{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:24px;width:90%;max-width:400px;max-height:90vh;overflow-y:auto}
 .modal-title{font-size:20px;font-weight:600;margin-bottom:20px;text-align:center}
 .input-group{margin-bottom:16px}
 .input-group label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
@@ -55,6 +59,10 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .ft-links{font-size:11px;color:#666;text-align:center;margin-top:30px;padding-bottom:20px}
 .ft-links a{color:#aaa;text-decoration:none}
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:9999}
+#qr-reader{width:100%;border:2px solid var(--gold);border-radius:12px;overflow:hidden}
+#qrcode{display:flex;justify-content:center;padding:20px;background:#fff;border-radius:12px;margin:15px 0}
+.scan-box{padding:12px;border:1px solid var(--gold);border-radius:12px;text-align:center;margin:15px 0;cursor:pointer}
+.scan-box:active{background:rgba(243,199,116,0.1)}
 </style>
 </head>
 <body>
@@ -69,7 +77,10 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <div class="id-box" id="userId">ID: Loading...</div>
 
 <div class="card">
-<div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">-</span>›</div></div>
+<!-- ✅ ADD: Send & Receive RUPPY Options -->
+<div class="row" onclick="openSendModal()"><div class="l"><div class="icon">📤</div><div class="txt">Send RUPPY</div></div>›</div>
+<div class="row" onclick="openReceiveModal()"><div class="l"><div class="icon">📥</div><div class="txt">Receive RUPPY</div></div>›</div>
+<div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">-</span>›</div>
 <div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
 <div class="row" onclick="goPage('security.html')"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
 <div class="row" onclick="toggleNotification()"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div><div><span class="val" id="notifStatus">Off</span>›</div></div>
@@ -113,6 +124,54 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   </div>
 </div>
 
+<!-- ✅ ADD: Send RUPPY Modal -->
+<div class="modal" id="sendModal">
+  <div class="modal-content">
+    <div class="modal-title">Send RUPPY</div>
+
+    <div class="scan-box" onclick="startScan()">
+      <div style="font-size:32px;margin-bottom:8px">📷</div>
+      <div style="font-weight:600">Scan QR Code</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">Camera से Scan करो</div>
+    </div>
+
+    <div id="qr-reader" style="display:none;"></div>
+
+    <div class="input-group">
+      <label>Or Enter User ID Manually</label>
+      <input type="text" id="receiverId" placeholder="Enter Receiver UID">
+    </div>
+
+    <div class="input-group">
+      <label>Amount (RUPPY)</label>
+      <input type="number" id="sendAmount" placeholder="Enter Amount" min="1">
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-cancel" onclick="closeSendModal()">Cancel</button>
+      <button class="btn btn-save" id="sendBtn" onclick="sendRuppy()">Send Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ ADD: Receive RUPPY Modal -->
+<div class="modal" id="receiveModal">
+  <div class="modal-content">
+    <div class="modal-title">Receive RUPPY</div>
+    <p style="text-align:center;color:var(--muted);font-size:13px;margin-bottom:10px">दूसरे को ये QR दिखाओ या ID दो</p>
+
+    <div id="qrcode"></div>
+
+    <div class="input-group">
+      <label>Your User ID</label>
+      <input type="text" id="myUserId" readonly style="text-align:center;font-weight:600;color:var(--gold)">
+    </div>
+
+    <button class="btn btn-save" onclick="copyUserId()" style="width:100%">Copy My ID</button>
+    <button class="btn btn-cancel" onclick="closeReceiveModal()" style="width:100%;margin-top:10px">Close</button>
+  </div>
+</div>
+
 <div class="nav">
   <div class="nav-item" onclick="goPage('app.html')">
     <div class="icon">🏠</div>
@@ -150,6 +209,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 var userData = window.userData;
+let html5QrCode;
 
 async function loadProfile(){
   let attempts = 0;
@@ -261,6 +321,133 @@ function compressToBase64(file, maxWidth, quality){
     }
     reader.onerror = reject;
   });
+}
+
+// ✅ ADD: Send RUPPY Functions
+window.openSendModal = function(){
+  document.getElementById('sendModal').classList.add('active');
+  document.getElementById('receiverId').value = '';
+  document.getElementById('sendAmount').value = '';
+}
+
+window.closeSendModal = function(){
+  document.getElementById('sendModal').classList.remove('active');
+  if(html5QrCode){
+    html5QrCode.stop().catch(err => console.log(err));
+    document.getElementById('qr-reader').style.display = 'none';
+  }
+}
+
+window.startScan = function(){
+  document.getElementById('qr-reader').style.display = 'block';
+  html5QrCode = new Html5Qrcode("qr-reader");
+
+  html5QrCode.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: { width: 250, height: 250 } },
+    (decodedText) => {
+      document.getElementById('receiverId').value = decodedText;
+      html5QrCode.stop();
+      document.getElementById('qr-reader').style.display = 'none';
+      showToast('QR Scanned Successfully!');
+    },
+    (error) => {}
+  ).catch(err => {
+    alert('Camera Permission दो भाई');
+  });
+}
+
+window.sendRuppy = async function(){
+  const receiverId = document.getElementById('receiverId').value.trim();
+  const amount = parseInt(document.getElementById('sendAmount').value);
+  const sendBtn = document.getElementById('sendBtn');
+
+  if(!receiverId){
+    alert('Receiver ID डालो या QR Scan करो');
+    return;
+  }
+
+  if(!amount || amount <= 0){
+    alert('Valid Amount डालो');
+    return;
+  }
+
+  if(amount > (userData.balance || 0)){
+    alert('इतना Balance नहीं है भाई! तेरे पास ' + userData.balance + ' RUPPY है');
+    return;
+  }
+
+  if(receiverId === userData.uid){
+    alert('खुद को नहीं भेज सकते भाई 😅');
+    return;
+  }
+
+  sendBtn.disabled = true;
+  sendBtn.textContent = 'Sending...';
+
+  try {
+    // Receiver का Data Fetch करो
+    const { data: receiverData, error } = await supabase
+     .from('ruppy_users')
+     .select('*')
+     .eq('uid', receiverId)
+     .single();
+
+    if(error ||!receiverData){
+      alert('User नहीं मिला! ID Check करो');
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Send Now';
+      return;
+    }
+
+    // Sender का Balance Minus
+    userData.balance = (userData.balance || 0) - amount;
+    await saveRuppyData(userData);
+
+    // Receiver का Balance Plus
+    receiverData.balance = (receiverData.balance || 0) + amount;
+    await supabase
+     .from('ruppy_users')
+     .update({ balance: receiverData.balance })
+     .eq('uid', receiverId);
+
+    await loadProfile();
+    closeSendModal();
+    showToast(`${amount} RUPPY Sent Successfully!`);
+
+  } catch(error){
+    console.error('Send Error:', error);
+    alert('Transfer Failed: ' + error.message);
+  }
+
+  sendBtn.disabled = false;
+  sendBtn.textContent = 'Send Now';
+}
+
+// ✅ ADD: Receive RUPPY Functions
+window.openReceiveModal = function(){
+  document.getElementById('receiveModal').classList.add('active');
+  document.getElementById('myUserId').value = userData.uid;
+
+  // QR Code Generate करो
+  document.getElementById('qrcode').innerHTML = '';
+  new QRCode(document.getElementById('qrcode'), {
+    text: userData.uid,
+    width: 200,
+    height: 200,
+    colorDark: "#000000",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H
+  });
+}
+
+window.closeReceiveModal = function(){
+  document.getElementById('receiveModal').classList.remove('active');
+}
+
+window.copyUserId = function(){
+  navigator.clipboard.writeText(userData.uid);
+  showToast('Your ID Copied!');
 }
 
 window.logout = async function(){
