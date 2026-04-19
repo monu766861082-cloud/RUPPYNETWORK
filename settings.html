@@ -74,7 +74,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .scan-option-desc{font-size:12px;color:var(--muted)}
 .divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:12px}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
-/* ✅ NEW: Balance Display Box */
 .balance-box{background:linear-gradient(135deg, rgba(36,196,100,0.1), rgba(243,199,116,0.1));border:1px solid var(--border);border-radius:16px;padding:16px;margin:15px 0}
 .balance-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .balance-row:last-child{margin-bottom:0}
@@ -101,7 +100,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">-</span>›</div>
 <div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
 <div class="row" onclick="goPage('security.html')"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
-<div class="row" onclick="toggleNotification()"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div><div><span class="val" id="notifStatus">Off</span>›</div></div>
+<div class="row" onclick="toggleNotification()"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div><span class="val" id="notifStatus">Off</span>›</div></div>
 <div class="row" onclick="goPage('contact.html')"><div class="l"><div class="icon">❓</div><div class="txt">Help & Support</div></div>›</div>
 <div class="row" onclick="goPage('privacy.html')"><div class="l"><div class="icon">📄</div><div class="txt">Privacy Policy</div></div>›</div>
 <div class="row" onclick="goPage('terms.html')"><div class="l"><div class="icon">📋</div><div class="txt">Terms & Conditions</div></div>›</div>
@@ -147,7 +146,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   <div class="modal-content">
     <div class="modal-title">Send RUPPY</div>
 
-    <!-- ✅ NEW: Live Balance Display -->
     <div class="balance-box">
       <div class="balance-row">
         <span class="balance-label">Your Balance</span>
@@ -265,6 +263,14 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 var userData = window.userData;
 let html5QrCode;
 
+// ✅ NEW: Short Referral Code Generate
+function generateRefCode(uid){
+  // UID के Last 8 Characters + Random 2 Digit = 10 Digit Code
+  const short = uid.slice(-6).toUpperCase();
+  const random = Math.floor(10 + Math.random() * 90);
+  return short + random;
+}
+
 async function loadProfile(){
   let attempts = 0;
   while(!window.userData?.uid && attempts < 50) {
@@ -273,8 +279,15 @@ async function loadProfile(){
   }
   userData = window.userData;
 
+  // UID Lock
   if(!userData.uid){
     userData.uid = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    await saveRuppyData(userData);
+  }
+
+  // ✅ NEW: Referral Code Lock - एक बार बन गया तो कभी नहीं बदलेगा
+  if(!userData.refCode){
+    userData.refCode = generateRefCode(userData.uid);
     await saveRuppyData(userData);
   }
 
@@ -286,7 +299,7 @@ async function loadProfile(){
   document.getElementById('userName').innerText = userData.name;
   document.getElementById('userBalance').innerText = (userData.balance || 0) + ' RUPPY';
   document.getElementById('userId').innerText = 'ID: ' + userData.uid;
-  document.getElementById('refCode').innerText = userData.uid;
+  document.getElementById('refCode').innerText = userData.refCode; // ✅ FIX: Short Code दिखाओ
 }
 
 loadProfile();
@@ -299,9 +312,11 @@ window.showToast = function(msg, type = 'success'){
   setTimeout(() => t.style.display = 'none', 3000);
 }
 
+// ✅ FIX: Share करने पे Short Code + Link भेजो
 window.copyRefCode = function(){
-  navigator.clipboard.writeText(userData.uid);
-  showToast('Referral Code Copied!', 'success');
+  const shareText = `Join RUPPY Network & start playing! 💰\nUse my code: ${userData.refCode}\nhttps://ruppynetwork.vercel.app?ref=${userData.refCode}`;
+  navigator.clipboard.writeText(shareText);
+  showToast('Referral Link Copied!', 'success');
 }
 
 window.openEditProfile = function(){
@@ -383,7 +398,6 @@ function compressToBase64(file, maxWidth, quality){
   });
 }
 
-// ✅ NEW: Live Balance Update Function
 window.updateRemainingBalance = function(){
   const amount = parseInt(document.getElementById('sendAmount').value) || 0;
   const currentBal = userData.balance || 0;
@@ -399,7 +413,6 @@ window.updateRemainingBalance = function(){
   }
 }
 
-// Send RUPPY Functions
 window.openSendModal = function(){
   document.getElementById('sendModal').classList.add('active');
   document.getElementById('receiverId').value = '';
@@ -496,6 +509,7 @@ window.sendRuppy = async function(){
         uid: receiverId,
         name: 'User_' + receiverId.slice(-4),
         balance: 0,
+        refCode: generateRefCode(receiverId),
         referralCount: 0,
         dailyShares: 0,
         joinedAt: Date.now()
@@ -523,7 +537,6 @@ window.sendRuppy = async function(){
   sendBtn.textContent = 'Send Now';
 }
 
-// Receive RUPPY Functions
 window.openReceiveModal = function(){
   document.getElementById('receiveModal').classList.add('active');
   document.getElementById('myUserId').value = userData.uid;
