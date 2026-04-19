@@ -33,8 +33,8 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .sec{color:var(--muted);letter-spacing:1px;font-size:13px;margin:24px 0 12px}
 .logout{width:100%;padding:16px;border:1px solid var(--red);border-radius:16px;background:transparent;color:var(--red);font-size:16px;font-weight:600;margin-top:24px;cursor:pointer}
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0;z-index:999}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:20%;position:relative}
-.nav-item img{width:20px;height:20px;object-fit:contain}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:10px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
+.nav-item.icon{font-size:20px;line-height:1}
 .nav-item.active{color:#FFA500}
 .nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:1000;flex-direction:column;backdrop-filter:blur(4px)}
@@ -115,27 +115,27 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
 <div class="nav">
   <div class="nav-item" onclick="goPage('app.html')">
-    <img src="home.png" alt="Home">
+    <div class="icon">🏠</div>
     <span>Home</span>
   </div>
   <div class="nav-item" onclick="goPage('tasks.html')">
-    <img src="tasks.png" alt="Tasks">
+    <div class="icon">📋</div>
     <span>Tasks</span>
   </div>
   <div class="nav-item" onclick="goPage('referral.html')">
-    <img src="referral.png" alt="Referral">
+    <div class="icon">👥</div>
     <span>Referral</span>
   </div>
   <div class="nav-item" onclick="goPage('ranking.html')">
-    <img src="ranking.png" alt="Ranking">
+    <div class="icon">🏆</div>
     <span>Ranking</span>
   </div>
   <div class="nav-item" onclick="goPage('community.html')">
-    <img src="feed.png" alt="Feed">
+    <div class="icon">📝</div>
     <span>Feed</span>
   </div>
   <div class="nav-item active">
-    <img src="settings.png" alt="Settings">
+    <div class="icon">⚙️</div>
     <span>Settings</span>
   </div>
 </div>
