@@ -41,10 +41,10 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .sec{color:var(--muted);letter-spacing:1px;font-size:13px;margin:24px 0 12px}
 .logout{width:100%;padding:16px;border:1px solid var(--red);border-radius:16px;background:transparent;color:var(--red);font-size:16px;font-weight:600;margin-top:24px;cursor:pointer}
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0;z-index:999}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:10px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
-.nav-item.icon{font-size:20px;line-height:1}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
 .nav-item.active{color:#FFA500}
 .nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
+.nav-item.icon{font-size:20px}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:1000;flex-direction:column;backdrop-filter:blur(8px)}
 .modal.active{display:flex;align-items:center;justify-content:center}
 .modal-content{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:24px;width:90%;max-width:400px;max-height:90vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,0.5)}
@@ -79,12 +79,12 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
 <div class="avatar" id="avatarBox"><span id="avatarLetter">R</span></div>
 <div class="name" id="userName">Loading...</div>
-<div class="bal" id="userBalance">0 RUP COIN</div>
+<div class="bal" id="userBalance">0 RUP</div>
 <div class="id-box" id="userId">ID: Loading...</div>
 
 <div class="card">
-<div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📤</div><div class="txt">Send RUP COIN <span class="coming-soon">Coming Soon</span></div></div>›</div>
-<div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📥</div><div class="txt">Receive RUP COIN <span class="coming-soon">Coming Soon</span></div></div>›</div>
+<div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📤</div><div class="txt">Send RUP <span class="coming-soon">Coming Soon</span></div></div>›</div>
+<div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📥</div><div class="txt">Receive RUP <span class="coming-soon">Coming Soon</span></div></div>›</div>
 <div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">-</span>›</div>
 <div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
 <div class="row" onclick="goPage('security.html')"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
@@ -104,7 +104,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 </div>
 
 <div style="font-size:9px;color:#666;text-align:center;padding:15px;line-height:1.4">
-*RUP COIN are virtual points for entertainment & leaderboard ranking only. They have no monetary value and cannot be exchanged for real cash, prizes, or cryptocurrency.
+*RUP are virtual points for entertainment & leaderboard ranking only. They have no monetary value and cannot be exchanged for real cash, prizes, or cryptocurrency.
 </div>
 
 <div class="sp"></div>
@@ -215,7 +215,7 @@ async function loadProfile(){
     document.getElementById('avatarBox').innerHTML = `<span>${userData.name.charAt(0).toUpperCase()}</span>`;
   }
   document.getElementById('userName').innerText = userData.name;
-  document.getElementById('userBalance').innerText = (userData.balance || 0) + ' RUP COIN';
+  document.getElementById('userBalance').innerText = (userData.balance || 0) + ' RUP';
   document.getElementById('userId').innerText = 'ID: ' + userData.uid;
   document.getElementById('refCode').innerText = userData.refCode;
 }
@@ -359,7 +359,7 @@ window.sendMiningNotif = function(){
   if(localStorage.getItem('notif_enabled') === 'true'){
     if('Notification' in window && Notification.permission === 'granted'){
       new Notification('Rewards Ready!', {
-        body: 'Your RUP COIN is ready to collect!',
+        body: 'Your RUP is ready to collect!',
         icon: 'https://ruppynetwork.com/icon.png'
       });
       new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play();
