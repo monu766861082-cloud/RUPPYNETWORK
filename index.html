@@ -15,39 +15,39 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
 html,body{background:#000;color:#fff;height:100%;overflow-x:hidden}
 
-/* 👇 Login Screen - Full Mobile Height */
-.login-screen{width:100%;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+/* Login Screen - 100vh में सब Fit */
+.login-screen{width:100%;height:100vh;display:flex;align-items:center;justify-content:center;padding:12px}
 
 .wrap{width:100%;max-width:480px;text-align:center}
-.pill{border:1px solid #c28840;color:#c28840;padding:6px 16px;border-radius:14px;display:inline-block;font-size:12px;margin-bottom:24px;font-weight:700}
+.pill{border:1px solid #c28840;color:#c28840;padding:4px 12px;border-radius:14px;display:inline-block;font-size:11px;margin-bottom:12px;font-weight:700}
 
-/* Logo 300px - सबसे बड़ा */
-.coin{width:300px;height:300px;margin:0 auto 28px;border-radius:24px;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 0 50px rgba(249,168,37,0.2)}
+/* Logo 200px - छोटा किया ताकि सब Fit हो */
+.coin{width:200px;height:200px;margin:0 auto 16px;border-radius:20px;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(249,168,37,0.2)}
 .coin img{width:100%;height:100%;object-fit:cover}
 
-/* RUP NETWORK 42px */
-h1{color:#f9a825;margin:0 0 32px;font-size:42px;font-weight:900;letter-spacing:3px}
+/* RUP NETWORK 36px + कम Gap */
+h1{color:#f9a825;margin:0 0 20px;font-size:36px;font-weight:900;letter-spacing:6px;line-height:1.1}
 
-/* Input Box Full Screen Wide + 70px Height */
-.input-box{margin:22px 0;text-align:left}
-.input-box label{color:#bbb;font-size:17px;display:block;margin-bottom:12px;font-weight:700}
-.input-box input{width:100%;padding:0 22px;border:3px solid #333;border-radius:20px;background:#111;color:#fff;font-size:19px;box-sizing:border-box;height:70px}
-.input-box input:focus{outline:none;border-color:#f9a825;box-shadow:0 0 20px rgba(249,168,37,0.5)}
-.input-box input::placeholder{color:#555;font-size:18px}
+/* Input 60px Height - Gap कम */
+.input-box{margin:14px 0;text-align:left}
+.input-box label{color:#bbb;font-size:15px;display:block;margin-bottom:8px;font-weight:700}
+.input-box input{width:100%;padding:0 18px;border:2px solid #333;border-radius:16px;background:#111;color:#fff;font-size:17px;box-sizing:border-box;height:60px}
+.input-box input:focus{outline:none;border-color:#f9a825;box-shadow:0 0 15px rgba(249,168,37,0.4)}
+.input-box input::placeholder{color:#555;font-size:16px}
 
-/* Button 70px Height - Input जितना लंबा */
-.btn{margin:28px auto;padding:0 24px;background:#f9a825;color:#000;border:none;border-radius:20px;font-weight:900;width:100%;cursor:pointer;font-size:20px;letter-spacing:1px;height:70px}
+/* Button 60px Height */
+.btn{margin:18px auto 0;padding:0 24px;background:#f9a825;color:#000;border:none;border-radius:16px;font-weight:900;width:100%;cursor:pointer;font-size:18px;letter-spacing:1px;height:60px}
 .btn:disabled{background:#333;color:#666;cursor:not-allowed}
 .btn:active{transform:scale(0.97)}
 
-/* Google बटन Login के ठीक नीचे + 70px */
-.btn-google{background:#fff;color:#000;margin-top:18px;display:flex;align-items:center;justify-content:center;gap:14px;font-size:19px;font-weight:700;height:70px}
+/* Google बटन Login के ठीक नीचे */
+.btn-google{background:#fff;color:#000;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:18px;font-weight:700;height:60px}
 
-.toggle{color:#aaa;font-size:17px;margin-top:24px;cursor:pointer}
+.toggle{color:#aaa;font-size:15px;margin-top:16px;cursor:pointer}
 .toggle span{color:#f9a825;text-decoration:underline;font-weight:700}
-.ft{font-size:13px;color:#666;margin-top:40px;line-height:1.8}
+.ft{font-size:11px;color:#666;margin-top:20px;line-height:1.6}
 a{color:#aaa;text-decoration:none}
-.error{color:#f33;font-size:16px;margin-top:14px;display:none;font-weight:600}
+.error{color:#f33;font-size:14px;margin-top:10px;display:none;font-weight:600}
 
 /* Content Section नीचे रहेगा, Login नहीं छुपेगा */
 .content-section{max-width:800px;margin:60px auto;padding:0 20px;color:#ccc;line-height:1.7;text-align:left}
@@ -67,9 +67,8 @@ a{color:#aaa;text-decoration:none}
 <div class="wrap">
 <div class="pill">VIP PREMIUM</div>
 
-<!-- Logo 300px दिखेगा अब -->
 <div class="coin"><img src="IMG_7999.jpeg" alt="R U P Logo"></div>
-<h1>R U P NETWORK</h1>
+<h1>R U P<br>NETWORK</h1>
 
 <div id="loginForm">
   <div class="input-box">
@@ -84,7 +83,7 @@ a{color:#aaa;text-decoration:none}
   <button class="btn" onclick="handleLogin()" id="loginBtn">LOGIN</button>
 
   <button class="btn btn-google" onclick="signInWithGoogle()">
-    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="26" height="26">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="24" height="24">
     Sign in with Google
   </button>
 
