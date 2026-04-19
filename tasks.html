@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ruppy Tasks</title>
+
+<!-- Google AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
+
+<!-- ✅ FIX: config.js Add करा Balance Sync के लिए -->
+<script type="module" src="config.js"></script>
+
 <style>
 body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .hdr{padding:20px}
@@ -21,9 +28,9 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .bt.done{background:#333;color:#666;border-color:#333;cursor:not-allowed}
 .bt.opened{background:#1a1a1a;color:#888;border-color:#444}
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 15px}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
 .nav-item.active{color:#FFA500}
-.nav-item.active::after{content:'';width:30px;height:2px;background:#FFA500;margin-top:2px}
+.nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
 .nav-item.icon{font-size:20px}
 </style>
 </head>
@@ -54,6 +61,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   <a class="bt" id="xBtn">FOLLOW</a>
 </div>
 
+<!-- ✅ FIX: Nav में Feed Icon जोड़ा -->
 <div class="nav">
   <div class="nav-item" onclick="goPage('app.html')">
     <div class="icon">🏠</div>
@@ -71,6 +79,10 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
     <div class="icon">🏆</div>
     <span>Ranking</span>
   </div>
+  <div class="nav-item" onclick="goPage('community.html')">
+    <div class="icon">📝</div>
+    <span>Feed</span>
+  </div>
   <div class="nav-item" onclick="goPage('settings.html')">
     <div class="icon">⚙️</div>
     <span>Settings</span>
@@ -78,22 +90,26 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 </div>
 
 <script>
-let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
-  name: 'User',
-  balance: 0,
-  lastMine: 0,
-  lastGift: 0,
-  boostCount: 0,
-  boostResetTime: Date.now(),
-  team: []
-};
-
+// ✅ FIX: localStorage हटाया, config.js वाला userData Use करा
+var userData = window.userData;
 let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
 let openedTask = null;
 
-document.getElementById('userId').innerText = `ID: ${userData.name.toUpperCase()}`;
-document.getElementById('bal').innerText = userData.balance;
-updateButtons();
+// ✅ FIX: init Function बनाया जो userData Load होने का Wait करता
+async function init(){
+  let attempts = 0;
+  while(!window.userData?.uid && attempts < 50) {
+    await new Promise(r => setTimeout(r, 100));
+    attempts++;
+  }
+  userData = window.userData;
+  
+  document.getElementById('userId').innerText = `ID: ${userData.uid}`;
+  document.getElementById('bal').innerText = userData.balance || 0;
+  updateButtons();
+}
+
+init();
 
 document.addEventListener('visibilitychange', function() {
   if (!document.hidden && openedTask) {
@@ -112,12 +128,17 @@ function openLink(task, url) {
   updateButtons();
 }
 
-function claimReward(task) {
+// ✅ FIX: saveRuppyData() Use करा ताकि सब Pages में Sync हो
+async function claimReward(task) {
   if (taskState[task] === 'ready_to_claim') {
+    userData.balance = Number(userData.balance) || 0;
     userData.balance += 20;
     taskState[task] = 'claimed';
-    localStorage.setItem('ruppy_user', JSON.stringify(userData));
     localStorage.setItem('taskState', JSON.stringify(taskState));
+    
+    // Firebase में Save करा
+    await saveRuppyData(userData);
+    
     document.getElementById('bal').innerText = userData.balance;
     updateButtons();
     alert('+20 RUPPY Claimed!');
@@ -157,11 +178,12 @@ function goPage(page) {
   window.location.href = page;
 }
 
+// ✅ FIX: Real-time Sync के लिए storage Event रखा
 window.addEventListener('storage', function(e) {
-  if (e.key === 'ruppy_user') {
+  if (e.key === 'ruppy_user_cache') {
     userData = JSON.parse(e.newValue);
     document.getElementById('bal').innerText = userData.balance;
-    document.getElementById('userId').innerText = `ID: ${userData.name.toUpperCase()}`;
+    document.getElementById('userId').innerText = `ID: ${userData.uid}`;
   }
 });
 </script>
