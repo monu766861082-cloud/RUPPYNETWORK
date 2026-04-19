@@ -42,27 +42,27 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 <body>
 <div class="hdr">
   <h1>DAILY TASKS</h1>
-  <p>RUP COIN</p>
+  <p>RUP</p>
   <small id="userId">ID: Loading...</small>
 </div>
 
-<div class="tokenBal">Your Balance: <div class="r-coin">R</div> <b id="bal">0</b> RUP COIN</div>
+<div class="tokenBal">Your Balance: <div class="r-coin">R</div> <b id="bal">0</b> RUP</div>
 
 <div class="card">
   <div class="ic tg">✈️</div>
-  <div class="txt"><b>Join Telegram</b><span>Reward: <div class="mini-coin">R</div> 20 RUP COIN</span></div>
+  <div class="txt"><b>Join Telegram</b><span>Reward: <div class="mini-coin">R</div> 20 RUP</span></div>
   <a class="bt" id="tgBtn">JOIN</a>
 </div>
 
 <div class="card">
   <div class="ic fb">f</div>
-  <div class="txt"><b>Follow on Facebook</b><span>Reward: <div class="mini-coin">R</div> 20 RUP COIN</span></div>
+  <div class="txt"><b>Follow on Facebook</b><span>Reward: <div class="mini-coin">R</div> 20 RUP</span></div>
   <a class="bt" id="fbBtn">FOLLOW</a>
 </div>
 
 <div class="card">
   <div class="ic x">X</div>
-  <div class="txt"><b>Follow on X</b><span>Reward: <div class="mini-coin">R</div> 20 RUP COIN</span></div>
+  <div class="txt"><b>Follow on X</b><span>Reward: <div class="mini-coin">R</div> 20 RUP</span></div>
   <a class="bt" id="xBtn">FOLLOW</a>
 </div>
 
@@ -146,7 +146,7 @@ async function claimReward(task) {
     
     document.getElementById('bal').innerText = userData.balance;
     updateButtons();
-    alert('+20 RUP COIN Claimed!');
+    alert('+20 RUP Claimed!');
   }
 }
 
