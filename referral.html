@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ruppy Referral</title>
+
+<!-- ✅ FIX: config.js Add करा Sync के लिए -->
+<script type="module" src="config.js"></script>
+
 <style>
 body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .hdr{padding:20px;font-size:28px;font-weight:bold}
@@ -24,9 +28,9 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .team{padding:0 16px;font-size:18px;font-weight:bold;color:#d4a017}
 
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 15px}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
 .nav-item.active{color:#FFA500}
-.nav-item.active::after{content:'';width:30px;height:2px;background:#FFA500;margin-top:2px}
+.nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
 .nav-item.icon{font-size:20px}
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999}
 </style>
@@ -60,6 +64,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 
 <div class="team">👥 My Team</div>
 
+<!-- ✅ FIX: Nav में Feed Icon जोड़ा -->
 <div class="nav">
   <div class="nav-item" onclick="goPage('app.html')">
     <div class="icon">🏠</div>
@@ -77,6 +82,10 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
     <div class="icon">🏆</div>
     <span>Ranking</span>
   </div>
+  <div class="nav-item" onclick="goPage('community.html')">
+    <div class="icon">📝</div>
+    <span>Feed</span>
+  </div>
   <div class="nav-item" onclick="goPage('settings.html')">
     <div class="icon">⚙️</div>
     <span>Settings</span>
@@ -86,63 +95,67 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 <div class="toast" id="toast">Copied!</div>
 
 <script>
-let userData = JSON.parse(localStorage.getItem('ruppy_user')) || {
-  userId: '',
-  name: 'User',
-  balance: 0,
-  lastMine: 0,
-  lastGift: 0,
-  boostCount: 0,
-  boostResetTime: Date.now(),
-  team: [],
-  lastTeamRewardCheck: 0,
-  teamRewardEarned: 0
-};
+// ✅ FIX: localStorage हटाया, config.js वाला userData Use करा
+var userData = window.userData;
+let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
+let openedTask = null;
 
-// Fix: Generate User ID if missing
-if(!userData.userId || userData.userId === 'undefined'){
-  userData.userId = 'ab' + Math.floor(Math.random()*9000000+1000000);
-  localStorage.setItem('ruppy_user', JSON.stringify(userData));
+// ✅ FIX: init Function - userData Load होने का Wait
+async function init(){
+  let attempts = 0;
+  while(!window.userData?.uid && attempts < 50) {
+    await new Promise(r => setTimeout(r, 100));
+    attempts++;
+  }
+  userData = window.userData;
+  
+  // ✅ FIX: Invite Code = User UID ही होगा
+  let inviteCode = userData.uid || 'GUEST';
+  document.getElementById('inviteCode').innerText = inviteCode;
+  
+  updateTeamStats();
 }
 
-// Fix: Invite Code = User ID for consistency
-let inviteCode = userData.userId;
-localStorage.setItem('ruppy_inviteCode', inviteCode);
-document.getElementById('inviteCode').innerText = inviteCode;
+init();
 
-let team = userData.team || [];
-let now = Date.now();
-let oneDay = 24*60*60*1000;
+function updateTeamStats(){
+  let team = userData.team || [];
+  let now = Date.now();
+  let oneDay = 24*60*60*1000;
 
-let total = team.length;
-let active = team.filter(t => now - t.lastMine < oneDay).length;
-let inactive = total - active;
+  let total = team.length;
+  let active = team.filter(t => now - (t.lastMine || 0) < oneDay).length;
+  let inactive = total - active;
 
-let teamCollected24h = team.reduce((sum, t) => {
-  if(now - t.lastMine < oneDay) return sum + (t.lastMinedAmount || 0);
-  return sum;
-}, 0);
+  let teamCollected24h = team.reduce((sum, t) => {
+    if(now - (t.lastMine || 0) < oneDay) return sum + (t.lastMinedAmount || 0);
+    return sum;
+  }, 0);
 
-let newTeamReward = Math.floor(teamCollected24h * 0.02);
+  let newTeamReward = Math.floor(teamCollected24h * 0.02);
 
-if(now - userData.lastTeamRewardCheck > oneDay){
-  userData.balance += newTeamReward;
-  userData.lastTeamRewardCheck = now;
-  userData.teamRewardEarned += newTeamReward;
-  localStorage.setItem('ruppy_user', JSON.stringify(userData));
+  // 24 घंटे में एक बार Auto-Credit
+  if(now - (userData.lastTeamRewardCheck || 0) > oneDay){
+    userData.balance = (userData.balance || 0) + newTeamReward;
+    userData.lastTeamRewardCheck = now;
+    userData.teamRewardEarned = (userData.teamRewardEarned || 0) + newTeamReward;
+    saveRuppyData(userData);
+  }
+
+  document.getElementById('teamReward').innerText = userData.teamRewardEarned || 0;
+  document.getElementById('totalCount').innerText = total;
+  document.getElementById('activeCount').innerText = active;
+  document.getElementById('inactiveCount').innerText = inactive;
 }
-
-document.getElementById('teamReward').innerText = userData.teamRewardEarned || 0;
-document.getElementById('totalCount').innerText = total;
-document.getElementById('activeCount').innerText = active;
-document.getElementById('inactiveCount').innerText = inactive;
 
 function copy(){
+  let inviteCode = userData.uid || 'GUEST';
   navigator.clipboard.writeText(inviteCode);
   showToast('Invite Code Copied!');
 }
 
 function invite(){
+  let inviteCode = userData.uid || 'GUEST';
   let text = `Join RUPPY Network & start playing! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app?ref=${inviteCode}`;
   
   if(navigator.share){
@@ -168,8 +181,12 @@ function goPage(page){
   window.location.href = page;
 }
 
+// ✅ FIX: Real-time Sync
 window.addEventListener('storage', function(e){
-  if(e.key === 'ruppy_user') location.reload();
+  if(e.key === 'ruppy_user_cache') {
+    userData = JSON.parse(e.newValue);
+    updateTeamStats();
+  }
 });
 </script>
 </body>
