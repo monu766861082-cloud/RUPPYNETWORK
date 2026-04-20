@@ -215,6 +215,21 @@
   // Reward Structure
   const REWARDS = {1: 1000, 10: 800, 50: 600, 100: 500, 500: 300};
 
+  // ✅ नया: RUP-8K2M5X जैसा साफ Code बनाने वाला - सिर्फ Add किया
+  function generateUniqueCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = 'RUP-';
+    for(let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+  }
+
+  // ✅ नया: Check करेगा Code UID है या RUP- है - सिर्फ Add किया
+  function isValidReferralCode(code) {
+    return code && code.startsWith('RUP-') && code.length === 10;
+  }
+
   function getRewardByRank(rank) {
     if (rank === 1) return 1000;
     if (rank <= 10) return 800;
@@ -232,6 +247,12 @@
       attempts++;
     }
     userData = window.userData;
+
+    // ✅ नया: अगर Code UID है तो RUP- बना दे - सिर्फ 3 Line Add की
+    if (userData &&!isValidReferralCode(userData.myReferralCode)) {
+      userData.myReferralCode = generateUniqueCode();
+      if(window.saveRuppyData) saveRuppyData(userData);
+    }
 
     signInAnonymously(auth).catch((error) => {
       console.error("Auth Error:", error);
@@ -319,17 +340,21 @@
 
   async function checkReferral() {
     const urlParams = new URLSearchParams(window.location.search);
-    const referrerUid = urlParams.get('ref');
+    const referrerCode = urlParams.get('ref');
 
-    if (referrerUid && referrerUid!== currentUser.uid) {
-      const referrerRef = ref(database, 'users/' + referrerUid);
-      const referrerSnap = await get(referrerRef);
-
-      if (referrerSnap.exists()) {
-        const referrerData = referrerSnap.val();
-        await update(referrerRef, {
-          referralCount: (referrerData.referralCount || 0) + 1,
-          balance: (referrerData.balance || 0) + 50
+    if (referrerCode && referrerCode!== userData.myReferralCode) {
+      // ✅ FIX: अब Code से User ढूंढेंगे, UID से नहीं
+      const usersSnap = await get(allUsersRef);
+      if (usersSnap.exists()) {
+        usersSnap.forEach(async (child) => {
+          const referrerData = child.val();
+          if (referrerData.myReferralCode === referrerCode) {
+            const referrerRef = ref(database, 'users/' + child.key);
+            await update(referrerRef, {
+              referralCount: (referrerData.referralCount || 0) + 1,
+              balance: (referrerData.balance || 0) + 50
+            });
+          }
         });
       }
     }
@@ -378,6 +403,7 @@
         dailyShares: 0,
         lastReset: new Date().toDateString(),
         uid: currentUser.uid,
+        myReferralCode: userData.myReferralCode || generateUniqueCode(), // ✅ FIX: नया User को भी RUP- Code दो
         joinedAt: Date.now()
       });
     }
@@ -491,10 +517,11 @@
       });
     }
 
-    const shareUrl = window.location.origin + window.location.pathname + '?ref=' + currentUser.uid;
+    // ✅ FIX: अब UID नहीं, RUP- Code Share होगा
+    const shareUrl = window.location.origin + '/referral.html?ref=' + userData.myReferralCode;
     const shareData = {
       title: 'Ruppy Network',
-      text: 'Join Ruppy Network and earn free RUPPY! Use my referral link:',
+      text: 'Join Ruppy Network & start playing! 💰\nUse my code: ' + userData.myReferralCode,
       url: shareUrl
     };
 
@@ -502,7 +529,7 @@
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
-        await navigator.clipboard.writeText(shareData.url);
+        await navigator.clipboard.writeText(shareData.text + '\n' + shareData.url);
         alert('Referral link copied! +10 points added');
       }
 
