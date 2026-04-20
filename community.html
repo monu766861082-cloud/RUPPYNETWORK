@@ -210,14 +210,14 @@ let currentUser = 'User';
 let todayPostCount = 0;
 let todayPostsData = [];
 
+// ✅ FIX 1: Timezone Bug Fix - Date String Use करो
 function getTodayKey(){
-  return new Date().toDateString();
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; // "2026-4-19"
 }
 
 async function getTodayPosts(){
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  const todayTimestamp = today.getTime();
+  const todayKey = getTodayKey();
 
   const postsRef = ref(db, 'posts');
   const userPostsQuery = query(postsRef, orderByChild('user'), equalTo(currentUser));
@@ -227,7 +227,8 @@ async function getTodayPosts(){
   if(snapshot.exists()){
     snapshot.forEach(child => {
       let post = {id: child.key,...child.val()};
-      if(post.time >= todayTimestamp){
+      // ✅ FIX 2: time की जगह postDateKey Check करो
+      if(post.postDateKey === todayKey){
         todayPostsData.push(post);
       }
     });
@@ -360,6 +361,7 @@ window.createPost = async function(){
       mediaType = selectedFile.type.includes('video')? 'video' : 'image';
     }
 
+    // ✅ FIX 3: Post Save करते वक्त postDateKey Add करो
     const newPostRef = await push(ref(db, 'posts'), {
       user: currentUser,
       userDp: (typeof window.userData!== 'undefined' && window.userData.dp)? window.userData.dp : null,
@@ -367,6 +369,7 @@ window.createPost = async function(){
       media: mediaUrl,
       mediaType: mediaType,
       time: Date.now(),
+      postDateKey: getTodayKey(), // ✅ ये Line Add की - "2026-4-19" Save होगा
       likes: 0,
       likedBy: {},
       comments: [],
