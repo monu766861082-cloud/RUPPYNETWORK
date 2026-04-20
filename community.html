@@ -313,7 +313,7 @@ window.addEmoji = function(){
 
 window.claimPost = async function(postId){
   await markPostClaimed(postId);
-  alert('10 Rup Claimed! 🎉');
+  alert('10 RUP Claimed! 🎉');
   await getTodayPosts();
   updateRewardBanner();
   renderFeed(JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]'));
@@ -439,7 +439,8 @@ function renderFeed(posts){
 
     let claimBtnHTML = '';
     if(post.user === currentUser && post.claimed === false){
-      claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +10 रुपए</button>`;
+      // ✅ बस ये Line बदली है - "रुपए" से "RUP" कर दिया
+      claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +10 RUP</button>`;
     } else if(post.user === currentUser && post.claimed === true){
       claimBtnHTML = `<button class="claim-btn claimed" disabled>Claimed</button>`;
     }
