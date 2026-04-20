@@ -215,21 +215,6 @@
   // Reward Structure
   const REWARDS = {1: 1000, 10: 800, 50: 600, 100: 500, 500: 300};
 
-  // ✅ नया: RUP-8K2M5X जैसा साफ Code बनाने वाला - सिर्फ ये Add किया
-  function generateUniqueCode() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let code = 'RUP-';
-    for(let i = 0; i < 6; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return code;
-  }
-
-  // ✅ नया: Check करेगा Code UID है या RUP- है - सिर्फ ये Add किया
-  function isValidReferralCode(code) {
-    return code && code.startsWith('RUP-') && code.length === 10;
-  }
-
   function getRewardByRank(rank) {
     if (rank === 1) return 1000;
     if (rank <= 10) return 800;
@@ -247,12 +232,6 @@
       attempts++;
     }
     userData = window.userData;
-
-    // ✅ नया: अगर Code UID है तो RUP- बना दे - सिर्फ ये 3 Line Add की
-    if (userData &&!isValidReferralCode(userData.myReferralCode)) {
-      userData.myReferralCode = generateUniqueCode();
-      if(window.saveRuppyData) saveRuppyData(userData);
-    }
 
     signInAnonymously(auth).catch((error) => {
       console.error("Auth Error:", error);
@@ -498,7 +477,6 @@
     });
   }
 
-  // ✅ तेरा Original Function - dailyShares वाला वापस
   window.handleReferNow = async function() {
     if (!currentUser) return alert("Please wait, logging in...");
 
@@ -513,8 +491,7 @@
       });
     }
 
-    // ✅ बस ये 1 Line बदली: UID की जगह RUP- Code Share होगा
-    const shareUrl = window.location.origin + window.location.pathname + '?ref=' + userData.myReferralCode;
+    const shareUrl = window.location.origin + window.location.pathname + '?ref=' + currentUser.uid;
     const shareData = {
       title: 'Ruppy Network',
       text: 'Join Ruppy Network and earn free RUPPY! Use my referral link:',
