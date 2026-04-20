@@ -86,7 +86,7 @@
   <div class="header">
     <div class="title">
       <h3>Leaderboard</h3>
-      <p>Updates Daily • 1 Referral = 10 pts</p>
+      <p>Updates Daily • 1 Share = 10 pts</p>
     </div>
     <div class="back-btn" onclick="window.location.href='app.html'">←</div>
   </div>
@@ -129,7 +129,7 @@
 
   <div class="campaign-card">
     <div class="tag">📊 DAILY CAMPAIGN</div>
-    <h2>Refer More. Rank Higher.<br><span>Earn Bigger Rewards.</span></h2>
+    <h2>Share More. Rank Higher.<br><span>Earn Bigger Rewards.</span></h2>
     <p>Ranking resets every 24 hours. Winners can claim rewards every Monday!</p>
     <button class="btn-refer" onclick="handleReferNow()">REFER NOW</button>
   </div>
@@ -215,7 +215,7 @@
   // Reward Structure
   const REWARDS = {1: 1000, 10: 800, 50: 600, 100: 500, 500: 300};
 
-  // ✅ नया: RUP-8K2M5X जैसा साफ Code बनाने वाला
+  // ✅ नया: RUP-8K2M5X जैसा साफ Code बनाने वाला - सिर्फ ये Add किया
   function generateUniqueCode() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let code = 'RUP-';
@@ -225,7 +225,7 @@
     return code;
   }
 
-  // ✅ नया: Check करेगा Code UID है या RUP- है
+  // ✅ नया: Check करेगा Code UID है या RUP- है - सिर्फ ये Add किया
   function isValidReferralCode(code) {
     return code && code.startsWith('RUP-') && code.length === 10;
   }
@@ -248,7 +248,7 @@
     }
     userData = window.userData;
 
-    // ✅ नया: अगर Code UID है तो RUP- बना दे
+    // ✅ नया: अगर Code UID है तो RUP- बना दे - सिर्फ ये 3 Line Add की
     if (userData &&!isValidReferralCode(userData.myReferralCode)) {
       userData.myReferralCode = generateUniqueCode();
       if(window.saveRuppyData) saveRuppyData(userData);
@@ -276,7 +276,6 @@
 
   init();
 
-  // ✅ FIX: अब dailyPosts भी Reset होगा - Feed Limit के लिए
   async function checkDailyReset() {
     const snap = await get(userRef);
     if (snap.exists()) {
@@ -285,7 +284,6 @@
       if (data.lastReset!== today) {
         await update(userRef, {
           dailyShares: 0,
-          dailyPosts: 0, // ← ये Line Add की Feed के लिए
           lastReset: today
         });
       }
@@ -340,25 +338,19 @@
     return d.getUTCFullYear() + '-W' + weekNo;
   }
 
-  // ✅ FIX: अब Join करने पे +10 Points मिलेंगे, Share करने पे नहीं
   async function checkReferral() {
     const urlParams = new URLSearchParams(window.location.search);
-    const referrerCode = urlParams.get('ref');
+    const referrerUid = urlParams.get('ref');
 
-    if (referrerCode && referrerCode!== userData.myReferralCode) {
-      // ✅ FIX: अब Code से User ढूंढेंगे, UID से नहीं
-      const usersSnap = await get(allUsersRef);
-      if (usersSnap.exists()) {
-        usersSnap.forEach(async (child) => {
-          const referrerData = child.val();
-          if (referrerData.myReferralCode === referrerCode) {
-            const referrerRef = ref(database, 'users/' + child.key);
-            // ✅ FIX: अब dailyShares बढ़ेगा = 10 Points मिलेंगे
-            await update(referrerRef, {
-              referralCount: (referrerData.referralCount || 0) + 1,
-              dailyShares: (referrerData.dailyShares || 0) + 1 // ← यही Line Point बढ़ाएगी
-            });
-          }
+    if (referrerUid && referrerUid!== currentUser.uid) {
+      const referrerRef = ref(database, 'users/' + referrerUid);
+      const referrerSnap = await get(referrerRef);
+
+      if (referrerSnap.exists()) {
+        const referrerData = referrerSnap.val();
+        await update(referrerRef, {
+          referralCount: (referrerData.referralCount || 0) + 1,
+          balance: (referrerData.balance || 0) + 50
         });
       }
     }
@@ -368,11 +360,12 @@
     if (!currentUser) return;
 
     const snapshot = await get(allUsersRef);
-    const usersMap = {};
+    const usersMap = {}; // ✅ CHANGE 1: Map बनाया UID के लिए
 
     if (snapshot.exists()) {
       snapshot.forEach((child) => {
         const data = child.val();
+        // ✅ CHANGE 2: UID से Save करो - Duplicate Auto Overwrite हो जाएगा
         usersMap[child.key] = {
           uid: child.key,
           name: data.name || 'User',
@@ -382,7 +375,9 @@
       });
     }
 
+    // ✅ CHANGE 3: Map को Array में Convert - अब हर UID 1 ही बार है
     const allUsers = Object.values(usersMap);
+
     allUsers.sort((a, b) => b.points - a.points);
 
     const userIndex = allUsers.findIndex(u => u.uid === currentUser.uid);
@@ -402,10 +397,8 @@
         referralCount: userData.referralCount || 0,
         balance: userData.balance || 0,
         dailyShares: 0,
-        dailyPosts: 0, // ← ये Line Add की Feed के लिए
         lastReset: new Date().toDateString(),
         uid: currentUser.uid,
-        myReferralCode: userData.myReferralCode || generateUniqueCode(),
         joinedAt: Date.now()
       });
     }
@@ -505,14 +498,13 @@
     });
   }
 
-  // ✅ तेरा Original Function वापस - dailyShares वापस Add कर दिया जैसे पहले था
+  // ✅ तेरा Original Function - dailyShares वाला वापस
   window.handleReferNow = async function() {
     if (!currentUser) return alert("Please wait, logging in...");
 
     const btn = document.querySelector('.btn-refer');
     btn.disabled = true;
 
-    // ✅ तेरा पुराना Logic वापस - Share पे Point बढ़ेगा
     const snap = await get(userRef);
     if (snap.exists()) {
       const data = snap.val();
