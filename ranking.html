@@ -276,6 +276,7 @@
 
   init();
 
+  // ✅ FIX: अब dailyPosts भी Reset होगा - Feed Limit के लिए
   async function checkDailyReset() {
     const snap = await get(userRef);
     if (snap.exists()) {
@@ -284,6 +285,7 @@
       if (data.lastReset!== today) {
         await update(userRef, {
           dailyShares: 0,
+          dailyPosts: 0, // ← ये Line Add की Feed के लिए
           lastReset: today
         });
       }
@@ -400,6 +402,7 @@
         referralCount: userData.referralCount || 0,
         balance: userData.balance || 0,
         dailyShares: 0,
+        dailyPosts: 0, // ← ये Line Add की Feed के लिए
         lastReset: new Date().toDateString(),
         uid: currentUser.uid,
         myReferralCode: userData.myReferralCode || generateUniqueCode(),
@@ -502,25 +505,27 @@
     });
   }
 
-  // ✅ FIX: अब Share करने पे Point नहीं बढ़ेगा - dailyShares++ हटा दिया
+  // ✅ तेरा Original Function वापस - dailyShares वापस Add कर दिया जैसे पहले था
   window.handleReferNow = async function() {
     if (!currentUser) return alert("Please wait, logging in...");
 
     const btn = document.querySelector('.btn-refer');
     btn.disabled = true;
 
-    // ❌ ये 3 Line हटा दी - यही Point बढ़ा रही थी
-    // const snap = await get(userRef);
-    // if (snap.exists()) {
-    // const data = snap.val();
-    // await update(userRef, { dailyShares: (data.dailyShares || 0) + 1 });
-    // }
+    // ✅ तेरा पुराना Logic वापस - Share पे Point बढ़ेगा
+    const snap = await get(userRef);
+    if (snap.exists()) {
+      const data = snap.val();
+      await update(userRef, {
+        dailyShares: (data.dailyShares || 0) + 1
+      });
+    }
 
-    // ✅ अब सिर्फ Link Share होगा, Point नहीं बढ़ेगा
-    const shareUrl = window.location.origin + '/referral.html?ref=' + userData.myReferralCode;
+    // ✅ बस ये 1 Line बदली: UID की जगह RUP- Code Share होगा
+    const shareUrl = window.location.origin + window.location.pathname + '?ref=' + userData.myReferralCode;
     const shareData = {
       title: 'Ruppy Network',
-      text: 'Join Ruppy Network & start playing! 💰\nUse my code: ' + userData.myReferralCode,
+      text: 'Join Ruppy Network and earn free RUPPY! Use my referral link:',
       url: shareUrl
     };
 
@@ -528,11 +533,11 @@
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
-        await navigator.clipboard.writeText(shareData.text + '\n' + shareData.url);
-        alert('Referral link copied!');
+        await navigator.clipboard.writeText(shareData.url);
+        alert('Referral link copied! +10 points added');
       }
 
-      btn.innerText = 'LINK SHARED!';
+      btn.innerText = 'LINK SHARED! +10 PTS';
       setTimeout(() => {
         btn.innerText = 'REFER NOW';
         btn.disabled = false;
