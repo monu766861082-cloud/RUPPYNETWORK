@@ -86,7 +86,7 @@
   <div class="header">
     <div class="title">
       <h3>Leaderboard</h3>
-      <p>Updates Daily • 1 Share = 10 pts</p>
+      <p>Rank by Referrals • Updates Live</p>
     </div>
     <div class="back-btn" onclick="window.location.href='app.html'">←</div>
   </div>
@@ -99,14 +99,14 @@
   </div>
 
   <div class="position-card">
-    <p>YOUR POSITION TODAY</p>
+    <p>YOUR POSITION</p>
     <div class="position-row">
       <div class="position-left">
         <div class="position-rank" id="userRank">#-</div>
         <div class="position-name" id="userName">Loading...</div>
       </div>
       <div class="position-right">
-        <div class="label">Today's Points</div>
+        <div class="label">Total Referrals</div>
         <div class="points" id="userPoints">0</div>
       </div>
     </div>
@@ -121,16 +121,16 @@
   </div>
 
   <div class="leaderboard-list">
-    <h4>🔥 TODAY'S TOP 100</h4>
+    <h4>🔥 TOP 100 BY REFERRALS</h4>
     <div id="leaderboardList">
       <p style="color:#666; text-align:center; padding:20px 0;">Loading rankings...</p>
     </div>
   </div>
 
   <div class="campaign-card">
-    <div class="tag">📊 DAILY CAMPAIGN</div>
-    <h2>Share More. Rank Higher.<br><span>Earn Bigger Rewards.</span></h2>
-    <p>Ranking resets every 24 hours. Winners can claim rewards every Monday!</p>
+    <div class="tag">📊 REFERRAL CAMPAIGN</div>
+    <h2>Refer More. Rank Higher.<br><span>Earn Bigger Rewards.</span></h2>
+    <p>Ranking based on total successful referrals. Winners can claim rewards every Monday!</p>
     <button class="btn-refer" onclick="handleReferNow()">REFER NOW</button>
   </div>
 
@@ -141,387 +141,4 @@
       <div class="token">1000 RUPPY</div>
     </div>
     <div class="reward-row">
-      <div class="rank">#2 - #10</div>
-      <div class="token">800 RUPPY</div>
-    </div>
-    <div class="reward-row">
-      <div class="rank">#11 - #50</div>
-      <div class="token">600 RUPPY</div>
-    </div>
-    <div class="reward-row">
-      <div class="rank">#51 - #100</div>
-      <div class="token">500 RUPPY</div>
-    </div>
-    <div class="reward-row">
-      <div class="rank">#101 - #500</div>
-      <div class="token">300 RUPPY</div>
-    </div>
-  </div>
-
-  <!-- ✅ FIX: Nav में Feed Icon जोड़ा -->
-  <div class="nav">
-    <div class="nav-item" onclick="navClick('home')">
-      <div class="icon">🏠</div>
-      <span>Home</span>
-    </div>
-    <div class="nav-item" onclick="navClick('tasks')">
-      <div class="icon">📋</div>
-      <span>Tasks</span>
-    </div>
-    <div class="nav-item" onclick="navClick('referral')">
-      <div class="icon">👥</div>
-      <span>Referral</span>
-    </div>
-    <div class="nav-item active">
-      <div class="icon">🏆</div>
-      <span>Ranking</span>
-    </div>
-    <div class="nav-item" onclick="navClick('community')">
-      <div class="icon">📝</div>
-      <span>Feed</span>
-    </div>
-    <div class="nav-item" onclick="navClick('settings')">
-      <div class="icon">⚙️</div>
-      <span>Settings</span>
-    </div>
-  </div>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
-  import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
-    authDomain: "ruppynetwork-50362.firebaseapp.com",
-    databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
-    projectId: "ruppynetwork-50362",
-    storageBucket: "ruppynetwork-50362.firebasestorage.app",
-    messagingSenderId: "132064610854",
-    appId: "1:132064610854:web:3c217eaf3618007f5934e7"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const database = getDatabase(app);
-
-  // ✅ FIX: config.js वाला userData Use करा
-  let userData = window.userData;
-  let currentUser = null;
-  let userRef = null;
-  const allUsersRef = ref(database, 'users');
-  const winnersRef = ref(database, 'winners/thisWeek');
-
-  // Reward Structure
-  const REWARDS = {1: 1000, 10: 800, 50: 600, 100: 500, 500: 300};
-
-  function getRewardByRank(rank) {
-    if (rank === 1) return 1000;
-    if (rank <= 10) return 800;
-    if (rank <= 50) return 600;
-    if (rank <= 100) return 500;
-    if (rank <= 500) return 300;
-    return 0;
-  }
-
-  // ✅ FIX: Init Function - userData Load होने का Wait
-  async function init(){
-    let attempts = 0;
-    while(!window.userData?.uid && attempts < 50) {
-      await new Promise(r => setTimeout(r, 100));
-      attempts++;
-    }
-    userData = window.userData;
-
-    signInAnonymously(auth).catch((error) => {
-      console.error("Auth Error:", error);
-      alert("Login failed. Check Firebase Auth settings.");
-    });
-  }
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      currentUser = user;
-      userRef = ref(database, 'users/' + user.uid);
-      checkDailyReset();
-      checkWeeklySnapshot();
-      checkReferral();
-      loadUserPosition();
-      loadWinnersList();
-      checkClaimStatus();
-      setupRealtimeListener();
-    }
-  });
-
-  init();
-
-  async function checkDailyReset() {
-    const snap = await get(userRef);
-    if (snap.exists()) {
-      const data = snap.val();
-      const today = new Date().toDateString();
-      if (data.lastReset!== today) {
-        await update(userRef, {
-          dailyShares: 0,
-          lastReset: today
-        });
-      }
-    }
-  }
-
-  // ADD: हर Sunday Winners का Snapshot बनाओ
-  async function checkWeeklySnapshot() {
-    const now = new Date();
-    const day = now.getDay(); // 0 = Sunday
-    const weekId = getWeekId(now);
-
-    const snap = await get(winnersRef);
-    if (day === 0 && (!snap.exists() || snap.val().weekId!== weekId)) {
-      // Sunday है और इस हफ्ते का Snapshot नहीं बना
-      const usersSnap = await get(allUsersRef);
-      const allUsers = [];
-      if (usersSnap.exists()) {
-        usersSnap.forEach((child) => {
-          const data = child.val();
-          allUsers.push({
-            uid: child.key,
-            name: data.name || 'User',
-            dailyShares: data.dailyShares || 0,
-            points: (data.dailyShares || 0) * 10
-          });
-        });
-      }
-      allUsers.sort((a, b) => b.points - a.points);
-      const top100 = allUsers.slice(0, 100).map((u, i) => ({
-        rank: i + 1,
-        uid: u.uid,
-        name: u.name,
-        points: u.points,
-        reward: getRewardByRank(i + 1),
-        claimed: false
-      }));
-
-      await set(winnersRef, {
-        weekId: weekId,
-        date: now.toISOString(),
-        winners: top100
-      });
-    }
-  }
-
-  function getWeekId(date) {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
-    return d.getUTCFullYear() + '-W' + weekNo;
-  }
-
-  async function checkReferral() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const referrerUid = urlParams.get('ref');
-
-    if (referrerUid && referrerUid!== currentUser.uid) {
-      const referrerRef = ref(database, 'users/' + referrerUid);
-      const referrerSnap = await get(referrerRef);
-
-      if (referrerSnap.exists()) {
-        const referrerData = referrerSnap.val();
-        await update(referrerRef, {
-          referralCount: (referrerData.referralCount || 0) + 1,
-          balance: (referrerData.balance || 0) + 50
-        });
-      }
-    }
-  }
-
-  async function loadUserPosition() {
-    if (!currentUser) return;
-
-    const snapshot = await get(allUsersRef);
-    const allUsers = [];
-
-    if (snapshot.exists()) {
-      snapshot.forEach((child) => {
-        const data = child.val();
-        allUsers.push({
-          uid: child.key,
-          name: data.name || 'User',
-          dailyShares: data.dailyShares || 0,
-          points: (data.dailyShares || 0) * 10
-        });
-      });
-    }
-
-    allUsers.sort((a, b) => b.points - a.points);
-
-    const userIndex = allUsers.findIndex(u => u.uid === currentUser.uid);
-    const userRank = userIndex >= 0? userIndex + 1 : '-';
-    const userPoints = userIndex >= 0? allUsers[userIndex].points : 0;
-
-    document.getElementById('userName').innerText = userData.name || 'User';
-    document.getElementById('userPoints').innerText = userPoints;
-    document.getElementById('userRank').innerText = userRank === '-'? '#-' : '#' + userRank;
-
-    renderLeaderboard(allUsers.slice(0, 100));
-
-    const userSnap = await get(userRef);
-    if (!userSnap.exists()) {
-      set(userRef, {
-        name: userData.name || 'User',
-        referralCount: userData.referralCount || 0,
-        balance: userData.balance || 0,
-        dailyShares: 0,
-        lastReset: new Date().toDateString(),
-        uid: currentUser.uid,
-        joinedAt: Date.now()
-      });
-    }
-  }
-
-  // ADD: Winners List दिखाओ
-  async function loadWinnersList() {
-    const snap = await get(winnersRef);
-    const listDiv = document.getElementById('winnersList');
-    if (!snap.exists() ||!snap.val().winners) {
-      listDiv.innerHTML = '<p style="color:#666; text-align:center; padding:20px 0;">No winners yet. Check back Monday!</p>';
-      return;
-    }
-
-    const winners = snap.val().winners.slice(0, 10);
-    listDiv.innerHTML = winners.map(w => `
-      <div class="winner-row">
-        <div class="winner-left">
-          <div class="winner-rank">#${w.rank}</div>
-          <div class="winner-name">${w.name}</div>
-        </div>
-        <div class="winner-right">
-          <div class="winner-token">${w.reward} RUPPY</div>
-          <div class="winner-status ${w.claimed? '' : 'pending'}">${w.claimed? 'Claimed ✅' : 'Pending ⏳'}</div>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  // ADD: Claim Button Check
-  async function checkClaimStatus() {
-    if (!currentUser) return;
-    const snap = await get(winnersRef);
-    if (!snap.exists() ||!snap.val().winners) return;
-
-    const winner = snap.val().winners.find(w => w.uid === currentUser.uid);
-    if (winner &&!winner.claimed) {
-      document.getElementById('winnerBanner').classList.add('show');
-      document.getElementById('winnerText').innerText = `You ranked #${winner.rank} last week! Claim your ${winner.reward} RUPPY now.`;
-      window.currentReward = winner.reward;
-      window.currentRank = winner.rank;
-    }
-  }
-
-  // ADD: Claim Reward Function
-  window.claimReward = async function() {
-    if (!currentUser ||!window.currentReward) return;
-    const btn = document.getElementById('claimBtn');
-    btn.disabled = true;
-    btn.innerText = 'CLAIMING...';
-
-    // 1. Balance में Add करो
-    userData.balance = (userData.balance || 0) + window.currentReward;
-    await saveRuppyData(userData);
-
-    // 2. Winner में Claimed = true करो
-    const snap = await get(winnersRef);
-    const winners = snap.val().winners;
-    const idx = winners.findIndex(w => w.uid === currentUser.uid);
-    if (idx >= 0) {
-      winners[idx].claimed = true;
-      await set(winnersRef, {...snap.val(), winners: winners});
-    }
-
-    btn.innerText = 'CLAIMED ✅';
-    setTimeout(() => {
-      document.getElementById('winnerBanner').classList.remove('show');
-      loadWinnersList();
-    }, 2000);
-  }
-
-  function renderLeaderboard(users) {
-    const listDiv = document.getElementById('leaderboardList');
-    if (users.length === 0) {
-      listDiv.innerHTML = '<p style="color:#666; text-align:center; padding:20px 0;">No rankings yet. Be the first to share!</p>';
-      return;
-    }
-
-    listDiv.innerHTML = users.map((u, i) => `
-      <div class="leader-row">
-        <div class="leader-left">
-          <div class="leader-rank">#${i + 1}</div>
-          <div class="leader-name">${u.name}</div>
-        </div>
-        <div class="leader-points">${u.points} pts</div>
-      </div>
-    `).join('');
-  }
-
-  function setupRealtimeListener() {
-    onValue(allUsersRef, () => {
-      loadUserPosition();
-    });
-    onValue(winnersRef, () => {
-      loadWinnersList();
-      checkClaimStatus();
-    });
-  }
-
-  window.handleReferNow = async function() {
-    if (!currentUser) return alert("Please wait, logging in...");
-
-    const btn = document.querySelector('.btn-refer');
-    btn.disabled = true;
-
-    const snap = await get(userRef);
-    if (snap.exists()) {
-      const data = snap.val();
-      await update(userRef, {
-        dailyShares: (data.dailyShares || 0) + 1
-      });
-    }
-
-    const shareUrl = window.location.origin + window.location.pathname + '?ref=' + currentUser.uid;
-    const shareData = {
-      title: 'Ruppy Network',
-      text: 'Join Ruppy Network and earn free RUPPY! Use my referral link:',
-      url: shareUrl
-    };
-
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(shareData.url);
-        alert('Referral link copied! +10 points added');
-      }
-
-      btn.innerText = 'LINK SHARED! +10 PTS';
-      setTimeout(() => {
-        btn.innerText = 'REFER NOW';
-        btn.disabled = false;
-      }, 2000);
-
-    } catch (err) {
-      btn.disabled = false;
-      console.error(err);
-    }
-  }
-
-  window.navClick = function(page) {
-    if(page === 'home') window.location.href = 'app.html';
-    if(page === 'tasks') window.location.href = 'tasks.html';
-    if(page === 'referral') window.location.href = 'referral.html';
-    if(page === 'ranking') window.location.href = 'ranking.html';
-    if(page === 'community') window.location.href = 'community.html';
-    if(page === 'settings') window.location.href = 'settings.html';
-  }
-</script>
-</body>
-</html>
+      <div class="rank">#2 - #
