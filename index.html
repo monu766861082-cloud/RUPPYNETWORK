@@ -87,7 +87,7 @@ a{color:#aaa;text-decoration:none}
   <!-- LOGIN में भी Referral Code Box - नया Add किया -->
   <div class="input-box">
     <label>Referral Code <span style="color:#666;font-size:13px;">(Optional - Missed during signup?)</span></label>
-    <input type="text" id="loginReferralCode" placeholder="Enter friend's code e.g. RUPPY-8X4K9M">
+    <input type="text" id="loginReferralCode" placeholder="Enter friend's code e.g. RUP-8X4K9M">
   </div>
   <div class="referral-info" id="loginReferralInfo" style="display:none">
     Referred by: <span id="loginReferrerName">Loading...</span>
@@ -119,7 +119,7 @@ a{color:#aaa;text-decoration:none}
   </div>
   <div class="input-box">
     <label>Referral Code <span style="color:#666;font-size:13px;">(Optional)</span></label>
-    <input type="text" id="regReferralCode" placeholder="Enter friend's code e.g. RUPPY-8X4K9M">
+    <input type="text" id="regReferralCode" placeholder="Enter friend's code e.g. RUP-8X4K9M">
   </div>
   <div class="referral-info" id="referralInfo" style="display:none">
     Referred by: <span id="referrerName">Loading...</span>
@@ -195,14 +195,23 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     }
   })();
 
-  // Unique Referral Code Generator
+  // ✅ FIX 1: Unique Referral Code Generator - अब RUP- वाला छोटा Code
   function generateUniqueCode() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let code = 'RUPPY-';
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // O,0,I,1 हटाए Confusion के लिए
+    let code = 'RUP-';
     for(let i = 0; i < 6; i++) {
       code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    return code;
+    return code; // Result: RUP-8K2M5X
+  }
+
+  // ✅ FIX 2: पुराना UID Code चेक करके नया बना दो
+  function isValidReferralCode(code) {
+    // अगर Code RUP- से Start नहीं होता या 12 से बड़ा है तो पुराना UID है
+    if(!code || code.length > 12 ||!code.startsWith('RUP-')) {
+      return false;
+    }
+    return true;
   }
 
   // Referral Code Check करो - Real Time दोनों Forms के लिए
@@ -240,7 +249,10 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
         showSuccess(type === 'reg'? 'regSuccessMsg' : 'successMsg', 'Valid referral code! 20 bonus points');
       } else {
         infoBox.style.display = 'none';
-        showError(type === 'reg'? 'regErrorMsg' : 'errorMsg', 'Invalid referral code');
+        // ✅ FIX 3: Login में Invalid Code पे Error मत दिखा, बस Silent रह
+        if(type === 'reg') {
+          showError('regErrorMsg', 'Invalid referral code');
+        }
       }
     } catch(err) {
       infoBox.style.display = 'none';
@@ -289,6 +301,11 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
       ultraRewardTime: 0,
       createdAt: Date.now()
     };
+
+    // ✅ FIX 4: पुराने User का UID वाला Code बदल दो नए RUP- वाले से
+    if(!isValidReferralCode(userData.myReferralCode)) {
+      userData.myReferralCode = generateUniqueCode();
+    }
 
     // अगर नया User है और Refer Code है तो Bonus दो
     if(!snapshot.exists() && userData.referredBy) {
@@ -429,12 +446,12 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
         createdAt: Date.now()
       };
 
-      // पुराने User के पास Code नहीं है तो बना दो
-      if(!userData.myReferralCode) {
+      // ✅ FIX 5: पुराने User के पास UID वाला Code है तो नया RUP- वाला बना दो
+      if(!isValidReferralCode(userData.myReferralCode)) {
         userData.myReferralCode = generateUniqueCode();
       }
 
-      // अगर Login करते Time Code डाला और पहले Claim नहीं किया तो Bonus दो
+      // ✅ FIX 6: Login में Referral Optional - गलत Code पे Login Block मत करो
       if(referralCode &&!userData.referralClaimed &&!userData.referredBy) {
         const refSnapshot = await db.ref('users').orderByChild('myReferralCode').equalTo(referralCode).once('value');
         if(refSnapshot.exists() && Object.keys(refSnapshot.val())[0]!== uid) {
@@ -443,11 +460,8 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
           userData.balance = (userData.balance || 0) + 20;
           await updateReferrerRank(referralCode, uid);
           showSuccess('successMsg', 'Referral bonus added! +20 points');
-        } else if(refSnapshot.exists()) {
-          showError('errorMsg', 'Cannot use your own code');
-        } else {
-          showError('errorMsg', 'Invalid referral code');
         }
+        // अपना Code या Invalid Code पे कुछ मत करो - Silent Ignore
       }
 
       await db.ref('users/' + uid).update(userData);
