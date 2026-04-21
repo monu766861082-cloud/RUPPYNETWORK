@@ -1,6 +1,6 @@
-// config.js - RUPPY GLOBAL SYNC - LOGOUT FIX + AUTO BALANCE + NAME/DP FIX + REFERRAL FIX
+// config.js - RUPPY GLOBAL SYNC - REFERRAL FIX + RUP- FORMAT + SEARCH SUPPORT
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, get, set, update, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -19,7 +19,7 @@ const auth = getAuth(app);
 
 const RUPPY_STORAGE_KEY = 'ruppy_user_cache';
 
-// 1. Default Data
+// 1. Default Data - RUP- Format के साथ
 function getDefaultData() {
   return {
     name: 'Guest',
@@ -27,23 +27,38 @@ function getDefaultData() {
     balance: 0,
     taskBalance: 0,
     uid: null,
-    referralCode: null, // 👈 ADD 1
-    referredBy: null, // 👈 ADD 2
+    myReferralCode: null, // ✅ FIX: RUP- वाला Code
+    referredBy: null,
+    referralClaimed: false,
+    team: [],
+    teamCount: 0,
     posts: [],
     lastMine: 0,
     lastGift: 0,
     boostCount: 0,
     boostResetTime: Date.now(),
     firstRewardTime: 0,
-    ultraRewardTime: 0
+    ultraRewardTime: 0,
+    createdAt: Date.now()
   };
 }
 
-// 1.1 Referral Code Generator - Unique बनाएगा 👈 ADD 3 - पूरा नया Function
-function generateReferralCode(uid) {
-  let prefix = uid.substring(0, 6).toUpperCase();
-  let random = Math.floor(1000 + Math.random() * 9000);
-  return prefix + random;
+// 1.1 ✅ FIX: Referral Code Generator - RUP-8X4K9M Format
+function generateReferralCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // O,0,I,1 हटाए
+  let code = 'RUP-';
+  for(let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
+// 1.2 ✅ FIX: पुराना Code Check - UID वाला है तो False
+function isValidReferralCode(code) {
+  if(!code || code.length!== 10 ||!code.startsWith('RUP-')) {
+    return false;
+  }
+  return true;
 }
 
 // 2. LocalStorage से Load - Button तुरंत चलें
@@ -91,7 +106,30 @@ window.loadProfileEverywhere = function(){
   if(nameEl) nameEl.textContent = 'Welcome back, ' + (window.userData.name || 'User');
 }
 
-// 5. ✅ LOGOUT/LOGIN FIX - Firebase = Truth + NAME/DP FIX + REFERRAL FIX
+// 4.1 ✅ FIX: Referrer को Bonus + Team Update
+async function updateReferrerRank(referralCode, newUserId) {
+  try {
+    const usersRef = ref(db, 'users');
+    const q = query(usersRef, orderByChild('myReferralCode'), equalTo(referralCode));
+    const snapshot = await get(q);
+
+    if(snapshot.exists()) {
+      const referrerId = Object.keys(snapshot.val())[0];
+      const referrerData = Object.values(snapshot.val())[0];
+      const updates = {
+        balance: (referrerData.balance || 0) + 20,
+        teamCount: (referrerData.teamCount || 0) + 1,
+        [`team/${newUserId}`]: true
+      };
+      await update(ref(db, `users/${referrerId}`), updates);
+      console.log('Referrer bonus added:', referralCode);
+    }
+  } catch(err) {
+    console.error('Referral update error:', err);
+  }
+}
+
+// 5. ✅ LOGOUT/LOGIN FIX + REFERRAL AUTO UPGRADE + SEARCH SUPPORT
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     // User Logged In
@@ -101,13 +139,11 @@ onAuthStateChanged(auth, async (user) => {
       const snapshot = await get(userRef);
 
       if (snapshot.exists()) {
-        // ✅ पुराना User - Firebase से सब लाओ, Google से Overwrite मत करो
+        // ✅ पुराना User - Firebase से सब लाओ
         const data = snapshot.val();
         window.userData.uid = user.uid;
         window.userData.name = data.name || user.displayName || user.email.split('@')[0];
         window.userData.dp = data.dp || user.photoURL || null;
-        window.userData.referralCode = data.referralCode || generateReferralCode(user.uid); // 👈 ADD 4
-        window.userData.referredBy = data.referredBy || null; // 👈 ADD 5
         window.userData.balance = Number(data.balance) || 0;
         window.userData.taskBalance = Number(data.taskBalance) || 0;
         window.userData.posts = data.posts || [];
@@ -117,30 +153,51 @@ onAuthStateChanged(auth, async (user) => {
         window.userData.boostResetTime = Number(data.boostResetTime) || Date.now();
         window.userData.firstRewardTime = Number(data.firstRewardTime) || 0;
         window.userData.ultraRewardTime = Number(data.ultraRewardTime) || 0;
+        window.userData.team = data.team || [];
+        window.userData.teamCount = Number(data.teamCount) || 0;
+        window.userData.referredBy = data.referredBy || null;
+        window.userData.referralClaimed = data.referralClaimed || false;
+        window.userData.createdAt = data.createdAt || Date.now();
 
-        // अगर पुराने User का Code नहीं है तो बना के Save कर दे 👈 ADD 6
-        if(!data.referralCode){
-          await update(userRef, { referralCode: window.userData.referralCode });
+        // ✅ FIX: पुराना UID वाला Code है तो नया RUP- वाला बना दो
+        if(!isValidReferralCode(data.myReferralCode)) {
+          window.userData.myReferralCode = generateReferralCode();
+          await update(userRef, { myReferralCode: window.userData.myReferralCode });
+          console.log('Upgraded old code to:', window.userData.myReferralCode);
+        } else {
+          window.userData.myReferralCode = data.myReferralCode;
         }
+
       } else {
         // ✅ नया User - Firebase में Create करो
         window.userData.uid = user.uid;
         window.userData.name = user.displayName || user.email.split('@')[0];
         window.userData.dp = user.photoURL || null;
-        window.userData.referralCode = generateReferralCode(user.uid); // 👈 ADD 7
+        window.userData.myReferralCode = generateReferralCode();
+
+        // URL या LocalStorage से Referral Code Check कर
+        const pendingRef = localStorage.getItem('ruppy_referredBy');
+        if(pendingRef && pendingRef.startsWith('RUP-')) {
+          window.userData.referredBy = pendingRef;
+          window.userData.referralClaimed = true;
+          window.userData.balance = 20; // New user bonus
+          await updateReferrerRank(pendingRef, user.uid);
+          localStorage.removeItem('ruppy_referredBy');
+        }
+
         await set(userRef, window.userData);
       }
     } catch (error) {
       console.error('Firebase Load Error:', error);
     }
 
-    // ✅ Firebase से आया Data LocalStorage में Save - Logout के बाद भी वापस आएगा
+    // Firebase से आया Data LocalStorage में Save
     localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
     updateBalanceBox();
     loadProfileEverywhere();
 
   } else {
-    // ✅ User Logged Out - Local Clear करो पर Firebase Safe है
+    // ✅ User Logged Out - Local Clear करो
     localStorage.removeItem(RUPPY_STORAGE_KEY);
     window.userData = getDefaultData();
     updateBalanceBox();
@@ -158,7 +215,7 @@ window.saveRuppyData = async function(data){
   window.userData = data;
   updateBalanceBox();
 
-  // Firebase में Save - Logout के बाद भी Safe रहेगा
+  // Firebase में Save
   if(!data.uid) return;
   try {
     const userRef = ref(db, `users/${data.uid}`);
@@ -167,8 +224,11 @@ window.saveRuppyData = async function(data){
       taskBalance: data.taskBalance,
       name: data.name,
       dp: data.dp,
-      referralCode: data.referralCode, // 👈 ADD 8
-      referredBy: data.referredBy, // 👈 ADD 9
+      myReferralCode: data.myReferralCode, // ✅ FIX
+      referredBy: data.referredBy,
+      referralClaimed: data.referralClaimed,
+      team: data.team || [],
+      teamCount: data.teamCount || 0,
       posts: data.posts || [],
       lastMine: data.lastMine || 0,
       lastGift: data.lastGift || 0,
