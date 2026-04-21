@@ -231,6 +231,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     }
   });
 
+  // ✅ FIX 3: Firebase Index Error Fix + Better Error Handling
   async function checkReferralCode(code, type) {
     const infoBox = document.getElementById(type === 'reg'? 'referralInfo' : 'loginReferralInfo');
     const nameSpan = document.getElementById(type === 'reg'? 'referrerName' : 'loginReferrerName');
@@ -249,13 +250,15 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
         showSuccess(type === 'reg'? 'regSuccessMsg' : 'successMsg', 'Valid referral code! 20 bonus points');
       } else {
         infoBox.style.display = 'none';
-        // ✅ FIX 3: Login में Invalid Code पे Error मत दिखा, बस Silent रह
+        // Login में Error मत दिखा - Register में दिखा
         if(type === 'reg') {
           showError('regErrorMsg', 'Invalid referral code');
         }
       }
     } catch(err) {
+      console.error('Referral Check Error:', err);
       infoBox.style.display = 'none';
+      // Index Error आए तो Silent रह - User को Disturb मत कर
     }
   }
 
@@ -411,6 +414,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     }
   }
 
+  // ✅ FIX 5: Login में Referral Code Silent Check - Invalid पे Block मत कर
   window.handleLogin = async function() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
@@ -446,22 +450,26 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
         createdAt: Date.now()
       };
 
-      // ✅ FIX 5: पुराने User के पास UID वाला Code है तो नया RUP- वाला बना दो
+      // ✅ FIX 6: पुराने User के पास UID वाला Code है तो नया RUP- वाला बना दो
       if(!isValidReferralCode(userData.myReferralCode)) {
         userData.myReferralCode = generateUniqueCode();
       }
 
-      // ✅ FIX 6: Login में Referral Optional - गलत Code पे Login Block मत करो
+      // ✅ FIX 7: Login में Referral Optional - गलत Code पे Login Block मत करो, Silent Ignore
       if(referralCode &&!userData.referralClaimed &&!userData.referredBy) {
-        const refSnapshot = await db.ref('users').orderByChild('myReferralCode').equalTo(referralCode).once('value');
-        if(refSnapshot.exists() && Object.keys(refSnapshot.val())[0]!== uid) {
-          userData.referredBy = referralCode;
-          userData.referralClaimed = true;
-          userData.balance = (userData.balance || 0) + 20;
-          await updateReferrerRank(referralCode, uid);
-          showSuccess('successMsg', 'Referral bonus added! +20 points');
+        try {
+          const refSnapshot = await db.ref('users').orderByChild('myReferralCode').equalTo(referralCode).once('value');
+          if(refSnapshot.exists() && Object.keys(refSnapshot.val())[0]!== uid) {
+            userData.referredBy = referralCode;
+            userData.referralClaimed = true;
+            userData.balance = (userData.balance || 0) + 20;
+            await updateReferrerRank(referralCode, uid);
+            showSuccess('successMsg', 'Referral bonus added! +20 points');
+          }
+        } catch(e) {
+          console.log('Referral check failed, continuing login');
         }
-        // अपना Code या Invalid Code पे कुछ मत करो - Silent Ignore
+        // अपना Code या Invalid Code पे कुछ मत करो - Silent Ignore, Login हो जाने दे
       }
 
       await db.ref('users/' + uid).update(userData);
