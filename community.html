@@ -179,11 +179,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-let currentUser = "Guest"; // FIX 1: Default user set kiya taaki feed load ho
+let currentUser = "Guest";
 
 async function syncBalanceFromConfig(){
   let attempts = 0;
-  // FIX 2: 20 attempts = 2 second wait, uske baad Guest se kaam chalao
   while((!window.userData || window.userData.uid === null) && attempts < 20){
     await new Promise(r => setTimeout(r, 100));
     attempts++;
@@ -197,7 +196,6 @@ async function syncBalanceFromConfig(){
     }
     currentUser = window.userData.name || 'User';
   } else {
-    // Agar userData nahi mila to Guest rahega
     document.getElementById('limitText').textContent = 'Login to post & earn rewards';
     document.getElementById('postBtn').disabled = true;
   }
@@ -410,10 +408,9 @@ window.createPost = async function(){
   updateRewardBanner();
 }
 
-// FIX 3: Firebase error handling + console log
-const postsQuery = query(ref(db, 'posts'), orderByChild('time'), limitToLast(20));
+const postsQuery = query(ref(db, 'posts'), limitToLast(20));
 onValue(postsQuery, async (snapshot) => {
-  console.log('Firebase data received'); // Debug ke liye
+  console.log('Firebase data received');
   let posts = [];
 
   snapshot.forEach((childSnapshot) => {
@@ -428,7 +425,6 @@ onValue(postsQuery, async (snapshot) => {
   renderFeed(posts);
   updateRewardBanner();
 }, (error) => {
-  // FIX 4: Agar Firebase se error aaye to bhi loading hat jayegi
   console.error('Firebase Error:', error);
   document.getElementById('feed').innerHTML = `
     <div class="empty-hub">
@@ -620,4 +616,4 @@ window.reportPost = async function(id){
 </script>
 
 </body>
-</html
+</html>
