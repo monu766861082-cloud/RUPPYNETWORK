@@ -31,9 +31,9 @@ h1{color:#f9a825;margin:0 0 20px;font-size:36px;font-weight:900;letter-spacing:6
 /* Input 60px Height - Gap कम */
 .input-box{margin:14px 0;text-align:left}
 .input-box label{color:#bbb;font-size:15px;display:block;margin-bottom:8px;font-weight:700}
-.input-box input{width:100%;padding:0 18px;border:2px solid #333;border-radius:16px;background:#111;color:#fff;font-size:17px;box-sizing:border-box;height:60px}
+.input-box input{width:100%;padding:0 18px;border:2px solid #333;border-radius:16px;background:#111;color:#fff;font-size:17px;box-sizing:border-box;height:60px;text-transform:uppercase}
 .input-box input:focus{outline:none;border-color:#f9a825;box-shadow:0 0 15px rgba(249,168,37,0.4)}
-.input-box input::placeholder{color:#555;font-size:16px}
+.input-box input::placeholder{color:#555;font-size:16px;text-transform:none}
 
 /* Button 60px Height */
 .btn{margin:18px auto 0;padding:0 24px;background:#f9a825;color:#000;border:none;border-radius:16px;font-weight:900;width:100%;cursor:pointer;font-size:18px;letter-spacing:1px;height:60px}
@@ -78,16 +78,16 @@ a{color:#aaa;text-decoration:none}
 <div id="loginForm">
   <div class="input-box">
     <label>Email Address</label>
-    <input type="email" id="email" placeholder="Enter your email">
+    <input type="email" id="email" placeholder="Enter your email" style="text-transform:none">
   </div>
   <div class="input-box">
     <label>Password</label>
-    <input type="password" id="password" placeholder="Enter your password">
+    <input type="password" id="password" placeholder="Enter your password" style="text-transform:none">
   </div>
-  <!-- LOGIN में भी Referral Code Box - नया Add किया -->
+  <!-- LOGIN में भी Referral Code Box - Fixed -->
   <div class="input-box">
     <label>Referral Code <span style="color:#666;font-size:13px;">(Optional - Missed during signup?)</span></label>
-    <input type="text" id="loginReferralCode" placeholder="Enter friend's code e.g. RUP-8X4K9M">
+    <input type="text" id="loginReferralCode" placeholder="Enter friend's code e.g. RUP-8X4K9M" maxlength="10">
   </div>
   <div class="referral-info" id="loginReferralInfo" style="display:none">
     Referred by: <span id="loginReferrerName">Loading...</span>
@@ -107,19 +107,19 @@ a{color:#aaa;text-decoration:none}
 <div id="registerForm" style="display:none">
   <div class="input-box">
     <label>Email Address</label>
-    <input type="email" id="regEmail" placeholder="Enter your email">
+    <input type="email" id="regEmail" placeholder="Enter your email" style="text-transform:none">
   </div>
   <div class="input-box">
     <label>Password</label>
-    <input type="password" id="regPassword" placeholder="Min 6 characters">
+    <input type="password" id="regPassword" placeholder="Min 6 characters" style="text-transform:none">
   </div>
   <div class="input-box">
     <label>Confirm Password</label>
-    <input type="password" id="regConfirmPassword" placeholder="Re-enter password">
+    <input type="password" id="regConfirmPassword" placeholder="Re-enter password" style="text-transform:none">
   </div>
   <div class="input-box">
     <label>Referral Code <span style="color:#666;font-size:13px;">(Optional)</span></label>
-    <input type="text" id="regReferralCode" placeholder="Enter friend's code e.g. RUP-8X4K9M">
+    <input type="text" id="regReferralCode" placeholder="Enter friend's code e.g. RUP-8X4K9M" maxlength="10">
   </div>
   <div class="referral-info" id="referralInfo" style="display:none">
     Referred by: <span id="referrerName">Loading...</span>
@@ -181,15 +181,16 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     const urlParams = new URLSearchParams(window.location.search);
     const refCode = urlParams.get('ref');
     if(refCode) {
-      localStorage.setItem('ruppy_referredBy', refCode);
+      const cleanCode = refCode.trim().toUpperCase();
+      localStorage.setItem('ruppy_referredBy', cleanCode);
       setTimeout(() => {
         if(document.getElementById('regReferralCode')) {
-          document.getElementById('regReferralCode').value = refCode;
-          checkReferralCode(refCode, 'reg');
+          document.getElementById('regReferralCode').value = cleanCode;
+          checkReferralCode(cleanCode, 'reg');
         }
         if(document.getElementById('loginReferralCode')) {
-          document.getElementById('loginReferralCode').value = refCode;
-          checkReferralCode(refCode, 'login');
+          document.getElementById('loginReferralCode').value = cleanCode;
+          checkReferralCode(cleanCode, 'login');
         }
       }, 500);
     }
@@ -207,8 +208,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
 
   // ✅ FIX 2: पुराना UID Code चेक करके नया बना दो
   function isValidReferralCode(code) {
-    // अगर Code RUP- से Start नहीं होता या 12 से बड़ा है तो पुराना UID है
-    if(!code || code.length > 12 ||!code.startsWith('RUP-')) {
+    if(!code || code.length!== 10 ||!code.startsWith('RUP-')) {
       return false;
     }
     return true;
@@ -221,12 +221,14 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
 
     if(regRefInput) {
       regRefInput.addEventListener('input', function(e) {
-        checkReferralCode(e.target.value.trim().toUpperCase(), 'reg');
+        e.target.value = e.target.value.toUpperCase();
+        checkReferralCode(e.target.value.trim(), 'reg');
       });
     }
     if(loginRefInput) {
       loginRefInput.addEventListener('input', function(e) {
-        checkReferralCode(e.target.value.trim().toUpperCase(), 'login');
+        e.target.value = e.target.value.toUpperCase();
+        checkReferralCode(e.target.value.trim(), 'login');
       });
     }
   });
@@ -236,7 +238,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     const infoBox = document.getElementById(type === 'reg'? 'referralInfo' : 'loginReferralInfo');
     const nameSpan = document.getElementById(type === 'reg'? 'referrerName' : 'loginReferrerName');
 
-    if(!code || code.length < 6) {
+    if(!code || code.length < 10) {
       infoBox.style.display = 'none';
       return;
     }
@@ -250,7 +252,6 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
         showSuccess(type === 'reg'? 'regSuccessMsg' : 'successMsg', 'Valid referral code! 20 bonus points');
       } else {
         infoBox.style.display = 'none';
-        // Login में Error मत दिखा - Register में दिखा
         if(type === 'reg') {
           showError('regErrorMsg', 'Invalid referral code');
         }
@@ -258,11 +259,16 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     } catch(err) {
       console.error('Referral Check Error:', err);
       infoBox.style.display = 'none';
-      // Index Error आए तो Silent रह - User को Disturb मत कर
     }
   }
 
   window.signInWithGoogle = async function() {
+    // Google Login से पहले Manual Code Check कर
+    const manualCode = document.getElementById('loginReferralCode').value.trim().toUpperCase();
+    if(manualCode && manualCode.startsWith('RUP-') && manualCode.length === 10) {
+      localStorage.setItem('ruppy_referredBy', manualCode);
+    }
+
     try {
       const result = await auth.signInWithPopup(provider);
       await handleGoogleUser(result.user);
@@ -305,13 +311,13 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
       createdAt: Date.now()
     };
 
-    // ✅ FIX 4: पुराने User का UID वाला Code बदल दो नए RUP- वाले से
+    // पुराने User का UID वाला Code बदल दो नए RUP- वाले से
     if(!isValidReferralCode(userData.myReferralCode)) {
       userData.myReferralCode = generateUniqueCode();
     }
 
     // अगर नया User है और Refer Code है तो Bonus दो
-    if(!snapshot.exists() && userData.referredBy) {
+    if(!snapshot.exists() && userData.referredBy && userData.referredBy.startsWith('RUP-')) {
       userData.balance = 20;
       userData.referralClaimed = true;
       await updateReferrerRank(userData.referredBy, uid);
@@ -319,6 +325,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
 
     await db.ref('users/' + uid).set(userData);
     localStorage.setItem('ruppy_user', JSON.stringify(userData));
+    localStorage.removeItem('ruppy_referredBy');
     window.location.replace('app.html');
   }
 
@@ -369,7 +376,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
 
     try {
       let validReferrer = null;
-      if(referralCode) {
+      if(referralCode && referralCode.startsWith('RUP-')) {
         const refSnapshot = await db.ref('users').orderByChild('myReferralCode').equalTo(referralCode).once('value');
         if(!refSnapshot.exists()) {
           showError('regErrorMsg', 'Invalid referral code');
@@ -414,7 +421,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     }
   }
 
-  // ✅ FIX 5: Login में Referral Code Silent Check - Invalid पे Block मत कर
+  // ✅ FIX 4: Login में Referral Code Silent Check - Search करके आने पे भी काम करेगा
   window.handleLogin = async function() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
@@ -450,13 +457,13 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
         createdAt: Date.now()
       };
 
-      // ✅ FIX 6: पुराने User के पास UID वाला Code है तो नया RUP- वाला बना दो
+      // पुराने User के पास UID वाला Code है तो नया RUP- वाला बना दो
       if(!isValidReferralCode(userData.myReferralCode)) {
         userData.myReferralCode = generateUniqueCode();
       }
 
-      // ✅ FIX 7: Login में Referral Optional - गलत Code पे Login Block मत करो, Silent Ignore
-      if(referralCode &&!userData.referralClaimed &&!userData.referredBy) {
+      // ✅ MAIN FIX: Login में Referral Optional - गलत Code पे Login Block मत करो
+      if(referralCode && referralCode.startsWith('RUP-') && referralCode.length === 10 &&!userData.referralClaimed &&!userData.referredBy) {
         try {
           const refSnapshot = await db.ref('users').orderByChild('myReferralCode').equalTo(referralCode).once('value');
           if(refSnapshot.exists() && Object.keys(refSnapshot.val())[0]!== uid) {
@@ -469,7 +476,6 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
         } catch(e) {
           console.log('Referral check failed, continuing login');
         }
-        // अपना Code या Invalid Code पे कुछ मत करो - Silent Ignore, Login हो जाने दे
       }
 
       await db.ref('users/' + uid).update(userData);
