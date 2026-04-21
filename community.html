@@ -180,12 +180,9 @@ function waitForConfig() {
 
 let db;
 let currentUser = "Guest";
-let currentUserId = ""; // ✅ FIX 1: UID Variable
+let currentUserId = "";
 let allLoadedPosts = [];
-let isLoadingMore = false;
-let noMorePosts = false;
 let claimedPosts = new Set();
-const POSTS_PER_PAGE = 20;
 
 async function initFeed() {
   await waitForConfig();
@@ -193,14 +190,13 @@ async function initFeed() {
 
   db = window.db || getDatabase();
   currentUser = window.userData.name || 'Guest';
-  currentUserId = window.userData.uid || 'guest'; // ✅ FIX 1: UID Set
+  currentUserId = window.userData.uid || 'guest';
 
   window.updateBalanceBox();
   window.loadProfileEverywhere();
 
-  loadPosts(true);
+  listenToPosts(); // ✅ FIX: Real-time Listener
   setupEventListeners();
-  setupInfiniteScroll();
 }
 
 initFeed();
@@ -285,7 +281,6 @@ async function markPostClaimed(postId){
   return true;
 }
 
-// ✅ FIX 2: Word Count Check Added
 function countWords(text){
   return text.trim().split(/\s+/).filter(word => word.length > 0).length;
 }
@@ -298,7 +293,7 @@ async function updateRewardBanner(){
 
   if(!window.userData || window.userData.uid === "guest"){
     bannerText.textContent = 'Login to earn rewards';
-    postBtn.disabled = wordCount < 200 &&!selectedFile; // ✅ FIX 2
+    postBtn.disabled = wordCount < 200 &&!selectedFile;
     return;
   }
 
@@ -316,7 +311,7 @@ async function updateRewardBanner(){
   } else {
     bannerText.textContent = `🎁 +10 RUPPY Coin reward per post | ${limitCheck.left}/3 left`;
     postBtn.textContent = `Post ${limitCheck.count + 1}/3`;
-    postBtn.disabled = wordCount < 200 &&!selectedFile; // ✅ FIX 2
+    postBtn.disabled = wordCount < 200 &&!selectedFile;
   }
 }
 
@@ -387,7 +382,6 @@ window.createPost = async function(){
   let text = document.getElementById('postText').value.trim();
   let wordCount = countWords(text);
 
-  // ✅ FIX 2: 200 Word Check
   if(wordCount < 200 &&!selectedFile){
     alert('Minimum 200 words required to post');
     return;
@@ -497,58 +491,26 @@ window.createPost = async function(){
   await updateRewardBanner();
 }
 
-async function loadPosts(isInitial = false){
-  if(isLoadingMore || noMorePosts) return;
-  isLoadingMore = true;
-
-  let postsQuery;
-  if(isInitial){
-    allLoadedPosts = [];
-    postsQuery = query(ref(db, 'posts'), orderByChild('time'), limitToLast(POSTS_PER_PAGE));
-  } else {
-    if(allLoadedPosts.length === 0) {
-      isLoadingMore = false;
-      return;
+// ✅ FIX: Real-time Listener - Like दबाते ही UI Update होगा
+function listenToPosts(){
+  const postsRef = ref(db, 'posts');
+  onValue(postsRef, (snapshot) => {
+    let posts = [];
+    if(snapshot.exists()){
+      snapshot.forEach((childSnapshot) => {
+        let post = { id: childSnapshot.key,...childSnapshot.val(), showAllComments: false };
+        if((post.reports || 0) < 3) {
+          posts.push(post);
+        }
+      });
+      posts.sort((a,b) => b.time - a.time);
+      allLoadedPosts = posts;
+      renderFeed(allLoadedPosts);
+    } else {
+      renderFeed([]);
     }
-    const lastTime = allLoadedPosts[allLoadedPosts.length - 1].time;
-    postsQuery = query(ref(db, 'posts'), orderByChild('time'), endBefore(lastTime), limitToLast(POSTS_PER_PAGE));
-  }
-
-  const snapshot = await get(postsQuery);
-  let posts = [];
-  if(snapshot.exists()){
-    snapshot.forEach((childSnapshot) => {
-      let post = { id: childSnapshot.key,...childSnapshot.val(), showAllComments: false };
-      if((post.reports || 0) < 3) {
-        posts.push(post);
-      }
-    });
-    posts.reverse();
-    if(posts.length < POSTS_PER_PAGE) noMorePosts = true;
-  } else {
-    noMorePosts = true;
-  }
-
-  if(isInitial){
-    allLoadedPosts = posts;
-  } else {
-    allLoadedPosts = [...allLoadedPosts,...posts];
-  }
-
-  localStorage.setItem('ruppy_last_posts', JSON.stringify(allLoadedPosts));
-  await updateRewardBanner();
-  renderFeed(allLoadedPosts);
-  isLoadingMore = false;
-}
-
-function setupInfiniteScroll(){
-  const observer = new IntersectionObserver((entries) => {
-    if(entries[0].isIntersecting &&!isLoadingMore &&!noMorePosts){
-      loadPosts(false);
-    }
-  }, { rootMargin: '400px' });
-
-  observer.observe(document.getElementById('scrollTrigger'));
+    updateRewardBanner();
+  });
 }
 
 function renderFeed(posts){
@@ -575,7 +537,7 @@ function renderFeed(posts){
     }
 
     let timeAgo = getTimeAgo(post.time);
-    let isLiked = post.likedBy && post.likedBy[currentUserId]; // ✅ FIX 1: UID Check
+    let isLiked = post.likedBy && post.likedBy[currentUserId]; // ✅ UID Check
     let commentsToShow = post.showAllComments? (post.comments || []) : (post.comments || []).slice(-2);
     let hiddenCount = (post.comments || []).length - commentsToShow.length;
 
@@ -630,12 +592,6 @@ function renderFeed(posts){
       </div>
     </div>`;
   });
-
-  if(isLoadingMore){
-    feed.innerHTML += `<div class="loading">Loading more posts...</div>`;
-  } else if(noMorePosts && allLoadedPosts.length > 0){
-    feed.innerHTML += `<div class="end-message">You're all caught up ✅</div>`;
-  }
 }
 
 function getTimeAgo(time){
@@ -651,7 +607,7 @@ function getTimeAgo(time){
   return new Date(time).toLocaleDateString();
 }
 
-// ✅✅✅ FIX 1: Like Button - UID Use किया
+// ✅ FIX: Like Button अब 100% चलेगा
 window.likePost = async function(id){
   if(!window.userData || window.userData.uid === "guest" ||!currentUserId){
     alert('Please login to like posts');
@@ -663,14 +619,14 @@ window.likePost = async function(id){
   const post = snapshot.val();
   if(!post) return;
 
-  let isLiked = post.likedBy && post.likedBy[currentUserId]; // ✅ UID Check
+  let isLiked = post.likedBy && post.likedBy[currentUserId];
   let updates = {};
   if(isLiked){
     updates[`posts/${id}/likes`] = Math.max(0, (post.likes || 0) - 1);
-    updates[`posts/${id}/likedBy/${currentUserId}`] = null; // ✅ UID Path
+    updates[`posts/${id}/likedBy/${currentUserId}`] = null;
   } else {
     updates[`posts/${id}/likes`] = (post.likes || 0) + 1;
-    updates[`posts/${id}/likedBy/${currentUserId}`] = true; // ✅ UID Path
+    updates[`posts/${id}/likedBy/${currentUserId}`] = true;
   }
   await update(ref(db), updates);
 }
@@ -681,13 +637,19 @@ window.toggleComments = function(id){
 }
 
 window.showAllComments = function(id){
-  let cached = JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]');
-  cached = cached.map(p => p.id === id? {...p, showAllComments: true} : p);
-  localStorage.setItem('ruppy_last_posts', JSON.stringify(cached));
-  renderFeed(cached);
+  const postIndex = allLoadedPosts.findIndex(p => p.id === id);
+  if(postIndex!== -1){
+    allLoadedPosts[postIndex].showAllComments = true;
+    renderFeed(allLoadedPosts);
+  }
 }
 
 window.addComment = async function(id){
+  if(!window.userData || window.userData.uid === "guest"){
+    alert('Please login to comment');
+    return;
+  }
+
   let input = document.getElementById(`commentInput-${id}`);
   let text = input.value.trim();
   if(!text) return;
@@ -699,7 +661,7 @@ window.addComment = async function(id){
   const snapshot = await get(postRef);
   const post = snapshot.val();
   const comments = post.comments || [];
-  comments.push({user: currentUser, userDp: window.userData?.dp || null, text: text, time: Date.now()});
+  comments.push({user: currentUser, userDp: window.userData?.dp || null, userId: currentUserId, text: text, time: Date.now()});
   await update(postRef, { comments: comments });
   input.value = '';
 }
