@@ -161,14 +161,28 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
 <script type="module">
   import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-  // ✅ FIX 1: Firebase से Fresh Data लाओ - referral.html वाला ही Code
-  async function loadProfile(){
-    await new Promise(resolve => setTimeout(resolve, 1200)); // config.js Load होने दो
+  // ✅ MAIN FIX: config.js का Wait + Same Code as referral.html
+  async function loadProfile() {
+    await new Promise(resolve => setTimeout(resolve, 1000)); // config.js Load होने दो
 
-    const uid = window.userData?.uid;
-    if(!uid) {
+    let uid = window.userData?.uid;
+
+    if (!uid) {
+      const auth = getAuth();
+      await new Promise(resolve => {
+        const unsubscribe = onAuthStateChanged(auth, user => {
+          unsubscribe();
+          uid = user?.uid || null;
+          resolve();
+        });
+      });
+    }
+
+    if (!uid) {
+      document.getElementById('refCode').innerText = 'LOGIN-FIRST';
+      document.getElementById('userId').innerText = 'ID: LOGIN-FIRST';
       showToast('Please login first', 'error');
       setTimeout(() => window.location.href = 'index.html', 1500);
       return;
@@ -179,16 +193,14 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
       const userRef = ref(db, `users/${uid}`);
       const snapshot = await get(userRef);
 
-      if(snapshot.exists()){
+      if (snapshot.exists()) {
         const data = snapshot.val();
 
-        // ✅ FIX 2: myReferralCode Primary - यही referral.html में है
-        const code = data.myReferralCode || data.referralCode || 'LOGIN-FIRST';
-
-        // ✅ FIX 3: User ID छोटी और साफ - RUP-XXXX format
+        // ✅ यही Line Fix है - myReferralCode पहले चेक करो
+        const code = data.myReferralCode || data.referralCode || 'NOT-FOUND';
         const shortId = data.shortId || `RUP-${uid.substring(0,4).toUpperCase()}`;
 
-        if(data.dp){
+        if (data.dp) {
           document.getElementById('avatarBox').innerHTML = `<img src="${data.dp}" alt="Profile">`;
         } else {
           document.getElementById('avatarBox').innerHTML = `<span>${(data.name || 'U').charAt(0).toUpperCase()}</span>`;
@@ -198,13 +210,18 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
         document.getElementById('userId').innerText = 'ID: ' + shortId;
         document.getElementById('refCode').innerText = code;
 
-        // Local Update कर दो
-        window.userData = {...window.userData,...data, myReferralCode: code, shortId: shortId};
+        window.userData = {...window.userData,...data, myReferralCode: code, shortId: shortId, uid: uid};
         localStorage.setItem('ruppy_user_cache', JSON.stringify(window.userData));
+
+        console.log('✅ Settings Code:', code);
+      } else {
+        document.getElementById('refCode').innerText = 'ERROR';
+        showToast('User data not found', 'error');
       }
-    } catch(err) {
+    } catch (err) {
       console.error('Load Error:', err);
-      showToast('Failed to load data', 'error');
+      document.getElementById('refCode').innerText = 'ERROR';
+      showToast('Failed to load: ' + err.message, 'error');
     }
   }
 
@@ -222,12 +239,12 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     showToast('This feature is Coming Soon! 🚀', 'info');
   }
 
-  // ✅ FIX 4: सिर्फ Code Copy करो - पूरा Share Text नहीं
+  // ✅ सिर्फ Code Copy करो
   window.copyRefCode = function(){
     const code = document.getElementById('refCode').innerText.trim();
 
-    if(!code || code === 'Loading...' || code === 'LOGIN-FIRST' || code === '-'){
-      showToast('Code not ready yet', 'error');
+    if(!code || code === 'Loading...' || code === 'LOGIN-FIRST' || code === '-' || code === 'ERROR' || code === 'NOT-FOUND'){
+      showToast('Code not ready: ' + code, 'error');
       return;
     }
 
@@ -246,9 +263,12 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     });
   }
 
-  // ✅ FIX 5: User ID Copy - छोटी ID
   window.copyUserId = function(){
     const idText = document.getElementById('userId').innerText.replace('ID: ', '');
+    if(idText === 'Loading...' || idText === 'LOGIN-FIRST') {
+      showToast('ID not ready', 'error');
+      return;
+    }
     navigator.clipboard.writeText(idText).then(() => {
       showToast('✅ ID Copied: ' + idText, 'success');
     });
@@ -257,8 +277,8 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   window.goPage = function(page){ window.location.href = page; }
 
   window.openEditProfile = function(){
-    document.getElementById('editName').value = window.userData.name || '';
-    document.getElementById('editBirthday').value = window.userData.birthday || '';
+    document.getElementById('editName').value = window.userData?.name || '';
+    document.getElementById('editBirthday').value = window.userData?.birthday || '';
     document.getElementById('editModal').classList.add('active');
   }
 
