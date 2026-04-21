@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RUP Hub</title>
-<script type="module" src="config.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
@@ -19,13 +18,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .stat-card{background:linear-gradient(135deg,#1a1a1a,#0d0d0d);border:1px solid #252525;border-radius:16px;padding:12px 16px;min-width:110px;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,0.5)}
 .stat-card h3{font-size:20px;font-weight:700;color:#FFD700;margin-bottom:2px}
 .stat-card p{font-size:11px;color:#888}
-.stat-card.reward-card{min-width:160px;padding:14px 16px}
-.stat-card.reward-card.reward-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.stat-card.reward-card.reward-top p{font-size:11px;color:#888}
-.stat-card.reward-card.reward-top h3{font-size:20px;font-weight:700;color:#FFD700;margin:0}
-.stat-card.reward-card.reward-bottom p{font-size:10px;color:#666;margin-bottom:2px}
-.stat-card.reward-card.reward-bottom h3{font-size:24px;font-weight:800;color:#FFD700;line-height:1;margin-bottom:2px}
-.stat-card.reward-card.reward-bottom span{font-size:11px;color:#FFD700;font-weight:700}
 .reward-banner{margin:0 20px 16px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:10px}
 .reward-banner span{font-size:14px;color:#92400E;font-weight:700}
 .create-card{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:20px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
@@ -85,6 +77,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .empty-hub button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:14px 28px;color:#000;font-weight:700;font-size:15px;cursor:pointer}
 #fileInput{display:none}
 .loading{text-align:center;padding:40px;color:#666}
+.error-box{background:#3f1a1a;border:1px solid #7f1d1d;border-radius:12px;padding:16px;margin:20px;text-align:center;color:#fca5a5}
 </style>
 </head>
 <body>
@@ -100,16 +93,13 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <div class="stats-bar">
-  <div class="stat-card reward-card">
-    <div class="reward-top">
-      <p>Task Balance:</p>
-      <h3 id="taskBalance">0</h3>
-    </div>
-    <div class="reward-bottom">
-      <p>TOTAL BALANCE</p>
-      <h3 id="totalBalance">0</h3>
-      <span>RUP</span>
-    </div>
+  <div class="stat-card">
+    <p>Task Balance</p>
+    <h3 id="taskBalance">0</h3>
+  </div>
+  <div class="stat-card">
+    <p>Total Balance</p>
+    <h3 id="totalBalance">0</h3>
   </div>
 </div>
 
@@ -119,7 +109,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
 <div class="create-card">
   <div class="create-top">
-    <div class="create-avatar" id="userAvatar">U</div>
+    <div class="create-avatar" id="userAvatar">G</div>
     <textarea id="postText" placeholder="Share your RUPPY update..." rows="2"></textarea>
   </div>
   <div class="create-actions">
@@ -127,7 +117,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
       <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📷</button>
       <button class="icon-btn" onclick="addEmoji()">😊</button>
     </div>
-    <button class="post-btn" id="postBtn" onclick="createPost()" disabled>Post</button>
+    <button class="post-btn" id="postBtn" onclick="createPost()">Post</button>
   </div>
   <input type="file" id="fileInput" accept="image/*,video/*">
   <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
@@ -152,7 +142,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
     <div class="icon">🏆</div>
     <span>Ranking</span>
   </div>
-  <div class="nav-item active" onclick="location.href='community.html'">
+  <div class="nav-item active">
     <div class="icon">📝</div>
     <span>Feed</span>
   </div>
@@ -164,7 +154,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, push, onValue, update, get, child, query, orderByChild, equalTo, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, update, get, query, orderByChild, equalTo, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
@@ -176,33 +166,17 @@ const firebaseConfig = {
   appId: "1:132064610854:web:3c217eaf3618007f5934e7"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-let currentUser = "Guest";
-
-async function syncBalanceFromConfig(){
-  let attempts = 0;
-  while((!window.userData || window.userData.uid === null) && attempts < 20){
-    await new Promise(r => setTimeout(r, 100));
-    attempts++;
-  }
-  if(window.userData){
-    document.getElementById('taskBalance').textContent = window.userData.taskBalance || 0;
-    document.getElementById('totalBalance').textContent = window.userData.balance || 0;
-    document.getElementById('userAvatar').textContent = (window.userData.name || 'U')[0].toUpperCase();
-    if(window.userData.dp){
-      document.getElementById('userAvatar').innerHTML = `<img src="${window.userData.dp}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">`;
-    }
-    currentUser = window.userData.name || 'User';
-  } else {
-    document.getElementById('limitText').textContent = 'Login to post & earn rewards';
-    document.getElementById('postBtn').disabled = true;
-  }
-  await getTodayPosts();
-  updateRewardBanner();
+let app, db;
+try {
+  app = initializeApp(firebaseConfig);
+  db = getDatabase(app);
+  console.log("Firebase Connected");
+} catch(e) {
+  document.getElementById('feed').innerHTML = `<div class="error-box">Firebase Connection Failed<br>${e.message}</div>`;
 }
-syncBalanceFromConfig();
+
+let currentUser = "Guest_" + Math.floor(Math.random()*1000);
+let userData = { name: currentUser, uid: "guest", balance: 0, taskBalance: 0, dp: null };
 
 const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
 function checkContent(text){
@@ -220,19 +194,12 @@ function getTodayKey(){
 
 async function getTodayPosts(){
   const todayKey = getTodayKey();
-
-  if(!currentUser || currentUser === "Guest"){
-    todayPostCount = 0;
-    todayPostsData = [];
-    return todayPostsData;
-  }
-
   const postsRef = ref(db, 'posts');
   const userPostsQuery = query(postsRef, orderByChild('user'), equalTo(currentUser));
-  const snapshot = await get(userPostsQuery);
+  const snapshot = await get(userPostsQuery).catch(()=>null);
 
   todayPostsData = [];
-  if(snapshot.exists()){
+  if(snapshot && snapshot.exists()){
     snapshot.forEach(child => {
       let post = {id: child.key,...child.val()};
       if(post.postDateKey === todayKey){
@@ -251,17 +218,10 @@ function getUnclaimedPost(){
 async function markPostClaimed(postId){
   const postRef = ref(db, `posts/${postId}`);
   await update(postRef, { claimed: true });
-
-  if(typeof window.userData!== 'undefined' && typeof window.saveRuppyData!== 'undefined'){
-    window.userData.balance = Number(window.userData.balance) || 0;
-    window.userData.balance += 10;
-
-    window.userData.taskBalance = Number(window.userData.taskBalance) || 0;
-    window.userData.taskBalance += 10;
-    document.getElementById('taskBalance').textContent = window.userData.taskBalance;
-
-    await window.saveRuppyData(window.userData);
-  }
+  userData.balance += 10;
+  userData.taskBalance += 10;
+  document.getElementById('taskBalance').textContent = userData.taskBalance;
+  document.getElementById('totalBalance').textContent = userData.balance;
 }
 
 function updateRewardBanner(){
@@ -269,12 +229,6 @@ function updateRewardBanner(){
   let unclaimed = getUnclaimedPost();
   let bannerText = document.getElementById('limitText');
   let postBtn = document.getElementById('postBtn');
-
-  if(!currentUser || currentUser === "Guest"){
-    bannerText.textContent = 'Login to post & earn rewards';
-    postBtn.disabled = true;
-    return;
-  }
 
   if(count >= 3){
     bannerText.textContent = `Daily limit reached. Come back tomorrow`;
@@ -306,7 +260,7 @@ document.getElementById('fileInput').onchange = function(e){
       let preview = document.getElementById('preview');
       preview.style.display = 'block';
       preview.innerHTML = selectedFile.type.includes('video')
-? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
+       ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
         : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
       updateRewardBanner();
     }
@@ -328,23 +282,18 @@ window.claimPost = async function(postId){
   alert('10 RUP Claimed! 🎉');
   await getTodayPosts();
   updateRewardBanner();
-  renderFeed(JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]'));
+  let cached = JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]');
+  renderFeed(cached);
 }
 
 window.createPost = async function(){
-  if(currentUser === "Guest"){
-    alert('Please login to create posts');
-    return;
-  }
-
   await getTodayPosts();
   if(todayPostCount >= 3){
     updateRewardBanner();
     return;
   }
-
   if(getUnclaimedPost()){
-    alert('Claim Post');
+    alert('Claim your last post first');
     return;
   }
 
@@ -367,20 +316,19 @@ window.createPost = async function(){
       const data = new FormData();
       data.append("file", selectedFile);
       data.append("upload_preset", "ruppy_posts");
-
       const res = await fetch(`https://api.cloudinary.com/v1_1/dr12i9orc/image/upload`, {
         method: "POST",
         body: data
       });
-
       const result = await res.json();
+      if(result.error) throw new Error(result.error.message);
       mediaUrl = result.secure_url;
       mediaType = selectedFile.type.includes('video')? 'video' : 'image';
     }
 
-    const newPostRef = await push(ref(db, 'posts'), {
+    await push(ref(db, 'posts'), {
       user: currentUser,
-      userDp: (typeof window.userData!== 'undefined' && window.userData.dp)? window.userData.dp : null,
+      userDp: userData.dp,
       text: text,
       media: mediaUrl,
       mediaType: mediaType,
@@ -408,18 +356,19 @@ window.createPost = async function(){
   updateRewardBanner();
 }
 
+// Main Feed Loader - यही Fix है
 const postsQuery = query(ref(db, 'posts'), limitToLast(20));
 onValue(postsQuery, async (snapshot) => {
-  console.log('Firebase data received');
+  console.log('Posts loaded:', snapshot.exists());
   let posts = [];
-
-  snapshot.forEach((childSnapshot) => {
-    let post = { id: childSnapshot.key,...childSnapshot.val(), showAllComments: false };
-    if(post.reports < 3) {
-      posts.unshift(post);
-    }
-  });
-
+  if(snapshot.exists()){
+    snapshot.forEach((childSnapshot) => {
+      let post = { id: childSnapshot.key,...childSnapshot.val(), showAllComments: false };
+      if((post.reports || 0) < 3) {
+        posts.unshift(post);
+      }
+    });
+  }
   localStorage.setItem('ruppy_last_posts', JSON.stringify(posts));
   await getTodayPosts();
   renderFeed(posts);
@@ -427,15 +376,21 @@ onValue(postsQuery, async (snapshot) => {
 }, (error) => {
   console.error('Firebase Error:', error);
   document.getElementById('feed').innerHTML = `
-    <div class="empty-hub">
-      <h3>Error Loading Posts</h3>
-      <p>Check your internet or Firebase rules</p>
+    <div class="error-box">
+      <b>Firebase Read Error</b><br>
+      ${error.message}<br><br>
+      Fix: Firebase Console → Database → Rules में ".read": true कर दे
     </div>`;
 });
 
+// Initial Load
+document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
+document.getElementById('taskBalance').textContent = userData.taskBalance;
+document.getElementById('totalBalance').textContent = userData.balance;
+updateRewardBanner();
+
 function renderFeed(posts){
   let feed = document.getElementById('feed');
-
   if(posts.length === 0){
     feed.innerHTML = `
       <div class="empty-hub">
@@ -481,11 +436,9 @@ function renderFeed(posts){
         </div>
         <button class="post-more" onclick="reportPost('${post.id}')">⋯</button>
       </div>
-
       ${post.text? `<div class="post-content">${post.text}</div>` : ''}
       ${mediaHTML}
       ${claimBtnHTML}
-
       <div class="post-footer">
         <div class="post-stats">
           <button class="stat-btn ${isLiked? 'liked' : ''}" onclick="likePost('${post.id}')">
@@ -497,10 +450,8 @@ function renderFeed(posts){
         </div>
         <button class="share-btn" onclick="sharePost('${post.id}')">Share</button>
       </div>
-
       <div class="comments-box" id="comments-${post.id}">
         ${hiddenCount > 0 &&!post.showAllComments? `<div class="view-more" onclick="showAllComments('${post.id}')">View ${hiddenCount} more comments</div>` : ''}
-
         ${commentsToShow.map(c => `
           <div class="comment">
             <div class="comment-avatar">${c.userDp? `<img src="${c.userDp}">` : (c.user || 'U')[0].toUpperCase()}</div>
@@ -509,7 +460,6 @@ function renderFeed(posts){
               <span>${c.text}</span>
             </div>
           </div>`).join('')}
-
         <div class="comment-input">
           <input type="text" placeholder="Add a comment..." id="commentInput-${post.id}" onkeypress="if(event.key==='Enter') addComment('${post.id}')">
           <button onclick="addComment('${post.id}')">Send</button>
@@ -533,17 +483,11 @@ function getTimeAgo(time){
 }
 
 window.likePost = async function(id){
-  if(currentUser === "Guest"){
-    alert('Please login to like posts');
-    return;
-  }
   const postRef = ref(db, `posts/${id}`);
   const snapshot = await get(postRef);
   const post = snapshot.val();
-
   let isLiked = post.likedBy && post.likedBy[currentUser];
   let updates = {};
-
   if(isLiked){
     updates[`posts/${id}/likes`] = (post.likes || 0) - 1;
     updates[`posts/${id}/likedBy/${currentUser}`] = null;
@@ -551,7 +495,6 @@ window.likePost = async function(id){
     updates[`posts/${id}/likes`] = (post.likes || 0) + 1;
     updates[`posts/${id}/likedBy/${currentUser}`] = true;
   }
-
   await update(ref(db), updates);
 }
 
@@ -561,14 +504,13 @@ window.toggleComments = function(id){
 }
 
 window.showAllComments = function(id){
-  document.getElementById(`comments-${id}`).style.display = 'block';
+  let cached = JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]');
+  cached = cached.map(p => p.id === id? {...p, showAllComments: true} : p);
+  localStorage.setItem('ruppy_last_posts', JSON.stringify(cached));
+  renderFeed(cached);
 }
 
 window.addComment = async function(id){
-  if(currentUser === "Guest"){
-    alert('Please login to comment');
-    return;
-  }
   let input = document.getElementById(`commentInput-${id}`);
   let text = input.value.trim();
   if(!text) return;
@@ -576,14 +518,11 @@ window.addComment = async function(id){
     alert('Inappropriate content');
     return;
   }
-
   const postRef = ref(db, `posts/${id}`);
   const snapshot = await get(postRef);
   const post = snapshot.val();
   const comments = post.comments || [];
-
-  comments.push({user: currentUser, userDp: (typeof window.userData!== 'undefined' && window.userData.dp)? window.userData.dp : null, text: text, time: Date.now()});
-
+  comments.push({user: currentUser, userDp: userData.dp, text: text, time: Date.now()});
   await update(postRef, { comments: comments });
   input.value = '';
 }
@@ -594,7 +533,6 @@ window.sharePost = function(id){
     text: 'Check this post on RUPPY Hub',
     url: window.location.href
   };
-
   if(navigator.share){
     navigator.share(shareData).catch(err => console.log('Share failed'));
   } else {
@@ -608,7 +546,6 @@ window.reportPost = async function(id){
     const postRef = ref(db, `posts/${id}`);
     const snapshot = await get(postRef);
     const post = snapshot.val();
-
     await update(postRef, { reports: (post.reports || 0) + 1 });
     alert('Reported');
   }
