@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RUP Hub</title>
+<!-- config.js सबसे पहले Load होगा - यही Balance संभालता है -->
+<script type="module" src="config.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
@@ -77,7 +79,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .empty-hub button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:14px 28px;color:#000;font-weight:700;font-size:15px;cursor:pointer}
 #fileInput{display:none}
 .loading{text-align:center;padding:40px;color:#666}
-.error-box{background:#3f1a1a;border:1px solid #7f1d1d;border-radius:12px;padding:16px;margin:20px;text-align:center;color:#fca5a5}
 </style>
 </head>
 <body>
@@ -109,7 +110,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
 <div class="create-card">
   <div class="create-top">
-    <div class="create-avatar" id="userAvatar">G</div>
+    <div class="create-avatar" id="userAvatar">U</div>
     <textarea id="postText" placeholder="Share your RUPPY update..." rows="2"></textarea>
   </div>
   <div class="create-actions">
@@ -117,7 +118,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
       <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📷</button>
       <button class="icon-btn" onclick="addEmoji()">😊</button>
     </div>
-    <button class="post-btn" id="postBtn" onclick="createPost()">Post</button>
+    <button class="post-btn" id="postBtn" onclick="createPost()" disabled>Post</button>
   </div>
   <input type="file" id="fileInput" accept="image/*,video/*">
   <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
@@ -153,30 +154,46 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+// config.js से Firebase, db, userData सब आ जाएगा - दुबारा Init नहीं करना
 import { getDatabase, ref, push, onValue, update, get, query, orderByChild, equalTo, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
-  authDomain: "ruppynetwork-50362.firebaseapp.com",
-  databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
-  projectId: "ruppynetwork-50362",
-  storageBucket: "ruppynetwork-50362.appspot.com",
-  messagingSenderId: "132064610854",
-  appId: "1:132064610854:web:3c217eaf3618007f5934e7"
-};
-
-let app, db;
-try {
-  app = initializeApp(firebaseConfig);
-  db = getDatabase(app);
-  console.log("Firebase Connected");
-} catch(e) {
-  document.getElementById('feed').innerHTML = `<div class="error-box">Firebase Connection Failed<br>${e.message}</div>`;
+// config.js Load होने का Wait करो - यही Balance Fix है
+function waitForConfig() {
+  return new Promise(resolve => {
+    if (window.userData && window.updateBalanceBox) {
+      resolve();
+    } else {
+      const interval = setInterval(() => {
+        if (window.userData && window.updateBalanceBox) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    }
+  });
 }
 
-let currentUser = "Guest_" + Math.floor(Math.random()*1000);
-let userData = { name: currentUser, uid: "guest", balance: 0, taskBalance: 0, dp: null };
+let db;
+let currentUser = "Guest";
+
+async function initFeed() {
+  await waitForConfig(); // config.js का Wait - यही Main Fix है
+  console.log("Config.js Loaded, User:", window.userData.name);
+
+  // config.js से db ले लो
+  db = window.db || getDatabase();
+  currentUser = window.userData.name || 'Guest';
+
+  // config.js वाले Function Call करो - Balance Auto दिखेगा
+  window.updateBalanceBox();
+  window.loadProfileEverywhere();
+
+  // अब Feed Load करो
+  loadPosts();
+  setupEventListeners();
+}
+
+initFeed();
 
 const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
 function checkContent(text){
@@ -208,6 +225,7 @@ async function getTodayPosts(){
     });
   }
   todayPostCount = todayPostsData.length;
+  updateRewardBanner();
   return todayPostsData;
 }
 
@@ -215,13 +233,21 @@ function getUnclaimedPost(){
   return todayPostsData.find(p =>!p.claimed);
 }
 
+// config.js का saveRuppyData Use करो - Balance Auto Save होगा
 async function markPostClaimed(postId){
   const postRef = ref(db, `posts/${postId}`);
   await update(postRef, { claimed: true });
-  userData.balance += 10;
-  userData.taskBalance += 10;
-  document.getElementById('taskBalance').textContent = userData.taskBalance;
-  document.getElementById('totalBalance').textContent = userData.balance;
+
+  // config.js वाला Balance Update
+  if(window.userData && window.userData.uid && window.userData.uid!== "guest"){
+    window.userData.balance = (Number(window.userData.balance) || 0) + 10;
+    window.userData.taskBalance = (Number(window.userData.taskBalance) || 0) + 10;
+
+    // config.js का Save Function - यही Balance Sync करेगा
+    if(typeof window.saveRuppyData === 'function'){
+      await window.saveRuppyData(window.userData);
+    }
+  }
 }
 
 function updateRewardBanner(){
@@ -229,6 +255,12 @@ function updateRewardBanner(){
   let unclaimed = getUnclaimedPost();
   let bannerText = document.getElementById('limitText');
   let postBtn = document.getElementById('postBtn');
+
+  if(!window.userData || window.userData.uid === "guest"){
+    bannerText.textContent = 'Login to earn rewards';
+    postBtn.disabled =!document.getElementById('postText').value.trim() &&!selectedFile;
+    return;
+  }
 
   if(count >= 3){
     bannerText.textContent = `Daily limit reached. Come back tomorrow`;
@@ -248,23 +280,26 @@ function updateRewardBanner(){
 }
 
 let selectedFile = null;
-document.getElementById('postText').oninput = function(){
-  updateRewardBanner();
-}
 
-document.getElementById('fileInput').onchange = function(e){
-  selectedFile = e.target.files[0];
-  if(selectedFile){
-    let reader = new FileReader();
-    reader.onload = function(e){
-      let preview = document.getElementById('preview');
-      preview.style.display = 'block';
-      preview.innerHTML = selectedFile.type.includes('video')
-       ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
-        : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
-      updateRewardBanner();
+function setupEventListeners(){
+  document.getElementById('postText').oninput = function(){
+    updateRewardBanner();
+  }
+
+  document.getElementById('fileInput').onchange = function(e){
+    selectedFile = e.target.files[0];
+    if(selectedFile){
+      let reader = new FileReader();
+      reader.onload = function(e){
+        let preview = document.getElementById('preview');
+        preview.style.display = 'block';
+        preview.innerHTML = selectedFile.type.includes('video')
+        ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
+          : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
+        updateRewardBanner();
+      }
+      reader.readAsDataURL(selectedFile);
     }
-    reader.readAsDataURL(selectedFile);
   }
 }
 
@@ -281,12 +316,15 @@ window.claimPost = async function(postId){
   await markPostClaimed(postId);
   alert('10 RUP Claimed! 🎉');
   await getTodayPosts();
-  updateRewardBanner();
   let cached = JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]');
   renderFeed(cached);
 }
 
 window.createPost = async function(){
+  if(!window.userData || window.userData.uid === "guest"){
+    return alert('पहले Login करो');
+  }
+
   await getTodayPosts();
   if(todayPostCount >= 3){
     updateRewardBanner();
@@ -328,7 +366,7 @@ window.createPost = async function(){
 
     await push(ref(db, 'posts'), {
       user: currentUser,
-      userDp: userData.dp,
+      userDp: window.userData.dp || null,
       text: text,
       media: mediaUrl,
       mediaType: mediaType,
@@ -353,41 +391,33 @@ window.createPost = async function(){
   }
 
   await getTodayPosts();
-  updateRewardBanner();
 }
 
-// Main Feed Loader - यही Fix है
-const postsQuery = query(ref(db, 'posts'), limitToLast(20));
-onValue(postsQuery, async (snapshot) => {
-  console.log('Posts loaded:', snapshot.exists());
-  let posts = [];
-  if(snapshot.exists()){
-    snapshot.forEach((childSnapshot) => {
-      let post = { id: childSnapshot.key,...childSnapshot.val(), showAllComments: false };
-      if((post.reports || 0) < 3) {
-        posts.unshift(post);
-      }
-    });
-  }
-  localStorage.setItem('ruppy_last_posts', JSON.stringify(posts));
-  await getTodayPosts();
-  renderFeed(posts);
-  updateRewardBanner();
-}, (error) => {
-  console.error('Firebase Error:', error);
-  document.getElementById('feed').innerHTML = `
-    <div class="error-box">
-      <b>Firebase Read Error</b><br>
-      ${error.message}<br><br>
-      Fix: Firebase Console → Database → Rules में ".read": true कर दे
-    </div>`;
-});
-
-// Initial Load
-document.getElementById('userAvatar').textContent = currentUser[0].toUpperCase();
-document.getElementById('taskBalance').textContent = userData.taskBalance;
-document.getElementById('totalBalance').textContent = userData.balance;
-updateRewardBanner();
+function loadPosts(){
+  const postsQuery = query(ref(db, 'posts'), limitToLast(20));
+  onValue(postsQuery, async (snapshot) => {
+    console.log('Posts loaded');
+    let posts = [];
+    if(snapshot.exists()){
+      snapshot.forEach((childSnapshot) => {
+        let post = { id: childSnapshot.key,...childSnapshot.val(), showAllComments: false };
+        if((post.reports || 0) < 3) {
+          posts.unshift(post);
+        }
+      });
+    }
+    localStorage.setItem('ruppy_last_posts', JSON.stringify(posts));
+    await getTodayPosts();
+    renderFeed(posts);
+  }, (error) => {
+    console.error('Firebase Error:', error);
+    document.getElementById('feed').innerHTML = `
+      <div class="empty-hub">
+        <h3>Error Loading Posts</h3>
+        <p>Check Firebase Rules: Set.read to true</p>
+      </div>`;
+  });
+}
 
 function renderFeed(posts){
   let feed = document.getElementById('feed');
@@ -522,7 +552,7 @@ window.addComment = async function(id){
   const snapshot = await get(postRef);
   const post = snapshot.val();
   const comments = post.comments || [];
-  comments.push({user: currentUser, userDp: userData.dp, text: text, time: Date.now()});
+  comments.push({user: currentUser, userDp: window.userData?.dp || null, text: text, time: Date.now()});
   await update(postRef, { comments: comments });
   input.value = '';
 }
