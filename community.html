@@ -443,9 +443,9 @@ function renderFeed(posts){
     let mediaHTML = '';
     if(post.media){
       if(post.mediaType === 'video'){
-        mediaHTML = `<div class="post-media"><video src="${post.media}" controls></video></div>`;
+        mediaHTML = `<div class="post-media"><video src="${post.media}" controls preload="metadata"></video></div>`;
       } else {
-        mediaHTML = `<div class="post-media"><img src="${post.media}" ondblclick="likePost('${post.id}')"></div>`;
+        mediaHTML = `<div class="post-media"><img src="${post.media}" loading="lazy" ondblclick="likePost('${post.id}')"></div>`;
       }
     }
 
@@ -463,7 +463,7 @@ function renderFeed(posts){
     }
 
     let postUserDp = post.userDp || post.user[0].toUpperCase();
-    let postUserDpHTML = post.userDp? `<img src="${post.userDp}">` : post.user[0].toUpperCase();
+    let postUserDpHTML = post.userDp? `<img src="${post.userDp}" loading="lazy">` : post.user[0].toUpperCase();
 
     feed.innerHTML += `
     <div class="post-card" id="post-${post.id}">
