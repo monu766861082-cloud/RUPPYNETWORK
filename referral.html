@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ruppy Referral</title>
 
-<!-- ✅ FIX: config.js Add करा Sync के लिए -->
+<!-- ✅ config.js सबसे पहले Load होगा -->
 <script type="module" src="config.js"></script>
 
 <style>
@@ -67,7 +67,6 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 
 <div class="team">👥 My Team</div>
 
-<!-- ✅ FIX: Nav में Feed Icon जोड़ा -->
 <div class="nav">
   <div class="nav-item" onclick="goPage('app.html')">
     <div class="icon">🏠</div>
@@ -98,27 +97,14 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 <div class="toast" id="toast">Copied!</div>
 
 <script>
-// ✅ FIX: localStorage हटाया, config.js वाला userData Use करा
+// ✅ FIX 1: config.js वाला userData Use करो, Local Storage नहीं
 var userData = window.userData;
 let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
 let openedTask = null;
 
-// ✅ नया: RUP-8K2M5X जैसा साफ Code बनाने वाला
-function generateUniqueCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = 'RUP-';
-  for(let i = 0; i < 6; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return code;
-}
+// ✅ FIX 2: generateUniqueCode हटाया - config.js वाला Use होगा
 
-// ✅ नया: Check करेगा Code UID है या RUP- है
-function isValidReferralCode(code) {
-  return code && code.startsWith('RUP-') && code.length === 10;
-}
-
-// ✅ FIX: init Function - userData Load होने का Wait + Code Fix
+// ✅ FIX 3: init Function - config.js का Wait + Code Sync
 async function init(){
   let attempts = 0;
   while(!window.userData?.uid && attempts < 50) {
@@ -127,16 +113,10 @@ async function init(){
   }
   userData = window.userData;
   
-  // ✅ सड़ा हुआ UID हटाओ, साफ RUP- Code बनाओ
-  if (!isValidReferralCode(userData.myReferralCode)) {
-    userData.myReferralCode = generateUniqueCode();
-    // Firebase में Save कर दो
-    if(window.saveRuppyData) saveRuppyData(userData);
-  }
-  
-  // ✅ FIX: Invite Code = अब RUP-8K2M5X होगा, UID नहीं
-  let inviteCode = userData.myReferralCode || generateUniqueCode();
-  document.getElementById('inviteCode').innerText = inviteCode;
+  // ✅ config.js में referralCode नाम से है, myReferralCode नहीं
+  // अब हर Page पे Same Code दिखेगा - config.js वाला
+  let inviteCode = userData.referralCode;
+  document.getElementById('inviteCode').innerText = inviteCode || 'Loading...';
   
   updateTeamStats();
 }
@@ -164,7 +144,8 @@ function updateTeamStats(){
     userData.balance = (userData.balance || 0) + newTeamReward;
     userData.lastTeamRewardCheck = now;
     userData.teamRewardEarned = (userData.teamRewardEarned || 0) + newTeamReward;
-    saveRuppyData(userData);
+    // ✅ config.js वाला saveRuppyData Use करो
+    if(window.saveRuppyData) window.saveRuppyData(userData);
   }
 
   document.getElementById('teamReward').innerText = userData.teamRewardEarned || 0;
@@ -174,15 +155,15 @@ function updateTeamStats(){
 }
 
 function copy(){
-  // ✅ FIX: अब UID नहीं, RUP- Code Copy होगा
-  let inviteCode = userData.myReferralCode || generateUniqueCode();
+  // ✅ FIX 4: config.js वाला referralCode Copy होगा
+  let inviteCode = userData.referralCode;
   navigator.clipboard.writeText(inviteCode);
   showToast('Invite Code Copied!');
 }
 
 function invite(){
-  // ✅ FIX: अब UID नहीं, RUP- Code Share होगा
-  let inviteCode = userData.myReferralCode || generateUniqueCode();
+  // ✅ FIX 5: config.js वाला referralCode Share होगा
+  let inviteCode = userData.referralCode;
   let text = `Join RUPPY Network & start playing! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app?ref=${inviteCode}`;
   
   if(navigator.share){
@@ -208,10 +189,11 @@ function goPage(page){
   window.location.href = page;
 }
 
-// ✅ FIX: Real-time Sync
+// ✅ FIX 6: config.js से Real-time Sync
 window.addEventListener('storage', function(e){
   if(e.key === 'ruppy_user_cache') {
     userData = JSON.parse(e.newValue);
+    document.getElementById('inviteCode').innerText = userData.referralCode;
     updateTeamStats();
   }
 });
