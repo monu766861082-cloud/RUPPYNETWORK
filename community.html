@@ -79,6 +79,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .empty-hub button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:14px 28px;color:#000;font-weight:700;font-size:15px;cursor:pointer}
 #fileInput{display:none}
 .loading{text-align:center;padding:40px;color:#666}
+.end-message{text-align:center;padding:30px;color:#666;font-size:14px}
 </style>
 </head>
 <body>
@@ -154,7 +155,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <script type="module">
-import { getDatabase, ref, push, onValue, update, get, query, orderByChild, equalTo, limitToLast, runTransaction, orderByKey, endBefore, orderByChild as orderByChildFirebase } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, update, get, query, orderByChild, equalTo, limitToLast, runTransaction, endBefore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 function waitForConfig() {
   return new Promise(resolve => {
@@ -173,11 +174,11 @@ function waitForConfig() {
 
 let db;
 let currentUser = "Guest";
-let lastPostKey = null;
 let allLoadedPosts = [];
 let isLoadingMore = false;
 let noMorePosts = false;
-let claimedPosts = new Set(); // ✅ FIX 1: Local Track कर Claim Button को Lock करेंगे
+let claimedPosts = new Set();
+const POSTS_PER_PAGE = 30;
 
 async function initFeed() {
   await waitForConfig();
@@ -251,25 +252,20 @@ async function getUnclaimedPost(){
   return null;
 }
 
-// ✅ FIX 2: Claim Function - Double Claim रोक दिया + Button Disable
 async function markPostClaimed(postId){
-  // ✅ पहले Check करो पहले से Claim तो नहीं हुआ
-  if(claimedPosts.has(postId)){
-    return false;
-  }
+  if(claimedPosts.has(postId)) return false;
 
   const postRef = ref(db, `posts/${postId}`);
   const snap = await get(postRef);
   const postData = snap.val();
 
-  // ✅ Firebase में भी Check करो
   if(postData.claimed === true){
     claimedPosts.add(postId);
     return false;
   }
 
   await update(postRef, { claimed: true });
-  claimedPosts.add(postId); // ✅ Local Set में Add कर दिया
+  claimedPosts.add(postId);
 
   if(window.userData && window.userData.uid && window.userData.uid!== "guest"){
     window.userData.balance = (Number(window.userData.balance) || 0) + 10;
@@ -324,7 +320,7 @@ function setupEventListeners(){
         let preview = document.getElementById('preview');
         preview.style.display = 'block';
         preview.innerHTML = selectedFile.type.includes('video')
- ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
+? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
           : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
         updateRewardBanner();
       }
@@ -342,7 +338,6 @@ window.addEmoji = function(){
   updateRewardBanner();
 }
 
-// ✅ FIX 3: Claim Button Click पे तुरंत Disable
 window.claimPost = async function(postId){
   const btn = document.querySelector(`#post-${postId}.claim-btn`);
   if(btn) {
@@ -435,7 +430,7 @@ window.createPost = async function(){
           userData.lastPostDate = todayKey;
         } else {
           if((userData.postsToday || 0) >= 3){
-            return; // Abort
+            return;
           }
           userData.postsToday = (userData.postsToday || 0) + 1;
         }
@@ -479,7 +474,7 @@ window.createPost = async function(){
   await updateRewardBanner();
 }
 
-// ✅ FIX 4: Infinite Scroll - Facebook जैसा
+// ✅ FIX 1: loadPosts - सही Logic
 function loadPosts(isInitial = false){
   if(isLoadingMore || noMorePosts) return;
   isLoadingMore = true;
@@ -487,27 +482,30 @@ function loadPosts(isInitial = false){
   let postsQuery;
   if(isInitial){
     allLoadedPosts = [];
-    lastPostKey = null;
-    postsQuery = query(ref(db, 'posts'), orderByChildFirebase('time'), limitToLast(30)); // ✅ 30 Post Initial
+    // ✅ time से Sort करके Latest 30 Post लो
+    postsQuery = query(ref(db, 'posts'), orderByChild('time'), limitToLast(POSTS_PER_PAGE));
   } else {
-    if(!lastPostKey) {
+    if(allLoadedPosts.length === 0) {
       isLoadingMore = false;
       return;
     }
-    postsQuery = query(ref(db, 'posts'), orderByChildFirebase('time'), endBefore(allLoadedPosts[allLoadedPosts.length - 1].time), limitToLast(30));
+    // ✅ आखिरी Post के time से पहले की 30 Post लो
+    const lastTime = allLoadedPosts[allLoadedPosts.length - 1].time;
+    postsQuery = query(ref(db, 'posts'), orderByChild('time'), endBefore(lastTime), limitToLast(POSTS_PER_PAGE));
   }
 
   onValue(postsQuery, async (snapshot) => {
-    console.log('Posts loaded');
     let posts = [];
     if(snapshot.exists()){
       snapshot.forEach((childSnapshot) => {
         let post = { id: childSnapshot.key,...childSnapshot.val(), showAllComments: false };
         if((post.reports || 0) < 3) {
-          posts.unshift(post);
+          posts.push(post);
         }
       });
-      if(posts.length < 30) noMorePosts = true; // ✅ और Post नहीं हैं
+      posts.reverse(); // Newest first
+      // ✅ अगर 30 से कम Post आई = खत्म हो गई
+      if(posts.length < POSTS_PER_PAGE) noMorePosts = true;
     } else {
       noMorePosts = true;
     }
@@ -525,17 +523,18 @@ function loadPosts(isInitial = false){
   }, {onlyOnce: true});
 }
 
-// ✅ Infinite Scroll - Scroll करते ही Load होगा
+// ✅ Infinite Scroll
 function setupInfiniteScroll(){
   window.addEventListener('scroll', () => {
     if(isLoadingMore || noMorePosts) return;
-    // ✅ Page के 80% Scroll पे Load कर दो
+    // ✅ 800px पहले Load कर दो
     if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 800){
       loadPosts(false);
     }
   });
 }
 
+// ✅ FIX 2: renderFeed - Loading सही दिखेगा
 function renderFeed(posts){
   let feed = document.getElementById('feed');
   if(posts.length === 0){
@@ -564,7 +563,6 @@ function renderFeed(posts){
     let commentsToShow = post.showAllComments? (post.comments || []) : (post.comments || []).slice(-2);
     let hiddenCount = (post.comments || []).length - commentsToShow.length;
 
-    // ✅ FIX 5: Claim Button - claimedPosts Set से Check
     let isClaimed = post.claimed || claimedPosts.has(post.id);
     let claimBtnHTML = '';
     if(post.user === currentUser &&!isClaimed){
@@ -617,9 +615,11 @@ function renderFeed(posts){
     </div>`;
   });
 
-  // ✅ Loading Indicator
-  if(!noMorePosts && posts.length >= 30){
+  // ✅ FIX 3: Loading Message सही Condition पे
+  if(isLoadingMore){
     feed.innerHTML += `<div class="loading">Loading more posts...</div>`;
+  } else if(noMorePosts && allLoadedPosts.length > 0){
+    feed.innerHTML += `<div class="end-message">You're all caught up ✅</div>`;
   }
 }
 
