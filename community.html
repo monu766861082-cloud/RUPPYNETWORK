@@ -127,7 +127,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
       <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📷</button>
       <button class="icon-btn" onclick="addEmoji()">😊</button>
     </div>
-    <button class="post-btn" id="postBtn" onclick="createPost()" disabled>Loading...</button>
+    <button class="post-btn" id="postBtn" onclick="createPost()" disabled>Post</button>
   </div>
   <input type="file" id="fileInput" accept="image/*,video/*">
   <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
@@ -135,7 +135,6 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
 <div class="feed" id="feed"><div class="loading">Loading posts...</div></div>
 
-<!-- CHANGE: Nav Icons app.html वाले लगा दिए -->
 <div class="ruppy-nav">
   <div class="nav-item" onclick="location.href='app.html'">
     <div class="icon">🏠</div>
@@ -180,9 +179,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-let currentUser = null; // ✅ फिक्स: null से शुरू करो, 'User' नहीं
+let currentUser = null;
 
-// ✅ CHANGE 1: Config.js से Balance Sync - 253 दिखेगा
 async function syncBalanceFromConfig(){
   let attempts = 0;
   while((!window.userData || window.userData.uid === null) && attempts < 50){
@@ -197,8 +195,8 @@ async function syncBalanceFromConfig(){
       document.getElementById('userAvatar').innerHTML = `<img src="${window.userData.dp}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">`;
     }
     currentUser = window.userData.name || 'User';
-    await getTodayPosts(); // ✅ यूज़र लोड होते ही पोस्ट काउंट लाओ
-    updateRewardBanner(); // ✅ बैनर अपडेट करो
+    await getTodayPosts();
+    updateRewardBanner();
   }
 }
 syncBalanceFromConfig();
@@ -212,16 +210,14 @@ function checkContent(text){
 let todayPostCount = 0;
 let todayPostsData = [];
 
-// ✅ FIX 1: Timezone Bug Fix - Date String Use करो
 function getTodayKey(){
   const d = new Date();
-  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; // "2026-4-19"
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
 }
 
 async function getTodayPosts(){
   const todayKey = getTodayKey();
 
-  // ✅ फिक्स 2: जब तक currentUser सेट नहीं होता, कुछ मत करो
   if(!currentUser){
     todayPostCount = 0;
     todayPostsData = [];
@@ -236,7 +232,6 @@ async function getTodayPosts(){
   if(snapshot.exists()){
     snapshot.forEach(child => {
       let post = {id: child.key,...child.val()};
-      // ✅ FIX 2: time की जगह postDateKey Check करो
       if(post.postDateKey === todayKey){
         todayPostsData.push(post);
       }
@@ -258,7 +253,6 @@ async function markPostClaimed(postId){
     window.userData.balance = Number(window.userData.balance) || 0;
     window.userData.balance += 10;
 
-    // ✅ Task Balance भी +10 करो - यही नया Add है
     window.userData.taskBalance = Number(window.userData.taskBalance) || 0;
     window.userData.taskBalance += 10;
     document.getElementById('taskBalance').textContent = window.userData.taskBalance;
@@ -273,10 +267,8 @@ function updateRewardBanner(){
   let bannerText = document.getElementById('limitText');
   let postBtn = document.getElementById('postBtn');
 
-  // ✅ फिक्स 3: अगर यूज़र लोड नहीं हुआ तो बटन बंद रखो
   if(!currentUser){
     bannerText.textContent = 'Loading user...';
-    postBtn.textContent = 'Loading...';
     postBtn.disabled = true;
     return;
   }
@@ -378,7 +370,6 @@ window.createPost = async function(){
       mediaType = selectedFile.type.includes('video')? 'video' : 'image';
     }
 
-    // ✅ FIX 3: Post Save करते वक्त postDateKey Add करो
     const newPostRef = await push(ref(db, 'posts'), {
       user: currentUser,
       userDp: (typeof window.userData!== 'undefined' && window.userData.dp)? window.userData.dp : null,
@@ -386,7 +377,7 @@ window.createPost = async function(){
       media: mediaUrl,
       mediaType: mediaType,
       time: Date.now(),
-      postDateKey: getTodayKey(), // ✅ ये Line Add की - "2026-4-19" Save होगा
+      postDateKey: getTodayKey(),
       likes: 0,
       likedBy: {},
       comments: [],
@@ -409,7 +400,6 @@ window.createPost = async function(){
   updateRewardBanner();
 }
 
-// ✅ यही असली फिक्स है - सिर्फ आखिरी 20 पोस्ट लोड होंगी
 const postsQuery = query(ref(db, 'posts'), orderByChild('time'), limitToLast(20));
 onValue(postsQuery, async (snapshot) => {
   let posts = [];
@@ -458,7 +448,6 @@ function renderFeed(posts){
 
     let claimBtnHTML = '';
     if(post.user === currentUser && post.claimed === false){
-      // ✅ बस ये Line बदली है - "रुपए" से "RUP" कर दिया
       claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +10 RUP</button>`;
     } else if(post.user === currentUser && post.claimed === true){
       claimBtnHTML = `<button class="claim-btn claimed" disabled>Claimed</button>`;
