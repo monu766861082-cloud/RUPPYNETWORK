@@ -163,9 +163,8 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
   import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-  // ✅ MAIN FIX: config.js का Wait + Same Code as referral.html
   async function loadProfile() {
-    await new Promise(resolve => setTimeout(resolve, 1000)); // config.js Load होने दो
+    await new Promise(resolve => setTimeout(resolve, 1200));
 
     let uid = window.userData?.uid;
 
@@ -196,9 +195,9 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
       if (snapshot.exists()) {
         const data = snapshot.val();
 
-        // ✅ यही Line Fix है - myReferralCode पहले चेक करो
-        const code = data.myReferralCode || data.referralCode || 'NOT-FOUND';
-        const shortId = data.shortId || `RUP-${uid.substring(0,4).toUpperCase()}`;
+        // ✅ MAIN FIX: referralCode पहले - यही referral.html में है
+        const code = data.referralCode || data.myReferralCode || 'NOT-FOUND';
+        const shortId = `RUP-${uid.substring(0,4).toUpperCase()}`;
 
         if (data.dp) {
           document.getElementById('avatarBox').innerHTML = `<img src="${data.dp}" alt="Profile">`;
@@ -210,7 +209,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
         document.getElementById('userId').innerText = 'ID: ' + shortId;
         document.getElementById('refCode').innerText = code;
 
-        window.userData = {...window.userData,...data, myReferralCode: code, shortId: shortId, uid: uid};
+        window.userData = {...window.userData,...data, referralCode: code, shortId: shortId, uid: uid};
         localStorage.setItem('ruppy_user_cache', JSON.stringify(window.userData));
 
         console.log('✅ Settings Code:', code);
@@ -239,7 +238,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     showToast('This feature is Coming Soon! 🚀', 'info');
   }
 
-  // ✅ सिर्फ Code Copy करो
+  // ✅ सिर्फ Code Copy होगा
   window.copyRefCode = function(){
     const code = document.getElementById('refCode').innerText.trim();
 
