@@ -160,26 +160,19 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <div class="toast" id="toast">Copied!</div>
 
 <script type="module">
-  import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-  async function loadProfile() {
-    await new Promise(resolve => setTimeout(resolve, 1200));
-
-    let uid = window.userData?.uid;
-
-    if (!uid) {
-      const auth = getAuth();
-      await new Promise(resolve => {
-        const unsubscribe = onAuthStateChanged(auth, user => {
-          unsubscribe();
-          uid = user?.uid || null;
-          resolve();
-        });
-      });
+  // ✅ FINAL FIX: सिर्फ config.js का Data Display करो - Generate मत करो
+  // Referral.html भी यही करता है इसलिए अब 100% Same रहेगा
+  async function loadProfile(){
+    let attempts = 0;
+    while(!window.userData?.uid && attempts < 50) {
+      await new Promise(r => setTimeout(r, 100));
+      attempts++;
     }
+    const userData = window.userData;
 
-    if (!uid) {
+    if (!userData?.uid) {
       document.getElementById('refCode').innerText = 'LOGIN-FIRST';
       document.getElementById('userId').innerText = 'ID: LOGIN-FIRST';
       showToast('Please login first', 'error');
@@ -187,41 +180,21 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
       return;
     }
 
-    try {
-      const db = getDatabase();
-      const userRef = ref(db, `users/${uid}`);
-      const snapshot = await get(userRef);
+    // ✅ config.js में जो भी Code है वही दिखाओ - कोई Generate नहीं
+    const code = userData.referralCode || 'NOT-FOUND';
+    const shortId = `RUP-${userData.uid.substring(0,4).toUpperCase()}`;
 
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-
-        // ✅ MAIN FIX: referralCode पहले - यही referral.html में है
-        const code = data.referralCode || data.myReferralCode || 'NOT-FOUND';
-        const shortId = `RUP-${uid.substring(0,4).toUpperCase()}`;
-
-        if (data.dp) {
-          document.getElementById('avatarBox').innerHTML = `<img src="${data.dp}" alt="Profile">`;
-        } else {
-          document.getElementById('avatarBox').innerHTML = `<span>${(data.name || 'U').charAt(0).toUpperCase()}</span>`;
-        }
-        document.getElementById('userName').innerText = data.name || 'User';
-        document.getElementById('userBalance').innerText = (data.balance || 0) + ' RUP';
-        document.getElementById('userId').innerText = 'ID: ' + shortId;
-        document.getElementById('refCode').innerText = code;
-
-        window.userData = {...window.userData,...data, referralCode: code, shortId: shortId, uid: uid};
-        localStorage.setItem('ruppy_user_cache', JSON.stringify(window.userData));
-
-        console.log('✅ Settings Code:', code);
-      } else {
-        document.getElementById('refCode').innerText = 'ERROR';
-        showToast('User data not found', 'error');
-      }
-    } catch (err) {
-      console.error('Load Error:', err);
-      document.getElementById('refCode').innerText = 'ERROR';
-      showToast('Failed to load: ' + err.message, 'error');
+    if (userData.dp) {
+      document.getElementById('avatarBox').innerHTML = `<img src="${userData.dp}" alt="Profile">`;
+    } else {
+      document.getElementById('avatarBox').innerHTML = `<span>${(userData.name || 'U').charAt(0).toUpperCase()}</span>`;
     }
+    document.getElementById('userName').innerText = userData.name || 'User';
+    document.getElementById('userBalance').innerText = (userData.balance || 0) + ' RUP';
+    document.getElementById('userId').innerText = 'ID: ' + shortId;
+    document.getElementById('refCode').innerText = code;
+
+    console.log('✅ Settings Code from config.js:', code);
   }
 
   loadProfile();
@@ -401,6 +374,13 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
       }
     }
   }
+
+  // ✅ config.js Update हो तो Auto Refresh
+  window.addEventListener('storage', function(e){
+    if(e.key === 'ruppy_user_cache') {
+      loadProfile();
+    }
+  });
 </script>
 
 </body>
