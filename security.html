@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Settings</title>
+<title>Security</title>
 
 <!-- Monetag Verification Meta Tag -->
 <meta name="monetag" content="21dbbe26571c9c62250f84692bff67fc">
@@ -17,26 +17,20 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
 .back{font-size:24px;cursor:pointer}
 .title{font-size:22px;font-weight:600}
-.avatar{width:96px;height:96px;margin:20px auto 14px;border-radius:50%;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,var(--gold)22%,transparent 22%);box-shadow:0 0 32px rgba(243,199,116,.35);overflow:hidden}
-.avatar img{width:100%;height:100%;object-fit:cover}
-.avatar span{font-size:44px;font-weight:700;color:var(--gold)}
-.name{text-align:center;font-size:26px;font-weight:600}
-.bal{display:block;width:max-content;margin:12px auto;padding:6px 18px;border:1px solid var(--green);border-radius:999px;color:var(--green);font-weight:600;font-size:15px}
-.id-box{display:block;width:max-content;margin:8px auto;padding:4px 14px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font-size:13px;cursor:pointer}
-.id-box:active{transform:scale(0.95)}
-.card{background:var(--card);border:1px solid var(--border);border-radius:24px;overflow:hidden;margin:26px 0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:24px;overflow:hidden;margin:20px 0}
 .row{display:flex;align-items:center;justify-content:space-between;padding:20px 18px;border-top:1px solid var(--border);cursor:pointer;transition:all 0.2s}
 .row:first-child{border:0}
 .row:active{background:rgba(243,199,116,0.05)}
 .row.disabled{opacity:0.5;cursor:not-allowed}
-.row.disabled:active{background:transparent}
 .l{display:flex;align-items:center}
 .icon{width:44px;height:44px;border-radius:12px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-right:16px;font-size:20px}
 .txt{font-size:18px}
-.val{color:var(--muted);font-size:16px;margin-right:10px;user-select:none}
+.desc{font-size:13px;color:var(--muted);margin-top:4px}
+.val{color:var(--muted);font-size:16px;margin-right:10px}
 .coming-soon{font-size:11px;color:var(--gold);background:rgba(243,199,116,0.1);padding:2px 8px;border-radius:6px;margin-left:8px}
-.sec{color:var(--muted);letter-spacing:1px;font-size:13px;margin:24px 0 12px}
-.logout{width:100%;padding:16px;border:1px solid var(--red);border-radius:16px;background:transparent;color:var(--red);font-size:16px;font-weight:600;margin-top:24px;cursor:pointer}
+.sec-title{color:var(--muted);letter-spacing:1px;font-size:13px;margin:24px 0 12px;padding:0 4px}
+.danger-btn{width:100%;padding:16px;border:1px solid var(--red);border-radius:16px;background:transparent;color:var(--red);font-size:16px;font-weight:600;margin-top:12px;cursor:pointer;transition:all 0.2s}
+.danger-btn:active{background:rgba(229,62,0.1)}
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0;z-index:999}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
 .nav-item.active{color:#FFA500}
@@ -50,82 +44,132 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .input-group label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px;font-weight:500}
 .input-group input{width:100%;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:#fff;font-size:15px;transition:all 0.2s}
 .input-group input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(243,199,116,0.1)}
-.file-input{display:none}
-.file-label{display:block;padding:14px;border:1px solid var(--border);border-radius:12px;text-align:center;cursor:pointer;transition:all 0.2s}
-.file-label:active{background:rgba(243,199,116,0.05)}
 .btn-group{display:flex;gap:12px;margin-top:20px}
 .btn{flex:1;padding:14px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;border:none}
 .btn:active{transform:scale(0.98)}
 .btn-cancel{background:transparent;border:1px solid var(--border);color:var(--muted)}
 .btn-save{background:linear-gradient(135deg, var(--gold), #FFA500);color:#000;box-shadow:0 4px 15px rgba(243,199,116,0.3)}
 .btn-save:disabled{opacity:0.5;cursor:not-allowed}
-.sp{height:96px}
-.ft-links{font-size:11px;color:#666;text-align:center;margin-top:30px;padding-bottom:20px}
-.ft-links a{color:#aaa;text-decoration:none}
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:14px 24px;border-radius:12px;font-size:14px;display:none;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);font-weight:500}
 .toast.success{background:#1a5c1a;color:#4ade80}
 .toast.error{background:#5c1a1a;color:#f87171}
 .toast.info{background:#1a3c5c;color:#60a5fa}
+.device-item{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.device-info{flex:1}
+.device-name{font-size:15px;font-weight:600;margin-bottom:4px}
+.device-meta{font-size:12px;color:var(--muted)}
+.current-badge{font-size:11px;color:var(--green);background:rgba(36,196,100,0.1);padding:2px 8px;border-radius:6px}
+.sp{height:96px}
 </style>
 </head>
 <body>
 <div class="header">
   <div class="back" onclick="history.back()">←</div>
-  <div class="title">Settings</div>
+  <div class="title">Security</div>
 </div>
 
-<div class="avatar" id="avatarBox"><span id="avatarLetter">R</span></div>
-<div class="name" id="userName">Loading...</div>
-<div class="bal" id="userBalance">0 RUP</div>
-<div class="id-box" id="userId" onclick="copyUserId()">ID: Loading...</div>
-
+<div class="sec-title">PASSWORD & LOGIN</div>
 <div class="card">
-<div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📤</div><div class="txt">Send RUP <span class="coming-soon">Coming Soon</span></div></div>›</div>
-<div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📥</div><div class="txt">Receive RUP <span class="coming-soon">Coming Soon</span></div></div>›</div>
-<div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">Loading...</span>›</div>
-<div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
-<div class="row" onclick="goPage('security.html')"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
-<div class="row" onclick="toggleNotification()"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div><span class="val" id="notifStatus">Off</span>›</div>
-<div class="row" onclick="goPage('contact.html')"><div class="l"><div class="icon">❓</div><div class="txt">Help & Support</div></div>›</div>
-<div class="row" onclick="goPage('privacy.html')"><div class="l"><div class="icon">📄</div><div class="txt">Privacy Policy</div></div>›</div>
-<div class="row" onclick="goPage('terms.html')"><div class="l"><div class="icon">📋</div><div class="txt">Terms & Conditions</div></div>›</div>
+  <div class="row" onclick="openChangePassword()">
+    <div class="l">
+      <div class="icon">🔒</div>
+      <div>
+        <div class="txt">Change Password</div>
+        <div class="desc">Update your account password</div>
+      </div>
+    </div>›
+  </div>
+  <div class="row disabled" onclick="showComingSoon()">
+    <div class="l">
+      <div class="icon">🔐</div>
+      <div>
+        <div class="txt">Two-Factor Authentication <span class="coming-soon">Coming Soon</span></div>
+        <div class="desc">Add extra security to your account</div>
+      </div>
+    </div>›
+  </div>
 </div>
 
-<button class="logout" onclick="logout()">Logout</button>
-
-<div class="ft-links">
-  <a href="about.html">About</a> •
-  <a href="contact.html">Contact</a> •
-  <a href="privacy.html">Privacy</a> •
-  <a href="terms.html">Terms</a>
+<div class="sec-title">ACTIVE SESSIONS</div>
+<div class="card">
+  <div class="row" onclick="openDevices()">
+    <div class="l">
+      <div class="icon">📱</div>
+      <div>
+        <div class="txt">Manage Devices</div>
+        <div class="desc">See where you're logged in</div>
+      </div>
+    </div>
+    <span class="val" id="deviceCount">1 Device</span>›
+  </div>
+  <div class="row" onclick="logoutAllDevices()">
+    <div class="l">
+      <div class="icon">🚪</div>
+      <div>
+        <div class="txt">Logout All Devices</div>
+        <div class="desc">Sign out from all devices</div>
+      </div>
+    </div>›
+  </div>
 </div>
 
-<div style="font-size:9px;color:#666;text-align:center;padding:15px;line-height:1.4">
-*RUP are virtual points for entertainment & leaderboard ranking only. They have no monetary value and cannot be exchanged for real cash, prizes, or cryptocurrency.
+<div class="sec-title">ACCOUNT SECURITY</div>
+<div class="card">
+  <div class="row">
+    <div class="l">
+      <div class="icon">✉️</div>
+      <div>
+        <div class="txt">Email Verification</div>
+        <div class="desc" id="emailStatus">Not verified</div>
+      </div>
+    </div>
+    <span class="val" id="emailVerified">❌</span>
+  </div>
+  <div class="row disabled" onclick="showComingSoon()">
+    <div class="l">
+      <div class="icon">📞</div>
+      <div>
+        <div class="txt">Phone Verification <span class="coming-soon">Coming Soon</span></div>
+        <div class="desc">Verify your phone number</div>
+      </div>
+    </div>›
+  </div>
 </div>
+
+<button class="danger-btn" onclick="confirmDeleteAccount()">Delete Account</button>
 
 <div class="sp"></div>
 
-<!-- Edit Profile Modal -->
-<div class="modal" id="editModal">
+<!-- Change Password Modal -->
+<div class="modal" id="passwordModal">
   <div class="modal-content">
-    <div class="modal-title">Edit Profile</div>
+    <div class="modal-title">Change Password</div>
     <div class="input-group">
-      <label>Name</label>
-      <input type="text" id="editName" placeholder="Enter Name">
+      <label>Current Password</label>
+      <input type="password" id="currentPass" placeholder="Enter current password">
     </div>
     <div class="input-group">
-      <label>Birthday</label>
-      <input type="date" id="editBirthday">
+      <label>New Password</label>
+      <input type="password" id="newPass" placeholder="Enter new password">
     </div>
     <div class="input-group">
-      <label>Profile Photo</label>
-      <input type="file" id="editPhoto" class="file-input" accept="image/*">
-      <label for="editPhoto" class="file-label">Choose Photo</label>
+      <label>Confirm New Password</label>
+      <input type="password" id="confirmPass" placeholder="Confirm new password">
     </div>
     <div class="btn-group">
-      <button class="btn btn-cancel" onclick="closeEditProfile()">Cancel</button>
-      <button class="btn btn-save" id="saveBtn" onclick="saveProfile()">Save</button>
+      <button class="btn btn-cancel" onclick="closePasswordModal()">Cancel</button>
+      <button class="btn btn-save" id="savePassBtn" onclick="changePassword()">Update</button>
+    </div>
+  </div>
+</div>
+
+<!-- Devices Modal -->
+<div class="modal" id="devicesModal">
+  <div class="modal-content">
+    <div class="modal-title">Active Devices</div>
+    <div id="devicesList"></div>
+    <div class="btn-group">
+      <button class="btn btn-cancel" onclick="closeDevicesModal()">Close</button>
     </div>
   </div>
 </div>
@@ -151,89 +195,39 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     <div class="icon">📝</div>
     <span>Feed</span>
   </div>
-  <div class="nav-item active">
+  <div class="nav-item" onclick="goPage('settings.html')">
     <div class="icon">⚙️</div>
     <span>Settings</span>
   </div>
 </div>
 
-<div class="toast" id="toast">Copied!</div>
+<div class="toast" id="toast"></div>
 
 <script type="module">
-  import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getAuth, signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-  // ✅ EXACT SAME AS REFERRAL.HTML - referralCode Field Use करो
-  async function init(){
-    let attempts = 0;
-    while(!window.userData?.uid && attempts < 50) {
-      await new Promise(r => setTimeout(r, 100));
-      attempts++;
-    }
-    let userData = window.userData;
-
-    if (!userData?.uid) {
-      const auth = getAuth();
-      await new Promise(resolve => {
-        const unsubscribe = onAuthStateChanged(auth, user => {
-          unsubscribe();
-          userData = { uid: user?.uid };
-          resolve();
-        });
-      });
-    }
-
-    if (!userData?.uid) {
-      document.getElementById('refCode').innerText = 'LOGIN-FIRST';
-      document.getElementById('userId').innerText = 'ID: LOGIN-FIRST';
-      showToast('Please login first', 'error');
-      setTimeout(() => window.location.href = 'index.html', 1500);
-      return;
-    }
-
-    try {
-      const db = getDatabase();
-      const userRef = ref(db, `users/${userData.uid}`);
-      const snapshot = await get(userRef);
-
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-
-        // ✅ यही Line Fix है - referralCode Primary, myReferralCode Secondary
-        // Referral.html में भी यही Logic है
-        const code = data.referralCode || data.myReferralCode || 'NOT-FOUND';
-
-        // ✅ Auto Sync: अगर myReferralCode अलग है तो Update कर दो
-        if (data.myReferralCode && data.myReferralCode!== data.referralCode) {
-          await update(userRef, { myReferralCode: data.referralCode });
-        }
-
-        const shortId = `RUP-${userData.uid.substring(0,4).toUpperCase()}`;
-
-        if (data.dp) {
-          document.getElementById('avatarBox').innerHTML = `<img src="${data.dp}" alt="Profile">`;
-        } else {
-          document.getElementById('avatarBox').innerHTML = `<span>${(data.name || 'U').charAt(0).toUpperCase()}</span>`;
-        }
-        document.getElementById('userName').innerText = data.name || 'User';
-        document.getElementById('userBalance').innerText = (data.balance || 0) + ' RUP';
-        document.getElementById('userId').innerText = 'ID: ' + shortId;
-        document.getElementById('refCode').innerText = code;
-
-        window.userData = {...window.userData,...data, referralCode: code, shortId: shortId};
-        localStorage.setItem('ruppy_user_cache', JSON.stringify(window.userData));
-      } else {
-        document.getElementById('refCode').innerText = 'ERROR';
-        showToast('User data not found', 'error');
-      }
-    } catch (err) {
-      console.error('Load Error:', err);
-      document.getElementById('refCode').innerText = 'ERROR';
-      showToast('Failed to load: ' + err.message, 'error');
-    }
+  let attempts = 0;
+  while(!window.userData?.uid && attempts < 50) {
+    await new Promise(r => setTimeout(r, 100));
+    attempts++;
   }
 
-  init();
+  const auth = getAuth();
+  const userData = window.userData;
+
+  // Load Security Info
+  function loadSecurityInfo(){
+    if(auth.currentUser?.emailVerified){
+      document.getElementById('emailVerified').innerText = '✅';
+      document.getElementById('emailStatus').innerText = auth.currentUser.email;
+      document.getElementById('emailStatus').style.color = 'var(--green)';
+    } else {
+      document.getElementById('emailVerified').innerText = '❌';
+      document.getElementById('emailStatus').innerText = 'Not verified - Tap to verify';
+      document.getElementById('emailStatus').style.color = 'var(--red)';
+    }
+  }
+  loadSecurityInfo();
 
   window.showToast = function(msg, type = 'success'){
     let t = document.getElementById('toast');
@@ -247,177 +241,122 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     showToast('This feature is Coming Soon! 🚀', 'info');
   }
 
-  // ✅ सिर्फ Code Copy होगा
-  window.copyRefCode = function(){
-    const code = document.getElementById('refCode').innerText.trim();
-
-    if(!code || code === 'Loading...' || code === 'LOGIN-FIRST' || code === '-' || code === 'ERROR' || code === 'NOT-FOUND'){
-      showToast('Code not ready: ' + code, 'error');
-      return;
-    }
-
-    navigator.clipboard.writeText(code).then(() => {
-      showToast('✅ Copied: ' + code, 'success');
-    }).catch(() => {
-      const temp = document.createElement('textarea');
-      temp.value = code;
-      temp.style.position = 'fixed';
-      temp.style.opacity = '0';
-      document.body.appendChild(temp);
-      temp.select();
-      document.execCommand('copy');
-      document.body.removeChild(temp);
-      showToast('✅ Copied: ' + code, 'success');
-    });
-  }
-
-  window.copyUserId = function(){
-    const idText = document.getElementById('userId').innerText.replace('ID: ', '');
-    if(idText === 'Loading...' || idText === 'LOGIN-FIRST') {
-      showToast('ID not ready', 'error');
-      return;
-    }
-    navigator.clipboard.writeText(idText).then(() => {
-      showToast('✅ ID Copied: ' + idText, 'success');
-    });
-  }
-
   window.goPage = function(page){ window.location.href = page; }
 
-  window.openEditProfile = function(){
-    document.getElementById('editName').value = window.userData?.name || '';
-    document.getElementById('editBirthday').value = window.userData?.birthday || '';
-    document.getElementById('editModal').classList.add('active');
+  // Change Password
+  window.openChangePassword = function(){
+    document.getElementById('passwordModal').classList.add('active');
   }
 
-  window.closeEditProfile = function(){
-    document.getElementById('editModal').classList.remove('active');
+  window.closePasswordModal = function(){
+    document.getElementById('passwordModal').classList.remove('active');
+    document.getElementById('currentPass').value = '';
+    document.getElementById('newPass').value = '';
+    document.getElementById('confirmPass').value = '';
   }
 
-  window.saveProfile = async function(){
-    const saveBtn = document.getElementById('saveBtn');
-    saveBtn.disabled = true;
-    saveBtn.textContent = 'Saving...';
+  window.changePassword = async function(){
+    const currentPass = document.getElementById('currentPass').value;
+    const newPass = document.getElementById('newPass').value;
+    const confirmPass = document.getElementById('confirmPass').value;
+    const btn = document.getElementById('savePassBtn');
 
-    try {
-      window.userData.name = document.getElementById('editName').value || 'Guest';
-      window.userData.birthday = document.getElementById('editBirthday').value;
-      const file = document.getElementById('editPhoto').files[0];
-
-      if(file){
-        saveBtn.textContent = 'Compressing...';
-        const base64Photo = await compressToBase64(file, 400, 0.6);
-
-        if(base64Photo.length > 900000){
-          showToast('Photo too large! Use smaller image', 'error');
-          saveBtn.disabled = false;
-          saveBtn.textContent = 'Save';
-          return;
-        }
-        window.userData.dp = base64Photo;
-      }
-
-      saveBtn.textContent = 'Saving...';
-      await window.saveRuppyData(window.userData);
-      await init();
-      closeEditProfile();
-      showToast('Profile Updated!', 'success');
-
-    } catch(error){
-      console.error('Save Error:', error);
-      showToast('Failed: ' + error.message, 'error');
+    if(!currentPass || !newPass || !confirmPass){
+      showToast('Please fill all fields', 'error');
+      return;
     }
 
-    saveBtn.disabled = false;
-    saveBtn.textContent = 'Save';
-  }
+    if(newPass !== confirmPass){
+      showToast('New passwords do not match', 'error');
+      return;
+    }
 
-  function compressToBase64(file, maxWidth, quality){
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = function(e){
-        const img = new Image();
-        img.src = e.target.result;
-        img.onload = function(){
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
+    if(newPass.length < 6){
+      showToast('Password must be at least 6 characters', 'error');
+      return;
+    }
 
-          if(width > maxWidth){
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
-          }
+    btn.disabled = true;
+    btn.textContent = 'Updating...';
 
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-
-          const base64 = canvas.toDataURL('image/jpeg', quality);
-          resolve(base64);
-        }
-        img.onerror = reject;
+    try {
+      const user = auth.currentUser;
+      const credential = EmailAuthProvider.credential(user.email, currentPass);
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, newPass);
+      showToast('Password updated successfully!', 'success');
+      closePasswordModal();
+    } catch(error){
+      console.error(error);
+      if(error.code === 'auth/wrong-password'){
+        showToast('Current password is incorrect', 'error');
+      } else {
+        showToast('Failed: ' + error.message, 'error');
       }
-      reader.onerror = reject;
-    });
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Update';
   }
 
-  window.logout = async function(){
-    if(confirm('Are you sure you want to logout?')){
-      const auth = getAuth();
+  // Email Verification
+  document.getElementById('emailStatus').parentElement.parentElement.onclick = async function(){
+    if(!auth.currentUser?.emailVerified){
+      try {
+        await sendEmailVerification(auth.currentUser);
+        showToast('Verification email sent! Check your inbox', 'success');
+      } catch(error){
+        showToast('Failed to send email: ' + error.message, 'error');
+      }
+    }
+  }
+
+  // Devices
+  window.openDevices = function(){
+    const devicesList = document.getElementById('devicesList');
+    const userAgent = navigator.userAgent;
+    let deviceName = 'Unknown Device';
+    
+    if(/iPhone/.test(userAgent)) deviceName = 'iPhone';
+    else if(/iPad/.test(userAgent)) deviceName = 'iPad';
+    else if(/Android/.test(userAgent)) deviceName = 'Android Device';
+    else if(/Windows/.test(userAgent)) deviceName = 'Windows PC';
+    else if(/Mac/.test(userAgent)) deviceName = 'Mac';
+
+    devicesList.innerHTML = `
+      <div class="device-item">
+        <div class="device-info">
+          <div class="device-name">${deviceName}</div>
+          <div class="device-meta">Last active: Now</div>
+        </div>
+        <span class="current-badge">Current</span>
+      </div>
+    `;
+    document.getElementById('devicesModal').classList.add('active');
+  }
+
+  window.closeDevicesModal = function(){
+    document.getElementById('devicesModal').classList.remove('active');
+  }
+
+  window.logoutAllDevices = async function(){
+    if(confirm('This will logout from all devices. Continue?')){
       await signOut(auth);
-      localStorage.removeItem('ruppy_user');
-      localStorage.removeItem('ruppy_user_cache');
-      localStorage.removeItem('notif_enabled');
+      localStorage.clear();
       window.location.href = '/';
     }
   }
 
-  let notifEnabled = localStorage.getItem('notif_enabled') === 'true';
-
-  function updateNotifStatus(){
-    document.getElementById('notifStatus').innerText = notifEnabled? 'On' : 'Off';
-    document.getElementById('notifStatus').style.color = notifEnabled? 'var(--green)' : 'var(--muted)';
-  }
-  updateNotifStatus();
-
-  window.toggleNotification = async function(){
-    if(!notifEnabled){
-      if('Notification' in window){
-        const permission = await Notification.requestPermission();
-        if(permission === 'granted'){
-          notifEnabled = true;
-          localStorage.setItem('notif_enabled', 'true');
-          updateNotifStatus();
+  window.confirmDeleteAccount = function(){
+    if(confirm('⚠️ WARNING: This will permanently delete your account and all data. This action cannot be undone. Are you sure?')){
+      if(confirm('Last chance! Type DELETE to confirm:')){
+        const input = prompt('Type DELETE to confirm account deletion:');
+        if(input === 'DELETE'){
+          showToast('Account deletion is Coming Soon! Contact support', 'info');
         }
       }
-    } else {
-      notifEnabled = false;
-      localStorage.setItem('notif_enabled', 'false');
-      updateNotifStatus();
     }
   }
-
-  window.sendMiningNotif = function(){
-    if(localStorage.getItem('notif_enabled') === 'true'){
-      if('Notification' in window && Notification.permission === 'granted'){
-        new Notification('Rewards Ready!', {
-          body: 'Your RUP is ready to collect!',
-          icon: 'https://ruppynetwork.com/icon.png'
-        });
-        new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play();
-      }
-    }
-  }
-
-  // ✅ Real-time Sync with Referral.html
-  window.addEventListener('storage', function(e){
-    if(e.key === 'ruppy_user_cache') {
-      const data = JSON.parse(e.newValue);
-      document.getElementById('refCode').innerText = data.referralCode || data.myReferralCode;
-    }
-  });
 </script>
 
 </body>
