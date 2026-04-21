@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RUP Hub</title>
-<!-- config.js सबसे पहले Load होगा - यही Balance संभालता है -->
 <script type="module" src="config.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -154,10 +153,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 </div>
 
 <script type="module">
-// config.js से Firebase, db, userData सब आ जाएगा - दुबारा Init नहीं करना
-import { getDatabase, ref, push, onValue, update, get, query, orderByChild, equalTo, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, update, get, query, orderByChild, equalTo, limitToLast, runTransaction, orderByKey, endBefore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// ✅ FIX 1: config.js Load होने का Wait करो - यही Main Fix है
 function waitForConfig() {
   return new Promise(resolve => {
     if (window.userData && window.updateBalanceBox) {
@@ -175,22 +172,24 @@ function waitForConfig() {
 
 let db;
 let currentUser = "Guest";
+let lastPostKey = null;
+let allLoadedPosts = [];
+let isLoadingMore = false;
+let noMorePosts = false;
 
 async function initFeed() {
-  await waitForConfig(); // config.js का Wait - यही Main Fix है
+  await waitForConfig();
   console.log("Config.js Loaded, User:", window.userData.name);
 
-  // config.js से db ले लो
   db = window.db || getDatabase();
   currentUser = window.userData.name || 'Guest';
 
-  // config.js वाले Function Call करो - Balance Auto दिखेगा
   window.updateBalanceBox();
   window.loadProfileEverywhere();
 
-  // अब Feed Load करो
-  loadPosts();
+  loadPosts(true);
   setupEventListeners();
+  setupInfiniteScroll(); // ✅ Infinite Scroll Setup
 }
 
 initFeed();
@@ -201,60 +200,69 @@ function checkContent(text){
   return bannedWords.some(word => lower.includes(word));
 }
 
-let todayPostCount = 0;
-let todayPostsData = [];
-
 function getTodayKey(){
   const d = new Date();
   return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
 }
 
-// ✅ FIX 2: UID से Filter करो, Name से नहीं - यही Bug था
-async function getTodayPosts(){
+async function checkPostLimit(){
+  if(!window.userData || window.userData.uid === "guest"){
+    return { canPost: false, reason: 'login' };
+  }
+
+  const userRef = ref(db, `users/${window.userData.uid}`);
+  const snap = await get(userRef);
+  const data = snap.val() || {};
+
+  const todayKey = getTodayKey();
+  const postsToday = data.postsToday || 0;
+  const lastPostDate = data.lastPostDate || '';
+
+  if(lastPostDate!== todayKey){
+    await update(userRef, { postsToday: 0, lastPostDate: todayKey });
+    return { canPost: true, count: 0, left: 3 };
+  }
+
+  if(postsToday < 3){
+    return { canPost: true, count: postsToday, left: 3 - postsToday };
+  }
+
+  return { canPost: false, count: postsToday, left: 0, reason: 'limit' };
+}
+
+async function getUnclaimedPost(){
   const todayKey = getTodayKey();
   const postsRef = ref(db, 'posts');
-  // ✅ FIX: user UID से Filter, Name से नहीं - Duplicate नहीं आएगा
   const userPostsQuery = query(postsRef, orderByChild('userId'), equalTo(window.userData.uid));
   const snapshot = await get(userPostsQuery).catch(()=>null);
 
-  todayPostsData = [];
   if(snapshot && snapshot.exists()){
+    let found = null;
     snapshot.forEach(child => {
       let post = {id: child.key,...child.val()};
-      if(post.postDateKey === todayKey){
-        todayPostsData.push(post);
+      if(post.postDateKey === todayKey &&!post.claimed){
+        found = post;
       }
     });
+    return found;
   }
-  todayPostCount = todayPostsData.length;
-  updateRewardBanner();
-  return todayPostsData;
+  return null;
 }
 
-function getUnclaimedPost(){
-  return todayPostsData.find(p =>!p.claimed);
-}
-
-// config.js का saveRuppyData Use करो - Balance Auto Save होगा
 async function markPostClaimed(postId){
   const postRef = ref(db, `posts/${postId}`);
   await update(postRef, { claimed: true });
 
-  // config.js वाला Balance Update
   if(window.userData && window.userData.uid && window.userData.uid!== "guest"){
     window.userData.balance = (Number(window.userData.balance) || 0) + 10;
     window.userData.taskBalance = (Number(window.userData.taskBalance) || 0) + 10;
-
-    // config.js का Save Function - यही Balance Sync करेगा
     if(typeof window.saveRuppyData === 'function'){
       await window.saveRuppyData(window.userData);
     }
   }
 }
 
-function updateRewardBanner(){
-  let count = todayPostCount;
-  let unclaimed = getUnclaimedPost();
+async function updateRewardBanner(){
   let bannerText = document.getElementById('limitText');
   let postBtn = document.getElementById('postBtn');
 
@@ -264,20 +272,20 @@ function updateRewardBanner(){
     return;
   }
 
-  // ✅ FIX 3: 3 Post के बाद Button Disable + Text Change
-  if(count >= 3){
+  const limitCheck = await checkPostLimit();
+  const unclaimed = await getUnclaimedPost();
+
+  if(!limitCheck.canPost && limitCheck.reason === 'limit'){
     bannerText.textContent = `Daily limit reached 3/3. Come back tomorrow`;
     postBtn.textContent = 'Limit Reached 3/3';
     postBtn.disabled = true;
   } else if(unclaimed){
-    let left = 3 - count;
-    bannerText.textContent = `⚠️ Claim Post | ${left}/3 left`;
+    bannerText.textContent = `⚠️ Claim Post | ${limitCheck.left}/3 left`;
     postBtn.textContent = `Claim First`;
     postBtn.disabled = true;
   } else {
-    let left = 3 - count;
-    bannerText.textContent = `🎁 +10 RUPPY Coin reward per post | ${left}/3 left`;
-    postBtn.textContent = `Post ${count+1}/3`;
+    bannerText.textContent = `🎁 +10 RUPPY Coin reward per post | ${limitCheck.left}/3 left`;
+    postBtn.textContent = `Post ${limitCheck.count + 1}/3`;
     postBtn.disabled =!document.getElementById('postText').value.trim() &&!selectedFile;
   }
 }
@@ -297,7 +305,7 @@ function setupEventListeners(){
         let preview = document.getElementById('preview');
         preview.style.display = 'block';
         preview.innerHTML = selectedFile.type.includes('video')
-       ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
+    ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
           : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
         updateRewardBanner();
       }
@@ -318,38 +326,45 @@ window.addEmoji = function(){
 window.claimPost = async function(postId){
   await markPostClaimed(postId);
   alert('10 RUP Claimed! 🎉');
-  await getTodayPosts();
-  let cached = JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]');
-  renderFeed(cached);
+  await updateRewardBanner();
 }
 
-// ✅ FIX 4: Post बनाने से पहले Count Check + UID Save करो
 window.createPost = async function(){
   if(!window.userData || window.userData.uid === "guest"){
     return alert('पहले Login करो');
   }
 
-  // ✅ FIX: Count Check पहले, Post बाद में - Race Condition Fix
-  await getTodayPosts();
+  document.getElementById('postBtn').disabled = true;
+  document.getElementById('postBtn').textContent = 'Checking...';
 
-  if(todayPostCount >= 3){
+  const limitCheck = await checkPostLimit();
+  if(!limitCheck.canPost){
     updateRewardBanner();
     alert('Daily limit reached 3/3. Come back tomorrow');
     return;
   }
-  if(getUnclaimedPost()){
+
+  const unclaimed = await getUnclaimedPost();
+  if(unclaimed){
     alert('Claim your last post first');
+    document.getElementById('postBtn').disabled = false;
+    await updateRewardBanner();
     return;
   }
 
   let text = document.getElementById('postText').value.trim();
-  if(!text &&!selectedFile) return;
+  if(!text &&!selectedFile) {
+    document.getElementById('postBtn').disabled = false;
+    await updateRewardBanner();
+    return;
+  }
   if(checkContent(text)){
     alert('Inappropriate content detected');
+    document.getElementById('postBtn').disabled = false;
+    await updateRewardBanner();
     return;
   }
 
-  document.getElementById('postBtn').disabled = true;
   document.getElementById('postBtn').textContent = 'Posting...';
 
   let mediaUrl = null;
@@ -371,10 +386,32 @@ window.createPost = async function(){
       mediaType = selectedFile.type.includes('video')? 'video' : 'image';
     }
 
-    // ✅ FIX 5: userId भी Save करो - Query के लिए जरूरी
+    const userRef = ref(db, `users/${window.userData.uid}`);
+    const result = await runTransaction(userRef, (userData) => {
+      if(userData){
+        const todayKey = getTodayKey();
+        if(userData.lastPostDate!== todayKey){
+          userData.postsToday = 1;
+          userData.lastPostDate = todayKey;
+        } else {
+          if((userData.postsToday || 0) >= 3){
+            return; // Abort
+          }
+          userData.postsToday = (userData.postsToday || 0) + 1;
+        }
+      }
+      return userData;
+    });
+
+    if(!result.committed){
+      alert('Daily limit reached 3/3');
+      await updateRewardBanner();
+      return;
+    }
+
     await push(ref(db, 'posts'), {
       user: currentUser,
-      userId: window.userData.uid, // ✅ यही Fix है - UID से Query होगी
+      userId: window.userData.uid,
       userDp: window.userData.dp || null,
       text: text,
       media: mediaUrl,
@@ -399,12 +436,27 @@ window.createPost = async function(){
     console.error(error);
   }
 
-  // ✅ Post के बाद Count Refresh करो
-  await getTodayPosts();
+  await updateRewardBanner();
 }
 
-function loadPosts(){
-  const postsQuery = query(ref(db, 'posts'), limitToLast(20));
+// ✅ FIX: Infinite Scroll - 50 Posts Load + Scroll पे Auto Load
+function loadPosts(isInitial = false){
+  if(isLoadingMore || noMorePosts) return;
+  isLoadingMore = true;
+
+  let postsQuery;
+  if(isInitial){
+    allLoadedPosts = [];
+    lastPostKey = null;
+    postsQuery = query(ref(db, 'posts'), limitToLast(50)); // ✅ 50 Post Load
+  } else {
+    if(!lastPostKey) {
+      isLoadingMore = false;
+      return;
+    }
+    postsQuery = query(ref(db, 'posts'), orderByKey(), endBefore(lastPostKey), limitToLast(50));
+  }
+
   onValue(postsQuery, async (snapshot) => {
     console.log('Posts loaded');
     let posts = [];
@@ -412,20 +464,39 @@ function loadPosts(){
       snapshot.forEach((childSnapshot) => {
         let post = { id: childSnapshot.key,...childSnapshot.val(), showAllComments: false };
         if((post.reports || 0) < 3) {
-          posts.unshift(post);
+          posts.push(post);
         }
       });
+      posts.reverse(); // Newest first
+      if(posts.length > 0){
+        lastPostKey = posts[posts.length - 1].id;
+      }
+      if(posts.length < 50) noMorePosts = true; // ✅ और Post नहीं हैं
+    } else {
+      noMorePosts = true;
     }
-    localStorage.setItem('ruppy_last_posts', JSON.stringify(posts));
-    await getTodayPosts(); // ✅ Count Refresh
-    renderFeed(posts);
-  }, (error) => {
-    console.error('Firebase Error:', error);
-    document.getElementById('feed').innerHTML = `
-      <div class="empty-hub">
-        <h3>Error Loading Posts</h3>
-        <p>Check Firebase Rules: Set.read to true</p>
-      </div>`;
+
+    if(isInitial){
+      allLoadedPosts = posts;
+    } else {
+      allLoadedPosts = [...allLoadedPosts,...posts];
+    }
+
+    localStorage.setItem('ruppy_last_posts', JSON.stringify(allLoadedPosts));
+    await updateRewardBanner();
+    renderFeed(allLoadedPosts);
+    isLoadingMore = false;
+  }, {onlyOnce: true});
+}
+
+// ✅ Infinite Scroll Setup - Scroll करते ही Load होगा
+function setupInfiniteScroll(){
+  window.addEventListener('scroll', () => {
+    if(isLoadingMore || noMorePosts) return;
+    // ✅ Page के 80% Scroll पे Load कर दो
+    if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 500){
+      loadPosts(false);
+    }
   });
 }
 
