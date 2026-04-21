@@ -35,7 +35,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-btn:disabled{opacity:0.3;cursor:not-allowed}
 .feed{padding:0 20px}
 .post-card{background:#111;border:1px solid #222;border-radius:24px;margin-bottom:16px;overflow:hidden;transition:0.3s;box-shadow:0 8px 25px rgba(0,0,0,0.6)}
-.post-card:active{transform:scale(0.98)}
+/* ✅ FIX 1: Card का Dabna हटाया */
 .post-card-head{padding:16px;display:flex;align-items:center;gap:12px}
 .post-avatar{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden}
 .post-avatar img{width:100%;height:100%;object-fit:cover}
@@ -53,7 +53,8 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 .post-footer{padding:12px 16px;border-top:1px solid #252525;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,#161616,#101010);box-shadow:inset 0 1px 0 rgba(255,215,0,0.15)}
 .post-stats{display:flex;gap:8px}
 .stat-btn{background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:6px 14px;color:#000000;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-width:85px;box-shadow:0 0 10px rgba(251,191,36,0.4);transition:0.2s}
-.stat-btn:active{transform:scale(0.96);background:#FDE68A}
+/* ✅ FIX 2: Like Button Smooth Animation */
+.stat-btn:active{transform:scale(0.92);background:#FDE68A;transition:transform 0.1s ease}
 .stat-btn.liked{background:#FEF3C7;border:1px solid #FDE68A;color:#000}
 .share-btn{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:9px 16px;color:#FFD700;font-size:13px;font-weight:700;cursor:pointer;transition:0.2s}
 .share-btn:active{transform:scale(0.92);background:#222}
@@ -195,7 +196,7 @@ async function initFeed() {
   window.updateBalanceBox();
   window.loadProfileEverywhere();
 
-  listenToPosts(); // ✅ FIX: Real-time Listener
+  listenToPosts();
   setupEventListeners();
 }
 
@@ -491,7 +492,6 @@ window.createPost = async function(){
   await updateRewardBanner();
 }
 
-// ✅ FIX: Real-time Listener - Like दबाते ही UI Update होगा
 function listenToPosts(){
   const postsRef = ref(db, 'posts');
   onValue(postsRef, (snapshot) => {
@@ -537,7 +537,7 @@ function renderFeed(posts){
     }
 
     let timeAgo = getTimeAgo(post.time);
-    let isLiked = post.likedBy && post.likedBy[currentUserId]; // ✅ UID Check
+    let isLiked = post.likedBy && post.likedBy[currentUserId];
     let commentsToShow = post.showAllComments? (post.comments || []) : (post.comments || []).slice(-2);
     let hiddenCount = (post.comments || []).length - commentsToShow.length;
 
@@ -607,19 +607,32 @@ function getTimeAgo(time){
   return new Date(time).toLocaleDateString();
 }
 
-// ✅ FIX: Like Button अब 100% चलेगा
+// ✅ FIX 3: Optimistic Like - Facebook जैसा Instant
 window.likePost = async function(id){
   if(!window.userData || window.userData.uid === "guest" ||!currentUserId){
     alert('Please login to like posts');
     return;
   }
 
-  const postRef = ref(db, `posts/${id}`);
-  const snapshot = await get(postRef);
-  const post = snapshot.val();
-  if(!post) return;
+  const postIndex = allLoadedPosts.findIndex(p => p.id === id);
+  if(postIndex === -1) return;
 
+  const post = allLoadedPosts[postIndex];
   let isLiked = post.likedBy && post.likedBy[currentUserId];
+
+  // 1. UI तुरंत Update - Optimistic
+  if(isLiked){
+    post.likes = Math.max(0, (post.likes || 0) - 1);
+    delete post.likedBy[currentUserId];
+  } else {
+    post.likes = (post.likes || 0) + 1;
+    if(!post.likedBy) post.likedBy = {};
+    post.likedBy[currentUserId] = true;
+  }
+  renderFeed(allLoadedPosts);
+
+  // 2. Firebase में Background Update
+  const postRef = ref(db, `posts/${id}`);
   let updates = {};
   if(isLiked){
     updates[`posts/${id}/likes`] = Math.max(0, (post.likes || 0) - 1);
