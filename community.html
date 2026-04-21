@@ -219,6 +219,13 @@ function getTodayKey(){
 async function getTodayPosts(){
   const todayKey = getTodayKey();
 
+  // ✅ बग फिक्स: जब तक असली यूज़रनेम लोड नहीं होता, काउंट 0 रखो
+  if(!window.userData ||!window.userData.name || currentUser === 'User'){
+    todayPostCount = 0;
+    todayPostsData = [];
+    return todayPostsData;
+  }
+
   const postsRef = ref(db, 'posts');
   const userPostsQuery = query(postsRef, orderByChild('user'), equalTo(currentUser));
   const snapshot = await get(userPostsQuery);
