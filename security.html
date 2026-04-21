@@ -1,189 +1,424 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Security Policy - RUPPY Network</title>
-<meta name="description" content="Security and data protection policy of RUPPY Network rewards application. Learn how we protect user accounts and data.">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Settings</title>
+
+<!-- Monetag Verification Meta Tag -->
+<meta name="monetag" content="21dbbe26571c9c62250f84692bff67fc">
+
+<script type="module" src="config.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-body{margin:0;background:#000;color:#fff;font-family:Arial, sans-serif;padding:20px;line-height:1.8}
-.wrap{max-width:800px;margin:auto;padding-bottom:80px}
-h1{color:#f9a825;text-align:center;margin-bottom:30px;font-size:32px;font-weight:700}
-h2{color:#f9a825;margin-top:40px;margin-bottom:15px;font-size:22px;border-left:4px solid #f9a825;padding-left:12px}
-h3{color:#f9a825;margin-top:25px;font-size:18px}
-p{color:#ccc;font-size:15px;margin-bottom:18px;text-align:justify}
-ul{color:#ccc;font-size:15px;margin:15px 0 25px 25px}
-li{margin-bottom:12px;line-height:1.7}
-.btn{display:block;margin:40px auto;padding:14px 28px;background:#f9a825;color:#000;border:none;border-radius:30px;font-weight:bold;width:220px;text-align:center;text-decoration:none;font-size:16px}
-a{color:#f9a825;text-decoration:none}
-a:hover{text-decoration:underline}
-.note{background:#111;border:1px solid #333;padding:20px;border-radius:12px;margin:25px 0;border-left:4px solid #f9a825}
-.note strong{color:#f9a825}
-table{width:100%;border-collapse:collapse;margin:20px 0;color:#ccc;font-size:14px}
-th,td{border:1px solid #333;padding:12px;text-align:left}
-th{background:#111;color:#f9a825}
+:root{--bg:#0B0B0C;--card:#161617;--border:#2A2A2C;--gold:#F3C774;--green:#24C464;--red:#E53E3E;--muted:#9CA3AF;--blue:#3B82F6}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Poppins,sans-serif}
+body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.back{font-size:24px;cursor:pointer}
+.title{font-size:22px;font-weight:600}
+.avatar{width:96px;height:96px;margin:20px auto 14px;border-radius:50%;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,var(--gold)22%,transparent 22%);box-shadow:0 0 32px rgba(243,199,116,.35);overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.avatar span{font-size:44px;font-weight:700;color:var(--gold)}
+.name{text-align:center;font-size:26px;font-weight:600}
+.bal{display:block;width:max-content;margin:12px auto;padding:6px 18px;border:1px solid var(--green);border-radius:999px;color:var(--green);font-weight:600;font-size:15px}
+.id-box{display:block;width:max-content;margin:8px auto;padding:4px 14px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font-size:13px;cursor:pointer}
+.id-box:active{transform:scale(0.95)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:24px;overflow:hidden;margin:26px 0}
+.row{display:flex;align-items:center;justify-content:space-between;padding:20px 18px;border-top:1px solid var(--border);cursor:pointer;transition:all 0.2s}
+.row:first-child{border:0}
+.row:active{background:rgba(243,199,116,0.05)}
+.row.disabled{opacity:0.5;cursor:not-allowed}
+.row.disabled:active{background:transparent}
+.l{display:flex;align-items:center}
+.icon{width:44px;height:44px;border-radius:12px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-right:16px;font-size:20px}
+.txt{font-size:18px}
+.val{color:var(--muted);font-size:16px;margin-right:10px;user-select:none}
+.coming-soon{font-size:11px;color:var(--gold);background:rgba(243,199,116,0.1);padding:2px 8px;border-radius:6px;margin-left:8px}
+.sec{color:var(--muted);letter-spacing:1px;font-size:13px;margin:24px 0 12px}
+.logout{width:100%;padding:16px;border:1px solid var(--red);border-radius:16px;background:transparent;color:var(--red);font-size:16px;font-weight:600;margin-top:24px;cursor:pointer}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0;z-index:999}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
+.nav-item.active{color:#FFA500}
+.nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
+.nav-item.icon{font-size:20px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:1000;flex-direction:column;backdrop-filter:blur(8px)}
+.modal.active{display:flex;align-items:center;justify-content:center}
+.modal-content{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:24px;width:90%;max-width:400px;max-height:90vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,0.5)}
+.modal-title{font-size:20px;font-weight:700;margin-bottom:20px;text-align:center;background:linear-gradient(135deg, var(--gold), #FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.input-group{margin-bottom:16px}
+.input-group label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px;font-weight:500}
+.input-group input{width:100%;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:#fff;font-size:15px;transition:all 0.2s}
+.input-group input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(243,199,116,0.1)}
+.file-input{display:none}
+.file-label{display:block;padding:14px;border:1px solid var(--border);border-radius:12px;text-align:center;cursor:pointer;transition:all 0.2s}
+.file-label:active{background:rgba(243,199,116,0.05)}
+.btn-group{display:flex;gap:12px;margin-top:20px}
+.btn{flex:1;padding:14px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;border:none}
+.btn:active{transform:scale(0.98)}
+.btn-cancel{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-save{background:linear-gradient(135deg, var(--gold), #FFA500);color:#000;box-shadow:0 4px 15px rgba(243,199,116,0.3)}
+.btn-save:disabled{opacity:0.5;cursor:not-allowed}
+.sp{height:96px}
+.ft-links{font-size:11px;color:#666;text-align:center;margin-top:30px;padding-bottom:20px}
+.ft-links a{color:#aaa;text-decoration:none}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:14px 24px;border-radius:12px;font-size:14px;display:none;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);font-weight:500}
+.toast.success{background:#1a5c1a;color:#4ade80}
+.toast.error{background:#5c1a1a;color:#f87171}
+.toast.info{background:#1a3c5c;color:#60a5fa}
 </style>
 </head>
 <body>
-<div class="wrap">
-<h1>Security Policy & Data Protection</h1>
-
-<p>Last Updated: April 12, 2026</p>
-
-<p>Welcome to RUPPY Network. Your trust is the foundation of our platform. This comprehensive Security Policy explains in detail how RUPPY Network protects your account, secures your data, and maintains the integrity of our rewards ecosystem. We are committed to transparency and want every user to understand the technical and procedural safeguards we have implemented. By creating an account or using RUPPY Network, you acknowledge that you have read, understood, and agree to be bound by this Security Policy.</p>
-
-<h2>1. Our Core Security Philosophy</h2>
-<p>RUPPY Network is built on the principle of "Privacy by Design and Security by Default." This means that security is not an afterthought but is integrated into every layer of our application architecture. Our primary goal is to ensure that users can enjoy earning rewards without worrying about their personal data, account safety, or the fairness of the platform. We believe that a secure platform is essential for building long-term user trust and a sustainable community.</p>
-<p>Unlike many applications that collect extensive personal information, RUPPY Network operates on a data minimization model. We only process the absolute minimum data required to provide our core functionality: displaying your username, tracking your RUPPY balance, and managing your referral code. This approach significantly reduces security risks because there is less sensitive data to protect.</p>
-
-<h2>2. Account Security Architecture</h2>
-<p>Your RUPPY Network account is protected by multiple layers of security designed to prevent unauthorized access, data breaches, and fraudulent activities.</p>
-
-<h3>2.1. Local-First Data Storage</h3>
-<p>All critical user data, including your RUPPY balance, mining timestamps, boost status, referral information, and profile settings, is stored locally on your device using the browser's secure localStorage API. This architecture provides several security advantages:</p>
-<ul>
-<li><strong>No Central Database of Passwords:</strong> Because we do not use traditional username-password authentication, there is no central database of user credentials that could be targeted by hackers. This eliminates the risk of large-scale password leaks that affect millions of users on other platforms.</li>
-<li><strong>User Control:</strong> You maintain direct control over your data. Your account data exists only on your device and is not transmitted to or stored on our servers unless explicitly required for a specific feature.</li>
-<li><strong>Reduced Attack Surface:</strong> With no central repository of user data, there is no single point of failure that an attacker could exploit to compromise all user accounts simultaneously.</li>
-</ul>
-
-<h3>2.2. Unique User Identification System</h3>
-<p>Every account on RUPPY Network is assigned a unique User ID at the moment of creation. This identifier serves as the primary key for your account and has the following security properties:</p>
-<ul>
-<li><strong>Cryptographic Generation:</strong> User IDs are generated using a combination of timestamp data and random number generation, creating IDs like RUP42413101. This makes them statistically impossible to guess or brute-force.</li>
-<li><strong>Non-Sequential:</strong> IDs are not sequential, which prevents an attacker from enumerating user accounts by simply incrementing a number.</li>
-<li><strong>Account Recovery:</strong> Your User ID is the sole credential required to identify and recover your account. This is why we strongly emphasize the importance of saving it in a secure location.</li>
-</ul>
-
-<h3>2.3. Session and Device Management</h3>
-<p>Your active session is tied exclusively to the specific browser and device you use to access RUPPY Network. We do not support simultaneous logins across multiple devices for a single account, which prevents session hijacking attacks. If you clear your browser data or switch to a new device, your session will end, and you will need to use your User ID to restore your progress on the new device.</p>
-
-<h2>3. Data Protection and Privacy Measures</h2>
-<p>Protecting your personal information is a legal and ethical obligation we take seriously. Our data handling practices are designed to comply with global privacy standards, including the General Data Protection Regulation (GDPR) principles.</p>
-
-<h3>3.1. Data We Collect and Why</h3>
-<p>RUPPY Network collects minimal data. The following table outlines exactly what we collect, why we collect it, and how it is stored:</p>
-<table>
-<tr>
-<th>Data Type</th>
-<th>Purpose</th>
-<th>Storage Location</th>
-<th>Retention Period</th>
-</tr>
-<tr>
-<td>Username</td>
-<td>To display your identity within the app and on leaderboards</td>
-<td>Local device storage only</td>
-<td>Until you clear app data or delete account</td>
-</tr>
-<tr>
-<td>User ID</td>
-<td>To uniquely identify your account and track rewards</td>
-<td>Local device storage only</td>
-<td>Until you clear app data or delete account</td>
-</tr>
-<tr>
-<td>RUPPY Balance</td>
-<td>To track your earned virtual rewards</td>
-<td>Local device storage only</td>
-<td>Until you clear app data or delete account</td>
-</tr>
-<tr>
-<td>Mining Timestamps</td>
-<td>To enforce the 3-hour cooldown period between claims</td>
-<td>Local device storage only</td>
-<td>Until you clear app data or delete account</td>
-</tr>
-<tr>
-<td>Device Information</td>
-<td>To optimize app performance for your screen size</td>
-<td>Processed in real-time, not stored</td>
-<td>Not stored</td>
-</tr>
-</table>
-<p>We explicitly do NOT collect: your real name, email address, phone number, physical address, GPS location, financial information, credit card details, bank account numbers, government ID numbers, or biometric data.</p>
-
-<h3>3.2. Data Encryption in Transit</h3>
-<p>All communication between your device and any external services used by RUPPY Network, such as our content delivery network or advertising partners, is encrypted using Transport Layer Security (TLS 1.3), also known as HTTPS. This industry-standard encryption ensures that any data transmitted over the internet cannot be intercepted, read, or modified by malicious third parties through man-in-the-middle attacks.</p>
-
-<h3>3.3. Third-Party Services and Data Sharing</h3>
-<p>To provide a complete service, RUPPY Network integrates with a limited number of carefully vetted third-party services. We are transparent about these integrations:</p>
-<ul>
-<li><strong>Google AdMob:</strong> Used to display advertisements that support our free service. AdMob may collect anonymized device identifiers for ad personalization. We do not share your RUPPY username, balance, or User ID with AdMob. You can opt out of personalized ads through your device settings.</li>
-<li><strong>Google Translate API:</strong> Used to provide multi-language support. When you select a language, your browser sends the text to be translated to Google. We do not send any personal account data to this service.</li>
-<li><strong>Monetag:</strong> An advertising partner used for additional monetization. Similar to AdMob, they receive only technical data required to serve ads and not your personal RUPPY account information.</li>
-</ul>
-<p>We do not sell, rent, or trade your personal information to any third parties for marketing purposes. Our business model is based on advertising revenue, not on data brokerage.</p>
-
-<h2>4. Platform Integrity and Anti-Fraud Systems</h2>
-<p>Maintaining a fair and balanced rewards ecosystem is crucial for the long-term health of RUPPY Network. We have implemented sophisticated automated systems to detect and prevent fraud, abuse, and unfair gameplay.</p>
-
-<h3>4.1. Prohibited Activities</h3>
-<p>The following activities are strictly prohibited and will result in immediate and permanent account suspension without warning:</p>
-<ul>
-<li>Using bots, scripts, auto-clickers, or any form of automation to claim rewards or complete tasks.</li>
-<li>Attempting to manipulate the client-side code to alter your RUPPY balance or bypass cooldown timers.</li>
-<li>Creating multiple accounts to abuse the referral system or claim new user bonuses repeatedly.</li>
-<li>Using VPNs, proxies, or emulators to mask your location or device identity for the purpose of exploiting the system.</li>
-<li>Engaging in any form of harassment, hate speech, or illegal activity within the app community.</li>
-</ul>
-
-<h3>4.2. How Our Detection Systems Work</h3>
-<p>Our anti-fraud system operates 24/7 and monitors for anomalous patterns that indicate non-human behavior. This includes analyzing claim frequency, click patterns, session duration, and device consistency. When suspicious activity is detected, the account is automatically flagged for review. Our security team then investigates the flag. If cheating is confirmed, the account is permanently banned, and all associated RUPPY coins are voided. This zero-tolerance policy ensures that genuine, honest users are not disadvantaged by cheaters.</p>
-
-<h2>5. User Responsibilities for Account Security</h2>
-<p>Security is a shared responsibility. While we implement robust protections on our end, you must also take proactive steps to secure your account. Failure to follow these guidelines may result in loss of access to your account, for which RUPPY Network cannot be held responsible.</p>
-
-<h3>5.1. Safeguarding Your User ID</h3>
-<p>Your User ID is the master key to your account. Treat it with the same level of care as you would a password.</p>
-<ul>
-<li><strong>Do:</strong> Copy your User ID from the Settings page and store it in a secure password manager like Bitwarden, 1Password, or a private encrypted note.</li>
-<li><strong>Do:</strong> Write it down on paper and store it in a safe physical location.</li>
-<li><strong>Do Not:</strong> Share your User ID on public forums, social media, or with anyone you do not trust completely.</li>
-<li><strong>Do Not:</strong> Save your User ID in an unprotected text file or screenshot on your phone, as this could be accessed if your device is compromised.</li>
-</ul>
-
-<h3>5.2. Recognizing and Avoiding Phishing Attacks</h3>
-<p>Phishing is a common tactic where attackers impersonate RUPPY Network to trick you into revealing your User ID or other information. Be vigilant:</p>
-<ul>
-<li>RUPPY Network staff will NEVER contact you via Telegram, WhatsApp, or social media to ask for your User ID. All official communication occurs through our support email: support@ruppynetwork.com.</li>
-<li>We will NEVER ask you to install software, grant remote access to your device, or send cryptocurrency to "verify" your account. These are all scams.</li>
-<li>Always check the URL in your browser. The only official domain is ruppynetwork.com. Beware of lookalike domains such as ruppynetwork-official.com or ruppy-network.net.</li>
-</ul>
-
-<h3>5.3. Device Security Best Practices</h3>
-<ul>
-<li>Keep your operating system and web browser updated to the latest version. Updates contain critical security patches.</li>
-<li>Use a reputable antivirus or anti-malware application on your device.</li>
-<li>Avoid accessing RUPPY Network on public or shared computers. If you must, always use the browser's private/incognito mode and ensure you log out and clear data afterward.</li>
-<li>Use a lock screen password, PIN, or biometric lock on your mobile device to prevent physical access by others.</li>
-</ul>
-
-<h2>6. Incident Response and Account Recovery</h2>
-<p>Despite best efforts, security incidents can occur. We have a defined process for handling them.</p>
-
-<h3>6.1. Reporting a Security Issue</h3>
-<p>If you believe you have discovered a security vulnerability in RUPPY Network or your account has been compromised, please contact us immediately at support@ruppynetwork.com with the subject line "URGENT: Security Issue". Please provide as much detail as possible, including steps to reproduce the vulnerability if applicable. We are committed to investigating all legitimate reports promptly and responsibly. We operate a responsible disclosure policy and ask that you do not publicly disclose the vulnerability until we have had a chance to address it.</p>
-
-<h3>6.2. Account Recovery Process</h3>
-<p>If you lose access to your device and need to recover your account, you must provide our support team with your User ID. Without this ID, we have no way to verify your ownership of an account due to our minimal data collection policy. This is a deliberate trade-off between privacy and convenience. Once you provide your User ID, we can manually restore your balance and progress to a new device. Please allow up to 48 business hours for account recovery requests to be processed.</p>
-
-<h2>7. Compliance and Legal Framework</h2>
-<p>RUPPY Network is designed to comply with applicable laws and regulations regarding data protection and online services. Because we do not handle real money or financial instruments, we are classified as an entertainment and gaming application, not a financial service. RUPPY coins have no monetary value outside the app and cannot be redeemed for cash or cryptocurrency. This distinction is important for legal and tax purposes.</p>
-
-<h2>8. Changes to This Policy</h2>
-<p>We may update this Security Policy periodically to reflect changes in our security practices, legal requirements, or platform features. When we make material changes, we will update the "Last Updated" date at the top of this page and may provide notice within the app. We encourage you to review this policy regularly to stay informed. Your continued use of RUPPY Network after any changes constitutes your acceptance of the updated policy.</p>
-
-<h2>9. Contact Information</h2>
-<p>For any questions, concerns, or reports related to security, privacy, or data protection, please do not hesitate to contact our dedicated team.</p>
-<p><strong>RUPPY Network Security Team</strong><br>
-<strong>Email:</strong> <a href="mailto:support@ruppynetwork.com">support@ruppynetwork.com</a><br>
-<strong>Response Time:</strong> We aim to respond to all security-related inquiries within 48 business hours.</p>
-<div class="note">
-<strong>Final Reminder:</strong> Your security is our priority, but it requires your participation. Please save your User ID, be wary of scams, and use the app responsibly. Together, we can keep the RUPPY Network community safe and fun for everyone.
+<div class="header">
+  <div class="back" onclick="history.back()">←</div>
+  <div class="title">Settings</div>
 </div>
 
-<a href="app.html" class="btn">Back to App</a>
+<div class="avatar" id="avatarBox"><span id="avatarLetter">R</span></div>
+<div class="name" id="userName">Loading...</div>
+<div class="bal" id="userBalance">0 RUP</div>
+<div class="id-box" id="userId" onclick="copyUserId()">ID: Loading...</div>
+
+<div class="card">
+<div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📤</div><div class="txt">Send RUP <span class="coming-soon">Coming Soon</span></div></div>›</div>
+<div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📥</div><div class="txt">Receive RUP <span class="coming-soon">Coming Soon</span></div></div>›</div>
+<div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">Loading...</span>›</div>
+<div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
+<div class="row" onclick="goPage('security.html')"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
+<div class="row" onclick="toggleNotification()"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div><span class="val" id="notifStatus">Off</span>›</div>
+<div class="row" onclick="goPage('contact.html')"><div class="l"><div class="icon">❓</div><div class="txt">Help & Support</div></div>›</div>
+<div class="row" onclick="goPage('privacy.html')"><div class="l"><div class="icon">📄</div><div class="txt">Privacy Policy</div></div>›</div>
+<div class="row" onclick="goPage('terms.html')"><div class="l"><div class="icon">📋</div><div class="txt">Terms & Conditions</div></div>›</div>
 </div>
+
+<button class="logout" onclick="logout()">Logout</button>
+
+<div class="ft-links">
+  <a href="about.html">About</a> •
+  <a href="contact.html">Contact</a> •
+  <a href="privacy.html">Privacy</a> •
+  <a href="terms.html">Terms</a>
+</div>
+
+<div style="font-size:9px;color:#666;text-align:center;padding:15px;line-height:1.4">
+*RUP are virtual points for entertainment & leaderboard ranking only. They have no monetary value and cannot be exchanged for real cash, prizes, or cryptocurrency.
+</div>
+
+<div class="sp"></div>
+
+<!-- Edit Profile Modal -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <div class="modal-title">Edit Profile</div>
+    <div class="input-group">
+      <label>Name</label>
+      <input type="text" id="editName" placeholder="Enter Name">
+    </div>
+    <div class="input-group">
+      <label>Birthday</label>
+      <input type="date" id="editBirthday">
+    </div>
+    <div class="input-group">
+      <label>Profile Photo</label>
+      <input type="file" id="editPhoto" class="file-input" accept="image/*">
+      <label for="editPhoto" class="file-label">Choose Photo</label>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-cancel" onclick="closeEditProfile()">Cancel</button>
+      <button class="btn btn-save" id="saveBtn" onclick="saveProfile()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <div class="nav-item" onclick="goPage('app.html')">
+    <div class="icon">🏠</div>
+    <span>Home</span>
+  </div>
+  <div class="nav-item" onclick="goPage('tasks.html')">
+    <div class="icon">📋</div>
+    <span>Tasks</span>
+  </div>
+  <div class="nav-item" onclick="goPage('referral.html')">
+    <div class="icon">👥</div>
+    <span>Referral</span>
+  </div>
+  <div class="nav-item" onclick="goPage('ranking.html')">
+    <div class="icon">🏆</div>
+    <span>Ranking</span>
+  </div>
+  <div class="nav-item" onclick="goPage('community.html')">
+    <div class="icon">📝</div>
+    <span>Feed</span>
+  </div>
+  <div class="nav-item active">
+    <div class="icon">⚙️</div>
+    <span>Settings</span>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied!</div>
+
+<script type="module">
+  import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+  // ✅ EXACT SAME AS REFERRAL.HTML - referralCode Field Use करो
+  async function init(){
+    let attempts = 0;
+    while(!window.userData?.uid && attempts < 50) {
+      await new Promise(r => setTimeout(r, 100));
+      attempts++;
+    }
+    let userData = window.userData;
+
+    if (!userData?.uid) {
+      const auth = getAuth();
+      await new Promise(resolve => {
+        const unsubscribe = onAuthStateChanged(auth, user => {
+          unsubscribe();
+          userData = { uid: user?.uid };
+          resolve();
+        });
+      });
+    }
+
+    if (!userData?.uid) {
+      document.getElementById('refCode').innerText = 'LOGIN-FIRST';
+      document.getElementById('userId').innerText = 'ID: LOGIN-FIRST';
+      showToast('Please login first', 'error');
+      setTimeout(() => window.location.href = 'index.html', 1500);
+      return;
+    }
+
+    try {
+      const db = getDatabase();
+      const userRef = ref(db, `users/${userData.uid}`);
+      const snapshot = await get(userRef);
+
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+
+        // ✅ यही Line Fix है - referralCode Primary, myReferralCode Secondary
+        // Referral.html में भी यही Logic है
+        const code = data.referralCode || data.myReferralCode || 'NOT-FOUND';
+
+        // ✅ Auto Sync: अगर myReferralCode अलग है तो Update कर दो
+        if (data.myReferralCode && data.myReferralCode!== data.referralCode) {
+          await update(userRef, { myReferralCode: data.referralCode });
+        }
+
+        const shortId = `RUP-${userData.uid.substring(0,4).toUpperCase()}`;
+
+        if (data.dp) {
+          document.getElementById('avatarBox').innerHTML = `<img src="${data.dp}" alt="Profile">`;
+        } else {
+          document.getElementById('avatarBox').innerHTML = `<span>${(data.name || 'U').charAt(0).toUpperCase()}</span>`;
+        }
+        document.getElementById('userName').innerText = data.name || 'User';
+        document.getElementById('userBalance').innerText = (data.balance || 0) + ' RUP';
+        document.getElementById('userId').innerText = 'ID: ' + shortId;
+        document.getElementById('refCode').innerText = code;
+
+        window.userData = {...window.userData,...data, referralCode: code, shortId: shortId};
+        localStorage.setItem('ruppy_user_cache', JSON.stringify(window.userData));
+      } else {
+        document.getElementById('refCode').innerText = 'ERROR';
+        showToast('User data not found', 'error');
+      }
+    } catch (err) {
+      console.error('Load Error:', err);
+      document.getElementById('refCode').innerText = 'ERROR';
+      showToast('Failed to load: ' + err.message, 'error');
+    }
+  }
+
+  init();
+
+  window.showToast = function(msg, type = 'success'){
+    let t = document.getElementById('toast');
+    t.innerText = msg;
+    t.className = 'toast ' + type;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+  }
+
+  window.showComingSoon = function(){
+    showToast('This feature is Coming Soon! 🚀', 'info');
+  }
+
+  // ✅ सिर्फ Code Copy होगा
+  window.copyRefCode = function(){
+    const code = document.getElementById('refCode').innerText.trim();
+
+    if(!code || code === 'Loading...' || code === 'LOGIN-FIRST' || code === '-' || code === 'ERROR' || code === 'NOT-FOUND'){
+      showToast('Code not ready: ' + code, 'error');
+      return;
+    }
+
+    navigator.clipboard.writeText(code).then(() => {
+      showToast('✅ Copied: ' + code, 'success');
+    }).catch(() => {
+      const temp = document.createElement('textarea');
+      temp.value = code;
+      temp.style.position = 'fixed';
+      temp.style.opacity = '0';
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand('copy');
+      document.body.removeChild(temp);
+      showToast('✅ Copied: ' + code, 'success');
+    });
+  }
+
+  window.copyUserId = function(){
+    const idText = document.getElementById('userId').innerText.replace('ID: ', '');
+    if(idText === 'Loading...' || idText === 'LOGIN-FIRST') {
+      showToast('ID not ready', 'error');
+      return;
+    }
+    navigator.clipboard.writeText(idText).then(() => {
+      showToast('✅ ID Copied: ' + idText, 'success');
+    });
+  }
+
+  window.goPage = function(page){ window.location.href = page; }
+
+  window.openEditProfile = function(){
+    document.getElementById('editName').value = window.userData?.name || '';
+    document.getElementById('editBirthday').value = window.userData?.birthday || '';
+    document.getElementById('editModal').classList.add('active');
+  }
+
+  window.closeEditProfile = function(){
+    document.getElementById('editModal').classList.remove('active');
+  }
+
+  window.saveProfile = async function(){
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+
+    try {
+      window.userData.name = document.getElementById('editName').value || 'Guest';
+      window.userData.birthday = document.getElementById('editBirthday').value;
+      const file = document.getElementById('editPhoto').files[0];
+
+      if(file){
+        saveBtn.textContent = 'Compressing...';
+        const base64Photo = await compressToBase64(file, 400, 0.6);
+
+        if(base64Photo.length > 900000){
+          showToast('Photo too large! Use smaller image', 'error');
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save';
+          return;
+        }
+        window.userData.dp = base64Photo;
+      }
+
+      saveBtn.textContent = 'Saving...';
+      await window.saveRuppyData(window.userData);
+      await init();
+      closeEditProfile();
+      showToast('Profile Updated!', 'success');
+
+    } catch(error){
+      console.error('Save Error:', error);
+      showToast('Failed: ' + error.message, 'error');
+    }
+
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save';
+  }
+
+  function compressToBase64(file, maxWidth, quality){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = function(e){
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = function(){
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          if(width > maxWidth){
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const base64 = canvas.toDataURL('image/jpeg', quality);
+          resolve(base64);
+        }
+        img.onerror = reject;
+      }
+      reader.onerror = reject;
+    });
+  }
+
+  window.logout = async function(){
+    if(confirm('Are you sure you want to logout?')){
+      const auth = getAuth();
+      await signOut(auth);
+      localStorage.removeItem('ruppy_user');
+      localStorage.removeItem('ruppy_user_cache');
+      localStorage.removeItem('notif_enabled');
+      window.location.href = '/';
+    }
+  }
+
+  let notifEnabled = localStorage.getItem('notif_enabled') === 'true';
+
+  function updateNotifStatus(){
+    document.getElementById('notifStatus').innerText = notifEnabled? 'On' : 'Off';
+    document.getElementById('notifStatus').style.color = notifEnabled? 'var(--green)' : 'var(--muted)';
+  }
+  updateNotifStatus();
+
+  window.toggleNotification = async function(){
+    if(!notifEnabled){
+      if('Notification' in window){
+        const permission = await Notification.requestPermission();
+        if(permission === 'granted'){
+          notifEnabled = true;
+          localStorage.setItem('notif_enabled', 'true');
+          updateNotifStatus();
+        }
+      }
+    } else {
+      notifEnabled = false;
+      localStorage.setItem('notif_enabled', 'false');
+      updateNotifStatus();
+    }
+  }
+
+  window.sendMiningNotif = function(){
+    if(localStorage.getItem('notif_enabled') === 'true'){
+      if('Notification' in window && Notification.permission === 'granted'){
+        new Notification('Rewards Ready!', {
+          body: 'Your RUP is ready to collect!',
+          icon: 'https://ruppynetwork.com/icon.png'
+        });
+        new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play();
+      }
+    }
+  }
+
+  // ✅ Real-time Sync with Referral.html
+  window.addEventListener('storage', function(e){
+    if(e.key === 'ruppy_user_cache') {
+      const data = JSON.parse(e.newValue);
+      document.getElementById('refCode').innerText = data.referralCode || data.myReferralCode;
+    }
+  });
+</script>
+
 </body>
 </html>
