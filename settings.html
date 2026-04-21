@@ -1,40 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Settings</title>
+
+<!-- Monetag Verification Meta Tag -->
+<meta name="monetag" content="21dbbe26571c9c62250f84692bff67fc">
+
+<script type="module" src="config.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0B0B0C;--card:#161617;--border:#2A2A2C;--gold:#F3C774;--green:#24C464;--red:#E53E3E;--muted:#9CA3AF;--blue:#3B82F6}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Poppins,sans-serif}
+body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.back{font-size:24px;cursor:pointer}
+.title{font-size:22px;font-weight:600}
+.avatar{width:96px;height:96px;margin:20px auto 14px;border-radius:50%;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,var(--gold)22%,transparent 22%);box-shadow:0 0 32px rgba(243,199,116,.35);overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.avatar span{font-size:44px;font-weight:700;color:var(--gold)}
+.name{text-align:center;font-size:26px;font-weight:600}
+.bal{display:block;width:max-content;margin:12px auto;padding:6px 18px;border:1px solid var(--green);border-radius:999px;color:var(--green);font-weight:600;font-size:15px}
+.id-box{display:block;width:max-content;margin:8px auto;padding:4px 14px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font-size:13px;cursor:pointer}
+.id-box:active{transform:scale(0.95)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:24px;overflow:hidden;margin:26px 0}
+.row{display:flex;align-items:center;justify-content:space-between;padding:20px 18px;border-top:1px solid var(--border);cursor:pointer;transition:all 0.2s}
+.row:first-child{border:0}
+.row:active{background:rgba(243,199,116,0.05)}
+.row.disabled{opacity:0.5;cursor:not-allowed}
+.row.disabled:active{background:transparent}
+.l{display:flex;align-items:center}
+.icon{width:44px;height:44px;border-radius:12px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-right:16px;font-size:20px}
+.txt{font-size:18px}
+.val{color:var(--muted);font-size:16px;margin-right:10px;user-select:none}
+.coming-soon{font-size:11px;color:var(--gold);background:rgba(243,199,116,0.1);padding:2px 8px;border-radius:6px;margin-left:8px}
+.sec{color:var(--muted);letter-spacing:1px;font-size:13px;margin:24px 0 12px}
+.logout{width:100%;padding:16px;border:1px solid var(--red);border-radius:16px;background:transparent;color:var(--red);font-size:16px;font-weight:600;margin-top:24px;cursor:pointer}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0;z-index:999}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
+.nav-item.active{color:#FFA500}
+.nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
+.nav-item.icon{font-size:20px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:1000;flex-direction:column;backdrop-filter:blur(8px)}
+.modal.active{display:flex;align-items:center;justify-content:center}
+.modal-content{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:24px;width:90%;max-width:400px;max-height:90vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,0.5)}
+.modal-title{font-size:20px;font-weight:700;margin-bottom:20px;text-align:center;background:linear-gradient(135deg, var(--gold), #FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.input-group{margin-bottom:16px}
+.input-group label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px;font-weight:500}
+.input-group input{width:100%;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:#fff;font-size:15px;transition:all 0.2s}
+.input-group input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(243,199,116,0.1)}
+.file-input{display:none}
+.file-label{display:block;padding:14px;border:1px solid var(--border);border-radius:12px;text-align:center;cursor:pointer;transition:all 0.2s}
+.file-label:active{background:rgba(243,199,116,0.05)}
+.btn-group{display:flex;gap:12px;margin-top:20px}
+.btn{flex:1;padding:14px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;border:none}
+.btn:active{transform:scale(0.98)}
+.btn-cancel{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-save{background:linear-gradient(135deg, var(--gold), #FFA500);color:#000;box-shadow:0 4px 15px rgba(243,199,116,0.3)}
+.btn-save:disabled{opacity:0.5;cursor:not-allowed}
+.sp{height:96px}
+.ft-links{font-size:11px;color:#666;text-align:center;margin-top:30px;padding-bottom:20px}
+.ft-links a{color:#aaa;text-decoration:none}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:14px 24px;border-radius:12px;font-size:14px;display:none;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);font-weight:500}
+.toast.success{background:#1a5c1a;color:#4ade80}
+.toast.error{background:#5c1a1a;color:#f87171}
+.toast.info{background:#1a3c5c;color:#60a5fa}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="back" onclick="history.back()">←</div>
+  <div class="title">Settings</div>
+</div>
+
+<div class="avatar" id="avatarBox"><span id="avatarLetter">R</span></div>
+<div class="name" id="userName">Loading...</div>
+<div class="bal" id="userBalance">0 RUP</div>
+<div class="id-box" id="userId" onclick="copyUserId()">ID: Loading...</div>
+
+<div class="card">
+<div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📤</div><div class="txt">Send RUP <span class="coming-soon">Coming Soon</span></div></div>›</div>
+<div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📥</div><div class="txt">Receive RUP <span class="coming-soon">Coming Soon</span></div></div>›</div>
+<div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">Loading...</span>›</div>
+<div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
+<div class="row" onclick="goPage('security.html')"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
+<div class="row" onclick="toggleNotification()"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div><span class="val" id="notifStatus">Off</span>›</div>
+<div class="row" onclick="goPage('contact.html')"><div class="l"><div class="icon">❓</div><div class="txt">Help & Support</div></div>›</div>
+<div class="row" onclick="goPage('privacy.html')"><div class="l"><div class="icon">📄</div><div class="txt">Privacy Policy</div></div>›</div>
+<div class="row" onclick="goPage('terms.html')"><div class="l"><div class="icon">📋</div><div class="txt">Terms & Conditions</div></div>›</div>
+</div>
+
+<button class="logout" onclick="logout()">Logout</button>
+
+<div class="ft-links">
+  <a href="about.html">About</a> •
+  <a href="contact.html">Contact</a> •
+  <a href="privacy.html">Privacy</a> •
+  <a href="terms.html">Terms</a>
+</div>
+
+<div style="font-size:9px;color:#666;text-align:center;padding:15px;line-height:1.4">
+*RUP are virtual points for entertainment & leaderboard ranking only. They have no monetary value and cannot be exchanged for real cash, prizes, or cryptocurrency.
+</div>
+
+<div class="sp"></div>
+
+<!-- Edit Profile Modal -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <div class="modal-title">Edit Profile</div>
+    <div class="input-group">
+      <label>Name</label>
+      <input type="text" id="editName" placeholder="Enter Name">
+    </div>
+    <div class="input-group">
+      <label>Birthday</label>
+      <input type="date" id="editBirthday">
+    </div>
+    <div class="input-group">
+      <label>Profile Photo</label>
+      <input type="file" id="editPhoto" class="file-input" accept="image/*">
+      <label for="editPhoto" class="file-label">Choose Photo</label>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-cancel" onclick="closeEditProfile()">Cancel</button>
+      <button class="btn btn-save" id="saveBtn" onclick="saveProfile()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <div class="nav-item" onclick="goPage('app.html')">
+    <div class="icon">🏠</div>
+    <span>Home</span>
+  </div>
+  <div class="nav-item" onclick="goPage('tasks.html')">
+    <div class="icon">📋</div>
+    <span>Tasks</span>
+  </div>
+  <div class="nav-item" onclick="goPage('referral.html')">
+    <div class="icon">👥</div>
+    <span>Referral</span>
+  </div>
+  <div class="nav-item" onclick="goPage('ranking.html')">
+    <div class="icon">🏆</div>
+    <span>Ranking</span>
+  </div>
+  <div class="nav-item" onclick="goPage('community.html')">
+    <div class="icon">📝</div>
+    <span>Feed</span>
+  </div>
+  <div class="nav-item active">
+    <div class="icon">⚙️</div>
+    <span>Settings</span>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied!</div>
+
 <script type="module">
   import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
   import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-  // ✅ FIX 1: config.js के Load होने का Wait करो
-  async function waitForConfig() {
-    let attempts = 0;
-    while ((!window.userData ||!window.userData.uid) && attempts < 50) {
-      await new Promise(r => setTimeout(r, 100));
-      attempts++;
-      console.log('Waiting for config.js...', attempts);
-    }
-    return window.userData?.uid || null;
-  }
+  // ✅ FIX 1: Firebase से Fresh Data लाओ - referral.html वाला ही Code
+  async function loadProfile(){
+    await new Promise(resolve => setTimeout(resolve, 1200)); // config.js Load होने दो
 
-  // ✅ FIX 2: Firebase से Direct Load करो अगर config.js Fail हो
-  async function loadProfile() {
-    document.getElementById('refCode').innerText = 'Loading...';
-
-    // पहले config.js का Wait करो
-    let uid = await waitForConfig();
-
-    // अगर config.js से नहीं मिला तो Firebase Auth से लो
-    if (!uid) {
-      const auth = getAuth();
-      await new Promise(resolve => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
-          unsubscribe();
-          uid = user?.uid || null;
-          resolve();
-        });
-      });
-    }
-
-    if (!uid) {
-      document.getElementById('refCode').innerText = 'LOGIN-FIRST';
-      document.getElementById('userId').innerText = 'ID: LOGIN-FIRST';
+    const uid = window.userData?.uid;
+    if(!uid) {
       showToast('Please login first', 'error');
       setTimeout(() => window.location.href = 'index.html', 1500);
       return;
@@ -45,16 +179,16 @@
       const userRef = ref(db, `users/${uid}`);
       const snapshot = await get(userRef);
 
-      if (snapshot.exists()) {
+      if(snapshot.exists()){
         const data = snapshot.val();
 
-        // ✅ FIX 3: myReferralCode Primary - यही referral.html में है
-        const code = data.myReferralCode || data.referralCode || 'NOT-FOUND';
+        // ✅ FIX 2: myReferralCode Primary - यही referral.html में है
+        const code = data.myReferralCode || data.referralCode || 'LOGIN-FIRST';
 
-        // ✅ FIX 4: User ID छोटी और साफ
+        // ✅ FIX 3: User ID छोटी और साफ - RUP-XXXX format
         const shortId = data.shortId || `RUP-${uid.substring(0,4).toUpperCase()}`;
 
-        if (data.dp) {
+        if(data.dp){
           document.getElementById('avatarBox').innerHTML = `<img src="${data.dp}" alt="Profile">`;
         } else {
           document.getElementById('avatarBox').innerHTML = `<span>${(data.name || 'U').charAt(0).toUpperCase()}</span>`;
@@ -64,19 +198,13 @@
         document.getElementById('userId').innerText = 'ID: ' + shortId;
         document.getElementById('refCode').innerText = code;
 
-        // Local Update
-        window.userData = {...window.userData,...data, myReferralCode: code, shortId: shortId, uid: uid};
+        // Local Update कर दो
+        window.userData = {...window.userData,...data, myReferralCode: code, shortId: shortId};
         localStorage.setItem('ruppy_user_cache', JSON.stringify(window.userData));
-
-        console.log('✅ Loaded Code:', code);
-      } else {
-        document.getElementById('refCode').innerText = 'ERROR';
-        showToast('User data not found', 'error');
       }
-    } catch (err) {
+    } catch(err) {
       console.error('Load Error:', err);
-      document.getElementById('refCode').innerText = 'ERROR';
-      showToast('Failed to load: ' + err.message, 'error');
+      showToast('Failed to load data', 'error');
     }
   }
 
@@ -94,12 +222,12 @@
     showToast('This feature is Coming Soon! 🚀', 'info');
   }
 
-  // ✅ FIX 5: सिर्फ Code Copy करो
+  // ✅ FIX 4: सिर्फ Code Copy करो - पूरा Share Text नहीं
   window.copyRefCode = function(){
     const code = document.getElementById('refCode').innerText.trim();
 
-    if(!code || code === 'Loading...' || code === 'LOGIN-FIRST' || code === '-' || code === 'ERROR' || code === 'NOT-FOUND'){
-      showToast('Code not ready: ' + code, 'error');
+    if(!code || code === 'Loading...' || code === 'LOGIN-FIRST' || code === '-'){
+      showToast('Code not ready yet', 'error');
       return;
     }
 
@@ -118,12 +246,9 @@
     });
   }
 
+  // ✅ FIX 5: User ID Copy - छोटी ID
   window.copyUserId = function(){
     const idText = document.getElementById('userId').innerText.replace('ID: ', '');
-    if(idText === 'Loading...' || idText === 'LOGIN-FIRST') {
-      showToast('ID not ready', 'error');
-      return;
-    }
     navigator.clipboard.writeText(idText).then(() => {
       showToast('✅ ID Copied: ' + idText, 'success');
     });
@@ -132,8 +257,8 @@
   window.goPage = function(page){ window.location.href = page; }
 
   window.openEditProfile = function(){
-    document.getElementById('editName').value = window.userData?.name || '';
-    document.getElementById('editBirthday').value = window.userData?.birthday || '';
+    document.getElementById('editName').value = window.userData.name || '';
+    document.getElementById('editBirthday').value = window.userData.birthday || '';
     document.getElementById('editModal').classList.add('active');
   }
 
@@ -258,3 +383,6 @@
     }
   }
 </script>
+
+</body>
+</html>
