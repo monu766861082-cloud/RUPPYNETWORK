@@ -5,12 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ruppy Referral</title>
 
-<!-- ✅ config.js सबसे पहले Load होगा -->
-<script type="module" src="config.js"></script>
+<!-- ✅ config.js सबसे पहले Load होगा - Cache Break -->
+<script type="module" src="config.js?v=2"></script>
 
 <style>
 body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .hdr{padding:20px;font-size:28px;font-weight:bold}
+.uid-box{padding:0 20px;margin-bottom:8px;font-size:14px;color:#999}
+.uid-box span{color:#d4a017;font-weight:bold}
 .card{border:1px solid #a87128;border-radius:14px;padding:16px;margin:16px;box-shadow:0 0 10px #a87128}
 .card h3{margin:0 0 8px;color:#ccc}
 .card .amt{font-size:36px;font-weight:bold;display:flex;align-items:center;gap:10px}
@@ -40,6 +42,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 </head>
 <body>
 <div class="hdr">Referral Program</div>
+<div class="uid-box">ID: <span id="shortUserId">Loading...</span></div>
 
 <div class="card">
   <h3>Team Rewards</h3>
@@ -97,26 +100,34 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 <div class="toast" id="toast">Copied!</div>
 
 <script>
-// ✅ FIX 1: config.js वाला userData Use करो, Local Storage नहीं
-var userData = window.userData;
-let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
-let openedTask = null;
-
-// ✅ FIX 2: generateUniqueCode हटाया - config.js वाला Use होगा
-
-// ✅ FIX 3: init Function - config.js का Wait + Code Sync
+// ✅ FIX: सिर्फ config.js का referralCode Use करो - कोई Generate नहीं
 async function init(){
+  console.log('⏳ Waiting for config.js...');
   let attempts = 0;
-  while(!window.userData?.uid && attempts < 50) {
+  while(!window.userData?.referralCode && attempts < 50) {
     await new Promise(r => setTimeout(r, 100));
     attempts++;
   }
-  userData = window.userData;
+  const userData = window.userData;
   
-  // ✅ config.js में referralCode नाम से है, myReferralCode नहीं
-  // अब हर Page पे Same Code दिखेगा - config.js वाला
-  let inviteCode = userData.referralCode;
-  document.getElementById('inviteCode').innerText = inviteCode || 'Loading...';
+  console.log('✅ config.js loaded:', userData);
+  
+  if(!userData?.uid){
+    document.getElementById('inviteCode').innerText = 'LOGIN-FIRST';
+    showToast('Please login first', 'error');
+    setTimeout(() => window.location.href = 'index.html', 1500);
+    return;
+  }
+  
+  // ✅ config.js वाला referralCode Direct Use करो
+  const inviteCode = userData.referralCode;
+  const shortId = `RUP-${userData.uid.substring(0,4).toUpperCase()}`;
+  
+  document.getElementById('inviteCode').innerText = inviteCode || 'NOT-FOUND';
+  document.getElementById('shortUserId').innerText = shortId;
+  
+  console.log('✅ Final Referral Code:', inviteCode);
+  console.log('✅ Short ID:', shortId);
   
   updateTeamStats();
 }
@@ -124,6 +135,7 @@ async function init(){
 init();
 
 function updateTeamStats(){
+  let userData = window.userData;
   let team = userData.team || [];
   let now = Date.now();
   let oneDay = 24*60*60*1000;
@@ -144,7 +156,6 @@ function updateTeamStats(){
     userData.balance = (userData.balance || 0) + newTeamReward;
     userData.lastTeamRewardCheck = now;
     userData.teamRewardEarned = (userData.teamRewardEarned || 0) + newTeamReward;
-    // ✅ config.js वाला saveRuppyData Use करो
     if(window.saveRuppyData) window.saveRuppyData(userData);
   }
 
@@ -155,15 +166,13 @@ function updateTeamStats(){
 }
 
 function copy(){
-  // ✅ FIX 4: config.js वाला referralCode Copy होगा
-  let inviteCode = userData.referralCode;
+  let inviteCode = window.userData.referralCode;
   navigator.clipboard.writeText(inviteCode);
   showToast('Invite Code Copied!');
 }
 
 function invite(){
-  // ✅ FIX 5: config.js वाला referralCode Share होगा
-  let inviteCode = userData.referralCode;
+  let inviteCode = window.userData.referralCode;
   let text = `Join RUPPY Network & start playing! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app?ref=${inviteCode}`;
   
   if(navigator.share){
@@ -189,12 +198,10 @@ function goPage(page){
   window.location.href = page;
 }
 
-// ✅ FIX 6: config.js से Real-time Sync
+// ✅ Real-time Sync with Settings.html
 window.addEventListener('storage', function(e){
   if(e.key === 'ruppy_user_cache') {
-    userData = JSON.parse(e.newValue);
-    document.getElementById('inviteCode').innerText = userData.referralCode;
-    updateTeamStats();
+    init();
   }
 });
 </script>
