@@ -9,10 +9,6 @@
 
 <script type="module" src="config.js"></script>
 
-<!-- QR Code Libraries - Commented for now -->
-<!-- <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script> -->
-<!-- <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script> -->
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0B0B0C;--card:#161617;--border:#2A2A2C;--gold:#F3C774;--green:#24C464;--red:#E53E3E;--muted:#9CA3AF;--blue:#3B82F6}
@@ -26,7 +22,8 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .avatar span{font-size:44px;font-weight:700;color:var(--gold)}
 .name{text-align:center;font-size:26px;font-weight:600}
 .bal{display:block;width:max-content;margin:12px auto;padding:6px 18px;border:1px solid var(--green);border-radius:999px;color:var(--green);font-weight:600;font-size:15px}
-.id-box{display:block;width:max-content;margin:8px auto;padding:4px 14px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font-size:13px}
+.id-box{display:block;width:max-content;margin:8px auto;padding:4px 14px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font-size:13px;cursor:pointer}
+.id-box:active{transform:scale(0.95)}
 .card{background:var(--card);border:1px solid var(--border);border-radius:24px;overflow:hidden;margin:26px 0}
 .row{display:flex;align-items:center;justify-content:space-between;padding:20px 18px;border-top:1px solid var(--border);cursor:pointer;transition:all 0.2s}
 .row:first-child{border:0}
@@ -36,7 +33,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .l{display:flex;align-items:center}
 .icon{width:44px;height:44px;border-radius:12px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-right:16px;font-size:20px}
 .txt{font-size:18px}
-.val{color:var(--muted);font-size:16px;margin-right:10px}
+.val{color:var(--muted);font-size:16px;margin-right:10px;user-select:none}
 .coming-soon{font-size:11px;color:var(--gold);background:rgba(243,199,116,0.1);padding:2px 8px;border-radius:6px;margin-left:8px}
 .sec{color:var(--muted);letter-spacing:1px;font-size:13px;margin:24px 0 12px}
 .logout{width:100%;padding:16px;border:1px solid var(--red);border-radius:16px;background:transparent;color:var(--red);font-size:16px;font-weight:600;margin-top:24px;cursor:pointer}
@@ -80,15 +77,15 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <div class="avatar" id="avatarBox"><span id="avatarLetter">R</span></div>
 <div class="name" id="userName">Loading...</div>
 <div class="bal" id="userBalance">0 RUP</div>
-<div class="id-box" id="userId">ID: Loading...</div>
+<div class="id-box" id="userId" onclick="copyUserId()">ID: Loading...</div>
 
 <div class="card">
 <div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📤</div><div class="txt">Send RUP <span class="coming-soon">Coming Soon</span></div></div>›</div>
 <div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📥</div><div class="txt">Receive RUP <span class="coming-soon">Coming Soon</span></div></div>›</div>
-<div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">-</span>›</div>
+<div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">Loading...</span>›</div>
 <div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
 <div class="row" onclick="goPage('security.html')"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
-<div class="row" onclick="toggleNotification()"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div><span class="val" id="notifStatus">Off</span>›</div></div>
+<div class="row" onclick="toggleNotification()"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div><span class="val" id="notifStatus">Off</span>›</div>
 <div class="row" onclick="goPage('contact.html')"><div class="l"><div class="icon">❓</div><div class="txt">Help & Support</div></div>›</div>
 <div class="row" onclick="goPage('privacy.html')"><div class="l"><div class="icon">📄</div><div class="txt">Privacy Policy</div></div>›</div>
 <div class="row" onclick="goPage('terms.html')"><div class="l"><div class="icon">📋</div><div class="txt">Terms & Conditions</div></div>›</div>
@@ -162,210 +159,229 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
 <div class="toast" id="toast">Copied!</div>
 
-<!-- Firebase Import -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-  import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+  import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
-    authDomain: "ruppynetwork-50362.firebaseapp.com",
-    databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
-    projectId: "ruppynetwork-50362",
-    storageBucket: "ruppynetwork-50362.firebasestorage.app",
-    messagingSenderId: "132064610854",
-    appId: "1:132064610854:web:3c217eaf3618007f5934e7"
-  };
+  // ✅ FIX 1: Firebase से Fresh Data लाओ - referral.html वाला ही Code
+  async function loadProfile(){
+    await new Promise(resolve => setTimeout(resolve, 1200)); // config.js Load होने दो
 
-  const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app);
-  window.firebaseDB = { database, ref, get, set, update };
-</script>
-
-<script>
-var userData = window.userData;
-
-function generateRefCode(uid){
-  const short = uid.slice(-6).toUpperCase();
-  const random = Math.floor(10 + Math.random() * 90);
-  return short + random;
-}
-
-async function loadProfile(){
-  let attempts = 0;
-  while(!window.userData?.uid && attempts < 50) {
-    await new Promise(r => setTimeout(r, 100));
-    attempts++;
-  }
-  userData = window.userData;
-
-  if(!userData.uid){
-    userData.uid = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    await saveRuppyData(userData);
-  }
-
-  if(!userData.refCode){
-    userData.refCode = generateRefCode(userData.uid);
-    await saveRuppyData(userData);
-  }
-
-  if(userData.dp){
-    document.getElementById('avatarBox').innerHTML = `<img src="${userData.dp}" alt="Profile">`;
-  } else {
-    document.getElementById('avatarBox').innerHTML = `<span>${userData.name.charAt(0).toUpperCase()}</span>`;
-  }
-  document.getElementById('userName').innerText = userData.name;
-  document.getElementById('userBalance').innerText = (userData.balance || 0) + ' RUP';
-  document.getElementById('userId').innerText = 'ID: ' + userData.uid;
-  document.getElementById('refCode').innerText = userData.refCode;
-}
-
-loadProfile();
-
-window.showToast = function(msg, type = 'success'){
-  let t = document.getElementById('toast');
-  t.innerText = msg;
-  t.className = 'toast ' + type;
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 3000);
-}
-
-window.showComingSoon = function(){
-  showToast('This feature is Coming Soon! 🚀', 'info');
-}
-
-window.copyRefCode = function(){
-  const shareText = `Join Ruppy Network & start playing! 🎮\nUse my code: ${userData.refCode}\nhttps://ruppynetwork.com?ref=${userData.refCode}`;
-  navigator.clipboard.writeText(shareText);
-  showToast('Referral Link Copied!', 'success');
-}
-
-window.openEditProfile = function(){
-  document.getElementById('editName').value = userData.name;
-  document.getElementById('editBirthday').value = userData.birthday || '';
-  document.getElementById('editModal').classList.add('active');
-}
-
-window.closeEditProfile = function(){
-  document.getElementById('editModal').classList.remove('active');
-}
-
-window.saveProfile = async function(){
-  const saveBtn = document.getElementById('saveBtn');
-  saveBtn.disabled = true;
-  saveBtn.textContent = 'Saving...';
-
-  try {
-    userData.name = document.getElementById('editName').value || 'Guest';
-    userData.birthday = document.getElementById('editBirthday').value;
-    const file = document.getElementById('editPhoto').files[0];
-
-    if(file){
-      saveBtn.textContent = 'Compressing...';
-      const base64Photo = await compressToBase64(file, 400, 0.6);
-
-      if(base64Photo.length > 900000){
-        showToast('Photo too large! Use smaller image', 'error');
-        saveBtn.disabled = false;
-        saveBtn.textContent = 'Save';
-        return;
-      }
-      userData.dp = base64Photo;
+    const uid = window.userData?.uid;
+    if(!uid) {
+      showToast('Please login first', 'error');
+      setTimeout(() => window.location.href = 'index.html', 1500);
+      return;
     }
 
-    saveBtn.textContent = 'Saving...';
-    await saveRuppyData(userData);
-    await loadProfile();
-    closeEditProfile();
-    showToast('Profile Updated!', 'success');
+    try {
+      const db = getDatabase();
+      const userRef = ref(db, `users/${uid}`);
+      const snapshot = await get(userRef);
 
-  } catch(error){
-    console.error('Save Error:', error);
-    showToast('Failed: ' + error.message, 'error');
-  }
+      if(snapshot.exists()){
+        const data = snapshot.val();
 
-  saveBtn.disabled = false;
-  saveBtn.textContent = 'Save';
-}
+        // ✅ FIX 2: myReferralCode Primary - यही referral.html में है
+        const code = data.myReferralCode || data.referralCode || 'LOGIN-FIRST';
 
-function compressToBase64(file, maxWidth, quality){
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function(e){
-      const img = new Image();
-      img.src = e.target.result;
-      img.onload = function(){
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
+        // ✅ FIX 3: User ID छोटी और साफ - RUP-XXXX format
+        const shortId = data.shortId || `RUP-${uid.substring(0,4).toUpperCase()}`;
 
-        if(width > maxWidth){
-          height = Math.round((height * maxWidth) / width);
-          width = maxWidth;
+        if(data.dp){
+          document.getElementById('avatarBox').innerHTML = `<img src="${data.dp}" alt="Profile">`;
+        } else {
+          document.getElementById('avatarBox').innerHTML = `<span>${(data.name || 'U').charAt(0).toUpperCase()}</span>`;
         }
+        document.getElementById('userName').innerText = data.name || 'User';
+        document.getElementById('userBalance').innerText = (data.balance || 0) + ' RUP';
+        document.getElementById('userId').innerText = 'ID: ' + shortId;
+        document.getElementById('refCode').innerText = code;
 
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-
-        const base64 = canvas.toDataURL('image/jpeg', quality);
-        resolve(base64);
+        // Local Update कर दो
+        window.userData = {...window.userData,...data, myReferralCode: code, shortId: shortId};
+        localStorage.setItem('ruppy_user_cache', JSON.stringify(window.userData));
       }
-      img.onerror = reject;
+    } catch(err) {
+      console.error('Load Error:', err);
+      showToast('Failed to load data', 'error');
     }
-    reader.onerror = reject;
-  });
-}
-
-window.logout = async function(){
-  if(confirm('Are you sure you want to logout?')){
-    localStorage.removeItem('ruppy_user');
-    localStorage.removeItem('ruppy_user_cache');
-    localStorage.removeItem('notif_enabled');
-    window.location.href = '/';
   }
-}
 
-window.goPage = function(page){ window.location.href = page; }
+  loadProfile();
 
-let notifEnabled = localStorage.getItem('notif_enabled') === 'true';
+  window.showToast = function(msg, type = 'success'){
+    let t = document.getElementById('toast');
+    t.innerText = msg;
+    t.className = 'toast ' + type;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+  }
 
-function updateNotifStatus(){
-  document.getElementById('notifStatus').innerText = notifEnabled? 'On' : 'Off';
-  document.getElementById('notifStatus').style.color = notifEnabled? 'var(--green)' : 'var(--muted)';
-}
-updateNotifStatus();
+  window.showComingSoon = function(){
+    showToast('This feature is Coming Soon! 🚀', 'info');
+  }
 
-window.toggleNotification = async function(){
-  if(!notifEnabled){
-    if('Notification' in window){
-      const permission = await Notification.requestPermission();
-      if(permission === 'granted'){
-        notifEnabled = true;
-        localStorage.setItem('notif_enabled', 'true');
-        updateNotifStatus();
+  // ✅ FIX 4: सिर्फ Code Copy करो - पूरा Share Text नहीं
+  window.copyRefCode = function(){
+    const code = document.getElementById('refCode').innerText.trim();
+
+    if(!code || code === 'Loading...' || code === 'LOGIN-FIRST' || code === '-'){
+      showToast('Code not ready yet', 'error');
+      return;
+    }
+
+    navigator.clipboard.writeText(code).then(() => {
+      showToast('✅ Copied: ' + code, 'success');
+    }).catch(() => {
+      const temp = document.createElement('textarea');
+      temp.value = code;
+      temp.style.position = 'fixed';
+      temp.style.opacity = '0';
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand('copy');
+      document.body.removeChild(temp);
+      showToast('✅ Copied: ' + code, 'success');
+    });
+  }
+
+  // ✅ FIX 5: User ID Copy - छोटी ID
+  window.copyUserId = function(){
+    const idText = document.getElementById('userId').innerText.replace('ID: ', '');
+    navigator.clipboard.writeText(idText).then(() => {
+      showToast('✅ ID Copied: ' + idText, 'success');
+    });
+  }
+
+  window.goPage = function(page){ window.location.href = page; }
+
+  window.openEditProfile = function(){
+    document.getElementById('editName').value = window.userData.name || '';
+    document.getElementById('editBirthday').value = window.userData.birthday || '';
+    document.getElementById('editModal').classList.add('active');
+  }
+
+  window.closeEditProfile = function(){
+    document.getElementById('editModal').classList.remove('active');
+  }
+
+  window.saveProfile = async function(){
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+
+    try {
+      window.userData.name = document.getElementById('editName').value || 'Guest';
+      window.userData.birthday = document.getElementById('editBirthday').value;
+      const file = document.getElementById('editPhoto').files[0];
+
+      if(file){
+        saveBtn.textContent = 'Compressing...';
+        const base64Photo = await compressToBase64(file, 400, 0.6);
+
+        if(base64Photo.length > 900000){
+          showToast('Photo too large! Use smaller image', 'error');
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save';
+          return;
+        }
+        window.userData.dp = base64Photo;
+      }
+
+      saveBtn.textContent = 'Saving...';
+      await window.saveRuppyData(window.userData);
+      await loadProfile();
+      closeEditProfile();
+      showToast('Profile Updated!', 'success');
+
+    } catch(error){
+      console.error('Save Error:', error);
+      showToast('Failed: ' + error.message, 'error');
+    }
+
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save';
+  }
+
+  function compressToBase64(file, maxWidth, quality){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = function(e){
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = function(){
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          if(width > maxWidth){
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const base64 = canvas.toDataURL('image/jpeg', quality);
+          resolve(base64);
+        }
+        img.onerror = reject;
+      }
+      reader.onerror = reject;
+    });
+  }
+
+  window.logout = async function(){
+    if(confirm('Are you sure you want to logout?')){
+      const auth = getAuth();
+      await signOut(auth);
+      localStorage.removeItem('ruppy_user');
+      localStorage.removeItem('ruppy_user_cache');
+      localStorage.removeItem('notif_enabled');
+      window.location.href = '/';
+    }
+  }
+
+  let notifEnabled = localStorage.getItem('notif_enabled') === 'true';
+
+  function updateNotifStatus(){
+    document.getElementById('notifStatus').innerText = notifEnabled? 'On' : 'Off';
+    document.getElementById('notifStatus').style.color = notifEnabled? 'var(--green)' : 'var(--muted)';
+  }
+  updateNotifStatus();
+
+  window.toggleNotification = async function(){
+    if(!notifEnabled){
+      if('Notification' in window){
+        const permission = await Notification.requestPermission();
+        if(permission === 'granted'){
+          notifEnabled = true;
+          localStorage.setItem('notif_enabled', 'true');
+          updateNotifStatus();
+        }
+      }
+    } else {
+      notifEnabled = false;
+      localStorage.setItem('notif_enabled', 'false');
+      updateNotifStatus();
+    }
+  }
+
+  window.sendMiningNotif = function(){
+    if(localStorage.getItem('notif_enabled') === 'true'){
+      if('Notification' in window && Notification.permission === 'granted'){
+        new Notification('Rewards Ready!', {
+          body: 'Your RUP is ready to collect!',
+          icon: 'https://ruppynetwork.com/icon.png'
+        });
+        new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play();
       }
     }
-  } else {
-    notifEnabled = false;
-    localStorage.setItem('notif_enabled', 'false');
-    updateNotifStatus();
   }
-}
-
-window.sendMiningNotif = function(){
-  if(localStorage.getItem('notif_enabled') === 'true'){
-    if('Notification' in window && Notification.permission === 'granted'){
-      new Notification('Rewards Ready!', {
-        body: 'Your RUP is ready to collect!',
-        icon: 'https://ruppynetwork.com/icon.png'
-      });
-      new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play();
-    }
-  }
-}
 </script>
 
 </body>
