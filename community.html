@@ -165,7 +165,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, push, onValue, update, get, child, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, update, get, child, query, orderByChild, equalTo, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
@@ -409,7 +409,9 @@ window.createPost = async function(){
   updateRewardBanner();
 }
 
-onValue(ref(db, 'posts'), async (snapshot) => {
+// ✅ यही असली फिक्स है - सिर्फ आखिरी 20 पोस्ट लोड होंगी
+const postsQuery = query(ref(db, 'posts'), orderByChild('time'), limitToLast(20));
+onValue(postsQuery, async (snapshot) => {
   let posts = [];
 
   snapshot.forEach((childSnapshot) => {
