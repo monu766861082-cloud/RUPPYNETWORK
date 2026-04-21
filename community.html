@@ -127,7 +127,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px}
       <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📷</button>
       <button class="icon-btn" onclick="addEmoji()">😊</button>
     </div>
-    <button class="post-btn" id="postBtn" onclick="createPost()" disabled>Post</button>
+    <button class="post-btn" id="postBtn" onclick="createPost()" disabled>Loading...</button>
   </div>
   <input type="file" id="fileInput" accept="image/*,video/*">
   <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
@@ -180,6 +180,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+let currentUser = null; // ✅ फिक्स: null से शुरू करो, 'User' नहीं
+
 // ✅ CHANGE 1: Config.js से Balance Sync - 253 दिखेगा
 async function syncBalanceFromConfig(){
   let attempts = 0;
@@ -195,6 +197,8 @@ async function syncBalanceFromConfig(){
       document.getElementById('userAvatar').innerHTML = `<img src="${window.userData.dp}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">`;
     }
     currentUser = window.userData.name || 'User';
+    await getTodayPosts(); // ✅ यूज़र लोड होते ही पोस्ट काउंट लाओ
+    updateRewardBanner(); // ✅ बैनर अपडेट करो
   }
 }
 syncBalanceFromConfig();
@@ -204,8 +208,6 @@ function checkContent(text){
   let lower = text.toLowerCase();
   return bannedWords.some(word => lower.includes(word));
 }
-
-let currentUser = 'User';
 
 let todayPostCount = 0;
 let todayPostsData = [];
@@ -219,8 +221,8 @@ function getTodayKey(){
 async function getTodayPosts(){
   const todayKey = getTodayKey();
 
-  // ✅ बग फिक्स: जब तक असली यूज़रनेम लोड नहीं होता, काउंट 0 रखो
-  if(!window.userData ||!window.userData.name || currentUser === 'User'){
+  // ✅ फिक्स 2: जब तक currentUser सेट नहीं होता, कुछ मत करो
+  if(!currentUser){
     todayPostCount = 0;
     todayPostsData = [];
     return todayPostsData;
@@ -270,6 +272,14 @@ function updateRewardBanner(){
   let unclaimed = getUnclaimedPost();
   let bannerText = document.getElementById('limitText');
   let postBtn = document.getElementById('postBtn');
+
+  // ✅ फिक्स 3: अगर यूज़र लोड नहीं हुआ तो बटन बंद रखो
+  if(!currentUser){
+    bannerText.textContent = 'Loading user...';
+    postBtn.textContent = 'Loading...';
+    postBtn.disabled = true;
+    return;
+  }
 
   if(count >= 3){
     bannerText.textContent = `Daily limit reached. Come back tomorrow`;
@@ -589,10 +599,6 @@ window.reportPost = async function(id){
     alert('Reported');
   }
 }
-
-getTodayPosts().then(() => {
-  updateRewardBanner();
-});
 </script>
 
 </body>
