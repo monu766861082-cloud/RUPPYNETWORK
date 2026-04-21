@@ -5,79 +5,77 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruppy Network - Leaderboard</title>
 
-  <!-- ✅ FIX: config.js Add करा Sync के लिए -->
+  <!-- ✅ config.js सबसे पहले Load होगा -->
   <script type="module" src="config.js"></script>
 
   <style>
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
     body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
 
-.header {padding:20px 15px 10px; display:flex; align-items:center; justify-content:space-between;}
-.header.title h3 {font-size:18px; font-weight:600;}
-.header.title p {font-size:12px; color:#888; margin-top:2px;}
-.header.back-btn {width:36px; height:36px; border:1px solid #333; border-radius:8px; background:#0d0d0d; display:flex; align-items:center; justify-content:center; cursor:pointer;}
+   .header {padding:20px 15px 10px; display:flex; align-items:center; justify-content:space-between;}
+   .header.title h3 {font-size:18px; font-weight:600;}
+   .header.title p {font-size:12px; color:#888; margin-top:2px;}
+   .header.back-btn {width:36px; height:36px; border:1px solid #333; border-radius:8px; background:#0d0d0d; display:flex; align-items:center; justify-content:center; cursor:pointer;}
 
-  /* ADD: Winner Banner */
-.winner-banner {margin:15px; background:linear-gradient(135deg, #FFA500, #FF6B00); border-radius:12px; padding:16px; display:none;}
-.winner-banner.show {display:block;}
-.winner-banner h3 {font-size:16px; color:#000; font-weight:700; margin-bottom:8px;}
-.winner-banner p {font-size:13px; color:#000; margin-bottom:12px;}
-.btn-claim {width:100%; padding:12px; background:#000; border:none; border-radius:8px; color:#FFA500; font-weight:700; font-size:14px; cursor:pointer;}
-.btn-claim:disabled {opacity:0.5;}
+   .winner-banner {margin:15px; background:linear-gradient(135deg, #FFA500, #FF6B00); border-radius:12px; padding:16px; display:none;}
+   .winner-banner.show {display:block;}
+   .winner-banner h3 {font-size:16px; color:#000; font-weight:700; margin-bottom:8px;}
+   .winner-banner p {font-size:13px; color:#000; margin-bottom:12px;}
+   .btn-claim {width:100%; padding:12px; background:#000; border:none; border-radius:8px; color:#FFA500; font-weight:700; font-size:14px; cursor:pointer;}
+   .btn-claim:disabled {opacity:0.5;}
 
-.position-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-.position-card p:first-child {color:#888; font-size:11px; letter-spacing:0.5px; margin-bottom:10px;}
-.position-row {display:flex; justify-content:space-between; align-items:center;}
-.position-left {display:flex; align-items:center; gap:12px;}
-.position-rank {width:36px; height:36px; border:2px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#FFA500;}
-.position-name {font-size:15px; font-weight:600;}
-.position-right {text-align:right;}
-.position-right.label {color:#888; font-size:11px;}
-.position-right.points {color:#FFA500; font-weight:700; font-size:20px;}
+   .position-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+   .position-card p:first-child {color:#888; font-size:11px; letter-spacing:0.5px; margin-bottom:10px;}
+   .position-row {display:flex; justify-content:space-between; align-items:center;}
+   .position-left {display:flex; align-items:center; gap:12px;}
+   .position-rank {width:36px; height:36px; border:2px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#FFA500;}
+   .position-name {font-size:15px; font-weight:600;}
+   .position-right {text-align:right;}
+   .position-right.label {color:#888; font-size:11px;}
+   .position-right.points {color:#FFA500; font-weight:700; font-size:20px;}
 
-  /* ADD: Last Week Winners List */
-.winners-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-.winners-list h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
-.winner-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
-.winner-row:last-child {border-bottom:none;}
-.winner-left {display:flex; align-items:center; gap:10px;}
-.winner-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
-.winner-name {font-size:14px;}
-.winner-right {text-align:right;}
-.winner-token {color:#FFA500; font-weight:700; font-size:13px;}
-.winner-status {font-size:10px; color:#4CAF50;}
-.winner-status.pending {color:#888;}
+   .winners-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+   .winners-list h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
+   .winner-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
+   .winner-row:last-child {border-bottom:none;}
+   .winner-left {display:flex; align-items:center; gap:10px;}
+   .winner-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
+   .winner-name {font-size:14px;}
+   .winner-right {text-align:right;}
+   .winner-token {color:#FFA500; font-weight:700; font-size:13px;}
+   .winner-status {font-size:10px; color:#4CAF50;}
+   .winner-status.pending {color:#888;}
 
-.leaderboard-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-.leaderboard-list h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
-.leader-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
-.leader-row:last-child {border-bottom:none;}
-.leader-left {display:flex; align-items:center; gap:10px;}
-.leader-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
-.leader-name {font-size:14px;}
-.leader-points {color:#FFA500; font-weight:700; font-size:14px;}
+   .leaderboard-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+   .leaderboard-list h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
+   .leader-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
+   .leader-row:last-child {border-bottom:none;}
+   .leader-left {display:flex; align-items:center; gap:10px;}
+   .leader-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
+   .leader-name {font-size:14px;}
+   .leader-points {color:#FFA500; font-weight:700; font-size:14px;}
 
-.campaign-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:18px;}
-.campaign-card.tag {color:#888; font-size:11px; display:flex; align-items:center; gap:5px; margin-bottom:10px;}
-.campaign-card h2 {font-size:20px; font-weight:700; line-height:1.3;}
-.campaign-card h2 span {color:#FFA500;}
-.campaign-card p {color:#666; font-size:12px; margin:10px 0 15px; line-height:1.5;}
-.btn-refer {width:100%; padding:14px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:700; font-size:14px; cursor:pointer;}
-.btn-refer:active {transform:scale(0.98);}
-.btn-refer:disabled {opacity:0.6;}
+   .campaign-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:18px;}
+   .campaign-card.tag {color:#888; font-size:11px; display:flex; align-items:center; gap:5px; margin-bottom:10px;}
+   .campaign-card h2 {font-size:20px; font-weight:700; line-height:1.3;}
+   .campaign-card h2 span {color:#FFA500;}
+   .campaign-card p {color:#666; font-size:12px; margin:10px 0 15px; line-height:1.5;}
+   .btn-refer {width:100%; padding:14px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:700; font-size:14px; cursor:pointer;}
+   .btn-refer:active {transform:scale(0.98);}
+   .btn-refer:disabled {opacity:0.6;}
 
-.reward-structure {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-.reward-structure h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
-.reward-row {display:flex; justify-content:space-between; padding:8px 0; font-size:13px; border-bottom:1px solid #1a1a1a;}
-.reward-row:last-child {border-bottom:none;}
-.reward-row.rank {color:#888;}
-.reward-row.token {color:#fff; font-weight:600;}
+   .reward-structure {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+   .reward-structure h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
+   .reward-row {display:flex; justify-content:space-between; padding:8px 0; font-size:13px; border-bottom:1px solid #1a1a1a;}
+   .reward-row:last-child {border-bottom:none;}
+   .reward-row.rank {color:#888;}
+   .reward-row.token {color:#fff; font-weight:600;}
 
-.nav {position:fixed; bottom:0; left:0; right:0; background:#0d0d0d; border-top:1px solid #222; display:flex; justify-content:space-around; padding:8px 0;}
-.nav-item {display:flex; flex-direction:column; align-items:center; gap:3px; color:#666; text-decoration:none; font-size:11px; cursor:pointer; padding:5px 0; width:16.6%; position:relative;}
-.nav-item.active {color:#FFA500;}
-.nav-item.active::after {content:''; position:absolute; bottom:2px; width:30px; height:2px; background:#FFA500; border-radius:2px;}
-.nav-item.icon {font-size:20px;}
+   .nav {position:fixed; bottom:0; left:0; right:0; background:#0d0d0d; border-top:1px solid #222; display:flex; justify-content:space-around; padding:8px 0;}
+   .nav-item {display:flex; flex-direction:column; align-items:center; gap:3px; color:#666; text-decoration:none; font-size:11px; cursor:pointer; padding:5px 0; width:16.6%; position:relative;}
+   .nav-item.active {color:#FFA500;}
+   .nav-item.active::after {content:''; position:absolute; bottom:2px; width:30px; height:2px; background:#FFA500; border-radius:2px;}
+   .nav-item.icon {font-size:20px;}
   </style>
 
 </head>
@@ -91,7 +89,6 @@
     <div class="back-btn" onclick="window.location.href='app.html'">←</div>
   </div>
 
-  <!-- ADD: Winner Claim Banner -->
   <div class="winner-banner" id="winnerBanner">
     <h3>🏆 Congratulations!</h3>
     <p id="winnerText">You ranked #0 last week</p>
@@ -112,7 +109,6 @@
     </div>
   </div>
 
-  <!-- ADD: Last Week Winners Public List -->
   <div class="winners-list">
     <h4>🏆 LAST WEEK TOP 10 WINNERS</h4>
     <div id="winnersList">
@@ -158,7 +154,6 @@
     </div>
   </div>
 
-  <!-- ✅ FIX: Nav में Feed Icon जोड़ा -->
   <div class="nav">
     <div class="nav-item" onclick="navClick('home')">
       <div class="icon">🏠</div>
@@ -205,14 +200,13 @@
   const auth = getAuth(app);
   const database = getDatabase(app);
 
-  // ✅ FIX: config.js वाला userData Use करा
+  // ✅ FIX 1: config.js वाला userData Use करो
   let userData = window.userData;
   let currentUser = null;
   let userRef = null;
   const allUsersRef = ref(database, 'users');
   const winnersRef = ref(database, 'winners/thisWeek');
 
-  // Reward Structure
   const REWARDS = {1: 1000, 10: 800, 50: 600, 100: 500, 500: 300};
 
   function getRewardByRank(rank) {
@@ -224,7 +218,7 @@
     return 0;
   }
 
-  // ✅ FIX: Init Function - userData Load होने का Wait
+  // ✅ FIX 2: config.js Load होने का Wait
   async function init(){
     let attempts = 0;
     while(!window.userData?.uid && attempts < 50) {
@@ -269,15 +263,13 @@
     }
   }
 
-  // ADD: हर Sunday Winners का Snapshot बनाओ
   async function checkWeeklySnapshot() {
     const now = new Date();
-    const day = now.getDay(); // 0 = Sunday
+    const day = now.getDay();
     const weekId = getWeekId(now);
 
     const snap = await get(winnersRef);
     if (day === 0 && (!snap.exists() || snap.val().weekId!== weekId)) {
-      // Sunday है और इस हफ्ते का Snapshot नहीं बना
       const usersSnap = await get(allUsersRef);
       const allUsers = [];
       if (usersSnap.exists()) {
@@ -339,12 +331,11 @@
     if (!currentUser) return;
 
     const snapshot = await get(allUsersRef);
-    const usersMap = {}; // ✅ CHANGE 1: Map बनाया UID के लिए
+    const usersMap = {};
 
     if (snapshot.exists()) {
       snapshot.forEach((child) => {
         const data = child.val();
-        // ✅ CHANGE 2: UID से Save करो - Duplicate Auto Overwrite हो जाएगा
         usersMap[child.key] = {
           uid: child.key,
           name: data.name || 'User',
@@ -354,9 +345,7 @@
       });
     }
 
-    // ✅ CHANGE 3: Map को Array में Convert - अब हर UID 1 ही बार है
     const allUsers = Object.values(usersMap);
-
     allUsers.sort((a, b) => b.points - a.points);
 
     const userIndex = allUsers.findIndex(u => u.uid === currentUser.uid);
@@ -383,7 +372,6 @@
     }
   }
 
-  // ADD: Winners List दिखाओ
   async function loadWinnersList() {
     const snap = await get(winnersRef);
     const listDiv = document.getElementById('winnersList');
@@ -407,7 +395,6 @@
     `).join('');
   }
 
-  // ADD: Claim Button Check
   async function checkClaimStatus() {
     if (!currentUser) return;
     const snap = await get(winnersRef);
@@ -422,18 +409,16 @@
     }
   }
 
-  // ADD: Claim Reward Function
   window.claimReward = async function() {
     if (!currentUser ||!window.currentReward) return;
     const btn = document.getElementById('claimBtn');
     btn.disabled = true;
     btn.innerText = 'CLAIMING...';
 
-    // 1. Balance में Add करो
+    // ✅ FIX 3: config.js वाला saveRuppyData Use करो
     userData.balance = (userData.balance || 0) + window.currentReward;
-    await saveRuppyData(userData);
+    if(window.saveRuppyData) await window.saveRuppyData(userData);
 
-    // 2. Winner में Claimed = true करो
     const snap = await get(winnersRef);
     const winners = snap.val().winners;
     const idx = winners.findIndex(w => w.uid === currentUser.uid);
