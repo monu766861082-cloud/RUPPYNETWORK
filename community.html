@@ -176,6 +176,7 @@ function waitForConfig() {
 
 let db;
 let currentUser = "Guest";
+let currentUserId = "";
 let allLoadedPosts = [];
 let isLoadingMore = false;
 let noMorePosts = false;
@@ -188,11 +189,17 @@ async function initFeed() {
 
   db = window.db || getDatabase();
   currentUser = window.userData.name || 'Guest';
+  currentUserId = window.userData.uid || 'guest';
+
+  // Load claimed posts from localStorage
+  const savedClaimed = JSON.parse(localStorage.getItem('ruppy_claimed_posts') || '[]');
+  claimedPosts = new Set(savedClaimed);
 
   window.updateBalanceBox();
   window.loadProfileEverywhere();
 
-  loadPosts(true);
+  // ✅ FIX: Real-time listener for posts
+  setupRealtimeListener();
   setupEventListeners();
   setupInfiniteScroll();
 }
@@ -263,11 +270,13 @@ async function markPostClaimed(postId){
 
   if(postData.claimed === true){
     claimedPosts.add(postId);
+    localStorage.setItem('ruppy_claimed_posts', JSON.stringify([...claimedPosts]));
     return false;
   }
 
   await update(postRef, { claimed: true });
   claimedPosts.add(postId);
+  localStorage.setItem('ruppy_claimed_posts', JSON.stringify([...claimedPosts]));
 
   if(window.userData && window.userData.uid && window.userData.uid!== "guest"){
     window.userData.balance = (Number(window.userData.balance) || 0) + 10;
@@ -340,6 +349,7 @@ window.addEmoji = function(){
   updateRewardBanner();
 }
 
+// ✅ FIX 2: Claim Button - Correct Selector + State Update
 window.claimPost = async function(postId){
   const btn = document.querySelector(`#post-${postId}.claim-btn`);
   if(btn) {
@@ -351,15 +361,18 @@ window.claimPost = async function(postId){
 
   if(success){
     alert('10 RUP Claimed! 🎉');
-    if(btn){
-      btn.textContent = 'Claimed';
-      btn.classList.add('claimed');
+    // Update local post data
+    const postIndex = allLoadedPosts.findIndex(p => p.id === postId);
+    if(postIndex!== -1){
+      allLoadedPosts[postIndex].claimed = true;
     }
+    renderFeed(allLoadedPosts);
   } else {
     alert('Already claimed!');
     if(btn){
       btn.textContent = 'Claimed';
       btn.classList.add('claimed');
+      btn.disabled = true;
     }
   }
 
@@ -476,59 +489,35 @@ window.createPost = async function(){
   await updateRewardBanner();
 }
 
-// ✅ FIX 1: loadPosts - Fast Query + Proper Pagination
-async function loadPosts(isInitial = false){
-  if(isLoadingMore || noMorePosts) return;
-  isLoadingMore = true;
-
-  let postsQuery;
-  if(isInitial){
-    allLoadedPosts = [];
-    postsQuery = query(ref(db, 'posts'), orderByChild('time'), limitToLast(POSTS_PER_PAGE));
-  } else {
-    if(allLoadedPosts.length === 0) {
-      isLoadingMore = false;
-      return;
+// ✅ FIX 1: Real-time Listener for Posts - Like Button काम करेगा
+function setupRealtimeListener(){
+  const postsRef = ref(db, 'posts');
+  onValue(postsRef, (snapshot) => {
+    let posts = [];
+    if(snapshot.exists()){
+      snapshot.forEach((childSnapshot) => {
+        let post = { id: childSnapshot.key,...childSnapshot.val(), showAllComments: false };
+        if((post.reports || 0) < 3) {
+          posts.push(post);
+        }
+      });
+      posts.sort((a,b) => b.time - a.time); // Newest first
+      allLoadedPosts = posts;
+      localStorage.setItem('ruppy_last_posts', JSON.stringify(posts.slice(0, POSTS_PER_PAGE)));
+      renderFeed(posts);
+    } else {
+      renderFeed([]);
     }
-    const lastTime = allLoadedPosts[allLoadedPosts.length - 1].time;
-    postsQuery = query(ref(db, 'posts'), orderByChild('time'), endBefore(lastTime), limitToLast(POSTS_PER_PAGE));
-  }
-
-  const snapshot = await get(postsQuery);
-  let posts = [];
-  if(snapshot.exists()){
-    snapshot.forEach((childSnapshot) => {
-      let post = { id: childSnapshot.key,...childSnapshot.val(), showAllComments: false };
-      if((post.reports || 0) < 3) {
-        posts.push(post);
-      }
-    });
-    posts.reverse(); // Newest first
-    if(posts.length < POSTS_PER_PAGE) noMorePosts = true;
-  } else {
-    noMorePosts = true;
-  }
-
-  if(isInitial){
-    allLoadedPosts = posts;
-  } else {
-    allLoadedPosts = [...allLoadedPosts,...posts];
-  }
-
-  localStorage.setItem('ruppy_last_posts', JSON.stringify(allLoadedPosts));
-  await updateRewardBanner();
-  renderFeed(allLoadedPosts);
-  isLoadingMore = false;
+  });
 }
 
-// ✅ FIX 2: Infinite Scroll - IntersectionObserver = Instant Load
 function setupInfiniteScroll(){
+  // No longer needed with real-time listener, but keeping for pagination
   const observer = new IntersectionObserver((entries) => {
     if(entries[0].isIntersecting &&!isLoadingMore &&!noMorePosts){
-      loadPosts(false);
+      // Load more logic can be added here if needed
     }
-  }, { rootMargin: '400px' }); // ✅ 400px पहले Load शुरू कर दे
-
+  }, { rootMargin: '400px' });
   observer.observe(document.getElementById('scrollTrigger'));
 }
 
@@ -556,15 +545,15 @@ function renderFeed(posts){
     }
 
     let timeAgo = getTimeAgo(post.time);
-    let isLiked = post.likedBy && post.likedBy[currentUser];
+    let isLiked = post.likedBy && post.likedBy[currentUserId];
     let commentsToShow = post.showAllComments? (post.comments || []) : (post.comments || []).slice(-2);
     let hiddenCount = (post.comments || []).length - commentsToShow.length;
 
     let isClaimed = post.claimed || claimedPosts.has(post.id);
     let claimBtnHTML = '';
-    if(post.user === currentUser &&!isClaimed){
+    if(post.userId === currentUserId &&!isClaimed){
       claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +10 RUP</button>`;
-    } else if(post.user === currentUser && isClaimed){
+    } else if(post.userId === currentUserId && isClaimed){
       claimBtnHTML = `<button class="claim-btn claimed" disabled>Claimed</button>`;
     }
 
@@ -612,10 +601,7 @@ function renderFeed(posts){
     </div>`;
   });
 
-  // ✅ FIX 3: Loading Message सिर्फ जब Load हो रहा हो
-  if(isLoadingMore){
-    feed.innerHTML += `<div class="loading">Loading more posts...</div>`;
-  } else if(noMorePosts && allLoadedPosts.length > 0){
+  if(noMorePosts && allLoadedPosts.length > 0){
     feed.innerHTML += `<div class="end-message">You're all caught up ✅</div>`;
   }
 }
@@ -633,20 +619,29 @@ function getTimeAgo(time){
   return new Date(time).toLocaleDateString();
 }
 
+// ✅ FIX 1: Like Button - Real-time Update
 window.likePost = async function(id){
+  if(!window.userData || window.userData.uid === "guest"){
+    alert('Please login to like posts');
+    return;
+  }
+
   const postRef = ref(db, `posts/${id}`);
   const snapshot = await get(postRef);
   const post = snapshot.val();
-  let isLiked = post.likedBy && post.likedBy[currentUser];
+  if(!post) return;
+
+  let isLiked = post.likedBy && post.likedBy[currentUserId];
   let updates = {};
   if(isLiked){
-    updates[`posts/${id}/likes`] = (post.likes || 0) - 1;
-    updates[`posts/${id}/likedBy/${currentUser}`] = null;
+    updates[`posts/${id}/likes`] = Math.max(0, (post.likes || 0) - 1);
+    updates[`posts/${id}/likedBy/${currentUserId}`] = null;
   } else {
     updates[`posts/${id}/likes`] = (post.likes || 0) + 1;
-    updates[`posts/${id}/likedBy/${currentUser}`] = true;
+    updates[`posts/${id}/likedBy/${currentUserId}`] = true;
   }
   await update(ref(db), updates);
+  // Real-time listener will auto-update UI
 }
 
 window.toggleComments = function(id){
@@ -655,13 +650,19 @@ window.toggleComments = function(id){
 }
 
 window.showAllComments = function(id){
-  let cached = JSON.parse(localStorage.getItem('ruppy_last_posts') || '[]');
-  cached = cached.map(p => p.id === id? {...p, showAllComments: true} : p);
-  localStorage.setItem('ruppy_last_posts', JSON.stringify(cached));
-  renderFeed(cached);
+  const postIndex = allLoadedPosts.findIndex(p => p.id === id);
+  if(postIndex!== -1){
+    allLoadedPosts[postIndex].showAllComments = true;
+    renderFeed(allLoadedPosts);
+  }
 }
 
 window.addComment = async function(id){
+  if(!window.userData || window.userData.uid === "guest"){
+    alert('Please login to comment');
+    return;
+  }
+
   let input = document.getElementById(`commentInput-${id}`);
   let text = input.value.trim();
   if(!text) return;
@@ -673,7 +674,7 @@ window.addComment = async function(id){
   const snapshot = await get(postRef);
   const post = snapshot.val();
   const comments = post.comments || [];
-  comments.push({user: currentUser, userDp: window.userData?.dp || null, text: text, time: Date.now()});
+  comments.push({user: currentUser, userDp: window.userData?.dp || null, userId: currentUserId, text: text, time: Date.now()});
   await update(postRef, { comments: comments });
   input.value = '';
 }
@@ -693,15 +694,4 @@ window.sharePost = function(id){
 }
 
 window.reportPost = async function(id){
-  if(confirm('Report this post?')){
-    const postRef = ref(db, `posts/${id}`);
-    const snapshot = await get(postRef);
-    const post = snapshot.val();
-    await update(postRef, { reports: (post.reports || 0) + 1 });
-    alert('Reported');
-  }
-}
-</script>
-
-</body>
-</html>
+  if(confirm('
