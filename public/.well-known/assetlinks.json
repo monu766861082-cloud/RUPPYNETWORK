@@ -1,8 +1,0 @@
-[{
-  "relation": ["delegate_permission/common.handle_all_urls"],
-  "target": {
-    "namespace": "android_app",
-    "package_name": "com.ruppynetwork.app",
-    "sha256_cert_fingerprints": ["F7:33:C3:D9:DF:F5:BA:1F:2F:85:98:7A:3A:5E:9F:6F:BC:1A:31:0A:BA:11:14:00:3A:21:82:46:07:A9:97:41"]
-  }
-}]
