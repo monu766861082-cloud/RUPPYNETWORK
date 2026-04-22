@@ -1,0 +1,9 @@
+{
+  "routes": [
+    {
+      "src": "/.well-known/assetlinks.json",
+      "headers": { "content-type": "application/json" },
+      "dest": "/api/assetlinks"
+    }
+  ]
+}
