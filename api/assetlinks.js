@@ -1,0 +1,13 @@
+export default function handler(req, res) {
+  res.setHeader('Content-Type', 'application/json');
+  res.status(200).json([{
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.ruppynetwork.ruppy",
+      "sha256_cert_fingerprints": [
+        "5B:A9:20:ED:E0:B3:1E:46:CE:58:ED:30:C8:86:94:43:CE:F7:F0:71:93:92:BA:F9:AF:BA:05:85:08:78:E8:8B"
+      ]
+    }
+  }]);
+}
