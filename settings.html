@@ -82,6 +82,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <div class="card">
 <div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📤</div><div class="txt">Send RUP <span class="coming-soon">Coming Soon</span></div></div>›</div>
 <div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📥</div><div class="txt">Receive RUP <span class="coming-soon">Coming Soon</span></div></div>›</div>
+<div class="row" onclick="goPage('history.html')"><div class="l"><div class="icon">📊</div><div class="txt">Transaction History</div></div>›</div>
 <div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">Loading...</span>›</div>
 <div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
 <div class="row" onclick="goPage('security.html')"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
@@ -181,7 +182,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     }
 
     // ✅ config.js में जो भी Code है वही दिखाओ - कोई Generate नहीं
-    const code = userData.referralCode || 'NOT-FOUND';
+    const code = userData.myReferralCode || 'NOT-FOUND';
     const shortId = `RUP-${userData.uid.substring(0,4).toUpperCase()}`;
 
     if (userData.dp) {
