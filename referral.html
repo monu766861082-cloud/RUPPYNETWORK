@@ -152,11 +152,11 @@ async function init(){
     document.getElementById('applyBox').style.display = 'none';
   }
 
+  // ✅ FIX: दोनों जगह Same Code दिखाओ - myReferralCode
   const inviteCode = userData.myReferralCode || `RUP-${userData.uid.substring(0,6).toUpperCase()}`;
-  const shortId = `RUP-${userData.uid.substring(0,4).toUpperCase()}`;
-
+  
   document.getElementById('inviteCode').innerText = inviteCode;
-  document.getElementById('shortUserId').innerText = shortId;
+  document.getElementById('shortUserId').innerText = inviteCode; // ✅ दोनों Same
 
   // ✅ Team Data Firebase से Load करो
   teamData = [];
