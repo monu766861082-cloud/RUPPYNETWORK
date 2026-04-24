@@ -1,4 +1,4 @@
-// config.js - RUPPY GLOBAL SYNC - REFERRAL FIX + RUP- FORMAT + SEARCH SUPPORT
+// config.js - RUPPY GLOBAL SYNC - REFERRAL FIX + RUP- FORMAT + SEARCH SUPPORT + TRANSACTION HISTORY
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, get, set, update, query, orderByChild, equalTo, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -337,5 +337,40 @@ window.applyReferralCodeManual = async function(code){
   } catch(error){
     console.error('Apply Referral Error:', error);
     return {success: false, msg: 'Error: ' + error.message};
+  }
+}
+
+// ✅ NEW: TRANSACTION HISTORY FUNCTIONS - Line 336 से Add हुआ
+window.addTransaction = async function(type, amount, note = ''){
+  if(!window.userData.uid) return;
+  try {
+    const txnData = {
+      type: type, // mining, referral, post, leaderboard
+      amount: Number(amount),
+      note: note,
+      timestamp: Date.now(),
+      balanceAfter: Number(window.userData.balance) || 0
+    };
+    await push(ref(db, `transactions/${window.userData.uid}`), txnData);
+    console.log('Transaction Saved:', type, amount);
+  } catch(error){
+    console.error('Transaction Error:', error);
+  }
+}
+
+window.getTransactionHistory = async function(){
+  if(!window.userData.uid) return [];
+  try {
+    const txnRef = ref(db, `transactions/${window.userData.uid}`);
+    const snapshot = await get(txnRef);
+    if(snapshot.exists()){
+      const data = Object.values(snapshot.val());
+      // Latest पहले दिखे
+      return data.sort((a,b) => b.timestamp - a.timestamp);
+    }
+    return [];
+  } catch(error){
+    console.error('History Error:', error);
+    return [];
   }
 }
