@@ -6,7 +6,6 @@
 <title>R U P Network - Daily Rewards App</title>
 <meta name="description" content="Join R U P Network to earn reward points daily. Complete tasks, refer friends, and unlock bonuses. 100% free rewards platform.">
 
-<!-- PWA Manifest -->
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#000000">
 <link rel="apple-touch-icon" href="/IMG_7725.png">
@@ -14,54 +13,35 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
 html,body{background:#000;color:#fff;height:100%;overflow-x:hidden}
-
-/* Login Screen - 100vh में सब Fit */
 .login-screen{width:100%;height:100vh;display:flex;align-items:center;justify-content:center;padding:12px}
-
 .wrap{width:100%;max-width:480px;text-align:center}
 .pill{border:1px solid #c28840;color:#c28840;padding:4px 12px;border-radius:14px;display:inline-block;font-size:11px;margin-bottom:12px;font-weight:700}
-
-/* Logo 200px - छोटा किया ताकि सब Fit हो */
 .coin{width:200px;height:200px;margin:0 auto 16px;border-radius:20px;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(249,168,37,0.2)}
 .coin img{width:100%;height:100%;object-fit:cover}
-
-/* RUP NETWORK 36px + कम Gap */
 h1{color:#f9a825;margin:0 0 20px;font-size:36px;font-weight:900;letter-spacing:6px;line-height:1.1}
-
-/* Input 60px Height - Gap कम */
 .input-box{margin:14px 0;text-align:left}
 .input-box label{color:#bbb;font-size:15px;display:block;margin-bottom:8px;font-weight:700}
 .input-box input{width:100%;padding:0 18px;border:2px solid #333;border-radius:16px;background:#111;color:#fff;font-size:17px;box-sizing:border-box;height:60px;text-transform:uppercase}
 .input-box input:focus{outline:none;border-color:#f9a825;box-shadow:0 0 15px rgba(249,168,37,0.4)}
 .input-box input::placeholder{color:#555;font-size:16px;text-transform:none}
-
-/* Button 60px Height */
 .btn{margin:18px auto 0;padding:0 24px;background:#f9a825;color:#000;border:none;border-radius:16px;font-weight:900;width:100%;cursor:pointer;font-size:18px;letter-spacing:1px;height:60px}
 .btn:disabled{background:#333;color:#666;cursor:not-allowed}
 .btn:active{transform:scale(0.97)}
-
-/* Google बटन Login के ठीक नीचे */
 .btn-google{background:#fff;color:#000;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:18px;font-weight:700;height:60px}
-
 .toggle{color:#aaa;font-size:15px;margin-top:16px;cursor:pointer}
 .toggle span{color:#f9a825;text-decoration:underline;font-weight:700}
 .ft{font-size:11px;color:#666;margin-top:20px;line-height:1.6}
 a{color:#aaa;text-decoration:none}
 .error{color:#f33;font-size:14px;margin-top:10px;display:none;font-weight:600}
 .success{color:#4caf50;font-size:14px;margin-top:10px;display:none;font-weight:600}
-
-/* Referral Code Box Style */
 .referral-info{background:#111;border:1px solid #333;border-radius:12px;padding:12px;margin:14px 0;font-size:13px;color:#aaa}
 .referral-info span{color:#f9a825;font-weight:700}
-
-/* Content Section नीचे रहेगा, Login नहीं छुपेगा */
 .content-section{max-width:800px;margin:60px auto;padding:0 20px;color:#ccc;line-height:1.7;text-align:left}
 .content-section h2{color:#f9a825;font-size:22px;margin:30px 0 15px}
 .content-section h3{color:#f9a825;font-size:18px;margin:25px 0 10px}
 .content-section a{color:#4a90e2;text-decoration:underline}
 </style>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444"
-     crossorigin="anonymous"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -71,7 +51,6 @@ a{color:#aaa;text-decoration:none}
 <div class="login-screen">
 <div class="wrap">
 <div class="pill">VIP PREMIUM</div>
-
 <div class="coin"><img src="IMG_7999.jpeg" alt="R U P Logo"></div>
 <h1>R U P<br>NETWORK</h1>
 
@@ -84,7 +63,6 @@ a{color:#aaa;text-decoration:none}
     <label>Password</label>
     <input type="password" id="password" placeholder="Enter your password" style="text-transform:none">
   </div>
-  <!-- LOGIN में भी Referral Code Box - Fixed -->
   <div class="input-box">
     <label>Referral Code <span style="color:#666;font-size:13px;">(Optional - Missed during signup?)</span></label>
     <input type="text" id="loginReferralCode" placeholder="Enter friend's code e.g. RUP-8X4K9M" maxlength="10">
@@ -95,16 +73,19 @@ a{color:#aaa;text-decoration:none}
   <div class="error" id="errorMsg"></div>
   <div class="success" id="successMsg"></div>
   <button class="btn" onclick="handleLogin()" id="loginBtn">LOGIN</button>
-
   <button class="btn btn-google" onclick="signInWithGoogle()">
     <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="24" height="24">
     Sign in with Google
   </button>
-
   <div class="toggle">New user? <span onclick="showRegister()">Create Account</span></div>
 </div>
 
 <div id="registerForm" style="display:none">
+  <!-- ✅ FIX: Name Input Add किया -->
+  <div class="input-box">
+    <label>Full Name</label>
+    <input type="text" id="regName" placeholder="Enter your full name" style="text-transform:none">
+  </div>
   <div class="input-box">
     <label>Email Address</label>
     <input type="email" id="regEmail" placeholder="Enter your email" style="text-transform:none">
@@ -131,27 +112,19 @@ a{color:#aaa;text-decoration:none}
 </div>
 
 <div class="ft">
-<a href="about.html">About</a> •
-<a href="blog.html">Blog</a> •
-<a href="contact.html">Contact</a> •
-<a href="privacy-policy.html">Privacy</a> •
-<a href="terms.html">Terms</a><br>
+<a href="about.html">About</a> • <a href="blog.html">Blog</a> • <a href="contact.html">Contact</a> • <a href="privacy-policy.html">Privacy</a> • <a href="terms.html">Terms</a><br>
 By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Terms</a> & <a href="privacy-policy.html" style="color:#f9a825;">Privacy Policy</a>.
 </div>
 </div>
 </div>
 
-<!-- SAFE CONTENT: Crypto/Mining शब्द हटा दिए - AdSense Friendly -->
 <section class="content-section">
   <h2>What is R U P Network?</h2>
   <p>R U P Network is a free rewards and engagement platform launched in 2026. Our mission is to help users earn reward points through simple daily activities. No investment, purchase, or payment is ever required. Users collect points by logging in daily, completing tasks, and referring friends. The platform uses secure Google Firebase Authentication and we never share personal data with third parties.</p>
-
   <h3>How Does R U P Rewards Work?</h3>
   <p>Members earn points through our daily check-in system. After login, tap "Start Earning" to activate your daily bonus cycle. The base rate is 10 points per session. You can increase your earnings through four methods: maintaining a daily login streak for bonus multipliers, referring friends with your unique code for permanent speed boosts, completing sponsored tasks in our Task Center, and watching optional rewarded ads for extra points. Every new user who joins using your referral code grants both you and them a 20 point welcome bonus.</p>
-
   <h3>Is R U P Network Safe to Use?</h3>
   <p>Yes. R U P Network operates on a zero-investment model. We will never ask users for money, bank details, or payment to earn or withdraw rewards. The platform is currently in the community rewards phase. All balances are stored securely and linked to your Google account. Our roadmap includes account verification in Q3 2026 followed by rewards redemption launch in Q4 2026. For detailed guides on maximizing points, security tips, and platform updates, visit our <a href="/blog.html">Official Blog</a>. Learn more about our mission on the <a href="/about.html">About Page</a>.</p>
-
   <h3>R U P Network Roadmap 2026-2027</h3>
   <p>Phase 1 - Q1 2026: App Launch, user onboarding, stability improvements.<br>
   Phase 2 - Q2 2026: AdSense integration, Task Center launch, referral contests.<br>
@@ -176,7 +149,6 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
   const db = firebase.database();
   const provider = new firebase.auth.GoogleAuthProvider();
 
-  // URL से Refer Code पकड़ो और दोनों Input में डाल दो
   (function() {
     const urlParams = new URLSearchParams(window.location.search);
     const refCode = urlParams.get('ref');
@@ -196,17 +168,15 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     }
   })();
 
-  // ✅ FIX 1: Unique Referral Code Generator - अब RUP- वाला छोटा Code
   function generateUniqueCode() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // O,0,I,1 हटाए Confusion के लिए
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let code = 'RUP-';
     for(let i = 0; i < 6; i++) {
       code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    return code; // Result: RUP-8K2M5X
+    return code;
   }
 
-  // ✅ FIX 2: पुराना UID Code चेक करके नया बना दो
   function isValidReferralCode(code) {
     if(!code || code.length!== 10 ||!code.startsWith('RUP-')) {
       return false;
@@ -214,11 +184,9 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     return true;
   }
 
-  // Referral Code Check करो - Real Time दोनों Forms के लिए
   document.addEventListener('DOMContentLoaded', function() {
     const regRefInput = document.getElementById('regReferralCode');
     const loginRefInput = document.getElementById('loginReferralCode');
-
     if(regRefInput) {
       regRefInput.addEventListener('input', function(e) {
         e.target.value = e.target.value.toUpperCase();
@@ -233,16 +201,13 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     }
   });
 
-  // ✅ FIX 3: Firebase Index Error Fix + Better Error Handling
   async function checkReferralCode(code, type) {
     const infoBox = document.getElementById(type === 'reg'? 'referralInfo' : 'loginReferralInfo');
     const nameSpan = document.getElementById(type === 'reg'? 'referrerName' : 'loginReferrerName');
-
     if(!code || code.length < 10) {
       infoBox.style.display = 'none';
       return;
     }
-
     try {
       const snapshot = await db.ref('users').orderByChild('myReferralCode').equalTo(code).once('value');
       if(snapshot.exists()) {
@@ -263,12 +228,10 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
   }
 
   window.signInWithGoogle = async function() {
-    // Google Login से पहले Manual Code Check कर
     const manualCode = document.getElementById('loginReferralCode').value.trim().toUpperCase();
     if(manualCode && manualCode.startsWith('RUP-') && manualCode.length === 10) {
       localStorage.setItem('ruppy_referredBy', manualCode);
     }
-
     try {
       const result = await auth.signInWithPopup(provider);
       await handleGoogleUser(result.user);
@@ -289,47 +252,65 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     showError('errorMsg', 'Google Error: ' + error.message);
   });
 
+  // ✅ FIX 1: Google Login में Name Proper Save होगा
   async function handleGoogleUser(user) {
     const uid = user.uid;
     const snapshot = await db.ref('users/' + uid).get();
-    let userData = snapshot.exists()? snapshot.val() : {
-      userId: uid,
-      name: user.displayName || user.email.split('@')[0],
-      email: user.email,
-      balance: 0,
-      lastMine: 0,
-      lastGift: 0,
-      boostCount: 0,
-      boostResetTime: Date.now(),
-      team: [],
-      teamCount: 0,
-      myReferralCode: generateUniqueCode(),
-      referredBy: localStorage.getItem('ruppy_referredBy') || '',
-      referralClaimed: false,
-      firstRewardTime: 0,
-      ultraRewardTime: 0,
-      createdAt: Date.now()
-    };
 
-    // पुराने User का UID वाला Code बदल दो नए RUP- वाले से
-    if(!isValidReferralCode(userData.myReferralCode)) {
-      userData.myReferralCode = generateUniqueCode();
+    if(!snapshot.exists()) {
+      // नया User - Name Save करो ✅
+      let userData = {
+        userId: uid,
+        name: user.displayName || user.email.split('@')[0], // Google से नाम लो
+        email: user.email,
+        photoUrl: user.photoURL || "",
+        balance: 0,
+        lastMine: 0,
+        lastGift: 0,
+        boostCount: 0,
+        boostResetTime: Date.now(),
+        team: [],
+        teamCount: 0,
+        myReferralCode: generateUniqueCode(),
+        referredBy: localStorage.getItem('ruppy_referredBy') || '',
+        referralClaimed: false,
+        firstRewardTime: 0,
+        ultraRewardTime: 0,
+        createdAt: Date.now()
+      };
+
+      // Referral Bonus दो
+      if(userData.referredBy && userData.referredBy.startsWith('RUP-')) {
+        userData.balance = 20;
+        userData.referralClaimed = true;
+        await updateReferrerRank(userData.referredBy, uid);
+      }
+
+      await db.ref('users/' + uid).set(userData);
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
+    } else {
+      // पुराना User - Name Update करो अगर नहीं है ✅
+      let userData = snapshot.val();
+      if(!userData.name || userData.name === userData.email.split('@')[0]) {
+        userData.name = user.displayName || userData.name;
+        userData.photoUrl = user.photoURL || userData.photoUrl || "";
+        await db.ref('users/' + uid).update({
+          name: userData.name,
+          photoUrl: userData.photoUrl
+        });
+      }
+      // पुराना UID Code Fix करो
+      if(!isValidReferralCode(userData.myReferralCode)) {
+        userData.myReferralCode = generateUniqueCode();
+        await db.ref('users/' + uid).update({ myReferralCode: userData.myReferralCode });
+      }
+      localStorage.setItem('ruppy_user', JSON.stringify(userData));
     }
 
-    // अगर नया User है और Refer Code है तो Bonus दो
-    if(!snapshot.exists() && userData.referredBy && userData.referredBy.startsWith('RUP-')) {
-      userData.balance = 20;
-      userData.referralClaimed = true;
-      await updateReferrerRank(userData.referredBy, uid);
-    }
-
-    await db.ref('users/' + uid).set(userData);
-    localStorage.setItem('ruppy_user', JSON.stringify(userData));
     localStorage.removeItem('ruppy_referredBy');
     window.location.replace('app.html');
   }
 
-  // Referrer की Ranking Update करो
   async function updateReferrerRank(referralCode, newUserId) {
     try {
       const snapshot = await db.ref('users').orderByChild('myReferralCode').equalTo(referralCode).once('value');
@@ -360,13 +341,16 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     document.getElementById('regErrorMsg').style.display = 'none';
   }
 
+  // ✅ FIX 2: Register में Name Input Add किया
   window.handleRegister = async function() {
+    const name = document.getElementById('regName').value.trim(); // नया
     const email = document.getElementById('regEmail').value.trim();
     const password = document.getElementById('regPassword').value;
     const confirmPassword = document.getElementById('regConfirmPassword').value;
     const referralCode = document.getElementById('regReferralCode').value.trim().toUpperCase();
     const btn = document.getElementById('registerBtn');
 
+    if (!name || name.length < 2) return showError('regErrorMsg', 'Enter your full name'); // नया
     if (!email ||!email.includes('@')) return showError('regErrorMsg', 'Enter valid email');
     if (password.length < 6) return showError('regErrorMsg', 'Password must be at least 6 characters');
     if (password!== confirmPassword) return showError('regErrorMsg', 'Passwords do not match');
@@ -392,7 +376,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
 
       let userData = {
         userId: uid,
-        name: email.split('@')[0],
+        name: name, // ✅ असली नाम Save होगा
         email: email,
         balance: referralCode? 20 : 0,
         lastMine: 0,
@@ -421,7 +405,6 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     }
   }
 
-  // ✅ FIX 4: Login में Referral Code Silent Check - Search करके आने पे भी काम करेगा
   window.handleLogin = async function() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
@@ -457,12 +440,10 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
         createdAt: Date.now()
       };
 
-      // पुराने User के पास UID वाला Code है तो नया RUP- वाला बना दो
       if(!isValidReferralCode(userData.myReferralCode)) {
         userData.myReferralCode = generateUniqueCode();
       }
 
-      // ✅ MAIN FIX: Login में Referral Optional - गलत Code पे Login Block मत करो
       if(referralCode && referralCode.startsWith('RUP-') && referralCode.length === 10 &&!userData.referralClaimed &&!userData.referredBy) {
         try {
           const refSnapshot = await db.ref('users').orderByChild('myReferralCode').equalTo(referralCode).once('value');
