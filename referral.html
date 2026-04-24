@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ruppy Referral</title>
-<script type="module" src="config.js?v=2"></script>
+<script type="module" src="config.js?v=3"></script>
 
 <style>
 body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
@@ -13,8 +13,8 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .uid-box span{color:#d4a017;font-weight:bold}
 .card{border:1px solid #a87128;border-radius:14px;padding:16px;margin:16px;box-shadow:0 0 10px #a87128}
 .card h3{margin:0 0 8px;color:#ccc}
-.card .amt{font-size:36px;font-weight:bold;display:flex;align-items:center;gap:10px}
-.card .amt span{color:#d4a017}
+.card.amt{font-size:36px;font-weight:bold;display:flex;align-items:center;gap:10px}
+.card.amt span{color:#d4a017}
 .r-coin {width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:#000;box-shadow:0 0 12px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500;position:relative;flex-shrink:0}
 .r-coin::after {content:'';position:absolute;inset:-2px;border-radius:50%;background:radial-gradient(circle,#FF6B00 0%,transparent 70%);opacity:0.4;filter:blur(3px);z-index:-1}
 .tag{background:#093;display:inline-block;padding:4px 10px;border-radius:6px;margin-top:8px;color:#0f0}
@@ -24,7 +24,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .cp{width:48px;height:48px;border:1px solid #a87128;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .bt{background:#d4a017;color:#000;font-weight:bold;border:none;border-radius:10px;padding:14px;width:100%;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
 
-/* ✅ NEW: APPLY CODE BOX */
+/* ✅ APPLY CODE BOX */
 .apply-box{border:1px solid #a87128;border-radius:14px;padding:16px;margin:16px;background:#0a0a0a;box-shadow:0 0 10px #a87128}
 .apply-box label{display:block;margin-bottom:8px;color:#d4a017;font-weight:bold;text-align:center}
 .apply-inp{width:100%;border:1px solid #a87128;border-radius:10px;padding:12px;text-align:center;font-size:18px;font-weight:bold;color:#d4a017;background:#111;box-sizing:border-box;text-transform:uppercase;margin-bottom:12px}
@@ -35,7 +35,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .bx{flex:1;border:1px solid #333;border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:0.2s}
 .bx:hover{border-color:#d4a017;transform:scale(1.05)}
 .bx.active{border-color:#d4a017;background:#1a1a1a}
-.bx .v{font-size:24px;font-weight:bold}.bx .l{display:block;margin-top:4px;color:#aaa}
+.bx.v{font-size:24px;font-weight:bold}.bx.l{display:block;margin-top:4px;color:#aaa}
 
 .team{padding:0 16px;font-size:18px;font-weight:bold;color:#d4a017;margin-top:20px;display:none}
 .team-table{margin:16px;border:1px solid #333;border-radius:10px;overflow:hidden;display:none}
@@ -67,14 +67,14 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
     <div class="r-coin">R</div>
     <span id="teamReward">0</span> <span>RUP</span>
   </div>
-  <div class="tag">+50 RUP Per Refer</div>
+  <div class="tag">+300 RUP Per Refer</div>
 </div>
 
-<!-- ✅ NEW: REFERRAL CODE APPLY BOX -->
+<!-- ✅ REFERRAL CODE APPLY BOX -->
 <div class="apply-box" id="applyBox">
   <label>🔥 ENTER REFERRAL CODE 🔥</label>
   <input type="text" class="apply-inp" id="applyCodeInput" placeholder="RUP-XXXXXX" maxlength="10">
-  <button class="apply-bt" onclick="applyReferralCode()">✅ APPLY CODE & GIVE 50 RUP</button>
+  <button class="apply-bt" onclick="applyReferralCode()">✅ APPLY CODE & GET 300 RUP</button>
 </div>
 
 <div class="inv">
@@ -99,7 +99,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   </div>
 </div>
 
-<!-- ✅ TABLE HIDDEN BY DEFAULT -->
+<!-- ✅ TEAM TABLE -->
 <div class="team" id="teamTitle">👥 My Team</div>
 <div class="team-table" id="teamTable">
   <table>
@@ -107,13 +107,12 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
       <tr>
         <th>Sr</th>
         <th>Name</th>
-        <th>Gmail</th>
         <th>Join Date</th>
         <th>Status</th>
       </tr>
     </thead>
     <tbody id="teamTableBody">
-      <tr><td colspan="5" class="no-data">Click above to view list</td></tr>
+      <tr><td colspan="4" class="no-data">Click above to view list</td></tr>
     </tbody>
   </table>
 </div>
@@ -139,7 +138,7 @@ async function init(){
     await new Promise(r => setTimeout(r, 100));
     attempts++;
   }
-  
+
   const userData = window.userData;
   if(!userData?.uid){
     document.getElementById('inviteCode').innerText = 'LOGIN-FIRST';
@@ -148,35 +147,46 @@ async function init(){
     return;
   }
 
-  // ✅ अगर पहले से Refer किया है तो Apply Box Hide कर दो
+  // अगर पहले से Refer किया है तो Apply Box Hide कर दो
   if(userData.referredBy){
     document.getElementById('applyBox').style.display = 'none';
   }
-  
+
   const inviteCode = userData.myReferralCode || `RUP-${userData.uid.substring(0,6).toUpperCase()}`;
   const shortId = `RUP-${userData.uid.substring(0,4).toUpperCase()}`;
-  
+
   document.getElementById('inviteCode').innerText = inviteCode;
   document.getElementById('shortUserId').innerText = shortId;
-  
-  teamData = userData.team || [];
+
+  // ✅ Team Data Firebase से Load करो
+  teamData = [];
+  if(userData.team){
+    for(let uid in userData.team){
+      teamData.push({
+        uid: uid,
+      ...userData.team[uid]
+      });
+    }
+  }
+
   updateTeamStats();
+  if(window.updateBalanceBox) window.updateBalanceBox();
 }
 
-// ✅ NEW: REFERRAL CODE APPLY FUNCTION - config.js वाला Call करेगा
+// ✅ REFERRAL CODE APPLY FUNCTION
 async function applyReferralCode(){
   const code = document.getElementById('applyCodeInput').value.trim().toUpperCase();
-  
+
   if(!code){
     return showToast('Please enter code', 'error');
   }
 
   showToast('Checking code...');
-  
+
   // config.js का Function Call कर
   const result = await window.applyReferralCodeManual(code);
   showToast(result.msg, result.success? 'success' : 'error');
-  
+
   if(result.success){
     document.getElementById('applyBox').style.display = 'none';
     document.getElementById('applyCodeInput').value = '';
@@ -187,20 +197,20 @@ async function applyReferralCode(){
 // ✅ CLICK पे LIST दिखाओ
 function showList(type){
   currentFilter = type;
-  
+
   // Button Active Style
   document.querySelectorAll('.bx').forEach(b => b.classList.remove('active'));
   document.getElementById(type + 'Box').classList.add('active');
-  
+
   // Table Show करो
   document.getElementById('teamTitle').style.display = 'block';
   document.getElementById('teamTable').classList.add('show');
-  
+
   // Filter करके List बनाओ
   let filteredTeam = [];
   let now = Date.now();
   let sevenDays = 7*24*60*60*1000;
-  
+
   if(type === 'total'){
     filteredTeam = teamData;
     document.getElementById('teamTitle').innerText = '👥 Total Users';
@@ -211,14 +221,14 @@ function showList(type){
     filteredTeam = teamData.filter(t => now - (t.lastMine || 0) >= sevenDays);
     document.getElementById('teamTitle').innerText = '🔴 Inactive Users';
   }
-  
+
   renderTeamTable(filteredTeam);
 }
 
 function renderTeamTable(team){
   let tbody = document.getElementById('teamTableBody');
   tbody.innerHTML = '';
-  
+
   if(team && team.length > 0){
     team.forEach((user, index) => {
       let now = Date.now();
@@ -227,19 +237,18 @@ function renderTeamTable(team){
       let statusClass = isActive? 'status-active' : 'status-inactive';
       let statusText = isActive? 'Active 🟢' : 'Inactive 🔴';
       let joinDate = user.created_at? new Date(user.created_at).toLocaleDateString('en-GB') : 'N/A';
-      
+
       tbody.innerHTML += `
         <tr>
           <td>${index + 1}</td>
           <td>${user.name || 'User'}</td>
-          <td>${user.email || 'N/A'}</td>
           <td>${joinDate}</td>
           <td class="${statusClass}">${statusText}</td>
         </tr>
       `;
     });
   } else {
-    tbody.innerHTML = '<tr><td colspan="5" class="no-data">No users found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" class="no-data">No users found</td></tr>';
   }
 }
 
@@ -269,8 +278,8 @@ function copy(){
 function invite(){
   let inviteCode = document.getElementById('inviteCode').innerText;
   if(inviteCode === 'LOGIN-FIRST') return showToast('Login first!', 'error');
-  let text = `Join RUPPY Network & get 50 RUP Bonus! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app`;
-  
+  let text = `Join RUPPY Network & get 300 RUP Bonus! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app`;
+
   if(navigator.share){
     navigator.share({title: 'Join RUPPY Network', text: text});
   } else {
