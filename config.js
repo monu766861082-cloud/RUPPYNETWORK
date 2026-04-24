@@ -1,6 +1,6 @@
 // config.js - RUPPY GLOBAL SYNC - REFERRAL FIX + RUP- FORMAT + SEARCH SUPPORT
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, get, set, update, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, get, set, update, query, orderByChild, equalTo, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -275,3 +275,67 @@ window.addEventListener('storage', (e) => {
     loadProfileEverywhere();
   }
 });
+
+// ✅ NEW: REFERRAL CODE APPLY FUNCTION - Line 278 से Add हुआ
+window.applyReferralCodeManual = async function(code){
+  if(!window.userData.uid){
+    return {success: false, msg: 'Please login first'};
+  }
+
+  if(!code ||!code.startsWith('RUP-')){
+    return {success: false, msg: 'Invalid code format'};
+  }
+
+  if(code === window.userData.myReferralCode){
+    return {success: false, msg: 'Cannot use your own code'};
+  }
+
+  if(window.userData.referredBy){
+    return {success: false, msg: 'Already used referral code'};
+  }
+
+  try {
+    // 1. Code वाला User ढूंढो
+    const usersRef = ref(db, 'users');
+    const q = query(usersRef, orderByChild('myReferralCode'), equalTo(code));
+    const snapshot = await get(q);
+
+    if(!snapshot.exists()){
+      return {success: false, msg: 'Referral code not found'};
+    }
+
+    const referrerUID = Object.keys(snapshot.val())[0];
+    const referrerData = Object.values(snapshot.val())[0];
+
+    if(referrerUID === window.userData.uid){
+      return {success: false, msg: 'Cannot use your own code'};
+    }
+
+    // 2. Referral Entry बनाओ
+    await push(ref(db, 'referrals'), {
+      referrer_uid: referrerUID,
+      referred_uid: window.userData.uid,
+      bonus_given: 50,
+      created_at: Date.now()
+    });
+
+    // 3. Referrer को 50 RUP दो + Team Update
+    await update(ref(db, `users/${referrerUID}`), {
+      balance: (referrerData.balance || 0) + 50,
+      teamCount: (referrerData.teamCount || 0) + 1,
+      [`team/${window.userData.uid}`]: true,
+      teamRewardEarned: (referrerData.teamRewardEarned || 0) + 50
+    });
+
+    // 4. अपने Account में Save करो
+    window.userData.referredBy = referrerUID;
+    window.userData.referralClaimed = true;
+    await window.saveRuppyData(window.userData);
+
+    return {success: true, msg: '✅ 50 RUP Added to Referrer'};
+
+  } catch(error){
+    console.error('Apply Referral Error:', error);
+    return {success: false, msg: 'Error: ' + error.message};
+  }
+}
