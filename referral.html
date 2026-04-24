@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ruppy Referral</title>
 
-<!-- ✅ config.js सबसे पहले Load होगा - Cache Break -->
+<!-- ✅ Auto Sense वाला config.js - छेड़ा नहीं -->
 <script type="module" src="config.js?v=2"></script>
 
 <style>
@@ -30,7 +30,17 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .sts{display:flex;gap:12px;padding:0 16px;margin-bottom:12px}
 .bx{flex:1;border:1px solid #333;border-radius:10px;padding:16px;text-align:center}
 .bx .v{font-size:24px;font-weight:bold}.bx .l{display:block;margin-top:4px;color:#aaa}
-.team{padding:0 16px;font-size:18px;font-weight:bold;color:#d4a017}
+.team{padding:0 16px;font-size:18px;font-weight:bold;color:#d4a017;margin-top:20px}
+
+/* NEW: Team Table CSS - बस ये Add किया */
+.team-table{margin:16px;border:1px solid #333;border-radius:10px;overflow:hidden}
+.team-table table{width:100%;border-collapse:collapse;font-size:13px}
+.team-table th{background:#1a1a1a;color:#d4a017;padding:12px 8px;text-align:left;border-bottom:1px solid #333}
+.team-table td{padding:10px 8px;border-bottom:1px solid #222;color:#ccc}
+.team-table tr:last-child td{border-bottom:none}
+.status-active{color:#0f0;font-weight:bold}
+.status-inactive{color:#f33}
+.no-data{text-align:center;padding:20px;color:#666}
 
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
@@ -45,12 +55,12 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 <div class="uid-box">ID: <span id="shortUserId">Loading...</span></div>
 
 <div class="card">
-  <h3>Team Rewards</h3>
+  <h3>Referral Rewards</h3>
   <div class="amt">
     <div class="r-coin">R</div>
     <span id="teamReward">0</span> <span>RUP</span>
   </div>
-  <div class="tag">+2% bonus from team</div>
+  <div class="tag">+50 RUP Per Refer</div>
 </div>
 
 <div class="inv">
@@ -69,6 +79,22 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 </div>
 
 <div class="team">👥 My Team</div>
+<div class="team-table">
+  <table id="teamTable">
+    <thead>
+      <tr>
+        <th>Sr</th>
+        <th>Name</th>
+        <th>Gmail</th>
+        <th>Join Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="teamTableBody">
+      <tr><td colspan="5" class="no-data">Loading team...</td></tr>
+    </tbody>
+  </table>
+</div>
 
 <div class="nav">
   <div class="nav-item" onclick="goPage('app.html')">
@@ -100,7 +126,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 <div class="toast" id="toast">Copied!</div>
 
 <script>
-// ✅ FIX: सिर्फ config.js का referralCode Use करो - कोई Generate नहीं
+// ✅ Auto Sense Same है - config.js को छेड़ा नहीं
 async function init(){
   console.log('⏳ Waiting for config.js...');
   let attempts = 0;
@@ -119,47 +145,63 @@ async function init(){
     return;
   }
   
-  // ✅ config.js वाला referralCode Direct Use करो
   const inviteCode = userData.referralCode;
   const shortId = `RUP-${userData.uid.substring(0,4).toUpperCase()}`;
   
   document.getElementById('inviteCode').innerText = inviteCode || 'NOT-FOUND';
   document.getElementById('shortUserId').innerText = shortId;
   
-  console.log('✅ Final Referral Code:', inviteCode);
-  console.log('✅ Short ID:', shortId);
-  
   updateTeamStats();
+  loadTeamTable();
 }
 
-init();
+// ✅ NEW: Team Table Load करने का Function
+async function loadTeamTable(){
+  try {
+    const res = await fetch(`/api/get-team.php?uid=${window.userData.uid}`);
+    const data = await res.json();
+    
+    let tbody = document.getElementById('teamTableBody');
+    tbody.innerHTML = '';
+    
+    if(data.team && data.team.length > 0){
+      data.team.forEach((user, index) => {
+        let statusClass = user.isActive ? 'status-active' : 'status-inactive';
+        let statusText = user.isActive ? 'Active 🟢' : 'Inactive 🔴';
+        tbody.innerHTML += `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${user.name}</td>
+            <td>${user.email}</td>
+            <td>${user.joinDate}</td>
+            <td class="${statusClass}">${statusText}</td>
+          </tr>
+        `;
+      });
+    } else {
+      tbody.innerHTML = '<tr><td colspan="5" class="no-data">No referrals yet</td></tr>';
+    }
+  } catch(e) {
+    console.log('Team load error:', e);
+    document.getElementById('teamTableBody').innerHTML = '<tr><td colspan="5" class="no-data">Error loading team</td></tr>';
+  }
+}
 
+// ✅ CHANGED: 2% हटाकर 50 RUP Per Refer किया
 function updateTeamStats(){
   let userData = window.userData;
   let team = userData.team || [];
   let now = Date.now();
-  let oneDay = 24*60*60*1000;
+  let sevenDays = 7*24*60*60*1000;
 
   let total = team.length;
-  let active = team.filter(t => now - (t.lastMine || 0) < oneDay).length;
+  let active = team.filter(t => now - (t.lastMine || 0) < sevenDays).length;
   let inactive = total - active;
 
-  let teamCollected24h = team.reduce((sum, t) => {
-    if(now - (t.lastMine || 0) < oneDay) return sum + (t.lastMinedAmount || 0);
-    return sum;
-  }, 0);
+  // 50 RUP PER REFER - Hand to Hand
+  let totalReferralReward = total * 50;
 
-  let newTeamReward = Math.floor(teamCollected24h * 0.02);
-
-  // 24 घंटे में एक बार Auto-Credit
-  if(now - (userData.lastTeamRewardCheck || 0) > oneDay){
-    userData.balance = (userData.balance || 0) + newTeamReward;
-    userData.lastTeamRewardCheck = now;
-    userData.teamRewardEarned = (userData.teamRewardEarned || 0) + newTeamReward;
-    if(window.saveRuppyData) window.saveRuppyData(userData);
-  }
-
-  document.getElementById('teamReward').innerText = userData.teamRewardEarned || 0;
+  document.getElementById('teamReward').innerText = totalReferralReward;
   document.getElementById('totalCount').innerText = total;
   document.getElementById('activeCount').innerText = active;
   document.getElementById('inactiveCount').innerText = inactive;
@@ -173,7 +215,7 @@ function copy(){
 
 function invite(){
   let inviteCode = window.userData.referralCode;
-  let text = `Join RUPPY Network & start playing! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app?ref=${inviteCode}`;
+  let text = `Join RUPPY Network & get 50 RUP Bonus! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app?ref=${inviteCode}`;
   
   if(navigator.share){
     navigator.share({
@@ -182,8 +224,8 @@ function invite(){
       url: `https://ruppynetwork.vercel.app?ref=${inviteCode}`
     });
   } else {
-    navigator.clipboard.writeText(text + '\n\nShare on: WhatsApp, Facebook, Instagram, Telegram');
-    showToast('Invite Link Copied! Share on WhatsApp/Facebook/Instagram/Telegram');
+    navigator.clipboard.writeText(text);
+    showToast('Invite Link Copied!');
   }
 }
 
@@ -198,12 +240,13 @@ function goPage(page){
   window.location.href = page;
 }
 
-// ✅ Real-time Sync with Settings.html
 window.addEventListener('storage', function(e){
   if(e.key === 'ruppy_user_cache') {
     init();
   }
 });
+
+init();
 </script>
 </body>
 </html>
