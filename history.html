@@ -3,68 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Transaction History - RUPPY</title>
+<title>History</title>
 <script type="module" src="config.js?v=2"></script>
 
 <style>
 body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
-.hdr{padding:20px;font-size:28px;font-weight:bold;display:flex;align-items:center;gap:12px;border-bottom:1px solid #222}
+.hdr{padding:20px;font-size:24px;font-weight:bold;display:flex;align-items:center;gap:12px;border-bottom:1px solid #222}
 .back{font-size:24px;cursor:pointer;color:#d4a017}
-.total-box{margin:16px;padding:20px;border:1px solid #a87128;border-radius:14px;background:#0a0a0a;box-shadow:0 0 10px #a87128}
-.total-box h3{margin:0 0 8px;color:#999;font-size:14px}
-.total-box .amt{font-size:32px;font-weight:bold;color:#d4a017}
-.filter{display:flex;gap:8px;padding:0 16px;margin:16px 0;overflow-x:auto}
-.filter::-webkit-scrollbar{display:none}
-.filter-btn{padding:10px 18px;border:1px solid #333;border-radius:20px;background:#111;color:#999;font-size:13px;cursor:pointer;white-space:nowrap;transition:0.2s}
-.filter-btn.active{border-color:#d4a017;background:#1a1a1a;color:#d4a017;font-weight:bold}
-.txn-list{padding:0 16px}
-.txn-item{border:1px solid #222;border-radius:12px;padding:14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;background:#0a0a0a;transition:0.2s}
-.txn-item:hover{border-color:#a87128}
-.txn-left{display:flex;gap:12px;align-items:center;flex:1}
-.txn-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.txn-icon.mining{background:linear-gradient(135deg,#1a4d1a,#0d260d);color:#0f0;box-shadow:0 0 8px rgba(0,255,0,0.3)}
-.txn-icon.referral{background:linear-gradient(135deg,#4d1a4d,#260d26);color:#f0f;box-shadow:0 0 8px rgba(255,0,255,0.3)}
-.txn-icon.post{background:linear-gradient(135deg,#1a1a4d,#0d0d26);color:#0ff;box-shadow:0 0 8px rgba(0,255,255,0.3)}
-.txn-icon.leaderboard{background:linear-gradient(135deg,#4d3a1a,#261d0d);color:#fa0;box-shadow:0 0 8px rgba(255,170,0,0.3)}
-.txn-icon.gift{background:linear-gradient(135deg,#4d1a1a,#260d0d);color:#f00;box-shadow:0 0 8px rgba(255,0,0,0.3)}
-.txn-info{flex:1}
-.txn-type{font-size:15px;font-weight:bold;color:#d4a017;margin-bottom:4px}
-.txn-note{font-size:12px;color:#999}
-.txn-time{font-size:11px;color:#666;margin-top:4px}
-.txn-amount{font-size:20px;font-weight:bold;color:#0f0;flex-shrink:0}
-.txn-amount.minus{color:#f33}
-.no-txn{text-align:center;padding:60px 20px;color:#666}
-.no-txn .icon{font-size:48px;margin-bottom:12px;opacity:0.5}
+
+.total-box{margin:16px;padding:24px;border:2px solid #a87128;border-radius:16px;background:#0a0a0a;box-shadow:0 0 15px rgba(168,113,40,0.3);text-align:center}
+.total-box .label{color:#999;font-size:13px;margin-bottom:8px;letter-spacing:1px}
+.total-box .amt{font-size:42px;font-weight:bold;color:#d4a017}
+
+.list{padding:0 16px}
+.item{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid #1a1a1a}
+.item:last-child{border-bottom:none}
+.item .name{font-size:16px;color:#fff}
+.item .time{font-size:11px;color:#666;margin-top:4px}
+.item .amount{font-size:20px;font-weight:bold;color:#0f0}
+
+.no-data{text-align:center;padding:60px 20px;color:#666}
+.no-data .icon{font-size:48px;margin-bottom:12px;opacity:0.5}
+
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%}
 .nav-item.active{color:#FFA500}
-.nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
 .nav-item .icon{font-size:20px}
 </style>
 </head>
 <body>
 <div class="hdr">
-  <span class="back" onclick="goBack()">←</span>
+  <span class="back" onclick="history.back()">←</span>
   Transaction History
 </div>
 
 <div class="total-box">
-  <h3>TOTAL EARNED</h3>
+  <div class="label">TOTAL EARNED</div>
   <div class="amt"><span id="totalEarned">0</span> RUP</div>
 </div>
 
-<div class="filter">
-  <div class="filter-btn active" onclick="filterTxn('all')">All</div>
-  <div class="filter-btn" onclick="filterTxn('mining')">⛏️ Mining</div>
-  <div class="filter-btn" onclick="filterTxn('referral')">👥 Referral</div>
-  <div class="filter-btn" onclick="filterTxn('post')">📝 Post</div>
-  <div class="filter-btn" onclick="filterTxn('leaderboard')">🏆 Leaderboard</div>
-</div>
-
-<div class="txn-list" id="txnList">
-  <div class="no-txn">
+<div class="list" id="txnList">
+  <div class="no-data">
     <div class="icon">⏳</div>
-    <div>Loading transactions...</div>
+    <div>Loading...</div>
   </div>
 </div>
 
@@ -79,7 +60,6 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 
 <script>
 let allTransactions = [];
-let currentFilter = 'all';
 
 async function init(){
   let attempts = 0;
@@ -89,83 +69,58 @@ async function init(){
   }
   
   if(!window.userData?.uid){
-    document.getElementById('txnList').innerHTML = '<div class="no-txn"><div class="icon">🔒</div><div>Please login first</div></div>';
+    document.getElementById('txnList').innerHTML = '<div class="no-data"><div class="icon">🔒</div><div>Please login first</div></div>';
     return;
   }
   
   allTransactions = await window.getTransactionHistory();
-  updateTotalEarned();
-  renderTransactions();
+  updateTotal();
+  renderList();
 }
 
-function updateTotalEarned(){
-  const total = allTransactions.reduce((sum, txn) => sum + (txn.amount || 0), 0);
+function updateTotal(){
+  const total = allTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
   document.getElementById('totalEarned').innerText = total;
 }
 
-function filterTxn(type){
-  currentFilter = type;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-  renderTransactions();
-}
-
-function renderTransactions(){
+function renderList(){
   const list = document.getElementById('txnList');
-  let filtered = currentFilter === 'all'? allTransactions : allTransactions.filter(t => t.type === currentFilter);
   
-  if(filtered.length === 0){
-    list.innerHTML = '<div class="no-txn"><div class="icon">📭</div><div>No transactions found</div></div>';
+  if(allTransactions.length === 0){
+    list.innerHTML = '<div class="no-data"><div class="icon">📭</div><div>No transactions yet</div></div>';
     return;
   }
   
-  list.innerHTML = filtered.map(txn => {
-    const icons = {
-      mining: '⛏️',
-      referral: '👥',
-      post: '📝',
-      leaderboard: '🏆',
-      gift: '🎁'
-    };
-    
-    const types = {
-      mining: 'Mining Reward',
-      referral: 'Referral Bonus',
-      post: 'Post Reward',
-      leaderboard: 'Leaderboard Reward',
-      gift: 'Gift Received'
-    };
-    
-    const date = new Date(txn.timestamp);
-    const timeStr = date.toLocaleString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+  const names = {
+    mining: 'Mining Reward',
+    referral: 'Referral Bonus',
+    post: 'Daily Post Reward',
+    leaderboard: 'Leaderboard Reward',
+    gift: 'Gift Received'
+  };
+  
+  list.innerHTML = allTransactions.map(t => {
+    const date = new Date(t.timestamp);
+    const time = date.toLocaleString('en-GB',{
+      day:'2-digit',
+      month:'short', 
+      hour:'2-digit',
+      minute:'2-digit'
     });
     
     return `
-      <div class="txn-item">
-        <div class="txn-left">
-          <div class="txn-icon ${txn.type}">${icons[txn.type] || '💰'}</div>
-          <div class="txn-info">
-            <div class="txn-type">${types[txn.type] || 'Transaction'}</div>
-            <div class="txn-note">${txn.note || 'No details'}</div>
-            <div class="txn-time">${timeStr}</div>
-          </div>
+      <div class="item">
+        <div>
+          <div class="name">${names[t.type] || 'Transaction'}</div>
+          <div class="time">${time}</div>
         </div>
-        <div class="txn-amount ${txn.amount < 0? 'minus' : ''}">
-          ${txn.amount > 0? '+' : ''}${txn.amount} RUP
-        </div>
+        <div class="amount">+${t.amount} RUP</div>
       </div>
     `;
   }).join('');
 }
 
-function goBack(){ window.history.back(); }
-function goPage(page){ window.location.href = page; }
-
+function goPage(p){ window.location.href = p; }
 init();
 </script>
 </body>
