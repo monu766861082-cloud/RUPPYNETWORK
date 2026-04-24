@@ -109,7 +109,8 @@ async function init(){
   }
   userData = window.userData;
   
-  document.getElementById('userId').innerText = `ID: ${userData.uid}`;
+  // ✅ FIXED: UID की जगह myReferralCode दिखाओ
+  document.getElementById('userId').innerText = `ID: ${userData.myReferralCode || userData.uid.substring(0,8)}`;
   document.getElementById('bal').innerText = userData.balance || 0;
   updateButtons();
 }
@@ -188,7 +189,8 @@ window.addEventListener('storage', function(e) {
   if (e.key === 'ruppy_user_cache') {
     userData = JSON.parse(e.newValue);
     document.getElementById('bal').innerText = userData.balance;
-    document.getElementById('userId').innerText = `ID: ${userData.uid}`;
+    // ✅ FIXED: UID की जगह myReferralCode दिखाओ
+    document.getElementById('userId').innerText = `ID: ${userData.myReferralCode || userData.uid.substring(0,8)}`;
   }
 });
 </script>
