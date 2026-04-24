@@ -11,24 +11,42 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .hdr{padding:20px;font-size:24px;font-weight:bold;display:flex;align-items:center;gap:12px;border-bottom:1px solid #222}
 .back{font-size:24px;cursor:pointer;color:#d4a017}
 
-.total-box{margin:16px;padding:24px;border:2px solid #a87128;border-radius:16px;background:#0a0a0a;box-shadow:0 0 15px rgba(168,113,40,0.3);text-align:center}
-.total-box .label{color:#999;font-size:13px;margin-bottom:8px;letter-spacing:1px}
-.total-box .amt{font-size:42px;font-weight:bold;color:#d4a017}
+.bal-top{display:block;width:max-content;margin:16px auto;padding:8px 22px;border:1px solid #24C464;border-radius:999px;color:#24C464;font-weight:600;font-size:16px}
 
-.list{padding:0 16px}
-.item{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid #1a1a1a}
-.item:last-child{border-bottom:none}
-.item .name{font-size:16px;color:#fff}
-.item .time{font-size:11px;color:#666;margin-top:4px}
-.item .amount{font-size:20px;font-weight:bold;color:#0f0}
+.month-header{padding:16px;display:flex;justify-content:space-between;align-items:center;background:#0a0a0a;border-bottom:1px solid #222}
+.month-header.month{font-size:18px;font-weight:600;color:#fff}
+.month-header.total-spent{text-align:right}
+.month-header.total-spent.label{font-size:11px;color:#999}
+.month-header.total-spent.amt{font-size:18px;font-weight:bold;color:#d4a017}
 
-.no-data{text-align:center;padding:60px 20px;color:#666}
-.no-data .icon{font-size:48px;margin-bottom:12px;opacity:0.5}
+.list{padding:0}
+.item{display:flex;justify-content:space-between;align-items:flex-start;padding:16px;border-bottom:1px solid #1a1a1a}
+.item:active{background:#0a0a0a}
+.left{display:flex;gap:12px;flex:1}
+.avatar{width:44px;height:44px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;color:#d4a017;flex-shrink:0}
+.avatar.mining{background:#1a4d1a;color:#0f0}
+.avatar.referral{background:#4d1a4d;color:#f0f}
+.avatar.post{background:#1a1a4d;color:#0ff}
+.avatar.leaderboard{background:#4d3a1a;color:#fa0}
+.info{flex:1}
+.info.name{font-size:15px;font-weight:500;color:#fff;margin-bottom:4px}
+.info.date{font-size:12px;color:#666;margin-bottom:6px}
+.tag{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;background:#1a1a1a;border:1px solid #333;color:#999}
+.tag.mining{border-color:#0f0;color:#0f0;background:rgba(0,255,0,0.1)}
+.tag.referral{border-color:#f0f;color:#f0f;background:rgba(255,0,255,0.1)}
+.tag.post{border-color:#0ff;color:#0ff;background:rgba(0,255,255,0.1)}
+.tag.leaderboard{border-color:#fa0;color:#fa0;background:rgba(255,170,0,0.1)}
+.right{text-align:right}
+.right.amount{font-size:18px;font-weight:bold;color:#0f0;margin-bottom:4px}
+.right.from{font-size:11px;color:#666}
+
+.no-data{text-align:center;padding:80px 20px;color:#666}
+.no-data.icon{font-size:48px;margin-bottom:12px;opacity:0.5}
 
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%}
 .nav-item.active{color:#FFA500}
-.nav-item .icon{font-size:20px}
+.nav-item.icon{font-size:20px}
 </style>
 </head>
 <body>
@@ -37,10 +55,10 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   Transaction History
 </div>
 
-<div class="total-box">
-  <div class="label">TOTAL EARNED</div>
-  <div class="amt"><span id="totalEarned">0</span> RUP</div>
-</div>
+<!-- ✅ ऊपर Balance दिखेगा - Main Page जैसा -->
+<div class="bal-top" id="userBalance">0 RUP</div>
+
+<div id="monthContainer"></div>
 
 <div class="list" id="txnList">
   <div class="no-data">
@@ -73,48 +91,98 @@ async function init(){
     return;
   }
   
+  // ✅ Balance दिखाओ - Main Page जैसा
+  document.getElementById('userBalance').innerText = (window.userData.balance || 0) + ' RUP';
+  
   allTransactions = await window.getTransactionHistory();
-  updateTotal();
-  renderList();
+  renderHistory();
 }
 
-function updateTotal(){
-  const total = allTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
-  document.getElementById('totalEarned').innerText = total;
-}
-
-function renderList(){
+function renderHistory(){
   const list = document.getElementById('txnList');
+  const monthContainer = document.getElementById('monthContainer');
   
   if(allTransactions.length === 0){
     list.innerHTML = '<div class="no-data"><div class="icon">📭</div><div>No transactions yet</div></div>';
     return;
   }
   
+  // Group by month + Total Earned
+  const grouped = {};
+  let totalEarned = 0;
+  
+  allTransactions.forEach(t => {
+    const date = new Date(t.timestamp);
+    const monthKey = date.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
+    
+    if(!grouped[monthKey]) grouped[monthKey] = { items: [], total: 0 };
+    grouped[monthKey].items.push(t);
+    grouped[monthKey].total += t.amount || 0;
+    totalEarned += t.amount || 0;
+  });
+  
+  // Render month header with total earned
+  const currentMonth = new Date().toLocaleString('en-GB', { month: 'long', year: 'numeric' });
+  monthContainer.innerHTML = `
+    <div class="month-header">
+      <div class="month">${currentMonth}</div>
+      <div class="total-spent">
+        <div class="label">Total Earned</div>
+        <div class="amt">${totalEarned} RUP</div>
+      </div>
+    </div>
+  `;
+  
+  // Render transactions
+  const avatars = {
+    mining: '⛏️',
+    referral: '👥',
+    post: '📝',
+    leaderboard: '🏆',
+    gift: '🎁'
+  };
+  
   const names = {
     mining: 'Mining Reward',
     referral: 'Referral Bonus',
-    post: 'Daily Post Reward',
+    post: 'Post Reward',
     leaderboard: 'Leaderboard Reward',
     gift: 'Gift Received'
   };
   
+  const tags = {
+    mining: 'Mining',
+    referral: 'Referral',
+    post: 'Post',
+    leaderboard: 'Leaderboard',
+    gift: 'Gift'
+  };
+  
   list.innerHTML = allTransactions.map(t => {
     const date = new Date(t.timestamp);
-    const time = date.toLocaleString('en-GB',{
-      day:'2-digit',
-      month:'short', 
-      hour:'2-digit',
-      minute:'2-digit'
+    const dateStr = date.toLocaleString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit'
     });
+    
+    const firstLetter = (names[t.type] || 'T').charAt(0);
     
     return `
       <div class="item">
-        <div>
-          <div class="name">${names[t.type] || 'Transaction'}</div>
-          <div class="time">${time}</div>
+        <div class="left">
+          <div class="avatar ${t.type}">${avatars[t.type] || firstLetter}</div>
+          <div class="info">
+            <div class="name">${names[t.type] || 'Transaction'}</div>
+            <div class="date">Earned on ${dateStr}</div>
+            <div class="tag ${t.type}">${tags[t.type] || 'Other'}</div>
+          </div>
         </div>
-        <div class="amount">+${t.amount} RUP</div>
+        <div class="right">
+          <div class="amount">+ ${t.amount} RUP</div>
+          <div class="from">From App</div>
+        </div>
       </div>
     `;
   }).join('');
