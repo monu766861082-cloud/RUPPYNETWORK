@@ -271,8 +271,8 @@ async function markPostClaimed(postId){
   claimedPosts.add(postId);
 
   if(window.userData && window.userData.uid && window.userData.uid!== "guest"){
-    window.userData.balance = (Number(window.userData.balance) || 0) + 10;
-    window.userData.taskBalance = (Number(window.userData.taskBalance) || 0) + 10;
+    window.userData.balance = (Number(window.userData.balance) || 0) + 40; // ✅ 10 से 40 कर दिया
+    window.userData.taskBalance = (Number(window.userData.taskBalance) || 0) + 40; // ✅ 10 से 40 कर दिया
     if(typeof window.saveRuppyData === 'function'){
       await window.saveRuppyData(window.userData);
     }
@@ -308,7 +308,7 @@ async function updateRewardBanner(){
     postBtn.textContent = `Claim First`;
     postBtn.disabled = true;
   } else {
-    bannerText.textContent = `🎁 +10 RUPPY Coin reward per post | ${limitCheck.left}/3 left`;
+    bannerText.textContent = `🎁 +40 RUPPY Coin reward per post | ${limitCheck.left}/3 left`; // ✅ 10 से 40 कर दिया
     postBtn.textContent = `Post ${limitCheck.count + 1}/3`;
     postBtn.disabled = wordCount < 200 &&!selectedFile;
   }
@@ -357,7 +357,7 @@ window.claimPost = async function(postId){
   const success = await markPostClaimed(postId);
 
   if(success){
-    alert('10 RUP Claimed! 🎉');
+    alert('40 RUP Claimed! 🎉'); // ✅ 10 से 40 कर दिया
     if(btn){
       btn.textContent = 'Claimed';
       btn.classList.add('claimed');
@@ -542,7 +542,7 @@ function renderFeed(posts){
     let isClaimed = post.claimed || claimedPosts.has(post.id);
     let claimBtnHTML = '';
     if(post.userId === currentUserId &&!isClaimed){
-      claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +10 RUP</button>`;
+      claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +40 RUP</button>`; // ✅ 10 से 40 कर दिया
     } else if(post.userId === currentUserId && isClaimed){
       claimBtnHTML = `<button class="claim-btn claimed" disabled>Claimed</button>`;
     }
