@@ -1,4 +1,4 @@
-// config.js - RUPPY GLOBAL SYNC - 300 RUP REFERRAL + AUTO TEAM LIST
+// config.js - RUPPY GLOBAL SYNC - 300 RUP REFERRAL + AUTO TEAM LIST + WEEKLY POINTS
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, get, set, update, query, orderByChild, equalTo, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -33,6 +33,7 @@ function getDefaultData() {
     team: {},
     teamCount: 0,
     teamRewardEarned: 0,
+    weeklyPoints: 0, // ✅ Weekly Leaderboard के लिए
     posts: [],
     lastMine: 0,
     lastGift: 0,
@@ -132,6 +133,7 @@ onAuthStateChanged(auth, async (user) => {
         window.userData.team = data.team || {};
         window.userData.teamCount = Number(data.teamCount) || 0;
         window.userData.teamRewardEarned = Number(data.teamRewardEarned) || 0;
+        window.userData.weeklyPoints = Number(data.weeklyPoints) || 0; // ✅ Points Load
         window.userData.referredBy = data.referredBy || null;
         window.userData.referralClaimed = data.referralClaimed || false;
         window.userData.createdAt = data.createdAt || Date.now();
@@ -189,6 +191,7 @@ window.saveRuppyData = async function(data){
       team: data.team || {},
       teamCount: data.teamCount || 0,
       teamRewardEarned: data.teamRewardEarned || 0,
+      weeklyPoints: data.weeklyPoints || 0, // ✅ Points Save
       posts: data.posts || [],
       lastMine: data.lastMine || 0,
       lastGift: data.lastGift || 0,
@@ -236,7 +239,7 @@ window.addEventListener('storage', (e) => {
   }
 });
 
-// ✅ REFERRAL CODE APPLY FUNCTION - 300 RUP UPDATED
+// ✅ FIXED: REFERRAL CODE APPLY FUNCTION - 300 RUP + 10 POINTS
 window.applyReferralCodeManual = async function(code){
   if(!window.userData.uid){
     return {success: false, msg: 'Please login first'};
@@ -279,26 +282,35 @@ window.applyReferralCodeManual = async function(code){
       created_at: Date.now()
     });
 
-    // 3. Referrer को 300 RUP दो + Team Update + Team List में Add
-    await update(ref(db, `users/${referrerUID}`), {
-      balance: (referrerData.balance || 0) + 300,
-      teamCount: (referrerData.teamCount || 0) + 1,
-      [`team/${window.userData.uid}`]: {
-        name: window.userData.name || 'User',
-        email: window.userData.email || 'hidden',
-        created_at: Date.now(),
-        lastMine: Date.now()
-      },
-      teamRewardEarned: (referrerData.teamRewardEarned || 0) + 300
-    });
+    // 3. Referrer को 300 RUP + 10 Points दो + Team Update
+    const updates = {};
+    updates[`users/${referrerUID}/balance`] = (referrerData.balance || 0) + 300;
+    updates[`users/${referrerUID}/teamCount`] = (referrerData.teamCount || 0) + 1;
+    updates[`users/${referrerUID}/teamRewardEarned`] = (referrerData.teamRewardEarned || 0) + 300;
+    updates[`users/${referrerUID}/weeklyPoints`] = (referrerData.weeklyPoints || 0) + 10; // ✅ 10 Points
+    updates[`users/${referrerUID}/team/${window.userData.uid}`] = {
+      name: window.userData.name || 'User',
+      uid: window.userData.uid,
+      created_at: Date.now(),
+      lastMine: Date.now()
+    };
 
-    // 4. अपने Account में Save करो + 300 RUP दो
+    // 4. नया User - 300 RUP + ReferredBy Save
+    updates[`users/${window.userData.uid}/balance`] = (window.userData.balance || 0) + 300;
+    updates[`users/${window.userData.uid}/referredBy`] = referrerUID;
+    updates[`users/${window.userData.uid}/referralClaimed`] = true;
+
+    // ✅ Atomic Update - सब एक साथ
+    await update(ref(db), updates);
+
+    // 5. Local Update
     window.userData.referredBy = referrerUID;
     window.userData.referralClaimed = true;
     window.userData.balance = (window.userData.balance || 0) + 300;
-    await window.saveRuppyData(window.userData);
+    localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
+    updateBalanceBox();
 
-    return {success: true, msg: '✅ +300 RUP Credited!'};
+    return {success: true, msg: '✅ +300 RUP Credited! Referrer got 300 RUP + 10 Points'};
 
   } catch(error){
     console.error('Apply Referral Error:', error);
