@@ -34,6 +34,7 @@
     .mining-circle.ready h3 {color:#000;}
     .mining-circle.mining {background:transparent; border:2px solid #FFA500; cursor:not-allowed;}
     .mining-circle.mining h3 {color:#FFA500; font-size:16px; white-space:pre-line; text-align:center;}
+    .mining-circle.processing {opacity:0.5; pointer-events:none;} /* ✅ नया CSS */
     .mining-text {text-align:center; margin-top:15px; color:#666; font-size:13px;}
     
     .grid {display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:25px 15px;}
@@ -159,20 +160,34 @@
     </div>
   </div>
 
-<script>
-  // ✅ FIX 1: userData को Global बना
+<script type="module">
+  // ✅ FIX 1: Import increment for Atomic Updates
+  import { getDatabase, ref, update, increment, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  
   var userData = window.userData;
-  const MINING_REWARD = 30; // ✅ 40 से 30 कर दिया
+  const MINING_REWARD = 30;
+  const db = window.db || getDatabase();
 
-  // ✅ FIX 2: सब Functions को window पे चढ़ाया
   window.saveUser = async function() {
     await saveRuppyData(userData);
   }
 
+  // ✅ FIX 2: Double Click Protection + Buffer Time
   window.handleMiningClick = function() {
     let now = Date.now();
     let lastMine = Number(userData.lastMine) || 0;
-    if(now - lastMine < 10800000 && lastMine !== 0) return;
+    let circle = document.getElementById('miningCircle');
+    
+    // ✅ 3 घंटे + 5 सेकंड Buffer + Processing Check
+    if((now - lastMine < 10805000 && lastMine !== 0) || circle.classList.contains('processing')) {
+      return;
+    }
+    
+    // ✅ तुरंत Processing Mode On
+    circle.classList.add('processing');
+    circle.classList.add('ready'); // Visual
+    circle.onclick = null;
+    
     startMining();
   }
 
@@ -194,39 +209,68 @@
     openGift();
   }
 
-  window.claimFirstReward = function(){
+  window.claimFirstReward = async function(){
     if(Date.now() >= userData.firstRewardTime || userData.firstRewardTime === 0){
+      const userRef = ref(db, `users/${window.userData.uid}`);
+      await update(userRef, {
+        balance: increment(15),
+        taskBalance: increment(15),
+        firstRewardTime: Date.now() + 3600000
+      });
+      
       userData.balance = Number(userData.balance) || 0;
-      userData.balance += 15; // ✅ 20 से 15 कर दिया
+      userData.balance += 15;
+      userData.taskBalance = Number(userData.taskBalance) || 0;
+      userData.taskBalance += 15;
       userData.firstRewardTime = Date.now() + 3600000;
-      saveUser();
+      localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(userData));
+      
       updateBalance();
       updateFirstReward();
-      alert('You earned 15 RUP!'); // ✅ Alert भी Update
+      alert('You earned 15 RUP!');
     }
   }
 
-  window.claimUltraReward = function(){
+  window.claimUltraReward = async function(){
     if(Date.now() >= userData.ultraRewardTime || userData.ultraRewardTime === 0){
+      const userRef = ref(db, `users/${window.userData.uid}`);
+      await update(userRef, {
+        balance: increment(20),
+        taskBalance: increment(20),
+        ultraRewardTime: Date.now() + 3600000
+      });
+      
       userData.balance = Number(userData.balance) || 0;
-      userData.balance += 20; // ✅ 50 से 20 कर दिया
+      userData.balance += 20;
+      userData.taskBalance = Number(userData.taskBalance) || 0;
+      userData.taskBalance += 20;
       userData.ultraRewardTime = Date.now() + 3600000;
-      saveUser();
+      localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(userData));
+      
       updateBalance();
       updateUltraReward();
-      alert('You earned 20 RUP!'); // ✅ Alert भी Update
+      alert('You earned 20 RUP!');
     }
   }
 
-  window.watchBoostAd = function() {
+  window.watchBoostAd = async function() {
     if(userData.boostCount >= 3) return;
     
-    let boostAmount = Math.floor(MINING_REWARD * 0.10); // ✅ 0.05 से 0.10 कर दिया
+    let boostAmount = Math.floor(MINING_REWARD * 0.10);
+    const userRef = ref(db, `users/${window.userData.uid}`);
+    await update(userRef, {
+      balance: increment(boostAmount),
+      taskBalance: increment(boostAmount),
+      boostCount: increment(1)
+    });
+    
     userData.balance = Number(userData.balance) || 0;
     userData.balance += boostAmount;
+    userData.taskBalance = Number(userData.taskBalance) || 0;
+    userData.taskBalance += boostAmount;
     userData.boostCount++;
+    localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(userData));
     
-    saveUser();
     updateBalance();
     updateBoost();
     
@@ -250,7 +294,7 @@
       return;
     }
     document.getElementById('boostStep').innerText = userData.boostCount + 1;
-    document.getElementById('boostStepText').innerText = 'Watch ad for 10% bonus'; // ✅ Text Update
+    document.getElementById('boostStepText').innerText = 'Watch ad for 10% bonus';
     document.getElementById('boostModal').classList.add('active');
   }
 
@@ -266,15 +310,13 @@
     if(page === 'settings') window.location.href = 'settings.html';
   }
 
-  // ✅ FIX 3: init को Async + Wait लगाया
   async function init() {
-    // Firebase से userData Load होने का Wait
     let attempts = 0;
     while(!window.userData?.uid && attempts < 50) {
       await new Promise(r => setTimeout(r, 100));
       attempts++;
     }
-    userData = window.userData; // Update कर दे
+    userData = window.userData;
     
     loadProfileEverywhere();
     
@@ -313,6 +355,9 @@
     let circle = document.getElementById('miningCircle');
     let text = document.getElementById('miningText');
     
+    // ✅ Processing में है तो कुछ मत करो
+    if(circle.classList.contains('processing')) return;
+    
     if(diff >= cooldown || lastMine === 0) {
       circle.className = 'mining-circle ready';
       text.innerText = 'WATCH AD FOR BONUS';
@@ -329,17 +374,40 @@
     }
   }
 
-  function startMining() {
+  // ✅ FIX 3: Atomic Transaction - Balance कभी कम नहीं होगा
+  async function startMining() {
     let now = Date.now();
     let lastMine = Number(userData.lastMine) || 0;
     if(now - lastMine < 10800000 && lastMine !== 0) return;
     
-    userData.balance = Number(userData.balance) || 0;
-    userData.balance += MINING_REWARD; // ✅ अब 30 मिलेगा
-    userData.lastMine = now;
-    saveUser();
-    updateBalance();
-    updateMiningCircle();
+    try {
+      // ✅ Firebase को बोलो: Balance में 30 जोड़ दो, Safety के साथ
+      const userRef = ref(db, `users/${window.userData.uid}`);
+      await update(userRef, {
+        balance: increment(MINING_REWARD),
+        taskBalance: increment(MINING_REWARD),
+        lastMine: now
+      });
+      
+      // ✅ Success के बाद Local Update
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += MINING_REWARD;
+      userData.taskBalance = Number(userData.taskBalance) || 0;
+      userData.taskBalance += MINING_REWARD;
+      userData.lastMine = now;
+      localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(userData));
+      
+      updateBalance();
+      updateMiningCircle();
+      alert('+' + MINING_REWARD + ' RUP Claimed! 🎉');
+      
+    } catch (error) {
+      alert('Error: Please try again');
+      console.error(error);
+    } finally {
+      // ✅ Processing Mode Off
+      document.getElementById('miningCircle').classList.remove('processing');
+    }
   }
 
   function updateBoost() {
@@ -364,7 +432,7 @@
       document.getElementById('boostBar').style.width = '100%';
       document.getElementById('boostBadge').style.background = '#00ff00';
     } else {
-      document.getElementById('boostTimer').innerText = '10% Bonus Available'; // ✅ 5% से 10% कर दिया
+      document.getElementById('boostTimer').innerText = '10% Bonus Available';
       document.getElementById('boostBar').style.width = (userData.boostCount / 3 * 100) + '%';
       document.getElementById('boostBadge').style.background = '#FFA500';
     }
@@ -377,7 +445,7 @@
     let cooldown = 7200000;
     
     if(diff >= cooldown || lastGift === 0) {
-      document.getElementById('giftTimer').innerText = 'Ready → +10 RUP'; // ✅ 15 से 10 कर दिया
+      document.getElementById('giftTimer').innerText = 'Ready → +10 RUP';
       document.getElementById('giftBadge').innerText = '✓';
       document.getElementById('giftBadge').style.background = '#00ff00';
       document.getElementById('giftBar').style.width = '100%';
@@ -395,7 +463,7 @@
     }
   }
 
-  function openGift() {
+  async function openGift() {
     let now = Date.now();
     let lastGift = Number(userData.lastGift) || 0;
     if(now - lastGift < 7200000 && lastGift !== 0) {
@@ -403,13 +471,23 @@
       return;
     }
     
+    const userRef = ref(db, `users/${window.userData.uid}`);
+    await update(userRef, {
+      balance: increment(10),
+      taskBalance: increment(10),
+      lastGift: now
+    });
+    
     userData.balance = Number(userData.balance) || 0;
-    userData.balance += 10; // ✅ 15 से 10 कर दिया
+    userData.balance += 10;
+    userData.taskBalance = Number(userData.taskBalance) || 0;
+    userData.taskBalance += 10;
     userData.lastGift = now;
-    saveUser();
+    localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(userData));
+    
     updateBalance();
     updateGift();
-    alert('+10 RUP Added!'); // ✅ Alert भी Update
+    alert('+10 RUP Added!');
   }
 
   function updateFirstReward() {
@@ -417,7 +495,7 @@
     let diff = userData.firstRewardTime - now;
     
     if(diff <= 0 || userData.firstRewardTime === 0){
-      document.getElementById('firstRewardTimer').innerText = 'Claim 15 RUP'; // ✅ 20 से 15 कर दिया
+      document.getElementById('firstRewardTimer').innerText = 'Claim 15 RUP';
       document.getElementById('firstRewardBadge').style.display = 'block';
       document.getElementById('firstRewardBar').style.width = '100%';
     } else {
@@ -436,7 +514,7 @@
     let diff = userData.ultraRewardTime - now;
     
     if(diff <= 0 || userData.ultraRewardTime === 0){
-      document.getElementById('ultraRewardTimer').innerText = 'Claim 20 RUP'; // ✅ 50 से 20 कर दिया
+      document.getElementById('ultraRewardTimer').innerText = 'Claim 20 RUP';
       document.getElementById('ultraRewardBadge').style.display = 'block';
       document.getElementById('ultraRewardBar').style.width = '100%';
     } else {
