@@ -24,6 +24,12 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .cp{width:48px;height:48px;border:1px solid #a87128;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .bt{background:#d4a017;color:#000;font-weight:bold;border:none;border-radius:10px;padding:14px;width:100%;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
 
+/* ✅ NEW: APPLY CODE BOX */
+.apply-box{border:1px solid #a87128;border-radius:14px;padding:16px;margin:16px;background:#0a0a0a;box-shadow:0 0 10px #a87128}
+.apply-box label{display:block;margin-bottom:8px;color:#d4a017;font-weight:bold;text-align:center}
+.apply-inp{width:100%;border:1px solid #a87128;border-radius:10px;padding:12px;text-align:center;font-size:18px;font-weight:bold;color:#d4a017;background:#111;box-sizing:border-box;text-transform:uppercase;margin-bottom:12px}
+.apply-bt{background:#093;color:#0f0;font-weight:bold;border:none;border-radius:10px;padding:14px;width:100%;cursor:pointer;font-size:16px}
+
 /* ✅ CLICKABLE BUTTONS */
 .sts{display:flex;gap:12px;padding:0 16px;margin-bottom:12px}
 .bx{flex:1;border:1px solid #333;border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:0.2s}
@@ -48,6 +54,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
 .nav-item.icon{font-size:20px}
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999}
+.toast.error{background:#5c1a1a;color:#ff4d4d}
 </style>
 </head>
 <body>
@@ -61,6 +68,13 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
     <span id="teamReward">0</span> <span>RUP</span>
   </div>
   <div class="tag">+50 RUP Per Refer</div>
+</div>
+
+<!-- ✅ NEW: REFERRAL CODE APPLY BOX -->
+<div class="apply-box" id="applyBox">
+  <label>🔥 ENTER REFERRAL CODE 🔥</label>
+  <input type="text" class="apply-inp" id="applyCodeInput" placeholder="RUP-XXXXXX" maxlength="10">
+  <button class="apply-bt" onclick="applyReferralCode()">✅ APPLY CODE & GIVE 50 RUP</button>
 </div>
 
 <div class="inv">
@@ -130,10 +144,16 @@ async function init(){
   if(!userData?.uid){
     document.getElementById('inviteCode').innerText = 'LOGIN-FIRST';
     document.getElementById('shortUserId').innerText = 'LOGIN-FIRST';
+    document.getElementById('applyBox').style.display = 'none';
     return;
   }
+
+  // ✅ अगर पहले से Refer किया है तो Apply Box Hide कर दो
+  if(userData.referredBy){
+    document.getElementById('applyBox').style.display = 'none';
+  }
   
-  const inviteCode = userData.referralCode || `RUP${userData.uid.substring(0,6).toUpperCase()}`;
+  const inviteCode = userData.myReferralCode || `RUP-${userData.uid.substring(0,6).toUpperCase()}`;
   const shortId = `RUP-${userData.uid.substring(0,4).toUpperCase()}`;
   
   document.getElementById('inviteCode').innerText = inviteCode;
@@ -141,6 +161,27 @@ async function init(){
   
   teamData = userData.team || [];
   updateTeamStats();
+}
+
+// ✅ NEW: REFERRAL CODE APPLY FUNCTION - config.js वाला Call करेगा
+async function applyReferralCode(){
+  const code = document.getElementById('applyCodeInput').value.trim().toUpperCase();
+  
+  if(!code){
+    return showToast('Please enter code', 'error');
+  }
+
+  showToast('Checking code...');
+  
+  // config.js का Function Call कर
+  const result = await window.applyReferralCodeManual(code);
+  showToast(result.msg, result.success? 'success' : 'error');
+  
+  if(result.success){
+    document.getElementById('applyBox').style.display = 'none';
+    document.getElementById('applyCodeInput').value = '';
+    setTimeout(() => window.location.reload(), 1500);
+  }
 }
 
 // ✅ CLICK पे LIST दिखाओ
@@ -183,9 +224,9 @@ function renderTeamTable(team){
       let now = Date.now();
       let sevenDays = 7*24*60*60*1000;
       let isActive = now - (user.lastMine || 0) < sevenDays;
-      let statusClass = isActive ? 'status-active' : 'status-inactive';
-      let statusText = isActive ? 'Active 🟢' : 'Inactive 🔴';
-      let joinDate = user.created_at ? new Date(user.created_at).toLocaleDateString('en-GB') : 'N/A';
+      let statusClass = isActive? 'status-active' : 'status-inactive';
+      let statusText = isActive? 'Active 🟢' : 'Inactive 🔴';
+      let joinDate = user.created_at? new Date(user.created_at).toLocaleDateString('en-GB') : 'N/A';
       
       tbody.innerHTML += `
         <tr>
@@ -210,7 +251,7 @@ function updateTeamStats(){
   let total = team.length;
   let active = team.filter(t => now - (t.lastMine || 0) < sevenDays).length;
   let inactive = total - active;
-  let totalReferralReward = total * 50;
+  let totalReferralReward = (window.userData.teamRewardEarned || 0);
 
   document.getElementById('teamReward').innerText = totalReferralReward;
   document.getElementById('totalCount').innerText = total;
@@ -220,27 +261,28 @@ function updateTeamStats(){
 
 function copy(){
   let inviteCode = document.getElementById('inviteCode').innerText;
-  if(inviteCode === 'LOGIN-FIRST') return showToast('Login first!');
+  if(inviteCode === 'LOGIN-FIRST') return showToast('Login first!', 'error');
   navigator.clipboard.writeText(inviteCode);
   showToast('Invite Code Copied!');
 }
 
 function invite(){
   let inviteCode = document.getElementById('inviteCode').innerText;
-  if(inviteCode === 'LOGIN-FIRST') return showToast('Login first!');
-  let text = `Join RUPPY Network & get 50 RUP Bonus! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app?ref=${inviteCode}`;
+  if(inviteCode === 'LOGIN-FIRST') return showToast('Login first!', 'error');
+  let text = `Join RUPPY Network & get 50 RUP Bonus! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app`;
   
   if(navigator.share){
-    navigator.share({title: 'Join RUPPY Network', text: text, url: `https://ruppynetwork.vercel.app?ref=${inviteCode}`});
+    navigator.share({title: 'Join RUPPY Network', text: text});
   } else {
     navigator.clipboard.writeText(text);
     showToast('Invite Link Copied!');
   }
 }
 
-function showToast(msg){
+function showToast(msg, type = 'success'){
   let t = document.getElementById('toast');
   t.innerText = msg;
+  t.className = 'toast ' + type;
   t.style.display = 'block';
   setTimeout(() => t.style.display = 'none', 2500);
 }
