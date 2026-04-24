@@ -1,4 +1,4 @@
-// config.js - RUPPY GLOBAL SYNC - REFERRAL FIX + RUP- FORMAT + SEARCH SUPPORT + TRANSACTION HISTORY
+// config.js - RUPPY GLOBAL SYNC - 300 RUP REFERRAL + AUTO TEAM LIST
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, get, set, update, query, orderByChild, equalTo, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -27,11 +27,12 @@ function getDefaultData() {
     balance: 0,
     taskBalance: 0,
     uid: null,
-    myReferralCode: null, // ✅ FIX: RUP- वाला Code
+    myReferralCode: null,
     referredBy: null,
     referralClaimed: false,
-    team: [],
+    team: {},
     teamCount: 0,
+    teamRewardEarned: 0,
     posts: [],
     lastMine: 0,
     lastGift: 0,
@@ -43,9 +44,9 @@ function getDefaultData() {
   };
 }
 
-// 1.1 ✅ FIX: Referral Code Generator - RUP-8X4K9M Format
+// 1.1 Referral Code Generator - RUP-8X4K9M Format
 function generateReferralCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // O,0,I,1 हटाए
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code = 'RUP-';
   for(let i = 0; i < 6; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -53,7 +54,7 @@ function generateReferralCode() {
   return code;
 }
 
-// 1.2 ✅ FIX: पुराना Code Check - UID वाला है तो False
+// 1.2 पुराना Code Check
 function isValidReferralCode(code) {
   if(!code || code.length!== 10 ||!code.startsWith('RUP-')) {
     return false;
@@ -61,7 +62,7 @@ function isValidReferralCode(code) {
   return true;
 }
 
-// 2. LocalStorage से Load - Button तुरंत चलें
+// 2. LocalStorage से Load
 function getLocalData() {
   try {
     let stored = localStorage.getItem(RUPPY_STORAGE_KEY);
@@ -80,7 +81,7 @@ function getLocalData() {
 // Global Variable
 window.userData = getLocalData();
 
-// 3. Balance Display - app.html + community.html दोनों पे चलेगा
+// 3. Balance Display
 window.updateBalanceBox = function(){
   const totalEl = document.getElementById('totalBalance');
   const taskEl = document.getElementById('taskBalance');
@@ -106,40 +107,15 @@ window.loadProfileEverywhere = function(){
   if(nameEl) nameEl.textContent = 'Welcome back, ' + (window.userData.name || 'User');
 }
 
-// 4.1 ✅ FIX: Referrer को Bonus + Team Update
-async function updateReferrerRank(referralCode, newUserId) {
-  try {
-    const usersRef = ref(db, 'users');
-    const q = query(usersRef, orderByChild('myReferralCode'), equalTo(referralCode));
-    const snapshot = await get(q);
-
-    if(snapshot.exists()) {
-      const referrerId = Object.keys(snapshot.val())[0];
-      const referrerData = Object.values(snapshot.val())[0];
-      const updates = {
-        balance: (referrerData.balance || 0) + 20,
-        teamCount: (referrerData.teamCount || 0) + 1,
-        [`team/${newUserId}`]: true
-      };
-      await update(ref(db, `users/${referrerId}`), updates);
-      console.log('Referrer bonus added:', referralCode);
-    }
-  } catch(err) {
-    console.error('Referral update error:', err);
-  }
-}
-
-// 5. ✅ LOGOUT/LOGIN FIX + REFERRAL AUTO UPGRADE + SEARCH SUPPORT
+// 5. LOGOUT/LOGIN + REFERRAL AUTO UPGRADE
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    // User Logged In
     const userRef = ref(db, `users/${user.uid}`);
 
     try {
       const snapshot = await get(userRef);
 
       if (snapshot.exists()) {
-        // ✅ पुराना User - Firebase से सब लाओ
         const data = snapshot.val();
         window.userData.uid = user.uid;
         window.userData.name = data.name || user.displayName || user.email.split('@')[0];
@@ -153,51 +129,36 @@ onAuthStateChanged(auth, async (user) => {
         window.userData.boostResetTime = Number(data.boostResetTime) || Date.now();
         window.userData.firstRewardTime = Number(data.firstRewardTime) || 0;
         window.userData.ultraRewardTime = Number(data.ultraRewardTime) || 0;
-        window.userData.team = data.team || [];
+        window.userData.team = data.team || {};
         window.userData.teamCount = Number(data.teamCount) || 0;
+        window.userData.teamRewardEarned = Number(data.teamRewardEarned) || 0;
         window.userData.referredBy = data.referredBy || null;
         window.userData.referralClaimed = data.referralClaimed || false;
         window.userData.createdAt = data.createdAt || Date.now();
 
-        // ✅ FIX: पुराना UID वाला Code है तो नया RUP- वाला बना दो
         if(!isValidReferralCode(data.myReferralCode)) {
           window.userData.myReferralCode = generateReferralCode();
           await update(userRef, { myReferralCode: window.userData.myReferralCode });
-          console.log('Upgraded old code to:', window.userData.myReferralCode);
         } else {
           window.userData.myReferralCode = data.myReferralCode;
         }
 
       } else {
-        // ✅ नया User - Firebase में Create करो
         window.userData.uid = user.uid;
         window.userData.name = user.displayName || user.email.split('@')[0];
         window.userData.dp = user.photoURL || null;
         window.userData.myReferralCode = generateReferralCode();
-
-        // URL या LocalStorage से Referral Code Check कर
-        const pendingRef = localStorage.getItem('ruppy_referredBy');
-        if(pendingRef && pendingRef.startsWith('RUP-')) {
-          window.userData.referredBy = pendingRef;
-          window.userData.referralClaimed = true;
-          window.userData.balance = 20; // New user bonus
-          await updateReferrerRank(pendingRef, user.uid);
-          localStorage.removeItem('ruppy_referredBy');
-        }
-
         await set(userRef, window.userData);
       }
     } catch (error) {
       console.error('Firebase Load Error:', error);
     }
 
-    // Firebase से आया Data LocalStorage में Save
     localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
     updateBalanceBox();
     loadProfileEverywhere();
 
   } else {
-    // ✅ User Logged Out - Local Clear करो
     localStorage.removeItem(RUPPY_STORAGE_KEY);
     window.userData = getDefaultData();
     updateBalanceBox();
@@ -210,12 +171,10 @@ window.saveRuppyData = async function(data){
   data.balance = Number(data.balance) || 0;
   data.taskBalance = Number(data.taskBalance) || 0;
 
-  // Local तुरंत Update
   localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(data));
   window.userData = data;
   updateBalanceBox();
 
-  // Firebase में Save
   if(!data.uid) return;
   try {
     const userRef = ref(db, `users/${data.uid}`);
@@ -224,11 +183,12 @@ window.saveRuppyData = async function(data){
       taskBalance: data.taskBalance,
       name: data.name,
       dp: data.dp,
-      myReferralCode: data.myReferralCode, // ✅ FIX
+      myReferralCode: data.myReferralCode,
       referredBy: data.referredBy,
       referralClaimed: data.referralClaimed,
-      team: data.team || [],
+      team: data.team || {},
       teamCount: data.teamCount || 0,
+      teamRewardEarned: data.teamRewardEarned || 0,
       posts: data.posts || [],
       lastMine: data.lastMine || 0,
       lastGift: data.lastGift || 0,
@@ -267,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadProfileEverywhere();
 });
 
-// 9. ✅ AUTO SYNC - दूसरी Tab में Balance Change हो तो यहाँ भी Update
+// 9. AUTO SYNC
 window.addEventListener('storage', (e) => {
   if(e.key === RUPPY_STORAGE_KEY && e.newValue){
     window.userData = JSON.parse(e.newValue);
@@ -276,7 +236,7 @@ window.addEventListener('storage', (e) => {
   }
 });
 
-// ✅ NEW: REFERRAL CODE APPLY FUNCTION - Line 278 से Add हुआ
+// ✅ REFERRAL CODE APPLY FUNCTION - 300 RUP UPDATED
 window.applyReferralCodeManual = async function(code){
   if(!window.userData.uid){
     return {success: false, msg: 'Please login first'};
@@ -315,24 +275,30 @@ window.applyReferralCodeManual = async function(code){
     await push(ref(db, 'referrals'), {
       referrer_uid: referrerUID,
       referred_uid: window.userData.uid,
-      bonus_given: 50,
+      bonus_given: 300,
       created_at: Date.now()
     });
 
-    // 3. Referrer को 50 RUP दो + Team Update
+    // 3. Referrer को 300 RUP दो + Team Update + Team List में Add
     await update(ref(db, `users/${referrerUID}`), {
-      balance: (referrerData.balance || 0) + 50,
+      balance: (referrerData.balance || 0) + 300,
       teamCount: (referrerData.teamCount || 0) + 1,
-      [`team/${window.userData.uid}`]: true,
-      teamRewardEarned: (referrerData.teamRewardEarned || 0) + 50
+      [`team/${window.userData.uid}`]: {
+        name: window.userData.name || 'User',
+        email: window.userData.email || 'hidden',
+        created_at: Date.now(),
+        lastMine: Date.now()
+      },
+      teamRewardEarned: (referrerData.teamRewardEarned || 0) + 300
     });
 
-    // 4. अपने Account में Save करो
+    // 4. अपने Account में Save करो + 300 RUP दो
     window.userData.referredBy = referrerUID;
     window.userData.referralClaimed = true;
+    window.userData.balance = (window.userData.balance || 0) + 300;
     await window.saveRuppyData(window.userData);
 
-    return {success: true, msg: '✅ 50 RUP Added to Referrer'};
+    return {success: true, msg: '✅ +300 RUP Credited!'};
 
   } catch(error){
     console.error('Apply Referral Error:', error);
@@ -340,19 +306,18 @@ window.applyReferralCodeManual = async function(code){
   }
 }
 
-// ✅ NEW: TRANSACTION HISTORY FUNCTIONS - Line 336 से Add हुआ
+// ✅ TRANSACTION HISTORY FUNCTIONS
 window.addTransaction = async function(type, amount, note = ''){
   if(!window.userData.uid) return;
   try {
     const txnData = {
-      type: type, // mining, referral, post, leaderboard
+      type: type,
       amount: Number(amount),
       note: note,
       timestamp: Date.now(),
       balanceAfter: Number(window.userData.balance) || 0
     };
     await push(ref(db, `transactions/${window.userData.uid}`), txnData);
-    console.log('Transaction Saved:', type, amount);
   } catch(error){
     console.error('Transaction Error:', error);
   }
@@ -365,7 +330,6 @@ window.getTransactionHistory = async function(){
     const snapshot = await get(txnRef);
     if(snapshot.exists()){
       const data = Object.values(snapshot.val());
-      // Latest पहले दिखे
       return data.sort((a,b) => b.timestamp - a.timestamp);
     }
     return [];
