@@ -109,8 +109,13 @@ async function init(){
   }
   userData = window.userData;
   
-  // ✅ FIXED: UID की जगह myReferralCode दिखाओ
-  document.getElementById('userId').innerText = `ID: ${userData.myReferralCode || userData.uid.substring(0,8)}`;
+  // ✅ FIXED: Referral/Ranking वाला Auto Sense Logic
+  let displayId = userData.myReferralCode;
+  if(!displayId && userData.uid) {
+    displayId = 'RUP-' + userData.uid.substring(0,6).toUpperCase();
+  }
+  document.getElementById('userId').innerText = `ID: ${displayId || 'Loading...'}`;
+  
   document.getElementById('bal').innerText = userData.balance || 0;
   updateButtons();
 }
@@ -189,8 +194,13 @@ window.addEventListener('storage', function(e) {
   if (e.key === 'ruppy_user_cache') {
     userData = JSON.parse(e.newValue);
     document.getElementById('bal').innerText = userData.balance;
-    // ✅ FIXED: UID की जगह myReferralCode दिखाओ
-    document.getElementById('userId').innerText = `ID: ${userData.myReferralCode || userData.uid.substring(0,8)}`;
+    
+    // ✅ FIXED: Referral/Ranking वाला Auto Sense Logic
+    let displayId = userData.myReferralCode;
+    if(!displayId && userData.uid) {
+      displayId = 'RUP-' + userData.uid.substring(0,6).toUpperCase();
+    }
+    document.getElementById('userId').innerText = `ID: ${displayId || 'Loading...'}`;
   }
 });
 </script>
