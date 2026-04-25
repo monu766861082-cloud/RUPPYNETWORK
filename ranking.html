@@ -12,70 +12,72 @@
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
     body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
 
-   .header {padding:20px 15px 10px; display:flex; align-items:center; justify-content:space-between;}
-   .header.title h3 {font-size:18px; font-weight:600;}
-   .header.title p {font-size:12px; color:#888; margin-top:2px;}
-   .header.back-btn {width:36px; height:36px; border:1px solid #333; border-radius:8px; background:#0d0d0d; display:flex; align-items:center; justify-content:center; cursor:pointer;}
+ .header {padding:20px 15px 10px; display:flex; align-items:center; justify-content:space-between;}
+ .header.title h3 {font-size:18px; font-weight:600;}
+ .header.title p {font-size:12px; color:#888; margin-top:2px;}
+ .header.back-btn {width:36px; height:36px; border:1px solid #333; border-radius:8px; background:#0d0d0d; display:flex; align-items:center; justify-content:center; cursor:pointer;}
 
-   .winner-banner {margin:15px; background:linear-gradient(135deg, #FFA500, #FF6B00); border-radius:12px; padding:16px; display:none;}
-   .winner-banner.show {display:block;}
-   .winner-banner h3 {font-size:16px; color:#000; font-weight:700; margin-bottom:8px;}
-   .winner-banner p {font-size:13px; color:#000; margin-bottom:12px;}
-   .btn-claim {width:100%; padding:12px; background:#000; border:none; border-radius:8px; color:#FFA500; font-weight:700; font-size:14px; cursor:pointer;}
-   .btn-claim:disabled {opacity:0.5;}
+ .winner-banner {margin:15px; background:linear-gradient(135deg, #FFA500, #FF6B00); border-radius:12px; padding:16px; display:none;}
+ .winner-banner.show {display:block;}
+ .winner-banner h3 {font-size:16px; color:#000; font-weight:700; margin-bottom:8px;}
+ .winner-banner p {font-size:13px; color:#000; margin-bottom:12px;}
+ .btn-claim {width:100%; padding:12px; background:#000; border:none; border-radius:8px; color:#FFA500; font-weight:700; font-size:14px; cursor:pointer;}
+ .btn-claim:disabled {opacity:0.5;}
 
-   .position-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-   .position-card p:first-child {color:#888; font-size:11px; letter-spacing:0.5px; margin-bottom:10px;}
-   .position-row {display:flex; justify-content:space-between; align-items:center;}
-   .position-left {display:flex; align-items:center; gap:12px;}
-   .position-rank {width:36px; height:36px; border:2px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#FFA500;}
-   .position-name {font-size:15px; font-weight:600;}
-   .position-right {text-align:right;}
-   .position-right.label {color:#888; font-size:11px;}
-   .position-right.points {color:#FFA500; font-weight:700; font-size:20px;}
+ .position-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+ .position-card p:first-child {color:#888; font-size:11px; letter-spacing:0.5px; margin-bottom:10px;}
+ .position-row {display:flex; justify-content:space-between; align-items:center;}
+ .position-left {display:flex; align-items:center; gap:12px;}
+ .position-rank {width:36px; height:36px; border:2px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#FFA500;}
+ .position-name {font-size:15px; font-weight:600;}
+ .position-right {text-align:right;}
+ .position-right.label {color:#888; font-size:11px;}
+ .position-right.points {color:#FFA500; font-weight:700; font-size:20px;}
 
-   .winners-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-   .winners-list h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
-   .winner-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
-   .winner-row:last-child {border-bottom:none;}
-   .winner-left {display:flex; align-items:center; gap:10px;}
-   .winner-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
-   .winner-name {font-size:14px;}
-   .winner-right {text-align:right;}
-   .winner-token {color:#FFA500; font-weight:700; font-size:13px;}
-   .winner-status {font-size:10px; color:#4CAF50;}
-   .winner-status.pending {color:#888;}
+ .winners-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+ .winners-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+ .winners-list h4 {color:#FFA500; font-size:13px;}
+ .timer-display{color:#FFA500;font-size:12px;font-weight:600;background:#1a1a1a;padding:4px 10px;border-radius:6px;border:1px solid #FFA500;}
+ .winner-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
+ .winner-row:last-child {border-bottom:none;}
+ .winner-left {display:flex; align-items:center; gap:10px;}
+ .winner-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
+ .winner-name {font-size:14px;}
+ .winner-right {text-align:right;}
+ .winner-token {color:#FFA500; font-weight:700; font-size:13px;}
+ .winner-status {font-size:10px; color:#4CAF50;}
+ .winner-status.pending {color:#888;}
 
-   .leaderboard-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-   .leaderboard-list h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
-   .leader-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
-   .leader-row:last-child {border-bottom:none;}
-   .leader-left {display:flex; align-items:center; gap:10px;}
-   .leader-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
-   .leader-name {font-size:14px;}
-   .leader-points {color:#FFA500; font-weight:700; font-size:14px;}
+ .leaderboard-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+ .leaderboard-list h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
+ .leader-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
+ .leader-row:last-child {border-bottom:none;}
+ .leader-left {display:flex; align-items:center; gap:10px;}
+ .leader-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
+ .leader-name {font-size:14px;}
+ .leader-points {color:#FFA500; font-weight:700; font-size:14px;}
 
-   .campaign-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:18px;}
-   .campaign-card.tag {color:#888; font-size:11px; display:flex; align-items:center; gap:5px; margin-bottom:10px;}
-   .campaign-card h2 {font-size:20px; font-weight:700; line-height:1.3;}
-   .campaign-card h2 span {color:#FFA500;}
-   .campaign-card p {color:#666; font-size:12px; margin:10px 0 15px; line-height:1.5;}
-   .btn-refer {width:100%; padding:14px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:700; font-size:14px; cursor:pointer;}
-   .btn-refer:active {transform:scale(0.98);}
-   .btn-refer:disabled {opacity:0.6;}
+ .campaign-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:18px;}
+ .campaign-card.tag {color:#888; font-size:11px; display:flex; align-items:center; gap:5px; margin-bottom:10px;}
+ .campaign-card h2 {font-size:20px; font-weight:700; line-height:1.3;}
+ .campaign-card h2 span {color:#FFA500;}
+ .campaign-card p {color:#666; font-size:12px; margin:10px 0 15px; line-height:1.5;}
+ .btn-refer {width:100%; padding:14px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:700; font-size:14px; cursor:pointer;}
+ .btn-refer:active {transform:scale(0.98);}
+ .btn-refer:disabled {opacity:0.6;}
 
-   .reward-structure {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-   .reward-structure h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
-   .reward-row {display:flex; justify-content:space-between; padding:8px 0; font-size:13px; border-bottom:1px solid #1a1a1a;}
-   .reward-row:last-child {border-bottom:none;}
-   .reward-row.rank {color:#888;}
-   .reward-row.token {color:#fff; font-weight:600;}
+ .reward-structure {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+ .reward-structure h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
+ .reward-row {display:flex; justify-content:space-between; padding:8px 0; font-size:13px; border-bottom:1px solid #1a1a1a;}
+ .reward-row:last-child {border-bottom:none;}
+ .reward-row.rank {color:#888;}
+ .reward-row.token {color:#fff; font-weight:600;}
 
-   .nav {position:fixed; bottom:0; left:0; right:0; background:#0d0d0d; border-top:1px solid #222; display:flex; justify-content:space-around; padding:8px 0;}
-   .nav-item {display:flex; flex-direction:column; align-items:center; gap:3px; color:#666; text-decoration:none; font-size:11px; cursor:pointer; padding:5px 0; width:16.6%; position:relative;}
-   .nav-item.active {color:#FFA500;}
-   .nav-item.active::after {content:''; position:absolute; bottom:2px; width:30px; height:2px; background:#FFA500; border-radius:2px;}
-   .nav-item.icon {font-size:20px;}
+ .nav {position:fixed; bottom:0; left:0; right:0; background:#0d0d0d; border-top:1px solid #222; display:flex; justify-content:space-around; padding:8px 0;}
+ .nav-item {display:flex; flex-direction:column; align-items:center; gap:3px; color:#666; text-decoration:none; font-size:11px; cursor:pointer; padding:5px 0; width:16.6%; position:relative;}
+ .nav-item.active {color:#FFA500;}
+ .nav-item.active::after {content:''; position:absolute; bottom:2px; width:30px; height:2px; background:#FFA500; border-radius:2px;}
+ .nav-item.icon {font-size:20px;}
   </style>
 
 </head>
@@ -110,14 +112,17 @@
   </div>
 
   <div class="winners-list">
-    <h4>🏆 LAST WEEK TOP 10 WINNERS</h4>
+    <div class="winners-header">
+      <h4>🏆 LAST WEEK TOP 10 WINNERS</h4>
+      <div class="timer-display" id="countdown">Loading...</div>
+    </div>
     <div id="winnersList">
       <p style="color:#666; text-align:center; padding:20px 0;">No winners yet. Check back Monday!</p>
     </div>
   </div>
 
   <div class="leaderboard-list">
-    <h4>🔥 TODAY'S TOP 100</h4>
+    <h4>🔥 TODAY'S TOP 500</h4>
     <div id="leaderboardList">
       <p style="color:#666; text-align:center; padding:20px 0;">Loading rankings...</p>
     </div>
@@ -200,7 +205,7 @@
   const auth = getAuth(app);
   const database = getDatabase(app);
 
-  // ✅ FIX 1: config.js वाला userData Use करो
+  // ✅ config.js वाला userData Use करो
   let userData = window.userData;
   let currentUser = null;
   let userRef = null;
@@ -218,7 +223,38 @@
     return 0;
   }
 
-  // ✅ FIX 2: config.js Load होने का Wait
+  // ✅ Timer Function - Monday 12 AM को Reset
+  function getNextMonday() {
+    const now = new Date();
+    const nextMonday = new Date();
+    const day = now.getDay();
+    const daysUntilMonday = day === 1 && now.getHours() < 1? 0 : (day === 0? 1 : 8 - day);
+    nextMonday.setDate(now.getDate() + daysUntilMonday);
+    nextMonday.setHours(0, 0, 0, 0);
+    return nextMonday;
+  }
+
+  function startCountdown() {
+    const nextMonday = getNextMonday();
+    function updateTimer() {
+      const diff = nextMonday - new Date();
+      if (diff <= 0) {
+        document.getElementById('countdown').textContent = 'Updating...';
+        checkWeeklySnapshot();
+        setTimeout(() => startCountdown(), 5000); // 5 sec बाद Timer Restart
+        return;
+      }
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+      document.getElementById('countdown').textContent = `${d}d ${h}h ${m}m ${s}s`;
+    }
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  }
+
+  // ✅ config.js Load होने का Wait
   async function init(){
     let attempts = 0;
     while(!window.userData?.uid && attempts < 50) {
@@ -243,7 +279,8 @@
       loadUserPosition();
       loadWinnersList();
       checkClaimStatus();
-      setupRealtimeListener();
+      setupRealtimeListener(); // ✅ Auto-Sync वापस लगाया
+      startCountdown();
     }
   });
 
@@ -263,13 +300,14 @@
     }
   }
 
+  // ✅ Monday को New Week List बनेगी - Auto
   async function checkWeeklySnapshot() {
     const now = new Date();
     const day = now.getDay();
     const weekId = getWeekId(now);
 
     const snap = await get(winnersRef);
-    if (day === 0 && (!snap.exists() || snap.val().weekId!== weekId)) {
+    if (day === 1 && (!snap.exists() || snap.val().weekId!== weekId)) {
       const usersSnap = await get(allUsersRef);
       const allUsers = [];
       if (usersSnap.exists()) {
@@ -284,7 +322,7 @@
         });
       }
       allUsers.sort((a, b) => b.points - a.points);
-      const top100 = allUsers.slice(0, 100).map((u, i) => ({
+      const top500 = allUsers.slice(0, 500).map((u, i) => ({
         rank: i + 1,
         uid: u.uid,
         name: u.name,
@@ -296,7 +334,7 @@
       await set(winnersRef, {
         weekId: weekId,
         date: now.toISOString(),
-        winners: top100
+        winners: top500
       });
     }
   }
@@ -356,7 +394,7 @@
     document.getElementById('userPoints').innerText = userPoints;
     document.getElementById('userRank').innerText = userRank === '-'? '#-' : '#' + userRank;
 
-    renderLeaderboard(allUsers.slice(0, 100));
+    renderLeaderboard(allUsers.slice(0, 500)); // ✅ 500 Users
 
     const userSnap = await get(userRef);
     if (!userSnap.exists()) {
@@ -406,6 +444,8 @@
       document.getElementById('winnerText').innerText = `You ranked #${winner.rank} last week! Claim your ${winner.reward} RUPPY now.`;
       window.currentReward = winner.reward;
       window.currentRank = winner.rank;
+    } else {
+      document.getElementById('winnerBanner').classList.remove('show');
     }
   }
 
@@ -415,7 +455,7 @@
     btn.disabled = true;
     btn.innerText = 'CLAIMING...';
 
-    // ✅ FIX 3: config.js वाला saveRuppyData Use करो
+    // ✅ config.js वाला saveRuppyData Use करो
     userData.balance = (userData.balance || 0) + window.currentReward;
     if(window.saveRuppyData) await window.saveRuppyData(userData);
 
@@ -452,12 +492,13 @@
     `).join('');
   }
 
+  // ✅ Auto-Sync वापस - Ranking Real-time Update होगी
   function setupRealtimeListener() {
     onValue(allUsersRef, () => {
-      loadUserPosition();
+      loadUserPosition(); // Users का Data Change = Ranking Update
     });
     onValue(winnersRef, () => {
-      loadWinnersList();
+      loadWinnersList(); // Winners List Change = Auto Update
       checkClaimStatus();
     });
   }
