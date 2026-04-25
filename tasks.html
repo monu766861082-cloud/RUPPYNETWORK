@@ -18,16 +18,90 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .hdr p{margin:4px 0 0;color:#FFA500;font-weight:bold}
 .hdr small{color:#888}
 .tokenBal{background:#0d0d0d;border:1px solid #FFA500;border-radius:12px;padding:15px;margin:0 15px;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
-.tokenBal b{color:#FFA500;font-size:24px}
+.tokenBal b{color:#FFA500;font-size:24px;transition:0.3s;}
+.tokenBal b.flash{animation:flash 0.5s;}
+@keyframes flash{0%,100%{transform:scale(1)} 50%{transform:scale(1.15); color:#4CAF50}}
 
 .r-coin {width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;box-shadow:0 0 10px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500;position:relative;flex-shrink:0}
 .r-coin::after {content:'';position:absolute;inset:-2px;border-radius:50%;background:radial-gradient(circle,#FF6B00 0%,transparent 70%);opacity:0.4;filter:blur(3px);z-index:-1}
+
+/* ✅ SPIN WHEEL CSS */
+.spin-section{margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:20px; text-align:center;}
+.spin-section h4{color:#FFA500; font-size:13px; margin-bottom:5px;}
+.last-reward{color:#4CAF50; font-size:12px; margin-top:8px; min-height:16px; font-weight:600;}
+
+.wheel-container{position:relative; width:220px; height:220px; margin:20px auto;}
+.wheel-pointer{
+  position:absolute;
+  top:-10px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:24px;
+  color:#FFA500;
+  z-index:10;
+  filter:drop-shadow(0 2px 5px rgba(255,165,0,0.8));
+}
+.wheel{
+  width:220px;
+  height:220px;
+  border-radius:50%;
+  border:5px solid #FFA500;
+  position:relative;
+  transition:transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+  box-shadow:0 0 30px rgba(255,165,0,0.3);
+  background:conic-gradient(
+    from 0deg,
+    #FF6B6B 0deg 60deg,
+    #4ECDC4 60deg 120deg,
+    #FFA500 120deg 180deg,
+    #FF6B6B 180deg 240deg,
+    #4ECDC4 240deg 300deg,
+    #FFA500 300deg 360deg
+  );
+}
+.wheel-segment{
+  position:absolute;
+  width:50%;
+  height:50%;
+  top:50%;
+  left:50%;
+  transform-origin:0 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:18px;
+  color:#000;
+}
+.seg-10{transform:rotate(30deg) translate(60px, -20px);}
+.seg-15{transform:rotate(90deg) translate(60px, -20px);}
+.seg-25{transform:rotate(150deg) translate(60px, -20px);}
+.seg-10-2{transform:rotate(210deg) translate(60px, -20px);}
+.seg-15-2{transform:rotate(270deg) translate(60px, -20px);}
+.seg-25-2{transform:rotate(330deg) translate(60px, -20px);}
+
+.spin-btn{
+  background:linear-gradient(135deg, #FFA500, #FF8C00);
+  color:#000;
+  border:none;
+  padding:12px 40px;
+  border-radius:25px;
+  font-weight:700;
+  font-size:14px;
+  margin-top:20px;
+  cursor:pointer;
+  box-shadow:0 4px 15px rgba(255,165,0,0.4);
+  transition:0.2s;
+}
+.spin-btn:active{transform:scale(0.95);}
+.spin-btn:disabled{background:#444; color:#888; box-shadow:none; cursor:not-allowed;}
+.spin-info{margin-top:15px; font-size:11px; color:#888;}
 
 .card{border:1px solid #333;border-radius:12px;padding:14px;margin:12px 15px;display:flex;align-items:center;background:#0d0d0d}
 .ic{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:20px}
 .tg{background:#0088cc}.fb{background:#1877f2}.x{background:#fff;color:#000}
 .txt{flex:1}.txt b{display:block;font-size:15px}.txt span{color:#FFA500;font-size:12px;display:flex;align-items:center;gap:4px}
-.txt .mini-coin {width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:8px;color:#000}
+.txt.mini-coin {width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:8px;color:#000}
 .bt{border:1px solid #FFA500;color:#FFA500;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;min-width:70px;text-align:center;font-weight:600}
 .bt.claim{background:#FFA500;color:#000}
 .bt.done{background:#333;color:#666;border-color:#333;cursor:not-allowed}
@@ -47,6 +121,30 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 </div>
 
 <div class="tokenBal">Your Balance: <div class="r-coin">R</div> <b id="bal">0</b> RUP</div>
+
+<!-- ✅ SPIN WHEEL SECTION -->
+<div class="spin-section">
+  <h4>🎡 LUCKY SPIN</h4>
+  <p style="color:#888; font-size:12px; margin-bottom:15px;">Spin daily & win RUPPY</p>
+  <div class="last-reward" id="lastReward"></div>
+
+  <div class="wheel-container">
+    <div class="wheel-pointer">▼</div>
+    <div class="wheel" id="spinWheel">
+      <div class="wheel-segment seg-10">10</div>
+      <div class="wheel-segment seg-15">15</div>
+      <div class="wheel-segment seg-25">25</div>
+      <div class="wheel-segment seg-10-2">10</div>
+      <div class="wheel-segment seg-15-2">15</div>
+      <div class="wheel-segment seg-25-2">25</div>
+    </div>
+    <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN NOW</button>
+  </div>
+
+  <div class="spin-info">
+    <span id="spinStatus">1 Free Spin Available Today</span>
+  </div>
+</div>
 
 <div class="card">
   <div class="ic tg">✈️</div>
@@ -94,11 +192,19 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   </div>
 </div>
 
-<script>
+<script type="module">
+import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+
+const database = getDatabase();
+
 // ✅ FIX: localStorage हटाया, config.js वाला userData Use करा
 var userData = window.userData;
 let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
 let openedTask = null;
+let isSpinning = false;
+
+// ✅ सिर्फ 10, 15, 25 - 40, 60, 100 नहीं
+const SPIN_REWARDS = [10, 15, 25, 10, 15, 25];
 
 // ✅ FIX: init Function बनाया जो userData Load होने का Wait करता
 async function init(){
@@ -108,16 +214,17 @@ async function init(){
     attempts++;
   }
   userData = window.userData;
-  
+
   // ✅ FIXED: Referral/Ranking वाला Auto Sense Logic
   let displayId = userData.myReferralCode;
   if(!displayId && userData.uid) {
     displayId = 'RUP-' + userData.uid.substring(0,6).toUpperCase();
   }
   document.getElementById('userId').innerText = `ID: ${displayId || 'Loading...'}`;
-  
+
   document.getElementById('bal').innerText = userData.balance || 0;
   updateButtons();
+  checkSpinStatus();
 }
 
 init();
@@ -146,11 +253,16 @@ async function claimReward(task) {
     userData.balance += 20;
     taskState[task] = 'claimed';
     localStorage.setItem('taskState', JSON.stringify(taskState));
-    
+
     // Firebase में Save करा
     await saveRuppyData(userData);
-    
+
+    // Balance Flash Effect
+    const balEl = document.getElementById('bal');
+    balEl.classList.add('flash');
     document.getElementById('bal').innerText = userData.balance;
+    setTimeout(() => balEl.classList.remove('flash'), 500);
+
     updateButtons();
     alert('+20 RUP Claimed!');
   }
@@ -185,6 +297,78 @@ function updateButtons() {
   });
 }
 
+// ✅ SPIN WHEEL FUNCTIONS
+window.spinWheel = async function() {
+  if (isSpinning) return;
+  if (!userData?.uid) return alert("Login first!");
+
+  const today = new Date().toDateString();
+  const spinKey = `dailySpin_${today}`;
+
+  if (userData.dailySpin && userData.dailySpin[spinKey]) {
+    return alert("Today's spin already used! Come back tomorrow.");
+  }
+
+  isSpinning = true;
+  document.getElementById('spinBtn').disabled = true;
+  document.getElementById('spinBtn').innerText = 'SPINNING...';
+
+  // Random Reward चुनो - सिर्फ 10, 15, 25
+  const randomIndex = Math.floor(Math.random() * SPIN_REWARDS.length);
+  const reward = SPIN_REWARDS[randomIndex];
+
+  // Wheel को Rotate करो - 5 चक्कर + Final Position
+  const degrees = 1800 + (randomIndex * 60) + 30;
+  const wheel = document.getElementById('spinWheel');
+  wheel.style.transform = `rotate(${degrees}deg)`;
+
+  // 3 sec बाद Result
+  setTimeout(async () => {
+    // Balance Update
+    userData.balance = (userData.balance || 0) + reward;
+
+    // Spin Record Save
+    if (!userData.dailySpin) userData.dailySpin = {};
+    userData.dailySpin[spinKey] = reward;
+
+    // Firebase Update
+    const userRef = ref(database, 'users/' + userData.uid);
+    await update(userRef, {
+      balance: userData.balance,
+      dailySpin: userData.dailySpin
+    });
+
+    if(window.saveRuppyData) await window.saveRuppyData(userData);
+
+    // UI Update - Balance चमकेगा
+    const balEl = document.getElementById('bal');
+    balEl.classList.add('flash');
+    document.getElementById('bal').innerText = userData.balance;
+
+    // Last Reward दिखाओ
+    document.getElementById('lastReward').innerText = `🎉 +${reward} RUPPY Won!`;
+    document.getElementById('spinStatus').innerText = 'Come back tomorrow for next spin';
+
+    setTimeout(() => balEl.classList.remove('flash'), 500);
+
+    isSpinning = false;
+    document.getElementById('spinBtn').innerText = 'SPIN USED';
+  }, 3000);
+}
+
+function checkSpinStatus() {
+  if (!userData?.uid) return;
+  const today = new Date().toDateString();
+  const spinKey = `dailySpin_${today}`;
+
+  if (userData.dailySpin && userData.dailySpin[spinKey]) {
+    document.getElementById('spinBtn').disabled = true;
+    document.getElementById('spinBtn').innerText = 'SPIN USED';
+    document.getElementById('spinStatus').innerText = 'Come back tomorrow for next spin';
+    document.getElementById('lastReward').innerText = `Last Won: +${userData.dailySpin[spinKey]} RUPPY`;
+  }
+}
+
 function goPage(page) {
   window.location.href = page;
 }
@@ -194,7 +378,7 @@ window.addEventListener('storage', function(e) {
   if (e.key === 'ruppy_user_cache') {
     userData = JSON.parse(e.newValue);
     document.getElementById('bal').innerText = userData.balance;
-    
+
     // ✅ FIXED: Referral/Ranking वाला Auto Sense Logic
     let displayId = userData.myReferralCode;
     if(!displayId && userData.uid) {
