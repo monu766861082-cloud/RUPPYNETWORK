@@ -5,33 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruppy Network - App</title>
   
-  <!-- AdSense का Code - जैसे था वैसे ही रखा, छुआ नहीं -->
-  
+  <!-- Monetag Vignette - Zone 10925298 - NO TIMER -->
   <script>
-    const MONETAG_ZONE = '10925298';
-    let monetagLoaded = false;
-    
-    // SDK Load होते ही Flag True कर देगा
     (function(s){
       s.dataset.zone='10925298';
       s.src='https://n6wxm.com/vignette.min.js';
-      s.onload = () => { monetagLoaded = true; console.log('Monetag SDK Loaded'); };
-      s.onerror = () => { console.log('Monetag SDK Failed'); };
       [document.documentElement, document.body].filter(Boolean).pop().appendChild(s);
     })(document.createElement('script'));
     
-    function openMonetagAd(zoneId, onComplete) {
-      if (monetagLoaded && typeof show_10925298 === 'function') {
+    // Direct Call - Timer नहीं है
+    function showAdAndReward(rewardFunction, rewardAmount) {
+      if (typeof show_10925298 === 'function') {
         show_10925298().then(() => {
-          console.log('Vignette Ad Complete');
-          if (onComplete) onComplete();
-        }).catch((e) => {
-          console.log('Ad Failed:', e);
-          if (onComplete) onComplete();
+          rewardFunction();
+          showToast(`+${rewardAmount} RUP Claimed!`);
+        }).catch(() => {
+          rewardFunction();
+          showToast(`+${rewardAmount} RUP Claimed!`);
         });
       } else {
-        console.log('SDK Not Ready - Free reward');
-        if (onComplete) onComplete();
+        // SDK नहीं मिला तो भी Reward दे दे
+        rewardFunction();
+        showToast(`+${rewardAmount} RUP Claimed!`);
       }
     }
   </script>
@@ -84,10 +79,6 @@
     .nav-item.active::after {content:''; width:30px; height:2px; background:#FFA500; margin-top:2px;}
     .nav-item .icon {font-size:20px;}
     #toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #FFA500; padding: 12px 20px; border-radius: 8px; border: 1px solid #FFA500; display: none; z-index: 1000; font-size: 14px; }
-    .timer-overlay {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:none; align-items:center; justify-content:center; z-index:10000; flex-direction:column;}
-    .timer-overlay.active {display:flex;}
-    .timer-circle {width:120px; height:120px; border:3px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:36px; color:#FFA500; font-weight:bold;}
-    .timer-text {margin-top:20px; color:#888; font-size:14px;}
   </style>
   
 </head>
@@ -184,35 +175,12 @@
     </div>
   </div>
 
-  <div class="timer-overlay" id="timerOverlay">
-    <div class="timer-circle" id="timerCount">5</div>
-    <div class="timer-text">Please wait... Loading Ad</div>
-  </div>
-
   <div id="toast"></div>
 
 <script type="module">
   let userData;
   const MINING_REWARD = 40;
   
-  function showAdTimer(seconds, callback) {
-    const overlay = document.getElementById('timerOverlay');
-    const count = document.getElementById('timerCount');
-    overlay.classList.add('active');
-    let timeLeft = seconds;
-    count.innerText = timeLeft;
-    
-    const interval = setInterval(() => {
-      timeLeft--;
-      count.innerText = timeLeft;
-      if (timeLeft <= 0) {
-        clearInterval(interval);
-        overlay.classList.remove('active');
-        if (callback) callback();
-      }
-    }, 1000);
-  }
-
   async function waitForUserData() {
     let attempts = 0;
     while(!window.userData?.uid && attempts < 50) {
@@ -229,19 +197,6 @@
     setTimeout(() => { toast.style.display = 'none'; }, 3000);
   }
 
-  function showMonetagAd(zoneId, rewardFunction, rewardAmount, timerSec) {
-    let buttons = document.querySelectorAll('.grid-item, .mining-circle, .btn');
-    buttons.forEach(btn => btn.style.pointerEvents = 'none');
-    
-    showAdTimer(timerSec, () => {
-      openMonetagAd(zoneId, () => {
-        rewardFunction();
-        buttons.forEach(btn => btn.style.pointerEvents = 'auto');
-        showToast(`+${rewardAmount} RUP Claimed!`);
-      });
-    });
-  }
-
   function doMining() {
     let now = Date.now();
     let lastMine = Number(userData.lastMine) || 0;
@@ -254,9 +209,7 @@
     updateBalance();
     updateMiningCircle();
     
-    if(window.logMineEvent) {
-      window.logMineEvent(MINING_REWARD);
-    }
+    if(window.logMineEvent) window.logMineEvent(MINING_REWARD);
   }
 
   function doBoost() {
@@ -269,9 +222,7 @@
     updateBalance();
     updateBoost();
     
-    if(window.logMineEvent) {
-      window.logMineEvent(boostAmount);
-    }
+    if(window.logMineEvent) window.logMineEvent(boostAmount);
     
     if(userData.boostCount >= 3) {
       document.getElementById('boostModalBtn').innerText = 'All Claimed!';
@@ -279,7 +230,6 @@
       setTimeout(closeBoostModal, 1500);
     } else {
       document.getElementById('boostStep').innerText = userData.boostCount + 1;
-      showToast(`+${boostAmount} RUP Claimed! (${userData.boostCount}/3)`);
     }
   }
 
@@ -295,9 +245,7 @@
     updateBalance();
     updateGift();
     
-    if(window.logMineEvent) {
-      window.logMineEvent(10);
-    }
+    if(window.logMineEvent) window.logMineEvent(10);
   }
 
   function doFirstReward() {
@@ -309,9 +257,7 @@
       updateBalance();
       updateFirstReward();
       
-      if(window.logMineEvent) {
-        window.logMineEvent(15);
-      }
+      if(window.logMineEvent) window.logMineEvent(15);
     }
   }
 
@@ -324,19 +270,18 @@
       updateBalance();
       updateUltraReward();
       
-      if(window.logMineEvent) {
-        window.logMineEvent(20);
-      }
+      if(window.logMineEvent) window.logMineEvent(20);
     }
   }
 
-  document.getElementById('miningCircle').onclick = () => showMonetagAd(MONETAG_ZONE, doMining, 40, 6);
+  // NO TIMER - DIRECT AD
+  document.getElementById('miningCircle').onclick = () => showAdAndReward(doMining, 40);
   document.getElementById('boostBtn').onclick = openBoostModal;
-  document.getElementById('boostModalBtn').onclick = () => showMonetagAd(MONETAG_ZONE, doBoost, Math.floor(MINING_REWARD * 0.10), 6);
+  document.getElementById('boostModalBtn').onclick = () => showAdAndReward(doBoost, Math.floor(MINING_REWARD * 0.10));
   document.getElementById('closeBoostModal').onclick = closeBoostModal;
-  document.getElementById('giftBtn').onclick = () => showMonetagAd(MONETAG_ZONE, doGift, 10, 30);
-  document.getElementById('firstRewardBtn').onclick = () => showMonetagAd(MONETAG_ZONE, doFirstReward, 15, 30);
-  document.getElementById('ultraRewardBtn').onclick = () => showMonetagAd(MONETAG_ZONE, doUltraReward, 20, 30);
+  document.getElementById('giftBtn').onclick = () => showAdAndReward(doGift, 10);
+  document.getElementById('firstRewardBtn').onclick = () => showAdAndReward(doFirstReward, 15);
+  document.getElementById('ultraRewardBtn').onclick = () => showAdAndReward(doUltraReward, 20);
 
   document.querySelectorAll('.nav-item').forEach(item => {
     item.onclick = () => {
