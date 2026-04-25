@@ -114,7 +114,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px;-webkit-tap-highlight-col
   <div class="create-top">
     <div class="create-avatar" id="userAvatar">U</div>
     <div style="flex:1">
-      <div class="word-limit-text">Minimum 200 words required</div>
+      <div class="word-limit-text">No word limit - Write as much as you want!</div>
       <textarea id="postText" placeholder="Share your RUPPY update..." rows="2"></textarea>
     </div>
   </div>
@@ -123,7 +123,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px;-webkit-tap-highlight-col
       <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📷</button>
       <button class="icon-btn" onclick="addEmoji()">😊</button>
     </div>
-    <button class="post-btn" id="postBtn" onclick="createPost()" disabled>Post</button>
+    <button class="post-btn" id="postBtn" onclick="createPost()">Post</button>
   </div>
   <input type="file" id="fileInput" accept="image/*,video/*">
   <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
@@ -161,6 +161,9 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px;-webkit-tap-highlight-col
 
 <script type="module">
 import { getDatabase, ref, push, onValue, update, get, query, orderByChild, equalTo, limitToLast, runTransaction, endBefore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+const POST_REWARD = 5; // ✅ 40 से 5 कर दिया
+const DAILY_POST_LIMIT = 3;
 
 function waitForConfig() {
   return new Promise(resolve => {
@@ -226,11 +229,11 @@ async function checkPostLimit(){
 
   if(lastPostDate!== todayKey){
     await update(userRef, { postsToday: 0, lastPostDate: todayKey });
-    return { canPost: true, count: 0, left: 3 };
+    return { canPost: true, count: 0, left: DAILY_POST_LIMIT };
   }
 
-  if(postsToday < 3){
-    return { canPost: true, count: postsToday, left: 3 - postsToday };
+  if(postsToday < DAILY_POST_LIMIT){
+    return { canPost: true, count: postsToday, left: DAILY_POST_LIMIT - postsToday };
   }
 
   return { canPost: false, count: postsToday, left: 0, reason: 'limit' };
@@ -271,8 +274,8 @@ async function markPostClaimed(postId){
   claimedPosts.add(postId);
 
   if(window.userData && window.userData.uid && window.userData.uid!== "guest"){
-    window.userData.balance = (Number(window.userData.balance) || 0) + 40; // ✅ 10 से 40 कर दिया
-    window.userData.taskBalance = (Number(window.userData.taskBalance) || 0) + 40; // ✅ 10 से 40 कर दिया
+    window.userData.balance = (Number(window.userData.balance) || 0) + POST_REWARD;
+    window.userData.taskBalance = (Number(window.userData.taskBalance) || 0) + POST_REWARD;
     if(typeof window.saveRuppyData === 'function'){
       await window.saveRuppyData(window.userData);
     }
@@ -288,11 +291,10 @@ async function updateRewardBanner(){
   let bannerText = document.getElementById('limitText');
   let postBtn = document.getElementById('postBtn');
   let text = document.getElementById('postText').value.trim();
-  let wordCount = countWords(text);
 
   if(!window.userData || window.userData.uid === "guest"){
     bannerText.textContent = 'Login to earn rewards';
-    postBtn.disabled = wordCount < 200 &&!selectedFile;
+    postBtn.disabled =!text &&!selectedFile;
     return;
   }
 
@@ -300,17 +302,17 @@ async function updateRewardBanner(){
   const unclaimed = await getUnclaimedPost();
 
   if(!limitCheck.canPost && limitCheck.reason === 'limit'){
-    bannerText.textContent = `Daily limit reached 3/3. Come back tomorrow`;
-    postBtn.textContent = 'Limit Reached 3/3';
+    bannerText.textContent = `Daily limit reached ${DAILY_POST_LIMIT}/${DAILY_POST_LIMIT}. Come back tomorrow`;
+    postBtn.textContent = 'Limit Reached';
     postBtn.disabled = true;
   } else if(unclaimed){
-    bannerText.textContent = `⚠️ Claim Post | ${limitCheck.left}/3 left`;
+    bannerText.textContent = `⚠️ Claim Post | ${limitCheck.left}/${DAILY_POST_LIMIT} left`;
     postBtn.textContent = `Claim First`;
     postBtn.disabled = true;
   } else {
-    bannerText.textContent = `🎁 +40 RUPPY Coin reward per post | ${limitCheck.left}/3 left`; // ✅ 10 से 40 कर दिया
-    postBtn.textContent = `Post ${limitCheck.count + 1}/3`;
-    postBtn.disabled = wordCount < 200 &&!selectedFile;
+    bannerText.textContent = `🎁 +${POST_REWARD} RUP reward per post | ${limitCheck.left}/${DAILY_POST_LIMIT} left`;
+    postBtn.textContent = `Post`;
+    postBtn.disabled =!text &&!selectedFile; // ✅ Word limit हटा दिया
   }
 }
 
@@ -357,7 +359,7 @@ window.claimPost = async function(postId){
   const success = await markPostClaimed(postId);
 
   if(success){
-    alert('40 RUP Claimed! 🎉'); // ✅ 10 से 40 कर दिया
+    alert(`${POST_REWARD} RUP Claimed! 🎉`);
     if(btn){
       btn.textContent = 'Claimed';
       btn.classList.add('claimed');
@@ -379,10 +381,10 @@ window.createPost = async function(){
   }
 
   let text = document.getElementById('postText').value.trim();
-  let wordCount = countWords(text);
 
-  if(wordCount < 200 &&!selectedFile){
-    alert('Minimum 200 words required to post');
+  // ✅ 200 Words वाला Check हटा दिया
+  if(!text &&!selectedFile){
+    alert('Write something or add image');
     return;
   }
 
@@ -392,7 +394,7 @@ window.createPost = async function(){
   const limitCheck = await checkPostLimit();
   if(!limitCheck.canPost){
     updateRewardBanner();
-    alert('Daily limit reached 3/3. Come back tomorrow');
+    alert(`Daily limit reached ${DAILY_POST_LIMIT}/${DAILY_POST_LIMIT}. Come back tomorrow`);
     return;
   }
 
@@ -404,11 +406,6 @@ window.createPost = async function(){
     return;
   }
 
-  if(!text &&!selectedFile) {
-    document.getElementById('postBtn').disabled = false;
-    await updateRewardBanner();
-    return;
-  }
   if(checkContent(text)){
     alert('Inappropriate content detected');
     document.getElementById('postBtn').disabled = false;
@@ -445,7 +442,7 @@ window.createPost = async function(){
           userData.postsToday = 1;
           userData.lastPostDate = todayKey;
         } else {
-          if((userData.postsToday || 0) >= 3){
+          if((userData.postsToday || 0) >= DAILY_POST_LIMIT){
             return;
           }
           userData.postsToday = (userData.postsToday || 0) + 1;
@@ -455,7 +452,7 @@ window.createPost = async function(){
     });
 
     if(!result.committed){
-      alert('Daily limit reached 3/3');
+      alert(`Daily limit reached ${DAILY_POST_LIMIT}/${DAILY_POST_LIMIT}`);
       await updateRewardBanner();
       return;
     }
@@ -542,7 +539,7 @@ function renderFeed(posts){
     let isClaimed = post.claimed || claimedPosts.has(post.id);
     let claimBtnHTML = '';
     if(post.userId === currentUserId &&!isClaimed){
-      claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +40 RUP</button>`; // ✅ 10 से 40 कर दिया
+      claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +${POST_REWARD} RUP</button>`;
     } else if(post.userId === currentUserId && isClaimed){
       claimBtnHTML = `<button class="claim-btn claimed" disabled>Claimed</button>`;
     }
@@ -605,7 +602,6 @@ function getTimeAgo(time){
   return new Date(time).toLocaleDateString();
 }
 
-// ✅ FIX: Optimistic Like - Facebook जैसा Instant + No Full Re-render
 window.likePost = async function(id){
   if(!window.userData || window.userData.uid === "guest" ||!currentUserId){
     alert('Please login to like posts');
@@ -618,7 +614,6 @@ window.likePost = async function(id){
   const post = allLoadedPosts[postIndex];
   let isLiked = post.likedBy && post.likedBy[currentUserId];
 
-  // 1. UI तुरंत Update - Optimistic + Direct DOM Update
   const likeBtn = document.getElementById(`like-btn-${id}`);
   const likeCount = document.getElementById(`like-count-${id}`);
 
@@ -635,7 +630,6 @@ window.likePost = async function(id){
     if(likeCount) likeCount.textContent = post.likes;
   }
 
-  // 2. Firebase में Background Update
   const postRef = ref(db, `posts/${id}`);
   let updates = {};
   if(isLiked){
