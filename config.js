@@ -12,7 +12,8 @@ const firebaseConfig = {
   projectId: "ruppynetwork-50362",
   storageBucket: "ruppynetwork-50362.appspot.com",
   messagingSenderId: "132064610854",
-  appId: "1:132064610854:web:3c217eaf3618007f5934e7"
+  appId: "1:132064610854:web:3c217eaf3618007f5934e7",
+  measurementId: "G-BDNYBPDTQM" // ✅ अब Add हो गया
 };
 
 const app = initializeApp(firebaseConfig);
