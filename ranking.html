@@ -1,543 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ruppy Network - Leaderboard</title>
-
-  <!-- ✅ config.js सबसे पहले Load होगा -->
-  <script type="module" src="config.js"></script>
-
-  <style>
-    * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
-    body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
-
- .header {padding:20px 15px 10px; display:flex; align-items:center; justify-content:space-between;}
- .header.title h3 {font-size:18px; font-weight:600;}
- .header.title p {font-size:12px; color:#888; margin-top:2px;}
- .header.back-btn {width:36px; height:36px; border:1px solid #333; border-radius:8px; background:#0d0d0d; display:flex; align-items:center; justify-content:center; cursor:pointer;}
-
- .winner-banner {margin:15px; background:linear-gradient(135deg, #FFA500, #FF6B00); border-radius:12px; padding:16px; display:none;}
- .winner-banner.show {display:block;}
- .winner-banner h3 {font-size:16px; color:#000; font-weight:700; margin-bottom:8px;}
- .winner-banner p {font-size:13px; color:#000; margin-bottom:12px;}
- .btn-claim {width:100%; padding:12px; background:#000; border:none; border-radius:8px; color:#FFA500; font-weight:700; font-size:14px; cursor:pointer;}
- .btn-claim:disabled {opacity:0.5;}
-
- .position-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
- .position-card p:first-child {color:#888; font-size:11px; letter-spacing:0.5px; margin-bottom:10px;}
- .position-row {display:flex; justify-content:space-between; align-items:center;}
- .position-left {display:flex; align-items:center; gap:12px;}
- .position-rank {width:36px; height:36px; border:2px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#FFA500;}
- .position-name {font-size:15px; font-weight:600;}
- .position-right {text-align:right;}
- .position-right.label {color:#888; font-size:11px;}
- .position-right.points {color:#FFA500; font-weight:700; font-size:20px;}
-
- .winners-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
- .winners-list h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
- .winner-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
- .winner-row:last-child {border-bottom:none;}
- .winner-left {display:flex; align-items:center; gap:10px;}
- .winner-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
- .winner-name {font-size:14px;}
- .winner-right {text-align:right;}
- .winner-token {color:#FFA500; font-weight:700; font-size:13px;}
- .winner-status {font-size:10px; color:#4CAF50;}
- .winner-status.pending {color:#888;}
-
- .leaderboard-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
- .leaderboard-list h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
- .leader-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
- .leader-row:last-child {border-bottom:none;}
- .leader-left {display:flex; align-items:center; gap:10px;}
- .leader-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
- .leader-name {font-size:14px;}
- .leader-points {color:#FFA500; font-weight:700; font-size:14px;}
-
- .campaign-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:18px;}
- .campaign-card.tag {color:#888; font-size:11px; display:flex; align-items:center; gap:5px; margin-bottom:10px;}
- .campaign-card h2 {font-size:20px; font-weight:700; line-height:1.3;}
- .campaign-card h2 span {color:#FFA500;}
- .campaign-card p {color:#666; font-size:12px; margin:10px 0 15px; line-height:1.5;}
- .btn-refer {width:100%; padding:14px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:700; font-size:14px; cursor:pointer;}
- .btn-refer:active {transform:scale(0.98);}
- .btn-refer:disabled {opacity:0.6;}
-
- .reward-structure {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
- .reward-structure h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
- .reward-row {display:flex; justify-content:space-between; padding:8px 0; font-size:13px; border-bottom:1px solid #1a1a1a;}
- .reward-row:last-child {border-bottom:none;}
- .reward-row.rank {color:#888;}
- .reward-row.token {color:#fff; font-weight:600;}
-
- .nav {position:fixed; bottom:0; left:0; right:0; background:#0d0d0d; border-top:1px solid #222; display:flex; justify-content:space-around; padding:8px 0;}
- .nav-item {display:flex; flex-direction:column; align-items:center; gap:3px; color:#666; text-decoration:none; font-size:11px; cursor:pointer; padding:5px 0; width:16.6%; position:relative;}
- .nav-item.active {color:#FFA500;}
- .nav-item.active::after {content:''; position:absolute; bottom:2px; width:30px; height:2px; background:#FFA500; border-radius:2px;}
- .nav-item.icon {font-size:20px;}
-  </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ruppy Network - Ranking</title>
+<script type="module" src="config.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
+body{background:#0a0a0a;color:#fff;padding-bottom:80px}
+.header{padding:20px;text-align:center;border-bottom:1px solid #222;background:#0d0d0d;position:sticky;top:0;z-index:100}
+.header h2{font-size:22px;font-weight:800;background:linear-gradient(90deg,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.timer-box{margin:15px 20px;background:linear-gradient(135deg,#1a1a1a,#0d0d0d);border:1px solid #FFD700;border-radius:16px;padding:16px;text-align:center}
+.timer-box h3{font-size:14px;color:#888;margin-bottom:8px}
+.timer-box.countdown{font-size:24px;font-weight:800;color:#FFD700}
+.timer-box.reward{font-size:12px;color:#666;margin-top:5px}
+.winner-banner{margin:15px 20px;background:#1a5c1a;border:1px solid #0f0;border-radius:16px;padding:12px;text-align:center;display:none}
+.winner-banner h4{color:#0f0;font-size:14px;margin-bottom:5px}
+.winner-banner p{color:#fff;font-size:12px}
+.top3{display:flex;justify-content:center;gap:15px;padding:20px;align-items:flex-end}
+.top-card{background:#111;border:1px solid #222;border-radius:20px;padding:15px;text-align:center;width:100px;position:relative}
+.top-card.first{background:linear-gradient(135deg,#FFD700,#FFA500);transform:scale(1.1);border:none}
+.top-card.claimed-badge{position:absolute;top:-8px;right:-8px;background:#0f0;color:#000;font-size:9px;font-weight:700;padding:3px 6px;border-radius:10px}
+.top-card.rank{font-size:24px;margin-bottom:8px}
+.top-card.dp{width:50px;height:50px;border-radius:50%;background:#1a1a1a;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;border:2px solid #333}
+.top-card.first.dp{border-color:#000}
+.top-card.dp img{width:100%;height:100%;object-fit:cover}
+.top-card.name{font-size:12px;font-weight:600;color:#FFD700;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-card.first.name{color:#000}
+.top-card.score{font-size:11px;color:#666}
+.top-card.first.score{color:#000}
+.leaderboard{padding:0 20px}
+.rank-item{background:#111;border:1px solid #222;border-radius:16px;padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:12px;position:relative}
+.rank-item.current-user{border:2px solid #FFD700;background:linear-gradient(135deg,#1a1a1a,#0d0d0d)}
+.rank-item.winner{border:2px solid #0f0;background:linear-gradient(135deg,#1a2a1a,#0d1a0d)}
+.claimed-tag{position:absolute;top:8px;right:8px;background:#0f0;color:#000;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px}
+.rank-num{width:30px;height:30px;border-radius:8px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-weight:700;color:#FFD700;font-size:14px}
+.rank-dp{width:40px;height:40px;border-radius:12px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #333}
+.rank-dp img{width:100%;height:100%;object-fit:cover}
+.rank-info{flex:1}
+.rank-info.name{font-size:14px;font-weight:600;margin-bottom:2px}
+.rank-info.refs{font-size:12px;color:#666}
+.rank-score{font-size:16px;font-weight:700;color:#FFD700}
+.ruppy-nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:10px;cursor:pointer;padding:5px 0;width:16.6%}
+.nav-item.active{color:#FFD700}
+.nav-item.active::after{content:'';width:30px;height:2px;background:#FFD700;margin-top:2px}
+.nav-item.icon{font-size:20px}
+.empty{text-align:center;padding:40px;color:#666}
+</style>
 </head>
 <body>
 
-  <div class="header">
-    <div class="title">
-      <h3>Leaderboard</h3>
-      <p>Updates Daily • 1 Share = 10 pts</p>
-    </div>
-    <div class="back-btn" onclick="window.location.href='app.html'">←</div>
-  </div>
+<div class="header">
+  <h2>🏆 Weekly Leaderboard</h2>
+</div>
 
-  <div class="winner-banner" id="winnerBanner">
-    <h3>🏆 Congratulations!</h3>
-    <p id="winnerText">You ranked #0 last week</p>
-    <button class="btn-claim" id="claimBtn" onclick="claimReward()">CLAIM REWARD</button>
-  </div>
+<div class="timer-box">
+  <h3>⏰ Next Reward Distribution</h3>
+  <div class="countdown" id="countdown">Loading...</div>
+  <div class="reward">Top Users Get Auto Reward - Watch Your Rank</div>
+</div>
 
-  <div class="position-card">
-    <p>YOUR POSITION TODAY</p>
-    <div class="position-row">
-      <div class="position-left">
-        <div class="position-rank" id="userRank">#-</div>
-        <div class="position-name" id="userName">Loading...</div>
-      </div>
-      <div class="position-right">
-        <div class="label">Today's Points</div>
-        <div class="points" id="userPoints">0</div>
-      </div>
-    </div>
-  </div>
+<div class="winner-banner" id="winnerBanner">
+  <h4>🎉 Last Week Winners - Auto Claimed</h4>
+  <p id="winnerList">Loading...</p>
+</div>
 
-  <div class="winners-list">
-    <h4>🏆 LAST WEEK TOP 10 WINNERS</h4>
-    <div id="winnersList">
-      <p style="color:#666; text-align:center; padding:20px 0;">No winners yet. Check back Monday!</p>
-    </div>
-  </div>
+<div class="top3" id="top3"></div>
 
-  <div class="leaderboard-list">
-    <h4>🔥 TODAY'S TOP 100</h4>
-    <div id="leaderboardList">
-      <p style="color:#666; text-align:center; padding:20px 0;">Loading rankings...</p>
-    </div>
-  </div>
+<div class="leaderboard" id="leaderboard">
+  <div class="empty">Loading rankings...</div>
+</div>
 
-  <div class="campaign-card">
-    <div class="tag">📊 DAILY CAMPAIGN</div>
-    <h2>Share More. Rank Higher.<br><span>Earn Bigger Rewards.</span></h2>
-    <p>Ranking resets every 24 hours. Winners can claim rewards every Monday!</p>
-    <button class="btn-refer" onclick="handleReferNow()">REFER NOW</button>
+<div class="ruppy-nav">
+  <div class="nav-item" onclick="location.href='index.html'">
+    <div class="icon">🏠</div>
+    <span>Home</span>
   </div>
-
-  <div class="reward-structure">
-    <h4>Weekly Reward Structure:</h4>
-    <div class="reward-row">
-      <div class="rank">#1</div>
-      <div class="token">1000 RUPPY</div>
-    </div>
-    <div class="reward-row">
-      <div class="rank">#2 - #10</div>
-      <div class="token">800 RUPPY</div>
-    </div>
-    <div class="reward-row">
-      <div class="rank">#11 - #50</div>
-      <div class="token">600 RUPPY</div>
-    </div>
-    <div class="reward-row">
-      <div class="rank">#51 - #100</div>
-      <div class="token">500 RUPPY</div>
-    </div>
-    <div class="reward-row">
-      <div class="rank">#101 - #500</div>
-      <div class="token">300 RUPPY</div>
-    </div>
+  <div class="nav-item" onclick="location.href='tasks.html'">
+    <div class="icon">📋</div>
+    <span>Tasks</span>
   </div>
-
-  <div class="nav">
-    <div class="nav-item" onclick="navClick('home')">
-      <div class="icon">🏠</div>
-      <span>Home</span>
-    </div>
-    <div class="nav-item" onclick="navClick('tasks')">
-      <div class="icon">📋</div>
-      <span>Tasks</span>
-    </div>
-    <div class="nav-item" onclick="navClick('referral')">
-      <div class="icon">👥</div>
-      <span>Referral</span>
-    </div>
-    <div class="nav-item active">
-      <div class="icon">🏆</div>
-      <span>Ranking</span>
-    </div>
-    <div class="nav-item" onclick="navClick('community')">
-      <div class="icon">📝</div>
-      <span>Feed</span>
-    </div>
-    <div class="nav-item" onclick="navClick('settings')">
-      <div class="icon">⚙️</div>
-      <span>Settings</span>
-    </div>
+  <div class="nav-item" onclick="location.href='referral.html'">
+    <div class="icon">👥</div>
+    <span>Referral</span>
   </div>
+  <div class="nav-item active">
+    <div class="icon">🏆</div>
+    <span>Ranking</span>
+  </div>
+  <div class="nav-item" onclick="location.href='community.html'">
+    <div class="icon">📝</div>
+    <span>Feed</span>
+  </div>
+  <div class="nav-item" onclick="location.href='settings.html'">
+    <div class="icon">⚙️</div>
+    <span>Settings</span>
+  </div>
+</div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
-  import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+import { getDatabase, ref, query, orderByChild, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
-    authDomain: "ruppynetwork-50362.firebaseapp.com",
-    databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
-    projectId: "ruppynetwork-50362",
-    storageBucket: "ruppynetwork-50362.firebasestorage.app",
-    messagingSenderId: "132064610854",
-    appId: "1:132064610854:web:3c217eaf3618007f5934e7"
-  };
+const MAX_USERS = 500; // ✅ 500 Users तक दिखेंगे
+const WEEKLY_REWARD = 500; // तू अपने हिसाब से Change कर लेना
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const database = getDatabase(app);
+function waitForConfig() {
+  return new Promise(resolve => {
+    if (window.userData) {
+      resolve();
+    } else {
+      const interval = setInterval(() => {
+        if (window.userData) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    }
+  });
+}
 
-  // ✅ config.js वाला userData Use करो
-  let userData = window.userData;
-  let currentUser = null;
-  let userRef = null;
-  const allUsersRef = ref(database, 'users');
-  const winnersRef = ref(database, 'winners/thisWeek');
+// ✅ 7 Days Timer - Sunday रात 12 बजे
+function getNextSunday() {
+  const now = new Date();
+  const nextSunday = new Date();
+  nextSunday.setDate(now.getDate() + (7 - now.getDay()) % 7);
+  nextSunday.setHours(23, 59, 59, 999);
+  if (now.getDay() === 0 && now.getHours() >= 23) {
+    nextSunday.setDate(nextSunday.getDate() + 7);
+  }
+  return nextSunday;
+}
 
-  const REWARDS = {1: 1000, 10: 800, 50: 600, 100: 500, 500: 300};
+function startCountdown() {
+  const nextSunday = getNextSunday();
 
-  function getRewardByRank(rank) {
-    if (rank === 1) return 1000;
-    if (rank <= 10) return 800;
-    if (rank <= 50) return 600;
-    if (rank <= 100) return 500;
-    if (rank <= 500) return 300;
-    return 0;
+  function update() {
+    const diff = nextSunday - new Date();
+    if (diff <= 0) {
+      document.getElementById('countdown').textContent = 'Distributing Rewards...';
+      distributeRewards();
+      return;
+    }
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+    document.getElementById('countdown').textContent = `${days}d ${hours}h ${mins}m ${secs}s`;
+  }
+  update();
+  setInterval(update, 1000);
+}
+
+// ✅ AUTO CLAIM - Timer खत्म होते ही Top 10 को Reward
+async function distributeRewards() {
+  const db = getDatabase();
+  const now = Date.now();
+  const weekKey = `week_${Math.floor(now / (7 * 24 * 60 * 60 * 1000))}`;
+
+  const distRef = ref(db, `weeklyDistribution/${weekKey}`);
+  const distSnap = await get(distRef);
+  if (distSnap.exists()) {
+    showLastWinners(distSnap.val());
+    return;
   }
 
-  // ✅ config.js Load होने का Wait
-  async function init(){
-    let attempts = 0;
-    while(!window.userData?.uid && attempts < 50) {
-      await new Promise(r => setTimeout(r, 100));
-      attempts++;
-    }
-    userData = window.userData;
+  const usersRef = query(ref(db, 'users'), orderByChild('referralCount'));
+  const snapshot = await get(usersRef);
 
-    // 🔥 ANALYTICS ADDED - Leaderboard View Event
-    if(window.logMineEvent) {
-      const { getAnalytics, logEvent } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js");
-      const analytics = getAnalytics(app);
-      logEvent(analytics, 'view_leaderboard');
-    }
-
-    signInAnonymously(auth).catch((error) => {
-      console.error("Auth Error:", error);
-      alert("Login failed. Check Firebase Auth settings.");
+  let users = [];
+  if (snapshot.exists()) {
+    snapshot.forEach(child => {
+      const data = child.val();
+      users.push({
+        uid: child.key,
+        name: data.name || 'User',
+        referralCount: data.referralCount || 0
+      });
     });
   }
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      currentUser = user;
-      userRef = ref(database, 'users/' + user.uid);
-      checkDailyReset();
-      checkWeeklySnapshot();
-      checkReferral();
-      loadUserPosition();
-      loadWinnersList();
-      checkClaimStatus();
-      setupRealtimeListener();
+  // तेरी Rank Logic Same रहेगी - बस Sort कर रहे हैं
+  users.sort((a, b) => b.referralCount - a.referralCount);
+  const winners = users.slice(0, 10);
+
+  const updates = {};
+  const winnerNames = [];
+
+  for (let winner of winners) {
+    if (winner.referralCount > 0) {
+      const userRef = ref(db, `users/${winner.uid}`);
+      const userSnap = await get(userRef);
+      const userData = userSnap.val();
+
+      updates[`users/${winner.uid}/balance`] = (userData.balance || 0) + WEEKLY_REWARD;
+      updates[`users/${winner.uid}/lastWeeklyReward`] = now;
+      updates[`users/${winner.uid}/weeklyRewardRank`] = winners.indexOf(winner) + 1;
+      updates[`users/${winner.uid}/weeklyRewardAmount`] = WEEKLY_REWARD;
+
+      winnerNames.push(`${winner.name} (#${winners.indexOf(winner) + 1})`);
+    }
+  }
+
+  updates[`weeklyDistribution/${weekKey}`] = {
+    timestamp: now,
+    winners: winnerNames,
+    distributed: true
+  };
+
+  await update(ref(db), updates);
+  showLastWinners({ winners: winnerNames, timestamp: now });
+
+  setTimeout(() => window.location.reload(), 3000);
+}
+
+async function showLastWinners(data) {
+  const banner = document.getElementById('winnerBanner');
+  const list = document.getElementById('winnerList');
+
+  if (data && data.winners && data.winners.length > 0) {
+    banner.style.display = 'block';
+    list.textContent = data.winners.join(', ');
+  }
+}
+
+async function loadLeaderboard() {
+  await waitForConfig();
+  const db = getDatabase();
+
+  // ✅ सारे Users लाओ - No Limit, फिर 500 Slice करो
+  const usersRef = query(ref(db, 'users'), orderByChild('referralCount'));
+  const snapshot = await get(usersRef);
+
+  let users = [];
+  if (snapshot.exists()) {
+    snapshot.forEach(child => {
+      const data = child.val();
+      users.push({
+        uid: child.key,
+        name: data.name || 'User',
+        dp: data.dp || null,
+        referralCount: data.referralCount || 0,
+        balance: data.balance || 0,
+        weeklyRewardRank: data.weeklyRewardRank || 0,
+        weeklyRewardAmount: data.weeklyRewardAmount || 0,
+        lastWeeklyReward: data.lastWeeklyReward || 0
+      });
+    });
+  }
+
+  // तेरी Rank Logic Same - बस Sort
+  users.sort((a, b) => b.referralCount - a.referralCount);
+  users = users.slice(0, MAX_USERS); // ✅ 500 तक
+
+  // Check Last Week Winners
+  const weekKey = `week_${Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000)) - 1}`;
+  const distRef = ref(db, `weeklyDistribution/${weekKey}`);
+  const distSnap = await get(distRef);
+  if (distSnap.exists()) {
+    showLastWinners(distSnap.val());
+  }
+
+  // Top 3 - तेरी Logic Same
+  const top3Div = document.getElementById('top3');
+  top3Div.innerHTML = '';
+
+  const positions = [1, 0, 2];
+  positions.forEach(i => {
+    if (users[i]) {
+      const user = users[i];
+      const medals = ['🥈', '🥇', '🥉'];
+      const isWinner = user.lastWeeklyReward && (Date.now() - user.lastWeeklyReward) < (7 * 24 * 60 * 60 * 1000);
+      const card = document.createElement('div');
+      card.className = `top-card ${i === 0? 'first' : ''}`;
+      card.innerHTML = `
+        ${isWinner? `<div class="claimed-badge">CLAIMED</div>` : ''}
+        <div class="rank">${medals[i]}</div>
+        <div class="dp">${user.dp? `<img src="${user.dp}">` : user.name[0].toUpperCase()}</div>
+        <div class="name">${user.name}</div>
+        <div class="score">${user.referralCount} Refs</div>
+      `;
+      top3Div.appendChild(card);
     }
   });
 
-  init();
+  // Full List - तेरी Rank Logic Same
+  const lbDiv = document.getElementById('leaderboard');
+  lbDiv.innerHTML = '';
 
-  async function checkDailyReset() {
-    const snap = await get(userRef);
-    if (snap.exists()) {
-      const data = snap.val();
-      const today = new Date().toDateString();
-      if (data.lastReset!== today) {
-        await update(userRef, {
-          dailyShares: 0,
-          lastReset: today
-        });
-      }
-    }
+  if (users.length === 0) {
+    lbDiv.innerHTML = '<div class="empty">No rankings yet. Start referring!</div>';
+    return;
   }
 
-  async function checkWeeklySnapshot() {
-    const now = new Date();
-    const day = now.getDay();
-    const weekId = getWeekId(now);
-
-    const snap = await get(winnersRef);
-    if (day === 0 && (!snap.exists() || snap.val().weekId!== weekId)) {
-      const usersSnap = await get(allUsersRef);
-      const allUsers = [];
-      if (usersSnap.exists()) {
-        usersSnap.forEach((child) => {
-          const data = child.val();
-          allUsers.push({
-            uid: child.key,
-            name: data.name || 'User',
-            dailyShares: data.dailyShares || 0,
-            points: (data.dailyShares || 0) * 10
-          });
-        });
-      }
-      allUsers.sort((a, b) => b.points - a.points);
-      const top100 = allUsers.slice(0, 100).map((u, i) => ({
-        rank: i + 1,
-        uid: u.uid,
-        name: u.name,
-        points: u.points,
-        reward: getRewardByRank(i + 1),
-        claimed: false
-      }));
-
-      await set(winnersRef, {
-        weekId: weekId,
-        date: now.toISOString(),
-        winners: top100
-      });
-    }
-  }
-
-  function getWeekId(date) {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
-    return d.getUTCFullYear() + '-W' + weekNo;
-  }
-
-  async function checkReferral() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const referrerUid = urlParams.get('ref');
-
-    if (referrerUid && referrerUid!== currentUser.uid) {
-      const referrerRef = ref(database, 'users/' + referrerUid);
-      const referrerSnap = await get(referrerRef);
-
-      if (referrerSnap.exists()) {
-        const referrerData = referrerSnap.val();
-        await update(referrerRef, {
-          referralCount: (referrerData.referralCount || 0) + 1,
-          balance: (referrerData.balance || 0) + 50
-        });
-      }
-    }
-  }
-
-  async function loadUserPosition() {
-    if (!currentUser) return;
-
-    const snapshot = await get(allUsersRef);
-    const usersMap = {};
-
-    if (snapshot.exists()) {
-      snapshot.forEach((child) => {
-        const data = child.val();
-        usersMap[child.key] = {
-          uid: child.key,
-          name: data.name || 'User',
-          dailyShares: data.dailyShares || 0,
-          points: (data.dailyShares || 0) * 10
-        };
-      });
-    }
-
-    const allUsers = Object.values(usersMap);
-    allUsers.sort((a, b) => b.points - a.points);
-
-    const userIndex = allUsers.findIndex(u => u.uid === currentUser.uid);
-    const userRank = userIndex >= 0? userIndex + 1 : '-';
-    const userPoints = userIndex >= 0? allUsers[userIndex].points : 0;
-
-    document.getElementById('userName').innerText = userData.name || 'User';
-    document.getElementById('userPoints').innerText = userPoints;
-    document.getElementById('userRank').innerText = userRank === '-'? '#-' : '#' + userRank;
-
-    renderLeaderboard(allUsers.slice(0, 100));
-
-    const userSnap = await get(userRef);
-    if (!userSnap.exists()) {
-      set(userRef, {
-        name: userData.name || 'User',
-        referralCount: userData.referralCount || 0,
-        balance: userData.balance || 0,
-        dailyShares: 0,
-        lastReset: new Date().toDateString(),
-        uid: currentUser.uid,
-        joinedAt: Date.now()
-      });
-    }
-  }
-
-  async function loadWinnersList() {
-    const snap = await get(winnersRef);
-    const listDiv = document.getElementById('winnersList');
-    if (!snap.exists() ||!snap.val().winners) {
-      listDiv.innerHTML = '<p style="color:#666; text-align:center; padding:20px 0;">No winners yet. Check back Monday!</p>';
-      return;
-    }
-
-    const winners = snap.val().winners.slice(0, 10);
-    listDiv.innerHTML = winners.map(w => `
-      <div class="winner-row">
-        <div class="winner-left">
-          <div class="winner-rank">#${w.rank}</div>
-          <div class="winner-name">${w.name}</div>
-        </div>
-        <div class="winner-right">
-          <div class="winner-token">${w.reward} RUPPY</div>
-          <div class="winner-status ${w.claimed? '' : 'pending'}">${w.claimed? 'Claimed ✅' : 'Pending ⏳'}</div>
-        </div>
+  users.forEach((user, index) => {
+    const isCurrentUser = user.uid === window.userData?.uid;
+    const isWinner = user.lastWeeklyReward && (Date.now() - user.lastWeeklyReward) < (7 * 24 * 60 * 60 * 1000);
+    const item = document.createElement('div');
+    item.className = `rank-item ${isCurrentUser? 'current-user' : ''} ${isWinner? 'winner' : ''}`;
+    item.innerHTML = `
+      ${isWinner? `<div class="claimed-tag">CLAIMED ${user.weeklyRewardAmount} RUP</div>` : ''}
+      <div class="rank-num">${index + 1}</div>
+      <div class="rank-dp">${user.dp? `<img src="${user.dp}">` : user.name[0].toUpperCase()}</div>
+      <div class="rank-info">
+        <div class="name">${user.name} ${isCurrentUser? '(You)' : ''}</div>
+        <div class="refs">${user.referralCount} Referrals ${isWinner? `• Rank #${user.weeklyRewardRank}` : ''}</div>
       </div>
-    `).join('');
-  }
+      <div class="rank-score">${user.balance} RUP</div>
+    `;
+    lbDiv.appendChild(item);
+  });
+}
 
-  async function checkClaimStatus() {
-    if (!currentUser) return;
-    const snap = await get(winnersRef);
-    if (!snap.exists() ||!snap.val().winners) return;
+async function init() {
+  startCountdown();
+  await loadLeaderboard();
+  setInterval(loadLeaderboard, 30000);
+}
 
-    const winner = snap.val().winners.find(w => w.uid === currentUser.uid);
-    if (winner &&!winner.claimed) {
-      document.getElementById('winnerBanner').classList.add('show');
-      document.getElementById('winnerText').innerText = `You ranked #${winner.rank} last week! Claim your ${winner.reward} RUPPY now.`;
-      window.currentReward = winner.reward;
-      window.currentRank = winner.rank;
-    }
-  }
-
-  window.claimReward = async function() {
-    if (!currentUser ||!window.currentReward) return;
-    const btn = document.getElementById('claimBtn');
-    btn.disabled = true;
-    btn.innerText = 'CLAIMING...';
-
-    // ✅ config.js वाला saveRuppyData Use करो
-    userData.balance = (userData.balance || 0) + window.currentReward;
-    if(window.saveRuppyData) await window.saveRuppyData(userData);
-
-    const snap = await get(winnersRef);
-    const winners = snap.val().winners;
-    const idx = winners.findIndex(w => w.uid === currentUser.uid);
-    if (idx >= 0) {
-      winners[idx].claimed = true;
-      await set(winnersRef, {...snap.val(), winners: winners});
-    }
-
-    // 🔥 ANALYTICS ADDED - Claim Reward Event
-    if(window.logMineEvent) {
-      const { getAnalytics, logEvent } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js");
-      const analytics = getAnalytics(app);
-      logEvent(analytics, 'claim_reward', {
-        reward_amount: window.currentReward,
-        rank: window.currentRank
-      });
-    }
-
-    btn.innerText = 'CLAIMED ✅';
-    setTimeout(() => {
-      document.getElementById('winnerBanner').classList.remove('show');
-      loadWinnersList();
-    }, 2000);
-  }
-
-  function renderLeaderboard(users) {
-    const listDiv = document.getElementById('leaderboardList');
-    if (users.length === 0) {
-      listDiv.innerHTML = '<p style="color:#666; text-align:center; padding:20px 0;">No rankings yet. Be the first to share!</p>';
-      return;
-    }
-
-    listDiv.innerHTML = users.map((u, i) => `
-      <div class="leader-row">
-        <div class="leader-left">
-          <div class="leader-rank">#${i + 1}</div>
-          <div class="leader-name">${u.name}</div>
-        </div>
-        <div class="leader-points">${u.points} pts</div>
-      </div>
-    `).join('');
-  }
-
-  function setupRealtimeListener() {
-    onValue(allUsersRef, () => {
-      loadUserPosition();
-    });
-    onValue(winnersRef, () => {
-      loadWinnersList();
-      checkClaimStatus();
-    });
-  }
-
-  window.handleReferNow = async function() {
-    if (!currentUser) return alert("Please wait, logging in...");
-
-    const btn = document.querySelector('.btn-refer');
-    btn.disabled = true;
-
-    const snap = await get(userRef);
-    if (snap.exists()) {
-      const data = snap.val();
-      await update(userRef, {
-        dailyShares: (data.dailyShares || 0) + 1
-      });
-    }
-
-    // 🔥 ANALYTICS ADDED - Refer Button Click
-    const { getAnalytics, logEvent } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js");
-    const analytics = getAnalytics(app);
-    logEvent(analytics, 'share_referral', {
-      method: 'button_click',
-      user_points: document.getElementById('userPoints').innerText
-    });
-
-    // ✅ अब UID नहीं, config.js वाला referralCode Use होगा
-    const shareCode = userData.myReferralCode;
-    const shareUrl = window.location.origin + window.location.pathname + '?ref=' + shareCode;
-    const shareData = {
-      title: 'Ruppy Network',
-      text: 'Join Ruppy Network and earn free RUPPY! Use my referral code:',
-      url: shareUrl
-    };
-
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(shareData.url);
-        alert('Referral link copied! +10 points added');
-      }
-
-      btn.innerText = 'LINK SHARED! +10 PTS';
-      setTimeout(() => {
-        btn.innerText = 'REFER NOW';
-        btn.disabled = false;
-      }, 2000);
-
-    } catch (err) {
-      btn.disabled = false;
-      console.error(err);
-    }
-  }
-
-  window.navClick = function(page) {
-    if(page === 'home') window.location.href = 'app.html';
-    if(page === 'tasks') window.location.href = 'tasks.html';
-    if(page === 'referral') window.location.href = 'referral.html';
-    if(page === 'ranking') window.location.href = 'ranking.html';
-    if(page === 'community') window.location.href = 'community.html';
-    if(page === 'settings') window.location.href = 'settings.html';
-  }
+init();
 </script>
 </body>
 </html>
