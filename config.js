@@ -2,7 +2,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, get, set, update, query, orderByChild, equalTo, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-// 🔥 ANALYTICS ADDED - Line 1
 import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
 const firebaseConfig = {
@@ -13,13 +12,12 @@ const firebaseConfig = {
   storageBucket: "ruppynetwork-50362.appspot.com",
   messagingSenderId: "132064610854",
   appId: "1:132064610854:web:3c217eaf3618007f5934e7",
-  measurementId: "G-BDNYBPDTQM" // ✅ अब Add हो गया
+  measurementId: "G-BDNYBPDTQM"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
-// 🔥 ANALYTICS ADDED - Line 2
 const analytics = getAnalytics(app);
 
 const RUPPY_STORAGE_KEY = 'ruppy_user_cache';
@@ -38,6 +36,7 @@ function getDefaultData() {
     team: {},
     teamCount: 0,
     teamRewardEarned: 0,
+    referralCount: 0, // ✅ ADD किया - Leaderboard के लिए
     weeklyPoints: 0,
     posts: [],
     lastMine: 0,
@@ -76,6 +75,7 @@ function getLocalData() {
       let data = JSON.parse(stored);
       data.balance = Number(data.balance) || 0;
       data.taskBalance = Number(data.taskBalance) || 0;
+      data.referralCount = Number(data.referralCount) || 0; // ✅ ADD किया
       return data;
     }
   } catch (e) {
@@ -116,9 +116,8 @@ window.loadProfileEverywhere = function(){
 // 5. LOGOUT/LOGIN + REFERRAL AUTO UPGRADE + ANALYTICS
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    // 🔥 ANALYTICS ADDED - Line 3: Login Event
     logEvent(analytics, 'login', { method: 'firebase' });
-    logEvent(analytics, 'app_open'); // App Open Track
+    logEvent(analytics, 'app_open');
 
     const userRef = ref(db, `users/${user.uid}`);
 
@@ -142,6 +141,7 @@ onAuthStateChanged(auth, async (user) => {
         window.userData.team = data.team || {};
         window.userData.teamCount = Number(data.teamCount) || 0;
         window.userData.teamRewardEarned = Number(data.teamRewardEarned) || 0;
+        window.userData.referralCount = Number(data.referralCount) || 0; // ✅ ADD किया
         window.userData.weeklyPoints = Number(data.weeklyPoints) || 0;
         window.userData.referredBy = data.referredBy || null;
         window.userData.referralClaimed = data.referralClaimed || false;
@@ -154,14 +154,21 @@ onAuthStateChanged(auth, async (user) => {
           window.userData.myReferralCode = data.myReferralCode;
         }
 
+        // ✅ OLD USERS के लिए referralCount Fix
+        if(data.referralCount === undefined) {
+          const teamSize = data.team? Object.keys(data.team).length : 0;
+          await update(userRef, { referralCount: teamSize });
+          window.userData.referralCount = teamSize;
+        }
+
       } else {
-        // 🔥 ANALYTICS ADDED - Line 4: New User Event
         logEvent(analytics, 'sign_up');
 
         window.userData.uid = user.uid;
         window.userData.name = user.displayName || user.email.split('@')[0];
         window.userData.dp = user.photoURL || null;
         window.userData.myReferralCode = generateReferralCode();
+        window.userData.referralCount = 0; // ✅ New User के लिए
         await set(userRef, window.userData);
       }
     } catch (error) {
@@ -203,6 +210,7 @@ window.saveRuppyData = async function(data){
       team: data.team || {},
       teamCount: data.teamCount || 0,
       teamRewardEarned: data.teamRewardEarned || 0,
+      referralCount: data.referralCount || 0, // ✅ ADD किया
       weeklyPoints: data.weeklyPoints || 0,
       posts: data.posts || [],
       lastMine: data.lastMine || 0,
@@ -232,7 +240,6 @@ window.addPostReward = async function() {
   window.userData.balance = Number(window.userData.balance || 0) + 10;
   window.userData.posts.push({time: Date.now()});
 
-  // 🔥 ANALYTICS ADDED - Line 5: Post Reward Event
   logEvent(analytics, 'post_reward', {
     reward_amount: 10,
     total_posts_today: todayPosts.length + 1
@@ -299,8 +306,10 @@ window.applyReferralCodeManual = async function(code){
     });
 
     const updates = {};
+    // ✅ REFERRER को Update - referralCount +1
     updates[`users/${referrerUID}/balance`] = (referrerData.balance || 0) + 300;
     updates[`users/${referrerUID}/teamCount`] = (referrerData.teamCount || 0) + 1;
+    updates[`users/${referrerUID}/referralCount`] = (referrerData.referralCount || 0) + 1; // ✅ ये Line Fix
     updates[`users/${referrerUID}/teamRewardEarned`] = (referrerData.teamRewardEarned || 0) + 300;
     updates[`users/${referrerUID}/weeklyPoints`] = (referrerData.weeklyPoints || 0) + 10;
     updates[`users/${referrerUID}/team/${window.userData.uid}`] = {
@@ -310,13 +319,13 @@ window.applyReferralCodeManual = async function(code){
       lastMine: Date.now()
     };
 
+    // ✅ NEW USER को Update
     updates[`users/${window.userData.uid}/balance`] = (window.userData.balance || 0) + 300;
     updates[`users/${window.userData.uid}/referredBy`] = referrerUID;
     updates[`users/${window.userData.uid}/referralClaimed`] = true;
 
     await update(ref(db), updates);
 
-    // 🔥 ANALYTICS ADDED - Line 6: Referral Success Event
     logEvent(analytics, 'referral_applied', {
       bonus_earned: 300,
       referrer_id: referrerUID
