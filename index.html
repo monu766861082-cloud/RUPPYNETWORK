@@ -40,13 +40,22 @@ a{color:#aaa;text-decoration:none}
 .content-section h2{color:#f9a825;font-size:22px;margin:30px 0 15px}
 .content-section h3{color:#f9a825;font-size:18px;margin:25px 0 10px}
 .content-section a{color:#4a90e2;text-decoration:underline}
+.ad-top-banner{text-align:center;padding:8px 0;background:#0a0a0a;border-bottom:1px solid #222}
 </style>
+
+<!-- Google AdSense - नहीं छुआ ✅ -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 </head>
 <body>
+
+<!-- A-Ads छोटा Banner 320x50 - बस यही ऊपर दिखेगा 👇 YOUR_AADS_ID_HERE बदल दे -->
+<div class="ad-top-banner">
+<iframe data-aa='YOUR_AADS_ID_HERE' src='//acceptable.a-ads.com/YOUR_AADS_ID_HERE' style='border:0px; padding:0; width:320px; height:50px; overflow:hidden; background-color: transparent;'></iframe>
+</div>
 
 <div class="login-screen">
 <div class="wrap">
@@ -251,7 +260,6 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     showError('errorMsg', 'Google Error: ' + error.message);
   });
 
-  // 🔥 ANALYTICS ADDED - Analytics Import for Login/Signup Events
   async function logAnalyticsEvent(eventName, params) {
     try {
       const { getAnalytics, logEvent } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js");
@@ -268,7 +276,6 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     const snapshot = await db.ref('users/' + uid).get();
 
     if(!snapshot.exists()) {
-      // नया User - Name Save करो ✅
       let userData = {
         userId: uid,
         name: user.displayName || user.email.split('@')[0],
@@ -289,7 +296,6 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
         createdAt: Date.now()
       };
 
-      // Referral Bonus दो
       if(userData.referredBy && userData.referredBy.startsWith('RUP-')) {
         userData.balance = 20;
         userData.referralClaimed = true;
@@ -298,12 +304,9 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
 
       await db.ref('users/' + uid).set(userData);
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
-
-      // 🔥 ANALYTICS ADDED - Sign Up Event
       logAnalyticsEvent('sign_up', { method: 'google' });
 
     } else {
-      // पुराना User - Name Update करो अगर नहीं है ✅
       let userData = snapshot.val();
       if(!userData.name || userData.name === userData.email.split('@')[0]) {
         userData.name = user.displayName || userData.name;
@@ -313,14 +316,11 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
           photoUrl: userData.photoUrl
         });
       }
-      // पुराना UID Code Fix करो
       if(!isValidReferralCode(userData.myReferralCode)) {
         userData.myReferralCode = generateUniqueCode();
         await db.ref('users/' + uid).update({ myReferralCode: userData.myReferralCode });
       }
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
-
-      // 🔥 ANALYTICS ADDED - Login Event
       logAnalyticsEvent('login', { method: 'google' });
     }
 
@@ -413,10 +413,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
       if(validReferrer) await updateReferrerRank(referralCode, uid);
 
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
-
-      // 🔥 ANALYTICS ADDED - Sign Up Event
       logAnalyticsEvent('sign_up', { method: 'email' });
-
       window.location.replace('app.html');
     } catch (error) {
       showError('regErrorMsg', error.message);
@@ -481,10 +478,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
 
       await db.ref('users/' + uid).update(userData);
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
-
-      // 🔥 ANALYTICS ADDED - Login Event
       logAnalyticsEvent('login', { method: 'email' });
-
       setTimeout(() => window.location.replace('app.html'), 1000);
     } catch (error) {
       showError('errorMsg', 'Invalid email or password');
