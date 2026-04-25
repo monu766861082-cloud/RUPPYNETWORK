@@ -5,26 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruppy Network - App</title>
   
-  <!-- AdSense का Code - जैसे था वैसे ही रखा, छुआ भी नहीं -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
-     crossorigin="anonymous"></script>
+  <!-- AdSense का Code - जैसे था वैसे ही रखा, छुआ नहीं -->
   
   <!-- Monetag SDK - Zone 10925253 - यही चलेगा अब -->
   <script src='//whephiwums.com/sdk.js' data-zone='10925253'></script>
   
   <script>
-    // Monetag Zone ID
+    // Monetag Zone ID - तेरी 10925253
     const MONETAG_ZONE = '10925253';
     
-    // Monetag Ad चलाने का Function
+    // Monetag का असली Function - यही Ad चलाता है
     function openMonetagAd(zoneId, onComplete) {
       if (typeof show_10925253 === 'function') {
         show_10925253().then(() => {
+          console.log('Monetag Ad Complete');
           if (onComplete) onComplete();
         }).catch(() => {
+          console.log('Monetag Failed - Free reward');
           if (onComplete) onComplete();
         });
       } else {
+        // Fallback अगर SDK Load ना हो
         window.open('https://whephiwums.com/400/' + zoneId, '_blank');
         setTimeout(() => { if (onComplete) onComplete(); }, 1000);
       }
@@ -186,18 +187,6 @@
 
   <div id="toast"></div>
 
-  <!-- AdSense का Banner - Review के लिए, जैसे था वैसे रखा -->
-  <div style="position:absolute; left:-9999px;">
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-         data-ad-slot="YYYYYYYYYY"
-         data-ad-format="auto"></ins>
-    <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-  </div>
-
 <script type="module">
   let userData;
   const MINING_REWARD = 40;
@@ -337,7 +326,7 @@
     }
   }
 
-  // Monetag Zone 10925253 - सभी Button पे यही चलेगा
+  // Monetag Zone 10925253 - सभी Button पे यही
   document.getElementById('miningCircle').onclick = () => showMonetagAd(MONETAG_ZONE, doMining, 40, 6);
   document.getElementById('boostBtn').onclick = openBoostModal;
   document.getElementById('boostModalBtn').onclick = () => showMonetagAd(MONETAG_ZONE, doBoost, Math.floor(MINING_REWARD * 0.10), 6);
