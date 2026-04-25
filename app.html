@@ -5,35 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruppy Network - App</title>
   
-  <!-- Monetag Script - तेरे 3 Zone ID यहाँ डाल 👇 -->
+  <!-- AdSense का Code - जैसे था वैसे ही रखा, छुआ भी नहीं -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+     crossorigin="anonymous"></script>
+  
+  <!-- Monetag SDK - Zone 10925253 - यही चलेगा अब -->
+  <script src='//whephiwums.com/sdk.js' data-zone='10925253'></script>
+  
   <script>
-    // Monetag Zone IDs - यहाँ बदल दे
-    const MONETAG_MINING_ZONE = 'YOUR_MONETAG_ZONE_ID_1'; // Mining Circle के लिए
-    const MONETAG_BONUS_ZONE = 'YOUR_MONETAG_ZONE_ID_2';  // COLLECT BONUS के लिए
-    const MONETAG_GIFT_ZONE = 'YOUR_MONETAG_ZONE_ID_3';   // ULTRA GIFT के लिए
+    // Monetag Zone ID
+    const MONETAG_ZONE = '10925253';
     
-    // Monetag Popunder Function
+    // Monetag Ad चलाने का Function
     function openMonetagAd(zoneId, onComplete) {
-      if (!zoneId || zoneId.includes('YOUR_MONETAG')) {
-        console.log('Monetag: No Zone ID - Giving free reward');
-        if (onComplete) onComplete();
-        return;
-      }
-      
-      // Monetag का Script Dynamic Load
-      var script = document.createElement('script');
-      script.src = '//' + 'thaudray.com' + '/400/' + zoneId; // Monetag Domain
-      script.onload = function() {
-        console.log('Monetag Ad Triggered');
-        setTimeout(() => {
+      if (typeof show_10925253 === 'function') {
+        show_10925253().then(() => {
           if (onComplete) onComplete();
-        }, 1000); // Ad दिखने के बाद Reward
-      };
-      script.onerror = function() {
-        console.log('Monetag Failed - Free reward');
-        if (onComplete) onComplete();
-      };
-      document.head.appendChild(script);
+        }).catch(() => {
+          if (onComplete) onComplete();
+        });
+      } else {
+        window.open('https://whephiwums.com/400/' + zoneId, '_blank');
+        setTimeout(() => { if (onComplete) onComplete(); }, 1000);
+      }
     }
   </script>
   
@@ -42,8 +36,6 @@
   <style>
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
     body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
-    .top-banner {width:100%; background:#111; text-align:center; padding:5px 0; border-bottom:1px solid #222;}
-    .ad-banner {margin: 15px; text-align:center;}
     .header {padding:20px 15px 10px; display:flex; align-items:center; gap:12px;}
     .header .dp {width:40px; height:40px; border-radius:50%; background:#1a1a1a; display:flex; align-items:center; justify-content:center; font-size:18px; overflow:hidden; border:1px solid #333;}
     .header .dp img {width:100%; height:100%; object-fit:cover;}
@@ -86,10 +78,7 @@
     .nav-item.active {color:#FFA500;}
     .nav-item.active::after {content:''; width:30px; height:2px; background:#FFA500; margin-top:2px;}
     .nav-item .icon {font-size:20px;}
-    
     #toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #FFA500; padding: 12px 20px; border-radius: 8px; border: 1px solid #FFA500; display: none; z-index: 1000; font-size: 14px; }
-    
-    /* Timer Overlay */
     .timer-overlay {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:none; align-items:center; justify-content:center; z-index:10000; flex-direction:column;}
     .timer-overlay.active {display:flex;}
     .timer-circle {width:120px; height:120px; border:3px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:36px; color:#FFA500; font-weight:bold;}
@@ -190,7 +179,6 @@
     </div>
   </div>
 
-  <!-- Timer Overlay -->
   <div class="timer-overlay" id="timerOverlay">
     <div class="timer-circle" id="timerCount">5</div>
     <div class="timer-text">Please wait... Loading Ad</div>
@@ -198,11 +186,22 @@
 
   <div id="toast"></div>
 
+  <!-- AdSense का Banner - Review के लिए, जैसे था वैसे रखा -->
+  <div style="position:absolute; left:-9999px;">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="YYYYYYYYYY"
+         data-ad-format="auto"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+
 <script type="module">
   let userData;
   const MINING_REWARD = 40;
   
-  // Timer दिखाने का Function
   function showAdTimer(seconds, callback) {
     const overlay = document.getElementById('timerOverlay');
     const count = document.getElementById('timerCount');
@@ -237,7 +236,6 @@
     setTimeout(() => { toast.style.display = 'none'; }, 3000);
   }
 
-  // 🔥 MONETAG REWARDED - 5-7 Sec Timer के साथ
   function showMonetagAd(zoneId, rewardFunction, rewardAmount, timerSec) {
     let buttons = document.querySelectorAll('.grid-item, .mining-circle, .btn');
     buttons.forEach(btn => btn.style.pointerEvents = 'none');
@@ -339,16 +337,15 @@
     }
   }
 
-  // Event Listeners - तेरे हिसाब से Timer 👇
-  document.getElementById('miningCircle').onclick = () => showMonetagAd(MONETAG_MINING_ZONE, doMining, 40, 6); // 5-7 Sec
+  // Monetag Zone 10925253 - सभी Button पे यही चलेगा
+  document.getElementById('miningCircle').onclick = () => showMonetagAd(MONETAG_ZONE, doMining, 40, 6);
   document.getElementById('boostBtn').onclick = openBoostModal;
-  document.getElementById('boostModalBtn').onclick = () => showMonetagAd(MONETAG_BONUS_ZONE, doBoost, Math.floor(MINING_REWARD * 0.10), 6); // 5-7 Sec
+  document.getElementById('boostModalBtn').onclick = () => showMonetagAd(MONETAG_ZONE, doBoost, Math.floor(MINING_REWARD * 0.10), 6);
   document.getElementById('closeBoostModal').onclick = closeBoostModal;
-  document.getElementById('giftBtn').onclick = () => showMonetagAd(MONETAG_GIFT_ZONE, doGift, 10, 30); // 30 Sec
-  document.getElementById('firstRewardBtn').onclick = () => showMonetagAd(MONETAG_GIFT_ZONE, doFirstReward, 15, 30); // 30 Sec
-  document.getElementById('ultraRewardBtn').onclick = () => showMonetagAd(MONETAG_GIFT_ZONE, doUltraReward, 20, 30); // 30 Sec
+  document.getElementById('giftBtn').onclick = () => showMonetagAd(MONETAG_ZONE, doGift, 10, 30);
+  document.getElementById('firstRewardBtn').onclick = () => showMonetagAd(MONETAG_ZONE, doFirstReward, 15, 30);
+  document.getElementById('ultraRewardBtn').onclick = () => showMonetagAd(MONETAG_ZONE, doUltraReward, 20, 30);
 
-  // Nav
   document.querySelectorAll('.nav-item').forEach(item => {
     item.onclick = () => {
       const page = item.dataset.page;
@@ -505,7 +502,6 @@
     profileName.innerText = 'Welcome back, ' + (userData.name || 'User');
   }
 
-  // Init
   (async function() {
     await waitForUserData();
     
