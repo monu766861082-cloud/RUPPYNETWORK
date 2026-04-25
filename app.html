@@ -269,6 +269,11 @@
     updateBalance();
     updateMiningCircle();
     showToast(`+${MINING_REWARD} RUP Mining Complete!`);
+    
+    // 🔥 ANALYTICS ADDED - Mining Event Fire
+    if(window.logMineEvent) {
+      window.logMineEvent(MINING_REWARD);
+    }
   }
 
   function doBoost() {
@@ -280,6 +285,11 @@
     saveRuppyData(userData);
     updateBalance();
     updateBoost();
+    
+    // 🔥 ANALYTICS ADDED - Boost Event
+    if(window.logMineEvent) {
+      window.logMineEvent(boostAmount);
+    }
     
     if(userData.boostCount >= 3) {
       document.getElementById('boostModalBtn').innerText = 'All Claimed!';
@@ -303,6 +313,11 @@
     updateBalance();
     updateGift();
     showToast('+10 RUP Gift Claimed!');
+    
+    // 🔥 ANALYTICS ADDED - Gift Event
+    if(window.logMineEvent) {
+      window.logMineEvent(10);
+    }
   }
 
   function doFirstReward() {
@@ -314,6 +329,11 @@
       updateBalance();
       updateFirstReward();
       showToast('You earned 15 RUP!');
+      
+      // 🔥 ANALYTICS ADDED - First Reward Event
+      if(window.logMineEvent) {
+        window.logMineEvent(15);
+      }
     }
   }
 
@@ -326,6 +346,11 @@
       updateBalance();
       updateUltraReward();
       showToast('You earned 20 RUP!');
+      
+      // 🔥 ANALYTICS ADDED - Ultra Reward Event
+      if(window.logMineEvent) {
+        window.logMineEvent(20);
+      }
     }
   }
 
