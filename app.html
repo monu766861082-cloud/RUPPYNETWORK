@@ -7,27 +7,31 @@
   
   <!-- AdSense का Code - जैसे था वैसे ही रखा, छुआ नहीं -->
   
-  <!-- Monetag SDK - Zone 10925253 - यही चलेगा अब -->
-  <script src='//whephiwums.com/sdk.js' data-zone='10925253'></script>
-  
   <script>
-    // Monetag Zone ID - तेरी 10925253
-    const MONETAG_ZONE = '10925253';
+    const MONETAG_ZONE = '10925298';
+    let monetagLoaded = false;
     
-    // Monetag का असली Function - यही Ad चलाता है
+    // SDK Load होते ही Flag True कर देगा
+    (function(s){
+      s.dataset.zone='10925298';
+      s.src='https://n6wxm.com/vignette.min.js';
+      s.onload = () => { monetagLoaded = true; console.log('Monetag SDK Loaded'); };
+      s.onerror = () => { console.log('Monetag SDK Failed'); };
+      [document.documentElement, document.body].filter(Boolean).pop().appendChild(s);
+    })(document.createElement('script'));
+    
     function openMonetagAd(zoneId, onComplete) {
-      if (typeof show_10925253 === 'function') {
-        show_10925253().then(() => {
-          console.log('Monetag Ad Complete');
+      if (monetagLoaded && typeof show_10925298 === 'function') {
+        show_10925298().then(() => {
+          console.log('Vignette Ad Complete');
           if (onComplete) onComplete();
-        }).catch(() => {
-          console.log('Monetag Failed - Free reward');
+        }).catch((e) => {
+          console.log('Ad Failed:', e);
           if (onComplete) onComplete();
         });
       } else {
-        // Fallback अगर SDK Load ना हो
-        window.open('https://whephiwums.com/400/' + zoneId, '_blank');
-        setTimeout(() => { if (onComplete) onComplete(); }, 1000);
+        console.log('SDK Not Ready - Free reward');
+        if (onComplete) onComplete();
       }
     }
   </script>
@@ -326,7 +330,6 @@
     }
   }
 
-  // Monetag Zone 10925253 - सभी Button पे यही
   document.getElementById('miningCircle').onclick = () => showMonetagAd(MONETAG_ZONE, doMining, 40, 6);
   document.getElementById('boostBtn').onclick = openBoostModal;
   document.getElementById('boostModalBtn').onclick = () => showMonetagAd(MONETAG_ZONE, doBoost, Math.floor(MINING_REWARD * 0.10), 6);
