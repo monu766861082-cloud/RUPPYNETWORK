@@ -5,24 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruppy Network - App</title>
   
-  <!-- AdinPlay Ads - RUP की जगह अपनी Site ID डाल | अभी test ID है -->
+  <!-- A-Ads Script - तेरी ID डाल दे यहाँ 👇 YOUR_AADS_ID_HERE -->
   <script>
-    var aiptag = aiptag || {};
-    aiptag.cmd = aiptag.cmd || [];
-    aiptag.cmd.display = aiptag.cmd.display || [];
-    aiptag.cmd.player = aiptag.cmd.player || [];
-    aiptag.cmd.display.push(function() { aipDisplayTag.display('ruppynetwork_320x50'); });
-    aiptag.cmd.display.push(function() { aipDisplayTag.display('ruppynetwork_300x250'); });
-    
-    // 🔥 FALLBACK के लिए Flag
-    window.adsReady = false;
-    aiptag.cmd.player.push(function() {
-        window.adsReady = true;
-        console.log('AdinPlay Ready');
-    });
+    var aads = aads || {};
+    aads.rewarded = function(options) {
+      var iframe = document.createElement('iframe');
+      iframe.src = '//acceptable.a-ads.com/' + options.zoneId + '?size=' + options.size + '&type=rewarded';
+      iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;border:0;z-index:99999;background:rgba(0,0,0,0.95)';
+      document.body.appendChild(iframe);
+      
+      window.addEventListener('message', function handler(e) {
+        if (e.data === 'aads_rewarded_complete') {
+          iframe.remove();
+          window.removeEventListener('message', handler);
+          if (options.onComplete) options.onComplete();
+        }
+        if (e.data === 'aads_rewarded_close') {
+          iframe.remove();
+          window.removeEventListener('message', handler);
+          if (options.onClose) options.onClose();
+        }
+      });
+    };
   </script>
-  <!-- 🔥 अभी test ID है, Approval बाद Real ID डाल देना -->
-  <script async src="//api.adinplay.com/libs/aiptag/pub/test/ruppynetwork.com/tag.min.js"></script>
   
   <script type="module" src="config.js"></script>
   
@@ -74,15 +79,19 @@
     .nav-item.active::after {content:''; width:30px; height:2px; background:#FFA500; margin-top:2px;}
     .nav-item .icon {font-size:20px;}
     
-    /* 🔥 Toast के लिए */
     #toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #FFA500; padding: 12px 20px; border-radius: 8px; border: 1px solid #FFA500; display: none; z-index: 1000; font-size: 14px; }
+    
+    /* 🔥 छोटा Banner - Top Right, 50% Opacity - चमकेगा नहीं */
+    .aads-small-banner {position:fixed;top:5px;right:5px;z-index:998;opacity:0.5;transition:0.3s;}
+    .aads-small-banner:hover{opacity:0.8}
   </style>
   
 </head>
 <body>
 
-  <div class="top-banner">
-    <div id='ruppynetwork_320x50'></div>
+  <!-- A-Ads छोटा Banner 234x60 - Top Right Corner, छोटा, नहीं चमकेगा 👇 -->
+  <div class="aads-small-banner">
+    <iframe data-aa='YOUR_AADS_ID_HERE' src='//acceptable.a-ads.com/YOUR_AADS_ID_HERE' style='border:0px; padding:0; width:234px; height:60px; overflow:hidden; background-color: transparent;'></iframe>
   </div>
 
   <div class="header">
@@ -102,11 +111,7 @@
     <div class="mining-circle ready" id="miningCircle">
       <h3 id="miningText">WATCH AD FOR BONUS</h3>
     </div>
-    <p class="mining-text">Watch ad to collect 30 RUP • Available every 3 hours</p>
-  </div>
-
-  <div class="ad-banner">
-    <div id='ruppynetwork_300x250'></div>
+    <p class="mining-text">Watch ad to collect 40 RUP • Available every 3 hours</p>
   </div>
 
   <div class="grid">
@@ -180,16 +185,15 @@
     </div>
   </div>
 
-  <!-- 🔥 Toast Div -->
   <div id="toast"></div>
 
-<!-- ✅ FIX: Script को Module बना दिया ताकि config.js से userData मिले -->
 <script type="module">
   let userData;
-  const MINING_REWARD = 30;
-  const AD_TIMEOUT = 4000; // 🔥 4 Sec में Ad नहीं आया तो Free Reward
+  const MINING_REWARD = 40; // 🔥 तूने 40 बोला था
+  
+  // 🔥 A-ADS ZONE ID - यहाँ अपनी ID डाल दे
+  const AADS_ZONE_ID = 'YOUR_AADS_ID_HERE'; // 👈 बदल दे इसको
 
-  // Wait for config.js to load userData
   async function waitForUserData() {
     let attempts = 0;
     while(!window.userData?.uid && attempts < 50) {
@@ -199,7 +203,6 @@
     userData = window.userData;
   }
 
-  // 🔥 Toast Function
   function showToast(msg) {
     let toast = document.getElementById('toast');
     toast.innerText = msg;
@@ -207,54 +210,25 @@
     setTimeout(() => { toast.style.display = 'none'; }, 3000);
   }
 
-  // 🔥 FALLBACK SYSTEM - अब User कभी नहीं भागेगा
-  function showAdAndReward(rewardFunction, rewardAmount, rewardType) {
-    let rewardGiven = false;
+  // 🔥 A-ADS REWARDED VIDEO FUNCTION - Bug Proof
+  function showRewardedAd(rewardFunction, rewardAmount, adDuration) {
     let buttons = document.querySelectorAll('.grid-item, .mining-circle, .btn');
-    
-    // Button Disable कर दे
     buttons.forEach(btn => btn.style.pointerEvents = 'none');
-    showToast('Loading reward...');
+    showToast('Loading ad... ' + adDuration);
     
-    // Fallback Timer: 4 Sec में Ad नहीं चला तो Free Reward दे दो
-    let fallbackTimer = setTimeout(() => {
-      if (!rewardGiven) {
-        rewardGiven = true;
-        showToast(`🎁 Bonus! +${rewardAmount} RUP`);
+    aads.rewarded({
+      zoneId: AADS_ZONE_ID,
+      size: 'fullscreen',
+      onComplete: function() {
         rewardFunction();
         buttons.forEach(btn => btn.style.pointerEvents = 'auto');
-        console.log('Fallback Reward Given - User Happy');
+        showToast(`+${rewardAmount} RUP Claimed!`);
+      },
+      onClose: function() {
+        buttons.forEach(btn => btn.style.pointerEvents = 'auto');
+        showToast('Ad closed - Try again');
       }
-    }, AD_TIMEOUT);
-    
-    // Real Ad Try करो
-    if (window.adsReady && typeof aiptag !== 'undefined' && aiptag.adplayer) {
-      aiptag.cmd.player.push(function() {
-        adplayer.startRewardedAd({
-          onAdCompleted: function() {
-            if (!rewardGiven) {
-              clearTimeout(fallbackTimer);
-              rewardGiven = true;
-              rewardFunction();
-              buttons.forEach(btn => btn.style.pointerEvents = 'auto');
-            }
-          },
-          onAdError: function() {
-            console.log('Ad Error - Fallback will trigger');
-            // Fallback Timer चलने दे, वो Reward दे देगा
-          },
-          onAdSkipped: function() {
-            clearTimeout(fallbackTimer);
-            rewardGiven = true;
-            showToast('Ad Skipped - No Reward');
-            buttons.forEach(btn => btn.style.pointerEvents = 'auto');
-          }
-        });
-      });
-    } else {
-      console.log('AdinPlay not ready - Waiting for fallback');
-      // Fallback Timer चलने दे
-    }
+    });
   }
 
   function doMining() {
@@ -268,9 +242,7 @@
     saveRuppyData(userData);
     updateBalance();
     updateMiningCircle();
-    showToast(`+${MINING_REWARD} RUP Mining Complete!`);
     
-    // 🔥 ANALYTICS ADDED - Mining Event Fire
     if(window.logMineEvent) {
       window.logMineEvent(MINING_REWARD);
     }
@@ -286,7 +258,6 @@
     updateBalance();
     updateBoost();
     
-    // 🔥 ANALYTICS ADDED - Boost Event
     if(window.logMineEvent) {
       window.logMineEvent(boostAmount);
     }
@@ -312,9 +283,7 @@
     saveRuppyData(userData);
     updateBalance();
     updateGift();
-    showToast('+10 RUP Gift Claimed!');
     
-    // 🔥 ANALYTICS ADDED - Gift Event
     if(window.logMineEvent) {
       window.logMineEvent(10);
     }
@@ -328,9 +297,7 @@
       saveRuppyData(userData);
       updateBalance();
       updateFirstReward();
-      showToast('You earned 15 RUP!');
       
-      // 🔥 ANALYTICS ADDED - First Reward Event
       if(window.logMineEvent) {
         window.logMineEvent(15);
       }
@@ -345,23 +312,21 @@
       saveRuppyData(userData);
       updateBalance();
       updateUltraReward();
-      showToast('You earned 20 RUP!');
       
-      // 🔥 ANALYTICS ADDED - Ultra Reward Event
       if(window.logMineEvent) {
         window.logMineEvent(20);
       }
     }
   }
 
-  // ✅ Event Listeners - Fallback के साथ
-  document.getElementById('miningCircle').onclick = () => showAdAndReward(doMining, 30, 'Mining');
+  // ✅ Event Listeners - तेरे हिसाब से Duration
+  document.getElementById('miningCircle').onclick = () => showRewardedAd(doMining, 40, '5-7 Sec');
   document.getElementById('boostBtn').onclick = openBoostModal;
-  document.getElementById('boostModalBtn').onclick = () => showAdAndReward(doBoost, Math.floor(MINING_REWARD * 0.10), 'Boost');
+  document.getElementById('boostModalBtn').onclick = () => showRewardedAd(doBoost, Math.floor(MINING_REWARD * 0.10), '5-7 Sec');
   document.getElementById('closeBoostModal').onclick = closeBoostModal;
-  document.getElementById('giftBtn').onclick = () => showAdAndReward(doGift, 10, 'Gift');
-  document.getElementById('firstRewardBtn').onclick = () => showAdAndReward(doFirstReward, 15, 'First Reward');
-  document.getElementById('ultraRewardBtn').onclick = () => showAdAndReward(doUltraReward, 20, 'Ultra Reward');
+  document.getElementById('giftBtn').onclick = () => showRewardedAd(doGift, 10, '30 Sec');
+  document.getElementById('firstRewardBtn').onclick = () => showRewardedAd(doFirstReward, 15, '30 Sec');
+  document.getElementById('ultraRewardBtn').onclick = () => showRewardedAd(doUltraReward, 20, '60 Sec');
 
   // Nav
   document.querySelectorAll('.nav-item').forEach(item => {
@@ -389,7 +354,7 @@
     document.getElementById('boostModal').classList.remove('active');
   }
 
-  // बाकी सब Functions Same
+  // बाकी Functions Same
   function updateBalance() {
     document.getElementById('balance').innerHTML = '<div class="r-coin">R</div> ' + Number(userData.balance) + ' <span>RUP</span>';
   }
