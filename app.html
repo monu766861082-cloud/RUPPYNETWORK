@@ -5,22 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruppy Network - App</title>
   
-  <!-- A-Ads Script - तेरी ID डाल दे यहाँ 👇 YOUR_AADS_ID_HERE -->
+  <!-- A-Ads Script - Bug Fixed Version -->
   <script>
     var aads = aads || {};
     aads.rewarded = function(options) {
+      // 🔥 पहले Check कर ID Valid है या नहीं
+      if (!options.zoneId || options.zoneId === 'YOUR_AADS_ID_HERE') {
+        console.log('A-Ads: Invalid Zone ID - Giving free reward');
+        if (options.onComplete) options.onComplete();
+        return;
+      }
+      
       var iframe = document.createElement('iframe');
       iframe.src = '//acceptable.a-ads.com/' + options.zoneId + '?size=' + options.size + '&type=rewarded';
       iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;border:0;z-index:99999;background:rgba(0,0,0,0.95)';
+      iframe.id = 'aads-rewarded-iframe';
       document.body.appendChild(iframe);
+      
+      // 🔥 Timeout: 3 Sec में Ad नहीं Load हुआ तो Free Reward
+      var adTimeout = setTimeout(function() {
+        console.log('A-Ads: Timeout - Giving free reward');
+        iframe.remove();
+        if (options.onComplete) options.onComplete();
+      }, 3000);
       
       window.addEventListener('message', function handler(e) {
         if (e.data === 'aads_rewarded_complete') {
+          clearTimeout(adTimeout);
           iframe.remove();
           window.removeEventListener('message', handler);
           if (options.onComplete) options.onComplete();
         }
-        if (e.data === 'aads_rewarded_close') {
+        if (e.data === 'aads_rewarded_close' || e.data === 'aads_rewarded_error') {
+          clearTimeout(adTimeout);
           iframe.remove();
           window.removeEventListener('message', handler);
           if (options.onClose) options.onClose();
@@ -81,7 +98,6 @@
     
     #toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #FFA500; padding: 12px 20px; border-radius: 8px; border: 1px solid #FFA500; display: none; z-index: 1000; font-size: 14px; }
     
-    /* 🔥 छोटा Banner - Top Right, 50% Opacity - चमकेगा नहीं */
     .aads-small-banner {position:fixed;top:5px;right:5px;z-index:998;opacity:0.5;transition:0.3s;}
     .aads-small-banner:hover{opacity:0.8}
   </style>
@@ -89,7 +105,7 @@
 </head>
 <body>
 
-  <!-- A-Ads छोटा Banner 234x60 - Top Right Corner, छोटा, नहीं चमकेगा 👇 -->
+  <!-- A-Ads छोटा Banner - ID बदल दे यहाँ 👇 -->
   <div class="aads-small-banner">
     <iframe data-aa='YOUR_AADS_ID_HERE' src='//acceptable.a-ads.com/YOUR_AADS_ID_HERE' style='border:0px; padding:0; width:234px; height:60px; overflow:hidden; background-color: transparent;'></iframe>
   </div>
@@ -189,9 +205,9 @@
 
 <script type="module">
   let userData;
-  const MINING_REWARD = 40; // 🔥 तूने 40 बोला था
+  const MINING_REWARD = 40;
   
-  // 🔥 A-ADS ZONE ID - यहाँ अपनी ID डाल दे
+  // 🔥 A-ADS ZONE ID - यहाँ अपनी ID डाल दे 👇
   const AADS_ZONE_ID = 'YOUR_AADS_ID_HERE'; // 👈 बदल दे इसको
 
   async function waitForUserData() {
@@ -210,11 +226,22 @@
     setTimeout(() => { toast.style.display = 'none'; }, 3000);
   }
 
-  // 🔥 A-ADS REWARDED VIDEO FUNCTION - Bug Proof
+  // 🔥 A-ADS REWARDED - Bug Fixed + Fallback
   function showRewardedAd(rewardFunction, rewardAmount, adDuration) {
     let buttons = document.querySelectorAll('.grid-item, .mining-circle, .btn');
     buttons.forEach(btn => btn.style.pointerEvents = 'none');
     showToast('Loading ad... ' + adDuration);
+    
+    // 🔥 अगर Zone ID नहीं डाली तो Direct Reward दे दो
+    if (!AADS_ZONE_ID || AADS_ZONE_ID === 'YOUR_AADS_ID_HERE') {
+      console.log('A-Ads: No Zone ID - Giving free reward');
+      setTimeout(() => {
+        rewardFunction();
+        buttons.forEach(btn => btn.style.pointerEvents = 'auto');
+        showToast(`+${rewardAmount} RUP Claimed!`);
+      }, 500);
+      return;
+    }
     
     aads.rewarded({
       zoneId: AADS_ZONE_ID,
@@ -319,7 +346,7 @@
     }
   }
 
-  // ✅ Event Listeners - तेरे हिसाब से Duration
+  // Event Listeners
   document.getElementById('miningCircle').onclick = () => showRewardedAd(doMining, 40, '5-7 Sec');
   document.getElementById('boostBtn').onclick = openBoostModal;
   document.getElementById('boostModalBtn').onclick = () => showRewardedAd(doBoost, Math.floor(MINING_REWARD * 0.10), '5-7 Sec');
@@ -354,7 +381,6 @@
     document.getElementById('boostModal').classList.remove('active');
   }
 
-  // बाकी Functions Same
   function updateBalance() {
     document.getElementById('balance').innerHTML = '<div class="r-coin">R</div> ' + Number(userData.balance) + ' <span>RUP</span>';
   }
