@@ -5,27 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruppy Network - App</title>
   
-  <!-- AdinPlay Ads - यहाँ अपनी Site ID डालना 👇 RUP की जगह -->
-  <script>
-    var aiptag = aiptag || {};
-    aiptag.cmd = aiptag.cmd || [];
-    aiptag.cmd.display = aiptag.cmd.display || [];
-    aiptag.cmd.player = aiptag.cmd.player || [];
-    aiptag.cmd.display.push(function() { aipDisplayTag.display('ruppynetwork_320x50'); });
-    aiptag.cmd.display.push(function() { aipDisplayTag.display('ruppynetwork_300x250'); });
-  </script>
-  <script async src="//api.adinplay.com/libs/aiptag/pub/RUP/ruppynetwork.com/tag.min.js"></script>
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
   
-  <!-- तेरा पुराना config.js वापस लगा दिया ✅ -->
   <script type="module" src="config.js"></script>
   
   <style>
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
     body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
     
-    .top-banner {width:100%; background:#111; text-align:center; padding:5px 0; border-bottom:1px solid #222;}
-    
-    .header {padding:15px 15px 10px; display:flex; align-items:center; gap:12px;}
+    .header {padding:20px 15px 10px; display:flex; align-items:center; gap:12px;}
     .header .dp {width:40px; height:40px; border-radius:50%; background:#1a1a1a; display:flex; align-items:center; justify-content:center; font-size:18px; overflow:hidden; border:1px solid #333;}
     .header .dp img {width:100%; height:100%; object-fit:cover;}
     .header .info h3 {font-size:16px; font-weight:500;}
@@ -45,7 +34,6 @@
     .mining-circle.ready h3 {color:#000;}
     .mining-circle.mining {background:transparent; border:2px solid #FFA500; cursor:not-allowed;}
     .mining-circle.mining h3 {color:#FFA500; font-size:16px; white-space:pre-line; text-align:center;}
-    .mining-circle.processing {opacity:0.5; pointer-events:none;}
     .mining-text {text-align:center; margin-top:15px; color:#666; font-size:13px;}
     
     .grid {display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:25px 15px;}
@@ -74,17 +62,10 @@
     .nav-item.active {color:#FFA500;}
     .nav-item.active::after {content:''; width:30px; height:2px; background:#FFA500; margin-top:2px;}
     .nav-item .icon {font-size:20px;}
-    
-    .ad-banner {margin: 15px; text-align:center;}
   </style>
   
 </head>
 <body>
-
-  <!-- छोटी YouTube जैसी पट्टी ऊपर 👇 -->
-  <div class="top-banner">
-    <div id='ruppynetwork_320x50'></div>
-  </div>
 
   <div class="header">
     <div class="dp" id="userDp">👤</div>
@@ -104,11 +85,6 @@
       <h3 id="miningText">WATCH AD FOR BONUS</h3>
     </div>
     <p class="mining-text">Watch ad to collect 30 RUP • Available every 3 hours</p>
-  </div>
-
-  <!-- Banner Ad -->
-  <div class="ad-banner">
-    <div id='ruppynetwork_300x250'></div>
   </div>
 
   <div class="grid">
@@ -184,37 +160,22 @@
   </div>
 
 <script>
-  // ✅ तेरा पुराना Code वापस डाल दिया - config.js से userData आएगा
+  // ✅ FIX 1: userData को Global बना
   var userData = window.userData;
-  const MINING_REWARD = 30;
+  const MINING_REWARD = 30; // ✅ 40 से 30 कर दिया
 
+  // ✅ FIX 2: सब Functions को window पे चढ़ाया
   window.saveUser = async function() {
     await saveRuppyData(userData);
   }
 
-  // ✅ 1. MINING = 5-7 SEC AD
   window.handleMiningClick = function() {
     let now = Date.now();
     let lastMine = Number(userData.lastMine) || 0;
-    let circle = document.getElementById('miningCircle');
-    
-    if((now - lastMine < 10800000 && lastMine !== 0) || circle.classList.contains('processing')) return;
-    
-    circle.classList.add('processing');
-    circle.onclick = null;
-    
-    aiptag.cmd.player.push(function() {
-      adplayer.startRewardedAd({
-        onReward: function() { startMining(); },
-        onClose: function() {
-          document.getElementById('miningCircle').classList.remove('processing');
-          updateMiningCircle();
-        }
-      });
-    });
+    if(now - lastMine < 10800000 && lastMine !== 0) return;
+    startMining();
   }
 
-  // ✅ 2. BOOST = 5-60 SEC AD
   window.handleBoostClick = function() {
     if(userData.boostCount >= 3) {
       alert('You watched 3 ads already. Try again after 3 hours.');
@@ -223,38 +184,6 @@
     openBoostModal();
   }
 
-  window.watchBoostAd = function() {
-    if(userData.boostCount >= 3) return;
-    document.getElementById('boostBtn').disabled = true;
-    
-    aiptag.cmd.player.push(function() {
-      adplayer.startRewardedAd({
-        onReward: function() {
-          let boostAmount = Math.floor(MINING_REWARD * 0.10);
-          userData.balance = Number(userData.balance) || 0;
-          userData.balance += boostAmount;
-          userData.boostCount++;
-          saveUser();
-          updateBalance();
-          updateBoost();
-          
-          if(userData.boostCount >= 3) {
-            document.getElementById('boostBtn').innerText = 'All Claimed!';
-            setTimeout(closeBoostModal, 1500);
-          } else {
-            document.getElementById('boostStep').innerText = userData.boostCount + 1;
-            document.getElementById('boostBtn').disabled = false;
-            alert('+' + boostAmount + ' RUP Claimed! (' + userData.boostCount + '/3)');
-          }
-        },
-        onClose: function() {
-          document.getElementById('boostBtn').disabled = false;
-        }
-      });
-    });
-  }
-
-  // ✅ 3. GIFT = 30 SEC AD
   window.handleGiftClick = function() {
     let now = Date.now();
     let lastGift = Number(userData.lastGift) || 0;
@@ -262,49 +191,56 @@
       alert('Please wait. Come back after 2 hours.');
       return;
     }
-    
-    aiptag.cmd.player.push(function() {
-      adplayer.startRewardedAd({
-        onReward: function() { openGift(); }
-      });
-    });
+    openGift();
   }
 
-  // ✅ 4. FIRST REWARD = 30 SEC AD
   window.claimFirstReward = function(){
     if(Date.now() >= userData.firstRewardTime || userData.firstRewardTime === 0){
-      aiptag.cmd.player.push(function() {
-        adplayer.startRewardedAd({
-          onReward: function() {
-            userData.balance = Number(userData.balance) || 0;
-            userData.balance += 15;
-            userData.firstRewardTime = Date.now() + 3600000;
-            saveUser();
-            updateBalance();
-            updateFirstReward();
-            alert('You earned 15 RUP!');
-          }
-        });
-      });
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += 15; // ✅ 20 से 15 कर दिया
+      userData.firstRewardTime = Date.now() + 3600000;
+      saveUser();
+      updateBalance();
+      updateFirstReward();
+      alert('You earned 15 RUP!'); // ✅ Alert भी Update
     }
   }
 
-  // ✅ 5. ULTRA REWARD = 30 SEC AD
   window.claimUltraReward = function(){
     if(Date.now() >= userData.ultraRewardTime || userData.ultraRewardTime === 0){
-      aiptag.cmd.player.push(function() {
-        adplayer.startRewardedAd({
-          onReward: function() {
-            userData.balance = Number(userData.balance) || 0;
-            userData.balance += 20;
-            userData.ultraRewardTime = Date.now() + 3600000;
-            saveUser();
-            updateBalance();
-            updateUltraReward();
-            alert('You earned 20 RUP!');
-          }
-        });
-      });
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += 20; // ✅ 50 से 20 कर दिया
+      userData.ultraRewardTime = Date.now() + 3600000;
+      saveUser();
+      updateBalance();
+      updateUltraReward();
+      alert('You earned 20 RUP!'); // ✅ Alert भी Update
+    }
+  }
+
+  window.watchBoostAd = function() {
+    if(userData.boostCount >= 3) return;
+    
+    let boostAmount = Math.floor(MINING_REWARD * 0.10); // ✅ 0.05 से 0.10 कर दिया
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += boostAmount;
+    userData.boostCount++;
+    
+    saveUser();
+    updateBalance();
+    updateBoost();
+    
+    if(userData.boostCount >= 3) {
+      document.getElementById('boostBtn').innerText = 'All Claimed!';
+      document.getElementById('boostBtn').disabled = true;
+      setTimeout(function() {
+        closeBoostModal();
+        document.getElementById('boostBtn').innerText = 'Watch Ad for Bonus';
+        document.getElementById('boostBtn').disabled = false;
+      }, 1500);
+    } else {
+      document.getElementById('boostStep').innerText = userData.boostCount + 1;
+      alert('+' + boostAmount + ' RUP Claimed! (' + userData.boostCount + '/3)');
     }
   }
 
@@ -314,9 +250,7 @@
       return;
     }
     document.getElementById('boostStep').innerText = userData.boostCount + 1;
-    document.getElementById('boostStepText').innerText = 'Watch ad for 10% bonus';
-    document.getElementById('boostBtn').innerText = 'Watch Ad for Bonus';
-    document.getElementById('boostBtn').disabled = false;
+    document.getElementById('boostStepText').innerText = 'Watch ad for 10% bonus'; // ✅ Text Update
     document.getElementById('boostModal').classList.add('active');
   }
 
@@ -332,14 +266,15 @@
     if(page === 'settings') window.location.href = 'settings.html';
   }
 
-  // ✅ तेरा पुराना सारा Code Same रखा है
+  // ✅ FIX 3: init को Async + Wait लगाया
   async function init() {
+    // Firebase से userData Load होने का Wait
     let attempts = 0;
     while(!window.userData?.uid && attempts < 50) {
       await new Promise(r => setTimeout(r, 100));
       attempts++;
     }
-    userData = window.userData;
+    userData = window.userData; // Update कर दे
     
     loadProfileEverywhere();
     
@@ -378,8 +313,6 @@
     let circle = document.getElementById('miningCircle');
     let text = document.getElementById('miningText');
     
-    if(circle.classList.contains('processing')) return;
-    
     if(diff >= cooldown || lastMine === 0) {
       circle.className = 'mining-circle ready';
       text.innerText = 'WATCH AD FOR BONUS';
@@ -402,7 +335,7 @@
     if(now - lastMine < 10800000 && lastMine !== 0) return;
     
     userData.balance = Number(userData.balance) || 0;
-    userData.balance += MINING_REWARD;
+    userData.balance += MINING_REWARD; // ✅ अब 30 मिलेगा
     userData.lastMine = now;
     saveUser();
     updateBalance();
@@ -431,7 +364,7 @@
       document.getElementById('boostBar').style.width = '100%';
       document.getElementById('boostBadge').style.background = '#00ff00';
     } else {
-      document.getElementById('boostTimer').innerText = '10% Bonus Available';
+      document.getElementById('boostTimer').innerText = '10% Bonus Available'; // ✅ 5% से 10% कर दिया
       document.getElementById('boostBar').style.width = (userData.boostCount / 3 * 100) + '%';
       document.getElementById('boostBadge').style.background = '#FFA500';
     }
@@ -444,7 +377,7 @@
     let cooldown = 7200000;
     
     if(diff >= cooldown || lastGift === 0) {
-      document.getElementById('giftTimer').innerText = 'Ready → +10 RUP';
+      document.getElementById('giftTimer').innerText = 'Ready → +10 RUP'; // ✅ 15 से 10 कर दिया
       document.getElementById('giftBadge').innerText = '✓';
       document.getElementById('giftBadge').style.background = '#00ff00';
       document.getElementById('giftBar').style.width = '100%';
@@ -471,12 +404,12 @@
     }
     
     userData.balance = Number(userData.balance) || 0;
-    userData.balance += 10;
+    userData.balance += 10; // ✅ 15 से 10 कर दिया
     userData.lastGift = now;
     saveUser();
     updateBalance();
     updateGift();
-    alert('+10 RUP Added!');
+    alert('+10 RUP Added!'); // ✅ Alert भी Update
   }
 
   function updateFirstReward() {
@@ -484,7 +417,7 @@
     let diff = userData.firstRewardTime - now;
     
     if(diff <= 0 || userData.firstRewardTime === 0){
-      document.getElementById('firstRewardTimer').innerText = 'Claim 15 RUP';
+      document.getElementById('firstRewardTimer').innerText = 'Claim 15 RUP'; // ✅ 20 से 15 कर दिया
       document.getElementById('firstRewardBadge').style.display = 'block';
       document.getElementById('firstRewardBar').style.width = '100%';
     } else {
@@ -503,7 +436,7 @@
     let diff = userData.ultraRewardTime - now;
     
     if(diff <= 0 || userData.ultraRewardTime === 0){
-      document.getElementById('ultraRewardTimer').innerText = 'Claim 20 RUP';
+      document.getElementById('ultraRewardTimer').innerText = 'Claim 20 RUP'; // ✅ 50 से 20 कर दिया
       document.getElementById('ultraRewardBadge').style.display = 'block';
       document.getElementById('ultraRewardBar').style.width = '100%';
     } else {
