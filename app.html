@@ -5,43 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruppy Network - App</title>
   
-  <!-- Monetag Vignette SDK - Zone 10925298 -->
-  <script>
-    const MONETAG_ZONE = '10925298';
-    window.monetagLoaded = false;
-    
-    (function(s){
-      s.dataset.zone='10925298';
-      s.src='https://n6wxm.com/vignette.min.js';
-      s.onload = () => { 
-        window.monetagLoaded = true; 
-        console.log('Vignette Ready');
-        document.getElementById('miningText').innerText = 'WATCH AD FOR BONUS';
-      };
-      s.onerror = () => { 
-        console.log('Vignette Failed - Free Mode');
-        window.monetagLoaded = false;
-        document.getElementById('miningText').innerText = 'CLAIM BONUS';
-      };
-      [document.documentElement, document.body].filter(Boolean).pop().appendChild(s);
-    })(document.createElement('script'));
-    
-    function showAdAndReward(rewardFunction, rewardAmount) {
-      if (window.monetagLoaded && typeof show_10925298 === 'function') {
-        show_10925298().then(() => {
-          rewardFunction();
-          showToast(`+${rewardAmount} RUP Claimed!`);
-        }).catch(() => {
-          rewardFunction();
-          showToast(`+${rewardAmount} RUP Claimed!`);
-        });
-      } else {
-        rewardFunction();
-        showToast(`+${rewardAmount} RUP Claimed!`);
-      }
-    }
-  </script>
-  
   <script type="module" src="config.js"></script>
   
   <style>
@@ -110,9 +73,9 @@
 
   <div class="mining-section">
     <div class="mining-circle ready" id="miningCircle">
-      <h3 id="miningText">LOADING...</h3>
+      <h3 id="miningText">CLAIM BONUS</h3>
     </div>
-    <p class="mining-text">Watch ad to collect 40 RUP • Available every 3 hours</p>
+    <p class="mining-text">Collect 20 RUP • Available every 3 hours</p>
   </div>
 
   <div class="grid">
@@ -149,12 +112,12 @@
   <div class="modal" id="boostModal">
     <div class="modal-content">
       <h3>🚀 COLLECT BONUS</h3>
-      <p>Watch ads to collect extra RUP</p>
+      <p>Collect extra RUP</p>
       <div class="boost-step">
         <h4>Step <span id="boostStep">1</span>/3</h4>
-        <p id="boostStepText">Watch ad for 10% bonus</p>
+        <p id="boostStepText">Claim 10% bonus</p>
       </div>
-      <button class="btn" id="boostModalBtn">Watch Ad for Bonus</button>
+      <button class="btn" id="boostModalBtn">Claim Bonus</button>
       <button class="close-btn" id="closeBoostModal">Close</button>
     </div>
   </div>
@@ -190,7 +153,7 @@
 
 <script type="module">
   let userData;
-  const MINING_REWARD = 40;
+  const MINING_REWARD = 20;
   
   async function waitForUserData() {
     let attempts = 0;
@@ -219,6 +182,7 @@
     saveRuppyData(userData);
     updateBalance();
     updateMiningCircle();
+    showToast(`+${MINING_REWARD} RUP Claimed!`);
     
     if(window.logMineEvent) window.logMineEvent(MINING_REWARD);
   }
@@ -232,6 +196,7 @@
     saveRuppyData(userData);
     updateBalance();
     updateBoost();
+    showToast(`+${boostAmount} RUP Claimed!`);
     
     if(window.logMineEvent) window.logMineEvent(boostAmount);
     
@@ -255,6 +220,7 @@
     saveRuppyData(userData);
     updateBalance();
     updateGift();
+    showToast('+10 RUP Claimed!');
     
     if(window.logMineEvent) window.logMineEvent(10);
   }
@@ -262,36 +228,38 @@
   function doFirstReward() {
     if(Date.now() >= userData.firstRewardTime || userData.firstRewardTime === 0){
       userData.balance = Number(userData.balance) || 0;
-      userData.balance += 15;
+      userData.balance += 10;
       userData.firstRewardTime = Date.now() + 3600000;
       saveRuppyData(userData);
       updateBalance();
       updateFirstReward();
+      showToast('+10 RUP Claimed!');
       
-      if(window.logMineEvent) window.logMineEvent(15);
+      if(window.logMineEvent) window.logMineEvent(10);
     }
   }
 
   function doUltraReward() {
     if(Date.now() >= userData.ultraRewardTime || userData.ultraRewardTime === 0){
       userData.balance = Number(userData.balance) || 0;
-      userData.balance += 20;
+      userData.balance += 30;
       userData.ultraRewardTime = Date.now() + 3600000;
       saveRuppyData(userData);
       updateBalance();
       updateUltraReward();
+      showToast('+30 RUP Claimed!');
       
-      if(window.logMineEvent) window.logMineEvent(20);
+      if(window.logMineEvent) window.logMineEvent(30);
     }
   }
 
-  document.getElementById('miningCircle').onclick = () => showAdAndReward(doMining, 40);
+  document.getElementById('miningCircle').onclick = doMining;
   document.getElementById('boostBtn').onclick = openBoostModal;
-  document.getElementById('boostModalBtn').onclick = () => showAdAndReward(doBoost, Math.floor(MINING_REWARD * 0.10));
+  document.getElementById('boostModalBtn').onclick = doBoost;
   document.getElementById('closeBoostModal').onclick = closeBoostModal;
-  document.getElementById('giftBtn').onclick = () => showAdAndReward(doGift, 10);
-  document.getElementById('firstRewardBtn').onclick = () => showAdAndReward(doFirstReward, 15);
-  document.getElementById('ultraRewardBtn').onclick = () => showAdAndReward(doUltraReward, 20);
+  document.getElementById('giftBtn').onclick = doGift;
+  document.getElementById('firstRewardBtn').onclick = doFirstReward;
+  document.getElementById('ultraRewardBtn').onclick = doUltraReward;
 
   document.querySelectorAll('.nav-item').forEach(item => {
     item.onclick = () => {
@@ -306,11 +274,11 @@
 
   function openBoostModal() {
     if(userData.boostCount >= 3) {
-      showToast('You watched 3 ads already. Try again after 3 hours.');
+      showToast('You claimed 3 bonuses already. Try again after 3 hours.');
       return;
     }
     document.getElementById('boostStep').innerText = userData.boostCount + 1;
-    document.getElementById('boostStepText').innerText = 'Watch ad for 10% bonus';
+    document.getElementById('boostStepText').innerText = 'Claim 10% bonus';
     document.getElementById('boostModal').classList.add('active');
   }
 
@@ -333,11 +301,7 @@
     
     if(diff >= cooldown || lastMine === 0) {
       circle.className = 'mining-circle ready';
-      if(window.monetagLoaded === false) {
-        text.innerText = 'CLAIM BONUS';
-      } else {
-        text.innerText = 'WATCH AD FOR BONUS';
-      }
+      text.innerText = 'CLAIM BONUS';
     } else {
       let remaining = cooldown - diff;
       let hrs = Math.floor(remaining / 3600000);
@@ -407,7 +371,7 @@
     let diff = userData.firstRewardTime - now;
     
     if(diff <= 0 || userData.firstRewardTime === 0){
-      document.getElementById('firstRewardTimer').innerText = 'Claim 15 RUP';
+      document.getElementById('firstRewardTimer').innerText = 'Claim 10 RUP';
       document.getElementById('firstRewardBadge').style.display = 'block';
       document.getElementById('firstRewardBar').style.width = '100%';
     } else {
@@ -426,7 +390,7 @@
     let diff = userData.ultraRewardTime - now;
     
     if(diff <= 0 || userData.ultraRewardTime === 0){
-      document.getElementById('ultraRewardTimer').innerText = 'Claim 20 RUP';
+      document.getElementById('ultraRewardTimer').innerText = 'Claim 30 RUP';
       document.getElementById('ultraRewardBadge').style.display = 'block';
       document.getElementById('ultraRewardBar').style.width = '100%';
     } else {
