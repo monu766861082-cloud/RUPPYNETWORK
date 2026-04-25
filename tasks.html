@@ -213,47 +213,47 @@ body{margin:0;background:#0A0E27;color:#fff;font-family:Arial;padding-bottom:80p
   </div>
 </div>
 
-<div class="section-title">🎁 LUCKY BOXES - Open Daily</div>
+<div class="section-title">🎁 LUCKY BOXES - 5 RUPPY Each</div>
 <div class="box-grid">
   <div class="lucky-box" id="box1">
     <div class="box-icon">💎</div>
     <div class="box-title">Diamond Box</div>
-    <div class="box-reward" id="reward1">?</div>
+    <div class="box-reward" id="reward1">5 RUPPY</div>
     <div class="box-status" id="status1">Open</div>
   </div>
 
   <div class="lucky-box" id="box2">
     <div class="box-icon">🎁</div>
     <div class="box-title">Gift Box</div>
-    <div class="box-reward" id="reward2">?</div>
+    <div class="box-reward" id="reward2">5 RUPPY</div>
     <div class="box-status" id="status2">Open</div>
   </div>
 
   <div class="lucky-box" id="box3">
     <div class="box-icon">⭐</div>
     <div class="box-title">Star Box</div>
-    <div class="box-reward" id="reward3">?</div>
+    <div class="box-reward" id="reward3">5 RUPPY</div>
     <div class="box-status" id="status3">Open</div>
   </div>
 
   <div class="lucky-box" id="box4">
     <div class="box-icon">🔥</div>
     <div class="box-title">Fire Box</div>
-    <div class="box-reward" id="reward4">?</div>
+    <div class="box-reward" id="reward4">5 RUPPY</div>
     <div class="box-status" id="status4">Open</div>
   </div>
 
   <div class="lucky-box" id="box5">
     <div class="box-icon">💰</div>
     <div class="box-title">Money Box</div>
-    <div class="box-reward" id="reward5">?</div>
+    <div class="box-reward" id="reward5">5 RUPPY</div>
     <div class="box-status" id="status5">Open</div>
   </div>
 
   <div class="lucky-box" id="box6">
     <div class="box-icon">👑</div>
     <div class="box-title">Crown Box</div>
-    <div class="box-reward" id="reward6">?</div>
+    <div class="box-reward" id="reward6">5 RUPPY</div>
     <div class="box-status" id="status6">Open</div>
   </div>
 </div>
@@ -317,9 +317,9 @@ let openedTask = null;
 let isSpinning = false;
 
 const SPIN_REWARDS = [25, 15, 10, 25, 15, 10];
-const BOX_REWARDS = [10, 15, 25];
+// ✅ सब Box में 5 Token Fixed
+const BOX_REWARD = 5;
 
-// ✅ FIX: Functions को Window पे Attach किया ताकि onclick काम करे
 window.goPage = function(page) {
   window.location.href = page;
 }
@@ -331,10 +331,11 @@ window.openLuckyBox = async function(boxNum) {
   const boxKey = `luckyBox${boxNum}_${today}`;
 
   if (userData.luckyBoxes && userData.luckyBoxes[boxKey]) {
-    return alert("Already opened today!");
+    return alert("Already opened today! Come back tomorrow.");
   }
 
-  const amount = BOX_REWARDS[Math.floor(Math.random() * BOX_REWARDS.length)];
+  // ✅ सब में 5 Token
+  const amount = BOX_REWARD;
 
   userData.balance = (userData.balance || 0) + amount;
 
@@ -437,23 +438,19 @@ async function init(){
 }
 
 function attachEventListeners() {
-  // Nav Clicks
   document.getElementById('nav-home').onclick = () => goPage('app.html');
   document.getElementById('nav-referral').onclick = () => goPage('referral.html');
   document.getElementById('nav-ranking').onclick = () => goPage('ranking.html');
   document.getElementById('nav-community').onclick = () => goPage('community.html');
   document.getElementById('nav-settings').onclick = () => goPage('settings.html');
 
-  // Spin Button
   document.getElementById('spinBtn').onclick = spinWheel;
   document.getElementById('spinWheel').onclick = spinWheel;
 
-  // Lucky Boxes
   for(let i = 1; i <= 6; i++) {
     document.getElementById(`box${i}`).onclick = () => openLuckyBox(i);
   }
 
-  // Social Tasks
   document.getElementById('tgBtn').onclick = () => openLink('tg', 'https://t.me/RUPPYfoundation');
   document.getElementById('fbBtn').onclick = () => openLink('fb', 'https://www.facebook.com/share/1PjMyFivNF/?mibextid=wwXIfr');
   document.getElementById('xBtn').onclick = () => openLink('x', 'https://x.com/rupfoundation?s=21');
@@ -499,7 +496,7 @@ async function claimReward(task) {
 
 function updateButtons() {
   const tasks = ['tg', 'fb', 'x'];
-  const texts = ['JOIN', 'FOLLOW'];
+  const texts = ['JOIN', 'FOLLOW', 'FOLLOW'];
 
   tasks.forEach((t, idx) => {
     let btn = document.getElementById(t + 'Btn');
