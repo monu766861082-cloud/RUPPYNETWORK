@@ -5,58 +5,54 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ruppy Tasks</title>
 
-<!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
-
-<!-- ✅ FIX: config.js Add करा Balance Sync के लिए -->
 <script type="module" src="config.js"></script>
 
 <style>
 body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .hdr{padding:20px}
 .hdr h1{margin:0;font-size:28px}
-.hdr p{margin:4px 0 0;color:#FFA500;font-weight:bold}
+.hdr p{margin:4px 0 0;color:#FFB84D;font-weight:bold}
 .hdr small{color:#888}
-.tokenBal{background:#0d0d0d;border:1px solid #FFA500;border-radius:12px;padding:15px;margin:0 15px;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
-.tokenBal b{color:#FFA500;font-size:24px;transition:0.3s;}
+.tokenBal{background:#0d0d0d;border:1px solid #FFB84D;border-radius:12px;padding:15px;margin:0 15px;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
+.tokenBal b{color:#FFB84D;font-size:24px;transition:0.3s;}
 .tokenBal b.flash{animation:flash 0.5s;}
 @keyframes flash{0%,100%{transform:scale(1)} 50%{transform:scale(1.15); color:#4CAF50}}
 
-.r-coin {width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;box-shadow:0 0 10px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500;position:relative;flex-shrink:0}
-.r-coin::after {content:'';position:absolute;inset:-2px;border-radius:50%;background:radial-gradient(circle,#FF6B00 0%,transparent 70%);opacity:0.4;filter:blur(3px);z-index:-1}
+.r-coin {width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFD580,#FFB84D,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;box-shadow:0 0 10px rgba(255,184,77,0.4);border:1px solid #FFB84D}
 
-/* ✅ SPIN WHEEL CSS */
-.spin-section{margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:20px; text-align:center;}
-.spin-section h4{color:#FFA500; font-size:13px; margin-bottom:5px;}
+/* ✅ SPIN WHEEL - हल्का Colour */
+.spin-section{margin:15px; background:#0d0d0d; border:1px solid #333; border-radius:12px; padding:20px; text-align:center; margin-bottom:25px;}
+.spin-section h4{color:#FFB84D; font-size:13px; margin-bottom:5px;}
 .last-reward{color:#4CAF50; font-size:12px; margin-top:8px; min-height:16px; font-weight:600;}
 
-.wheel-container{position:relative; width:220px; height:220px; margin:20px auto;}
+.wheel-container{position:relative; width:200px; height:200px; margin:20px auto;}
 .wheel-pointer{
   position:absolute;
   top:-10px;
   left:50%;
   transform:translateX(-50%);
   font-size:24px;
-  color:#FFA500;
+  color:#FFB84D;
   z-index:10;
-  filter:drop-shadow(0 2px 5px rgba(255,165,0,0.8));
+  filter:drop-shadow(0 2px 5px rgba(255,184,77,0.6));
 }
 .wheel{
-  width:220px;
-  height:220px;
+  width:200px;
+  height:200px;
   border-radius:50%;
-  border:5px solid #FFA500;
+  border:4px solid #FFB84D;
   position:relative;
   transition:transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-  box-shadow:0 0 30px rgba(255,165,0,0.3);
+  box-shadow:0 0 20px rgba(255,184,77,0.2);
   background:conic-gradient(
     from 0deg,
-    #FF6B6B 0deg 60deg,
-    #4ECDC4 60deg 120deg,
-    #FFA500 120deg 180deg,
-    #FF6B6B 180deg 240deg,
-    #4ECDC4 240deg 300deg,
-    #FFA500 300deg 360deg
+    #FFD580 0deg 60deg,
+    #7FD1C7 60deg 120deg,
+    #FF9F6B 120deg 180deg,
+    #FFD580 180deg 240deg,
+    #7FD1C7 240deg 300deg,
+    #FF9F6B 300deg 360deg
   );
 }
 .wheel-segment{
@@ -70,18 +66,18 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   align-items:center;
   justify-content:center;
   font-weight:700;
-  font-size:18px;
+  font-size:16px;
   color:#000;
 }
-.seg-10{transform:rotate(30deg) translate(60px, -20px);}
-.seg-15{transform:rotate(90deg) translate(60px, -20px);}
-.seg-25{transform:rotate(150deg) translate(60px, -20px);}
-.seg-10-2{transform:rotate(210deg) translate(60px, -20px);}
-.seg-15-2{transform:rotate(270deg) translate(60px, -20px);}
-.seg-25-2{transform:rotate(330deg) translate(60px, -20px);}
+.seg-10{transform:rotate(30deg) translate(55px, -18px);}
+.seg-15{transform:rotate(90deg) translate(55px, -18px);}
+.seg-25{transform:rotate(150deg) translate(55px, -18px);}
+.seg-10-2{transform:rotate(210deg) translate(55px, -18px);}
+.seg-15-2{transform:rotate(270deg) translate(55px, -18px);}
+.seg-25-2{transform:rotate(330deg) translate(55px, -18px);}
 
 .spin-btn{
-  background:linear-gradient(135deg, #FFA500, #FF8C00);
+  background:linear-gradient(135deg, #FFB84D, #FF9F40);
   color:#000;
   border:none;
   padding:12px 40px;
@@ -90,26 +86,55 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   font-size:14px;
   margin-top:20px;
   cursor:pointer;
-  box-shadow:0 4px 15px rgba(255,165,0,0.4);
+  box-shadow:0 4px 12px rgba(255,184,77,0.3);
   transition:0.2s;
+  position:relative;
+  z-index:5;
 }
 .spin-btn:active{transform:scale(0.95);}
 .spin-btn:disabled{background:#444; color:#888; box-shadow:none; cursor:not-allowed;}
 .spin-info{margin-top:15px; font-size:11px; color:#888;}
 
-.card{border:1px solid #333;border-radius:12px;padding:14px;margin:12px 15px;display:flex;align-items:center;background:#0d0d0d}
+/* ✅ LUCKY BOXES - Designing वाले */
+.section-title{margin:25px 15px 10px; color:#FFB84D; font-size:13px; font-weight:700;}
+.box-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:0 15px 20px;}
+.lucky-box{
+  background:linear-gradient(135deg, #1a1a1a, #0d0d0d);
+  border:1px solid #333;
+  border-radius:10px;
+  padding:15px;
+  text-align:center;
+  cursor:pointer;
+  transition:0.2s;
+  position:relative;
+  z-index:1;
+}
+.lucky-box:active{transform:scale(0.95); border-color:#FFB84D; box-shadow:0 0 15px rgba(255,184,77,0.3);}
+.box-icon{font-size:32px; margin-bottom:8px; filter:drop-shadow(0 0 5px rgba(255,184,77,0.4));}
+.box-title{font-size:11px; color:#fff; font-weight:600; margin-bottom:5px;}
+.box-reward{font-size:14px; color:#FFB84D; font-weight:700; margin-bottom:8px;}
+.box-status{font-size:9px; background:#FFB84D; color:#000; padding:3px 8px; border-radius:5px; font-weight:700; display:inline-block;}
+.lucky-box.opened{opacity:0.4; border-color:#4CAF50; pointer-events:none;}
+.lucky-box.opened.box-status{background:#4CAF50; color:#fff;}
+.lucky-box.opened.box-icon{animation:pop 0.3s;}
+@keyframes pop{0%{transform:scale(1)} 50%{transform:scale(1.3)} 100%{transform:scale(1)}}
+
+/* ✅ Social Tasks - Gap बढ़ाया */
+.task-section{margin-top:30px;}
+.card{border:1px solid #333;border-radius:12px;padding:14px;margin:12px 15px;display:flex;align-items:center;background:#0d0d0d; position:relative; z-index:1;}
 .ic{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:20px}
 .tg{background:#0088cc}.fb{background:#1877f2}.x{background:#fff;color:#000}
-.txt{flex:1}.txt b{display:block;font-size:15px}.txt span{color:#FFA500;font-size:12px;display:flex;align-items:center;gap:4px}
-.txt.mini-coin {width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:8px;color:#000}
-.bt{border:1px solid #FFA500;color:#FFA500;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;min-width:70px;text-align:center;font-weight:600}
-.bt.claim{background:#FFA500;color:#000}
+.txt{flex:1}.txt b{display:block;font-size:15px}.txt span{color:#FFB84D;font-size:12px;display:flex;align-items:center;gap:4px}
+.mini-coin {width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFD580,#FFB84D);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:8px;color:#000}
+.bt{border:1px solid #FFB84D;color:#FFB84D;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;min-width:70px;text-align:center;font-weight:600;position:relative;z-index:2;}
+.bt.claim{background:#FFB84D;color:#000}
 .bt.done{background:#333;color:#666;border-color:#333;cursor:not-allowed}
 .bt.opened{background:#1a1a1a;color:#888;border-color:#444}
-.nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
+
+.nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0;z-index:100;}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
-.nav-item.active{color:#FFA500}
-.nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
+.nav-item.active{color:#FFB84D}
+.nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFB84D;border-radius:2px}
 .nav-item.icon{font-size:20px}
 </style>
 </head>
@@ -122,7 +147,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 
 <div class="tokenBal">Your Balance: <div class="r-coin">R</div> <b id="bal">0</b> RUP</div>
 
-<!-- ✅ SPIN WHEEL SECTION -->
+<!-- ✅ SPIN WHEEL ऊपर -->
 <div class="spin-section">
   <h4>🎡 LUCKY SPIN</h4>
   <p style="color:#888; font-size:12px; margin-bottom:15px;">Spin daily & win RUPPY</p>
@@ -146,25 +171,75 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   </div>
 </div>
 
-<div class="card">
-  <div class="ic tg">✈️</div>
-  <div class="txt"><b>Join Telegram</b><span>Reward: <div class="mini-coin">R</div> 20 RUP</span></div>
-  <a class="bt" id="tgBtn">JOIN</a>
+<!-- ✅ LUCKY BOXES - Designing वाले -->
+<div class="section-title">🎁 LUCKY BOXES - Open Daily</div>
+<div class="box-grid">
+  <div class="lucky-box" id="box1" onclick="openLuckyBox(1)">
+    <div class="box-icon">💎</div>
+    <div class="box-title">Diamond Box</div>
+    <div class="box-reward" id="reward1">?</div>
+    <div class="box-status" id="status1">Open</div>
+  </div>
+
+  <div class="lucky-box" id="box2" onclick="openLuckyBox(2)">
+    <div class="box-icon">🎁</div>
+    <div class="box-title">Gift Box</div>
+    <div class="box-reward" id="reward2">?</div>
+    <div class="box-status" id="status2">Open</div>
+  </div>
+
+  <div class="lucky-box" id="box3" onclick="openLuckyBox(3)">
+    <div class="box-icon">⭐</div>
+    <div class="box-title">Star Box</div>
+    <div class="box-reward" id="reward3">?</div>
+    <div class="box-status" id="status3">Open</div>
+  </div>
+
+  <div class="lucky-box" id="box4" onclick="openLuckyBox(4)">
+    <div class="box-icon">🔥</div>
+    <div class="box-title">Fire Box</div>
+    <div class="box-reward" id="reward4">?</div>
+    <div class="box-status" id="status4">Open</div>
+  </div>
+
+  <div class="lucky-box" id="box5" onclick="openLuckyBox(5)">
+    <div class="box-icon">💰</div>
+    <div class="box-title">Money Box</div>
+    <div class="box-reward" id="reward5">?</div>
+    <div class="box-status" id="status5">Open</div>
+  </div>
+
+  <div class="lucky-box" id="box6" onclick="openLuckyBox(6)">
+    <div class="box-icon">👑</div>
+    <div class="box-title">Crown Box</div>
+    <div class="box-reward" id="reward6">?</div>
+    <div class="box-status" id="status6">Open</div>
+  </div>
 </div>
 
-<div class="card">
-  <div class="ic fb">f</div>
-  <div class="txt"><b>Follow on Facebook</b><span>Reward: <div class="mini-coin">R</div> 20 RUP</span></div>
-  <a class="bt" id="fbBtn">FOLLOW</a>
+<!-- ✅ Social Tasks - नीचे Gap के साथ -->
+<div class="task-section">
+  <div class="section-title">📱 SOCIAL TASKS</div>
+
+  <div class="card">
+    <div class="ic tg">✈️</div>
+    <div class="txt"><b>Join Telegram</b><span>Reward: <div class="mini-coin">R</div> 20 RUP</span></div>
+    <a class="bt" id="tgBtn">JOIN</a>
+  </div>
+
+  <div class="card">
+    <div class="ic fb">f</div>
+    <div class="txt"><b>Follow on Facebook</b><span>Reward: <div class="mini-coin">R</div> 20 RUP</span></div>
+    <a class="bt" id="fbBtn">FOLLOW</a>
+  </div>
+
+  <div class="card">
+    <div class="ic x">X</div>
+    <div class="txt"><b>Follow on X</b><span>Reward: <div class="mini-coin">R</div> 20 RUP</span></div>
+    <a class="bt" id="xBtn">FOLLOW</a>
+  </div>
 </div>
 
-<div class="card">
-  <div class="ic x">X</div>
-  <div class="txt"><b>Follow on X</b><span>Reward: <div class="mini-coin">R</div> 20 RUP</span></div>
-  <a class="bt" id="xBtn">FOLLOW</a>
-</div>
-
-<!-- ✅ FIX: Nav में Feed Icon जोड़ा -->
 <div class="nav">
   <div class="nav-item" onclick="goPage('app.html')">
     <div class="icon">🏠</div>
@@ -196,17 +271,14 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
 
 const database = getDatabase();
-
-// ✅ FIX: localStorage हटाया, config.js वाला userData Use करा
 var userData = window.userData;
 let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
 let openedTask = null;
 let isSpinning = false;
 
-// ✅ सिर्फ 10, 15, 25 - 40, 60, 100 नहीं
 const SPIN_REWARDS = [10, 15, 25, 10, 15, 25];
+const BOX_REWARDS = [10, 15, 25]; // सिर्फ 10, 15, 25
 
-// ✅ FIX: init Function बनाया जो userData Load होने का Wait करता
 async function init(){
   let attempts = 0;
   while(!window.userData?.uid && attempts < 50) {
@@ -215,16 +287,16 @@ async function init(){
   }
   userData = window.userData;
 
-  // ✅ FIXED: Referral/Ranking वाला Auto Sense Logic
   let displayId = userData.myReferralCode;
   if(!displayId && userData.uid) {
     displayId = 'RUP-' + userData.uid.substring(0,6).toUpperCase();
   }
-  document.getElementById('userId').innerText = `ID: ${displayId || 'Loading...'}`;
+  document.getElementById('userId').innerText = `ID: ${displayId || 'Guest'}`;
 
   document.getElementById('bal').innerText = userData.balance || 0;
   updateButtons();
   checkSpinStatus();
+  checkLuckyBoxes();
 }
 
 init();
@@ -246,7 +318,6 @@ function openLink(task, url) {
   updateButtons();
 }
 
-// ✅ FIX: saveRuppyData() Use करा ताकि सब Pages में Sync हो
 async function claimReward(task) {
   if (taskState[task] === 'ready_to_claim') {
     userData.balance = Number(userData.balance) || 0;
@@ -254,10 +325,8 @@ async function claimReward(task) {
     taskState[task] = 'claimed';
     localStorage.setItem('taskState', JSON.stringify(taskState));
 
-    // Firebase में Save करा
     await saveRuppyData(userData);
 
-    // Balance Flash Effect
     const balEl = document.getElementById('bal');
     balEl.classList.add('flash');
     document.getElementById('bal').innerText = userData.balance;
@@ -297,7 +366,6 @@ function updateButtons() {
   });
 }
 
-// ✅ SPIN WHEEL FUNCTIONS
 window.spinWheel = async function() {
   if (isSpinning) return;
   if (!userData?.uid) return alert("Login first!");
@@ -313,25 +381,19 @@ window.spinWheel = async function() {
   document.getElementById('spinBtn').disabled = true;
   document.getElementById('spinBtn').innerText = 'SPINNING...';
 
-  // Random Reward चुनो - सिर्फ 10, 15, 25
   const randomIndex = Math.floor(Math.random() * SPIN_REWARDS.length);
   const reward = SPIN_REWARDS[randomIndex];
 
-  // Wheel को Rotate करो - 5 चक्कर + Final Position
   const degrees = 1800 + (randomIndex * 60) + 30;
   const wheel = document.getElementById('spinWheel');
   wheel.style.transform = `rotate(${degrees}deg)`;
 
-  // 3 sec बाद Result
   setTimeout(async () => {
-    // Balance Update
     userData.balance = (userData.balance || 0) + reward;
 
-    // Spin Record Save
     if (!userData.dailySpin) userData.dailySpin = {};
     userData.dailySpin[spinKey] = reward;
 
-    // Firebase Update
     const userRef = ref(database, 'users/' + userData.uid);
     await update(userRef, {
       balance: userData.balance,
@@ -340,12 +402,10 @@ window.spinWheel = async function() {
 
     if(window.saveRuppyData) await window.saveRuppyData(userData);
 
-    // UI Update - Balance चमकेगा
     const balEl = document.getElementById('bal');
     balEl.classList.add('flash');
     document.getElementById('bal').innerText = userData.balance;
 
-    // Last Reward दिखाओ
     document.getElementById('lastReward').innerText = `🎉 +${reward} RUPPY Won!`;
     document.getElementById('spinStatus').innerText = 'Come back tomorrow for next spin';
 
@@ -354,6 +414,48 @@ window.spinWheel = async function() {
     isSpinning = false;
     document.getElementById('spinBtn').innerText = 'SPIN USED';
   }, 3000);
+}
+
+window.openLuckyBox = async function(boxNum) {
+  if (!userData?.uid) return alert("Login first!");
+
+  const today = new Date().toDateString();
+  const boxKey = `luckyBox${boxNum}_${today}`;
+
+  if (userData.luckyBoxes && userData.luckyBoxes[boxKey]) {
+    return alert("Already opened today!");
+  }
+
+  // सिर्फ 10, 15, 25
+  const amount = BOX_REWARDS[Math.floor(Math.random() * BOX_REWARDS.length)];
+
+  userData.balance = (userData.balance || 0) + amount;
+
+  if (!userData.luckyBoxes) userData.luckyBoxes = {};
+  userData.luckyBoxes[boxKey] = amount;
+
+  const userRef = ref(database, 'users/' + userData.uid);
+  await update(userRef, {
+    balance: userData.balance,
+    luckyBoxes: userData.luckyBoxes
+  });
+
+  if(window.saveRuppyData) await window.saveRuppyData(userData);
+
+  const box = document.getElementById(`box${boxNum}`);
+  const rewardEl = document.getElementById(`reward${boxNum}`);
+  const statusEl = document.getElementById(`status${boxNum}`);
+
+  box.classList.add('opened');
+  rewardEl.innerText = `+${amount} RUPPY`;
+  statusEl.innerText = 'Opened ✓';
+
+  const balEl = document.getElementById('bal');
+  balEl.classList.add('flash');
+  document.getElementById('bal').innerText = userData.balance;
+  setTimeout(() => balEl.classList.remove('flash'), 500);
+
+  alert(`🎉 You won ${amount} RUPPY!`);
 }
 
 function checkSpinStatus() {
@@ -369,22 +471,35 @@ function checkSpinStatus() {
   }
 }
 
+function checkLuckyBoxes() {
+  if (!userData?.uid) return;
+  const today = new Date().toDateString();
+
+  for(let i = 1; i <= 6; i++) {
+    const boxKey = `luckyBox${i}_${today}`;
+    if (userData.luckyBoxes && userData.luckyBoxes[boxKey]) {
+      const amount = userData.luckyBoxes[boxKey];
+      document.getElementById(`box${i}`).classList.add('opened');
+      document.getElementById(`reward${i}`).innerText = `+${amount} RUPPY`;
+      document.getElementById(`status${i}`).innerText = 'Opened ✓';
+    }
+  }
+}
+
 function goPage(page) {
   window.location.href = page;
 }
 
-// ✅ FIX: Real-time Sync के लिए storage Event रखा
 window.addEventListener('storage', function(e) {
   if (e.key === 'ruppy_user_cache') {
     userData = JSON.parse(e.newValue);
     document.getElementById('bal').innerText = userData.balance;
 
-    // ✅ FIXED: Referral/Ranking वाला Auto Sense Logic
     let displayId = userData.myReferralCode;
     if(!displayId && userData.uid) {
       displayId = 'RUP-' + userData.uid.substring(0,6).toUpperCase();
     }
-    document.getElementById('userId').innerText = `ID: ${displayId || 'Loading...'}`;
+    document.getElementById('userId').innerText = `ID: ${displayId || 'Guest'}`;
   }
 });
 </script>
