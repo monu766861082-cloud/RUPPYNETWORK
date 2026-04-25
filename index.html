@@ -81,7 +81,6 @@ a{color:#aaa;text-decoration:none}
 </div>
 
 <div id="registerForm" style="display:none">
-  <!-- ✅ FIX: Name Input Add किया -->
   <div class="input-box">
     <label>Full Name</label>
     <input type="text" id="regName" placeholder="Enter your full name" style="text-transform:none">
@@ -252,7 +251,18 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     showError('errorMsg', 'Google Error: ' + error.message);
   });
 
-  // ✅ FIX 1: Google Login में Name Proper Save होगा
+  // 🔥 ANALYTICS ADDED - Analytics Import for Login/Signup Events
+  async function logAnalyticsEvent(eventName, params) {
+    try {
+      const { getAnalytics, logEvent } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js");
+      const { getApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
+      const analytics = getAnalytics(getApp());
+      logEvent(analytics, eventName, params);
+    } catch(e) {
+      console.log('Analytics Error:', e);
+    }
+  }
+
   async function handleGoogleUser(user) {
     const uid = user.uid;
     const snapshot = await db.ref('users/' + uid).get();
@@ -261,7 +271,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
       // नया User - Name Save करो ✅
       let userData = {
         userId: uid,
-        name: user.displayName || user.email.split('@')[0], // Google से नाम लो
+        name: user.displayName || user.email.split('@')[0],
         email: user.email,
         photoUrl: user.photoURL || "",
         balance: 0,
@@ -288,6 +298,10 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
 
       await db.ref('users/' + uid).set(userData);
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
+
+      // 🔥 ANALYTICS ADDED - Sign Up Event
+      logAnalyticsEvent('sign_up', { method: 'google' });
+
     } else {
       // पुराना User - Name Update करो अगर नहीं है ✅
       let userData = snapshot.val();
@@ -305,6 +319,9 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
         await db.ref('users/' + uid).update({ myReferralCode: userData.myReferralCode });
       }
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
+
+      // 🔥 ANALYTICS ADDED - Login Event
+      logAnalyticsEvent('login', { method: 'google' });
     }
 
     localStorage.removeItem('ruppy_referredBy');
@@ -341,16 +358,15 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
     document.getElementById('regErrorMsg').style.display = 'none';
   }
 
-  // ✅ FIX 2: Register में Name Input Add किया
   window.handleRegister = async function() {
-    const name = document.getElementById('regName').value.trim(); // नया
+    const name = document.getElementById('regName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
     const password = document.getElementById('regPassword').value;
     const confirmPassword = document.getElementById('regConfirmPassword').value;
     const referralCode = document.getElementById('regReferralCode').value.trim().toUpperCase();
     const btn = document.getElementById('registerBtn');
 
-    if (!name || name.length < 2) return showError('regErrorMsg', 'Enter your full name'); // नया
+    if (!name || name.length < 2) return showError('regErrorMsg', 'Enter your full name');
     if (!email ||!email.includes('@')) return showError('regErrorMsg', 'Enter valid email');
     if (password.length < 6) return showError('regErrorMsg', 'Password must be at least 6 characters');
     if (password!== confirmPassword) return showError('regErrorMsg', 'Passwords do not match');
@@ -376,7 +392,7 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
 
       let userData = {
         userId: uid,
-        name: name, // ✅ असली नाम Save होगा
+        name: name,
         email: email,
         balance: referralCode? 20 : 0,
         lastMine: 0,
@@ -397,6 +413,10 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
       if(validReferrer) await updateReferrerRank(referralCode, uid);
 
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
+
+      // 🔥 ANALYTICS ADDED - Sign Up Event
+      logAnalyticsEvent('sign_up', { method: 'email' });
+
       window.location.replace('app.html');
     } catch (error) {
       showError('regErrorMsg', error.message);
@@ -461,6 +481,9 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
 
       await db.ref('users/' + uid).update(userData);
       localStorage.setItem('ruppy_user', JSON.stringify(userData));
+
+      // 🔥 ANALYTICS ADDED - Login Event
+      logAnalyticsEvent('login', { method: 'email' });
 
       setTimeout(() => window.location.replace('app.html'), 1000);
     } catch (error) {
