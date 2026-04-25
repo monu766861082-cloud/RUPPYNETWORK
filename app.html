@@ -11,17 +11,18 @@
     aiptag.cmd = aiptag.cmd || [];
     aiptag.cmd.display = aiptag.cmd.display || [];
     aiptag.cmd.player = aiptag.cmd.player || [];
-    // Banner Ads
-    aiptag.cmd.display.push(function() { aipDisplayTag.display('ruppynetwork_320x50'); }); // ऊपर वाली पट्टी
-    aiptag.cmd.display.push(function() { aipDisplayTag.display('ruppynetwork_300x250'); }); // नीचे वाला Banner
+    aiptag.cmd.display.push(function() { aipDisplayTag.display('ruppynetwork_320x50'); });
+    aiptag.cmd.display.push(function() { aipDisplayTag.display('ruppynetwork_300x250'); });
   </script>
   <script async src="//api.adinplay.com/libs/aiptag/pub/RUP/ruppynetwork.com/tag.min.js"></script>
+  
+  <!-- तेरा पुराना config.js वापस लगा दिया ✅ -->
+  <script type="module" src="config.js"></script>
   
   <style>
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
     body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
     
-    /* छोटी YouTube जैसी पट्टी 👇 */
     .top-banner {width:100%; background:#111; text-align:center; padding:5px 0; border-bottom:1px solid #222;}
     
     .header {padding:15px 15px 10px; display:flex; align-items:center; gap:12px;}
@@ -36,6 +37,7 @@
     .balance-card h2 span {color:#fff; font-size:20px;}
     
     .r-coin {width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#000;box-shadow:0 0 12px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500;position:relative;flex-shrink:0}
+    .r-coin::after {content:'';position:absolute;inset:-2px;border-radius:50%;background:radial-gradient(circle,#FF6B00 0%,transparent 70%);opacity:0.4;filter:blur(3px);z-index:-1}
     
     .mining-section {margin:30px 0; text-align:center;}
     .mining-circle {width:180px; height:180px; margin:0 auto; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:0.3s; border:2px solid #FFA500;}
@@ -60,6 +62,9 @@
     .modal.active {display:flex;}
     .modal-content {background:#0d0d0d; border:1px solid #333; border-radius:12px; padding:20px; width:90%; max-width:320px;}
     .modal-content h3 {margin-bottom:15px; color:#FFA500; text-align:center;}
+    .modal-content p {color:#888; font-size:13px; text-align:center; margin-bottom:15px;}
+    .modal-content .boost-step {background:#000; border:1px solid #222; padding:15px; border-radius:8px; margin:10px 0;}
+    .modal-content .boost-step h4 {color:#FFA500; margin-bottom:8px;}
     .btn {margin-top:10px; width:100%; padding:12px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:600; cursor:pointer;}
     .btn:disabled {background:#333; color:#666; cursor:not-allowed;}
     .close-btn {margin-top:8px; width:100%; padding:10px; background:#1a1a1a; border:1px solid #333; border-radius:8px; color:#888; cursor:pointer;}
@@ -67,6 +72,7 @@
     .nav {position:fixed; bottom:0; left:0; right:0; background:#0d0d0d; border-top:1px solid #222; display:flex; justify-content:space-around; padding:8px 0;}
     .nav-item {display:flex; flex-direction:column; align-items:center; gap:3px; color:#666; text-decoration:none; font-size:10px; cursor:pointer; padding:5px 0; width:16.6%;}
     .nav-item.active {color:#FFA500;}
+    .nav-item.active::after {content:''; width:30px; height:2px; background:#FFA500; margin-top:2px;}
     .nav-item .icon {font-size:20px;}
     
     .ad-banner {margin: 15px; text-align:center;}
@@ -97,7 +103,7 @@
     <div class="mining-circle ready" id="miningCircle" onclick="handleMiningClick()">
       <h3 id="miningText">WATCH AD FOR BONUS</h3>
     </div>
-    <p class="mining-text">Watch ad to collect 40 RUP • Available every 3 hours</p>
+    <p class="mining-text">Watch ad to collect 30 RUP • Available every 3 hours</p>
   </div>
 
   <!-- Banner Ad -->
@@ -110,14 +116,14 @@
       <div class="badge" id="boostBadge">0/3</div>
       <div class="icon">🖥️</div>
       <h4>COLLECT BONUS</h4>
-      <p id="boostTimer">5% Bonus Available</p>
+      <p id="boostTimer">10% Bonus Available</p>
       <div class="timer-bar"><div class="timer-fill" id="boostBar"></div></div>
     </div>
     <div class="grid-item" onclick="handleGiftClick()">
       <div class="badge" id="giftBadge">✓</div>
       <div class="icon" style="background:#6a5acd;">🎁</div>
       <h4 style="color:#fff;">ULTRA GIFT</h4>
-      <p id="giftTimer">Ready → +15 RUP</p>
+      <p id="giftTimer">Ready → +10 RUP</p>
       <div class="timer-bar"><div class="timer-fill" id="giftBar"></div></div>
     </div>
     <div class="grid-item" onclick="claimFirstReward()">
@@ -141,6 +147,10 @@
     <div class="modal-content">
       <h3>🚀 COLLECT BONUS</h3>
       <p>Watch ads to collect extra RUP</p>
+      <div class="boost-step">
+        <h4>Step <span id="boostStep">1</span>/3</h4>
+        <p id="boostStepText">Watch ad for 10% bonus</p>
+      </div>
       <button class="btn" id="boostBtn" onclick="watchBoostAd()">Watch Ad for Bonus</button>
       <button class="close-btn" onclick="closeBoostModal()">Close</button>
     </div>
@@ -173,43 +183,13 @@
     </div>
   </div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, update, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-  
-  // ✅ अपनी Firebase Config यहाँ डाल
-  const firebaseConfig = {
-    apiKey: "AIzaSyXXXXXXXXXXXXXXXXXXX",
-    authDomain: "ruppy-network.firebaseapp.com",
-    databaseURL: "https://ruppy-network-default-rtdb.firebaseio.com",
-    projectId: "ruppy-network",
-    storageBucket: "ruppy-network.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abcdef"
-  };
-  
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  
-  const RUPPY_STORAGE_KEY = 'ruppyData';
-  var userData = JSON.parse(localStorage.getItem(RUPPY_STORAGE_KEY)) || {
-    uid: 'guest_' + Date.now(),
-    balance: 0,
-    taskBalance: 0,
-    lastMine: 0,
-    boostCount: 0,
-    boostResetTime: Date.now(),
-    lastGift: 0,
-    firstRewardTime: 0,
-    ultraRewardTime: 0,
-    name: 'User',
-    dp: ''
-  };
-  
-  const MINING_REWARD = 40;
+<script>
+  // ✅ तेरा पुराना Code वापस डाल दिया - config.js से userData आएगा
+  var userData = window.userData;
+  const MINING_REWARD = 30;
 
-  async function saveUser() {
-    localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(userData));
+  window.saveUser = async function() {
+    await saveRuppyData(userData);
   }
 
   // ✅ 1. MINING = 5-7 SEC AD
@@ -218,17 +198,15 @@
     let lastMine = Number(userData.lastMine) || 0;
     let circle = document.getElementById('miningCircle');
     
-    if((now - lastMine < 10805000 && lastMine !== 0) || circle.classList.contains('processing')) return;
+    if((now - lastMine < 10800000 && lastMine !== 0) || circle.classList.contains('processing')) return;
     
     circle.classList.add('processing');
     circle.onclick = null;
     
     aiptag.cmd.player.push(function() {
       adplayer.startRewardedAd({
-        duration: 7, // 5-7 sec
-        onReward: function() { giveMiningReward(); },
+        onReward: function() { startMining(); },
         onClose: function() {
-          alert('Ad पूरा देखो Reward के लिए!');
           document.getElementById('miningCircle').classList.remove('processing');
           updateMiningCircle();
         }
@@ -236,34 +214,7 @@
     });
   }
 
-  async function giveMiningReward() {
-    let now = Date.now();
-    try {
-      const userRef = ref(db, `users/${userData.uid}`);
-      await update(userRef, {
-        balance: increment(MINING_REWARD),
-        taskBalance: increment(MINING_REWARD),
-        lastMine: now
-      }).catch(e => console.log('Firebase off'));
-      
-      userData.balance = Number(userData.balance) || 0;
-      userData.balance += MINING_REWARD;
-      userData.taskBalance = Number(userData.taskBalance) || 0;
-      userData.taskBalance += MINING_REWARD;
-      userData.lastMine = now;
-      await saveUser();
-      
-      updateBalance();
-      updateMiningCircle();
-      alert('+' + MINING_REWARD + ' RUP Claimed! 🎉');
-    } catch (error) {
-      alert('Error: ' + error.message);
-    } finally {
-      document.getElementById('miningCircle').classList.remove('processing');
-    }
-  }
-
-  // ✅ 2. COLLECT BONUS = 5-60 SEC AD
+  // ✅ 2. BOOST = 5-60 SEC AD
   window.handleBoostClick = function() {
     if(userData.boostCount >= 3) {
       alert('You watched 3 ads already. Try again after 3 hours.');
@@ -272,49 +223,38 @@
     openBoostModal();
   }
 
-  window.watchBoostAd = async function() {
+  window.watchBoostAd = function() {
     if(userData.boostCount >= 3) return;
     document.getElementById('boostBtn').disabled = true;
     
     aiptag.cmd.player.push(function() {
       adplayer.startRewardedAd({
-        duration: 60, // 5-60 sec
-        onReward: function() { giveBoostReward(); },
+        onReward: function() {
+          let boostAmount = Math.floor(MINING_REWARD * 0.10);
+          userData.balance = Number(userData.balance) || 0;
+          userData.balance += boostAmount;
+          userData.boostCount++;
+          saveUser();
+          updateBalance();
+          updateBoost();
+          
+          if(userData.boostCount >= 3) {
+            document.getElementById('boostBtn').innerText = 'All Claimed!';
+            setTimeout(closeBoostModal, 1500);
+          } else {
+            document.getElementById('boostStep').innerText = userData.boostCount + 1;
+            document.getElementById('boostBtn').disabled = false;
+            alert('+' + boostAmount + ' RUP Claimed! (' + userData.boostCount + '/3)');
+          }
+        },
         onClose: function() {
-          alert('Ad पूरा देखो!');
           document.getElementById('boostBtn').disabled = false;
         }
       });
     });
   }
 
-  async function giveBoostReward() {
-    let boostAmount = Math.floor(MINING_REWARD * 0.05);
-    const userRef = ref(db, `users/${userData.uid}`);
-    await update(userRef, {
-      balance: increment(boostAmount),
-      taskBalance: increment(boostAmount),
-      boostCount: increment(1)
-    }).catch(e => console.log('Firebase off'));
-    
-    userData.balance += boostAmount;
-    userData.taskBalance += boostAmount;
-    userData.boostCount++;
-    await saveUser();
-    
-    updateBalance();
-    updateBoost();
-    
-    if(userData.boostCount >= 3) {
-      document.getElementById('boostBtn').innerText = 'All Claimed!';
-      setTimeout(closeBoostModal, 1500);
-    } else {
-      document.getElementById('boostBtn').disabled = false;
-      alert('+' + boostAmount + ' RUP Claimed! (' + userData.boostCount + '/3)');
-    }
-  }
-
-  // ✅ 3. ULTRA GIFT = 30 SEC AD
+  // ✅ 3. GIFT = 30 SEC AD
   window.handleGiftClick = function() {
     let now = Date.now();
     let lastGift = Number(userData.lastGift) || 0;
@@ -325,92 +265,47 @@
     
     aiptag.cmd.player.push(function() {
       adplayer.startRewardedAd({
-        duration: 30,
-        onReward: function() { giveGiftReward(); },
-        onClose: function() { alert('Ad पूरा देखो!'); }
+        onReward: function() { openGift(); }
       });
     });
   }
 
-  async function giveGiftReward() {
-    let now = Date.now();
-    const userRef = ref(db, `users/${userData.uid}`);
-    await update(userRef, {
-      balance: increment(15),
-      taskBalance: increment(15),
-      lastGift: now
-    }).catch(e => console.log('Firebase off'));
-    
-    userData.balance += 15;
-    userData.taskBalance += 15;
-    userData.lastGift = now;
-    await saveUser();
-    
-    updateBalance();
-    updateGift();
-    alert('+15 RUP Added!');
-  }
-
   // ✅ 4. FIRST REWARD = 30 SEC AD
-  window.claimFirstReward = async function(){
+  window.claimFirstReward = function(){
     if(Date.now() >= userData.firstRewardTime || userData.firstRewardTime === 0){
       aiptag.cmd.player.push(function() {
         adplayer.startRewardedAd({
-          duration: 30,
-          onReward: function() { giveFirstReward(); },
-          onClose: function() { alert('Ad पूरा देखो!'); }
+          onReward: function() {
+            userData.balance = Number(userData.balance) || 0;
+            userData.balance += 15;
+            userData.firstRewardTime = Date.now() + 3600000;
+            saveUser();
+            updateBalance();
+            updateFirstReward();
+            alert('You earned 15 RUP!');
+          }
         });
       });
     }
-  }
-
-  async function giveFirstReward() {
-    const userRef = ref(db, `users/${userData.uid}`);
-    await update(userRef, {
-      balance: increment(20),
-      taskBalance: increment(20),
-      firstRewardTime: Date.now() + 3600000
-    }).catch(e => console.log('Firebase off'));
-    
-    userData.balance += 20;
-    userData.taskBalance += 20;
-    userData.firstRewardTime = Date.now() + 3600000;
-    await saveUser();
-    
-    updateBalance();
-    updateFirstReward();
-    alert('You earned 20 RUP!');
   }
 
   // ✅ 5. ULTRA REWARD = 30 SEC AD
-  window.claimUltraReward = async function(){
+  window.claimUltraReward = function(){
     if(Date.now() >= userData.ultraRewardTime || userData.ultraRewardTime === 0){
       aiptag.cmd.player.push(function() {
         adplayer.startRewardedAd({
-          duration: 30,
-          onReward: function() { giveUltraReward(); },
-          onClose: function() { alert('Ad पूरा देखो!'); }
+          onReward: function() {
+            userData.balance = Number(userData.balance) || 0;
+            userData.balance += 20;
+            userData.ultraRewardTime = Date.now() + 3600000;
+            saveUser();
+            updateBalance();
+            updateUltraReward();
+            alert('You earned 20 RUP!');
+          }
         });
       });
     }
-  }
-
-  async function giveUltraReward() {
-    const userRef = ref(db, `users/${userData.uid}`);
-    await update(userRef, {
-      balance: increment(50),
-      taskBalance: increment(50),
-      ultraRewardTime: Date.now() + 3600000
-    }).catch(e => console.log('Firebase off'));
-    
-    userData.balance += 50;
-    userData.taskBalance += 50;
-    userData.ultraRewardTime = Date.now() + 3600000;
-    await saveUser();
-    
-    updateBalance();
-    updateUltraReward();
-    alert('You earned 50 RUP!');
   }
 
   window.openBoostModal = function() {
@@ -418,6 +313,8 @@
       alert('You watched 3 ads already. Try again after 3 hours.');
       return;
     }
+    document.getElementById('boostStep').innerText = userData.boostCount + 1;
+    document.getElementById('boostStepText').innerText = 'Watch ad for 10% bonus';
     document.getElementById('boostBtn').innerText = 'Watch Ad for Bonus';
     document.getElementById('boostBtn').disabled = false;
     document.getElementById('boostModal').classList.add('active');
@@ -435,7 +332,15 @@
     if(page === 'settings') window.location.href = 'settings.html';
   }
 
+  // ✅ तेरा पुराना सारा Code Same रखा है
   async function init() {
+    let attempts = 0;
+    while(!window.userData?.uid && attempts < 50) {
+      await new Promise(r => setTimeout(r, 100));
+      attempts++;
+    }
+    userData = window.userData;
+    
     loadProfileEverywhere();
     
     if(Date.now() - userData.boostResetTime > 10800000) {
@@ -491,6 +396,19 @@
     }
   }
 
+  function startMining() {
+    let now = Date.now();
+    let lastMine = Number(userData.lastMine) || 0;
+    if(now - lastMine < 10800000 && lastMine !== 0) return;
+    
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += MINING_REWARD;
+    userData.lastMine = now;
+    saveUser();
+    updateBalance();
+    updateMiningCircle();
+  }
+
   function updateBoost() {
     let now = Date.now();
     userData.boostResetTime = Number(userData.boostResetTime) || now;
@@ -513,7 +431,7 @@
       document.getElementById('boostBar').style.width = '100%';
       document.getElementById('boostBadge').style.background = '#00ff00';
     } else {
-      document.getElementById('boostTimer').innerText = '5% Bonus Available';
+      document.getElementById('boostTimer').innerText = '10% Bonus Available';
       document.getElementById('boostBar').style.width = (userData.boostCount / 3 * 100) + '%';
       document.getElementById('boostBadge').style.background = '#FFA500';
     }
@@ -526,7 +444,7 @@
     let cooldown = 7200000;
     
     if(diff >= cooldown || lastGift === 0) {
-      document.getElementById('giftTimer').innerText = 'Ready → +15 RUP';
+      document.getElementById('giftTimer').innerText = 'Ready → +10 RUP';
       document.getElementById('giftBadge').innerText = '✓';
       document.getElementById('giftBadge').style.background = '#00ff00';
       document.getElementById('giftBar').style.width = '100%';
@@ -544,12 +462,29 @@
     }
   }
 
+  function openGift() {
+    let now = Date.now();
+    let lastGift = Number(userData.lastGift) || 0;
+    if(now - lastGift < 7200000 && lastGift !== 0) {
+      alert('Please wait. Come back after 2 hours.');
+      return;
+    }
+    
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += 10;
+    userData.lastGift = now;
+    saveUser();
+    updateBalance();
+    updateGift();
+    alert('+10 RUP Added!');
+  }
+
   function updateFirstReward() {
     let now = Date.now();
     let diff = userData.firstRewardTime - now;
     
     if(diff <= 0 || userData.firstRewardTime === 0){
-      document.getElementById('firstRewardTimer').innerText = 'Claim 20 RUP';
+      document.getElementById('firstRewardTimer').innerText = 'Claim 15 RUP';
       document.getElementById('firstRewardBadge').style.display = 'block';
       document.getElementById('firstRewardBar').style.width = '100%';
     } else {
@@ -568,7 +503,7 @@
     let diff = userData.ultraRewardTime - now;
     
     if(diff <= 0 || userData.ultraRewardTime === 0){
-      document.getElementById('ultraRewardTimer').innerText = 'Claim 50 RUP';
+      document.getElementById('ultraRewardTimer').innerText = 'Claim 20 RUP';
       document.getElementById('ultraRewardBadge').style.display = 'block';
       document.getElementById('ultraRewardBar').style.width = '100%';
     } else {
