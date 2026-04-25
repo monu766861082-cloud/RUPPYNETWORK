@@ -9,57 +9,57 @@
 <script type="module" src="config.js"></script>
 
 <style>
-body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
+body{margin:0;background:#0A0E27;color:#fff;font-family:Arial;padding-bottom:80px}
 .hdr{padding:20px}
-.hdr h1{margin:0;font-size:28px}
-.hdr p{margin:4px 0 0;color:#FFB84D;font-weight:bold}
+.hdr h1{margin:0;font-size:28px;background:linear-gradient(135deg,#4CAF50,#2196F3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hdr p{margin:4px 0 0;color:#FFC107;font-weight:bold}
 .hdr small{color:#888}
-.tokenBal{background:#0d0d0d;border:1px solid #FFB84D;border-radius:12px;padding:15px;margin:0 15px;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
-.tokenBal b{color:#FFB84D;font-size:24px;transition:0.3s;}
+.tokenBal{background:#111A3A;border:1px solid #2196F3;border-radius:12px;padding:15px;margin:0 15px;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 0 20px rgba(33,150,243,0.2);}
+.tokenBal b{color:#FFC107;font-size:24px;transition:0.3s;}
 .tokenBal b.flash{animation:flash 0.5s;}
 @keyframes flash{0%,100%{transform:scale(1)} 50%{transform:scale(1.15); color:#4CAF50}}
 
-.r-coin {width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFD580,#FFB84D,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;box-shadow:0 0 10px rgba(255,184,77,0.4);border:1px solid #FFB84D}
+.r-coin {width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFD700,#FFC107,#FF9800);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;box-shadow:0 0 15px rgba(255,193,7,0.5);border:1px solid #FFC107}
 
-/* ✅ NEW WHEEL DESIGN - Screenshot जैसा */
-.spin-section{margin:15px; background:#0d0d0d; border:1px solid #333; border-radius:12px; padding:20px; text-align:center; margin-bottom:25px;}
-.spin-section h4{color:#FFB84D; font-size:13px; margin-bottom:5px;}
+.spin-section{margin:15px; background:#111A3A; border:1px solid #2196F3; border-radius:16px; padding:24px; text-align:center; margin-bottom:30px; box-shadow:0 4px 20px rgba(33,150,243,0.15);}
+.spin-section h4{background:linear-gradient(135deg,#4CAF50,#2196F3);-webkit-background-clip:text;-webkit-text-fill-color:transparent; font-size:14px; margin-bottom:5px; font-weight:700;}
 .last-reward{color:#4CAF50; font-size:12px; margin-top:8px; min-height:16px; font-weight:600;}
 
-.wheel-container{position:relative; width:240px; height:240px; margin:20px auto;}
+.wheel-container{position:relative; width:260px; height:260px; margin:20px auto;}
 .wheel-pointer{
   position:absolute;
-  right:-5px;
+  right:-8px;
   top:50%;
-  transform:translateY(-50%) rotate(180deg);
+  transform:translateY(-50%);
   width:0;
   height:0;
-  border-top:12px solid transparent;
-  border-bottom:12px solid transparent;
-  border-left:20px solid #FF4444;
+  border-top:15px solid transparent;
+  border-bottom:15px solid transparent;
+  border-left:25px solid #FF4444;
   z-index:10;
-  filter:drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+  filter:drop-shadow(0 3px 8px rgba(0,0,0,0.6));
 }
 .wheel{
-  width:240px;
-  height:240px;
+  width:260px;
+  height:260px;
   border-radius:50%;
   position:relative;
   transition:transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-  box-shadow:0 0 30px rgba(0,0,0,0.5);
+  box-shadow:0 8px 40px rgba(0,0,0,0.6), inset 0 0 30px rgba(0,0,0,0.3);
   cursor:pointer;
 }
 .wheel::before{
   content:'';
   position:absolute;
-  width:40px;
-  height:40px;
-  background:#000;
+  width:50px;
+  height:50px;
+  background:radial-gradient(circle,#1a1a1a,#000);
   border-radius:50%;
   top:50%;
   left:50%;
   transform:translate(-50%, -50%);
   z-index:5;
+  box-shadow:0 0 20px rgba(0,0,0,0.8);
 }
 .wheel::after{
   content:'Tap to spin';
@@ -69,74 +69,103 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   transform:translate(-50%, -50%);
   color:#fff;
   font-weight:700;
-  font-size:14px;
+  font-size:15px;
   z-index:6;
-  text-shadow:0 2px 8px rgba(0,0,0,0.8);
+  text-shadow:0 2px 10px rgba(0,0,0,0.9);
   pointer-events:none;
+  letter-spacing:0.5px;
 }
 
 .wheel-svg{
   width:100%;
   height:100%;
-  transform:rotate(-90deg);
+  filter:drop-shadow(0 0 10px rgba(0,0,0,0.5));
 }
 
 .spin-btn{
-  background:linear-gradient(135deg, #FFB84D, #FF9F40);
-  color:#000;
+  background:linear-gradient(135deg, #2196F3, #1976D2);
+  color:#fff;
   border:none;
-  padding:12px 40px;
-  border-radius:25px;
+  padding:14px 45px;
+  border-radius:30px;
   font-weight:700;
-  font-size:14px;
-  margin-top:20px;
+  font-size:15px;
+  margin-top:25px;
   cursor:pointer;
-  box-shadow:0 4px 12px rgba(255,184,77,0.3);
+  box-shadow:0 6px 20px rgba(33,150,243,0.4);
   transition:0.2s;
   position:relative;
   z-index:5;
+  letter-spacing:0.5px;
 }
-.spin-btn:active{transform:scale(0.95);}
-.spin-btn:disabled{background:#444; color:#888; box-shadow:none; cursor:not-allowed;}
-.spin-info{margin-top:15px; font-size:11px; color:#888;}
+.spin-btn:active{transform:scale(0.95);box-shadow:0 3px 10px rgba(33,150,243,0.4);}
+.spin-btn:disabled{background:#333; color:#666; box-shadow:none; cursor:not-allowed;}
+.spin-info{margin-top:18px; font-size:12px; color:#aaa;}
 
-.section-title{margin:25px 15px 10px; color:#FFB84D; font-size:13px; font-weight:700;}
-.box-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:0 15px 20px;}
+.section-title{margin:30px 15px 15px; background:linear-gradient(135deg,#4CAF50,#2196F3);-webkit-background-clip:text;-webkit-text-fill-color:transparent; font-size:14px; font-weight:700; letter-spacing:0.5px;}
+.box-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:0 15px 25px;}
 .lucky-box{
-  background:linear-gradient(135deg, #1a1a1a, #0d0d0d);
-  border:1px solid #333;
-  border-radius:10px;
-  padding:15px;
+  background:#111A3A;
+  border:2px solid transparent;
+  border-radius:14px;
+  padding:18px 12px;
   text-align:center;
   cursor:pointer;
-  transition:0.2s;
+  transition:0.3s;
   position:relative;
   z-index:1;
+  overflow:hidden;
 }
-.lucky-box:active{transform:scale(0.95); border-color:#FFB84D; box-shadow:0 0 15px rgba(255,184,77,0.3);}
-.box-icon{font-size:32px; margin-bottom:8px; filter:drop-shadow(0 0 5px rgba(255,184,77,0.4));}
-.box-title{font-size:11px; color:#fff; font-weight:600; margin-bottom:5px;}
-.box-reward{font-size:14px; color:#FFB84D; font-weight:700; margin-bottom:8px;}
-.box-status{font-size:9px; background:#FFB84D; color:#000; padding:3px 8px; border-radius:5px; font-weight:700; display:inline-block;}
-.lucky-box.opened{opacity:0.4; border-color:#4CAF50; pointer-events:none;}
-.lucky-box.opened.box-status{background:#4CAF50; color:#fff;}
+.lucky-box::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:14px;
+  padding:2px;
+  background:linear-gradient(135deg, var(--box-color1), var(--box-color2));
+  -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  opacity:0.6;
+  transition:0.3s;
+}
+.lucky-box:hover::before{opacity:1;}
+.lucky-box:active{transform:scale(0.96);}
 
-.task-section{margin-top:30px;}
-.card{border:1px solid #333;border-radius:12px;padding:14px;margin:12px 15px;display:flex;align-items:center;background:#0d0d0d; position:relative; z-index:1;}
-.ic{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:20px}
-.tg{background:#0088cc}.fb{background:#1877f2}.x{background:#fff;color:#000}
-.txt{flex:1}.txt b{display:block;font-size:15px}.txt span{color:#FFB84D;font-size:12px;display:flex;align-items:center;gap:4px}
-.mini-coin {width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFD580,#FFB84D);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:8px;color:#000}
-.bt{border:1px solid #FFB84D;color:#FFB84D;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;min-width:70px;text-align:center;font-weight:600;position:relative;z-index:2;}
-.bt.claim{background:#FFB84D;color:#000}
-.bt.done{background:#333;color:#666;border-color:#333;cursor:not-allowed}
+.lucky-box:nth-child(1){--box-color1:#2196F3;--box-color2:#42A5F5;}
+.lucky-box:nth-child(2){--box-color1:#4CAF50;--box-color2:#66BB6A;}
+.lucky-box:nth-child(3){--box-color1:#FFC107;--box-color2:#FFD54F;}
+.lucky-box:nth-child(4){--box-color1:#FF4444;--box-color2:#EF5350;}
+.lucky-box:nth-child(5){--box-color1:#FFC107;--box-color2:#FFD54F;}
+.lucky-box:nth-child(6){--box-color1:#4CAF50;--box-color2:#66BB6A;}
+
+.box-icon{font-size:36px; margin-bottom:10px; filter:drop-shadow(0 0 8px var(--box-color1));}
+.box-title{font-size:12px; color:#fff; font-weight:700; margin-bottom:6px; letter-spacing:0.3px;}
+.box-reward{font-size:16px; color:var(--box-color1); font-weight:700; margin-bottom:10px;}
+.box-status{font-size:10px; background:var(--box-color1); color:#000; padding:4px 10px; border-radius:6px; font-weight:700; display:inline-block;}
+.lucky-box.opened{opacity:0.5; pointer-events:none;}
+.lucky-box.opened.box-status{background:#4CAF50; color:#fff;}
+.lucky-box.opened.box-icon{animation:pop 0.4s;}
+@keyframes pop{0%{transform:scale(1)} 50%{transform:scale(1.2)} 100%{transform:scale(1)}}
+
+.task-section{margin-top:35px;}
+.card{border:1px solid #1E2A4A;border-radius:14px;padding:16px;margin:14px 15px;display:flex;align-items:center;background:#111A3A; position:relative; z-index:1; transition:0.2s;}
+.card:hover{border-color:#2196F3; box-shadow:0 0 20px rgba(33,150,243,0.1);}
+.ic{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-right:14px;font-size:22px}
+.tg{background:linear-gradient(135deg,#0088cc,#00A3E0)}.fb{background:linear-gradient(135deg,#1877f2,#3B5998)}.x{background:linear-gradient(135deg,#fff,#e0e0e0);color:#000}
+.txt{flex:1}.txt b{display:block;font-size:15px;color:#fff}.txt span{color:#FFC107;font-size:12px;display:flex;align-items:center;gap:5px;margin-top:3px;}
+.mini-coin {width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFD700,#FFC107);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:9px;color:#000}
+.bt{border:2px solid #2196F3;color:#2196F3;padding:9px 18px;border-radius:10px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;min-width:75px;text-align:center;font-weight:700;position:relative;z-index:2;transition:0.2s;}
+.bt:hover{background:rgba(33,150,243,0.1);}
+.bt.claim{background:linear-gradient(135deg,#4CAF50,#66BB6A);color:#fff;border-color:#4CAF50;}
+.bt.done{background:#1a1a1a;color:#555;border-color:#333;cursor:not-allowed}
 .bt.opened{background:#1a1a1a;color:#888;border-color:#444}
 
-.nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0;z-index:100;}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
-.nav-item.active{color:#FFB84D}
-.nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFB84D;border-radius:2px}
-.nav-item.icon{font-size:20px}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#0A0E27;border-top:1px solid #1E2A4A;display:flex;justify-content:space-around;padding:10px 0;z-index:100;box-shadow:0 -4px 20px rgba(0,0,0,0.5);}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative;transition:0.2s;}
+.nav-item.active{color:#2196F3}
+.nav-item.active::after{content:'';position:absolute;bottom:0;width:35px;height:3px;background:linear-gradient(90deg,#4CAF50,#2196F3);border-radius:2px}
+.nav-item.icon{font-size:22px}
 </style>
 </head>
 <body>
@@ -148,37 +177,35 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 
 <div class="tokenBal">Your Balance: <div class="r-coin">R</div> <b id="bal">0</b> RUP</div>
 
-<!-- ✅ NEW WHEEL DESIGN -->
 <div class="spin-section">
   <h4>🎡 LUCKY SPIN</h4>
-  <p style="color:#888; font-size:12px; margin-bottom:15px;">Spin daily & win RUPPY</p>
+  <p style="color:#aaa; font-size:12px; margin-bottom:15px;">Spin daily & win RUPPY</p>
   <div class="last-reward" id="lastReward"></div>
 
   <div class="wheel-container">
     <div class="wheel-pointer"></div>
-    <div class="wheel" id="spinWheel" onclick="spinWheel()">
+    <div class="wheel" id="spinWheel">
       <svg class="wheel-svg" viewBox="0 0 200 200">
-        <!-- 6 Segments - Colorful -->
-        <path d="M100,100 L100,0 A100,100 0 0,1 186.6,50 Z" fill="#4CAF50"/>
-        <text x="143" y="35" fill="#000" font-size="16" font-weight="bold" text-anchor="middle" transform="rotate(30 100 100)">25</text>
+        <path d="M100,100 L100,0 A100,100 0 0,1 186.6,50 Z" fill="#2196F3"/>
+        <text x="143" y="35" fill="#fff" font-size="18" font-weight="bold" text-anchor="middle" transform="rotate(30 100 100)">25</text>
 
-        <path d="M100,100 L186.6,50 A100,100 0 0,1 186.6,150 Z" fill="#FFC107"/>
-        <text x="165" y="100" fill="#000" font-size="16" font-weight="bold" text-anchor="middle" transform="rotate(90 100 100)">15</text>
+        <path d="M100,100 L186.6,50 A100,100 0 0,1 186.6,150 Z" fill="#4CAF50"/>
+        <text x="165" y="100" fill="#fff" font-size="18" font-weight="bold" text-anchor="middle" transform="rotate(90 100 100)">15</text>
 
-        <path d="M100,100 L186.6,150 A100,100 0 0,1 100,200 Z" fill="#FF4444"/>
-        <text x="143" y="165" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle" transform="rotate(150 100 100)">10</text>
+        <path d="M100,100 L186.6,150 A100,100 0 0,1 100,200 Z" fill="#FFC107"/>
+        <text x="143" y="165" fill="#000" font-size="18" font-weight="bold" text-anchor="middle" transform="rotate(150 100 100)">10</text>
 
-        <path d="M100,100 L100,200 A100,100 0 0,1 13.4,150 Z" fill="#2196F3"/>
-        <text x="57" y="165" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle" transform="rotate(210 100 100)">25</text>
+        <path d="M100,100 L100,200 A100,100 0 0,1 13.4,150 Z" fill="#FF4444"/>
+        <text x="57" y="165" fill="#fff" font-size="18" font-weight="bold" text-anchor="middle" transform="rotate(210 100 100)">25</text>
 
         <path d="M100,100 L13.4,150 A100,100 0 0,1 13.4,50 Z" fill="#4CAF50"/>
-        <text x="35" y="100" fill="#000" font-size="16" font-weight="bold" text-anchor="middle" transform="rotate(270 100 100)">15</text>
+        <text x="35" y="100" fill="#fff" font-size="18" font-weight="bold" text-anchor="middle" transform="rotate(270 100 100)">15</text>
 
         <path d="M100,100 L13.4,50 A100,100 0 0,1 100,0 Z" fill="#FFC107"/>
-        <text x="57" y="35" fill="#000" font-size="16" font-weight="bold" text-anchor="middle" transform="rotate(330 100 100)">10</text>
+        <text x="57" y="35" fill="#000" font-size="18" font-weight="bold" text-anchor="middle" transform="rotate(330 100 100)">10</text>
       </svg>
     </div>
-    <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN NOW</button>
+    <button class="spin-btn" id="spinBtn">SPIN NOW</button>
   </div>
 
   <div class="spin-info">
@@ -186,45 +213,44 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   </div>
 </div>
 
-<!-- LUCKY BOXES -->
 <div class="section-title">🎁 LUCKY BOXES - Open Daily</div>
 <div class="box-grid">
-  <div class="lucky-box" id="box1" onclick="openLuckyBox(1)">
+  <div class="lucky-box" id="box1">
     <div class="box-icon">💎</div>
     <div class="box-title">Diamond Box</div>
     <div class="box-reward" id="reward1">?</div>
     <div class="box-status" id="status1">Open</div>
   </div>
 
-  <div class="lucky-box" id="box2" onclick="openLuckyBox(2)">
+  <div class="lucky-box" id="box2">
     <div class="box-icon">🎁</div>
     <div class="box-title">Gift Box</div>
     <div class="box-reward" id="reward2">?</div>
     <div class="box-status" id="status2">Open</div>
   </div>
 
-  <div class="lucky-box" id="box3" onclick="openLuckyBox(3)">
+  <div class="lucky-box" id="box3">
     <div class="box-icon">⭐</div>
     <div class="box-title">Star Box</div>
     <div class="box-reward" id="reward3">?</div>
     <div class="box-status" id="status3">Open</div>
   </div>
 
-  <div class="lucky-box" id="box4" onclick="openLuckyBox(4)">
+  <div class="lucky-box" id="box4">
     <div class="box-icon">🔥</div>
     <div class="box-title">Fire Box</div>
     <div class="box-reward" id="reward4">?</div>
     <div class="box-status" id="status4">Open</div>
   </div>
 
-  <div class="lucky-box" id="box5" onclick="openLuckyBox(5)">
+  <div class="lucky-box" id="box5">
     <div class="box-icon">💰</div>
     <div class="box-title">Money Box</div>
     <div class="box-reward" id="reward5">?</div>
     <div class="box-status" id="status5">Open</div>
   </div>
 
-  <div class="lucky-box" id="box6" onclick="openLuckyBox(6)">
+  <div class="lucky-box" id="box6">
     <div class="box-icon">👑</div>
     <div class="box-title">Crown Box</div>
     <div class="box-reward" id="reward6">?</div>
@@ -232,7 +258,6 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   </div>
 </div>
 
-<!-- SOCIAL TASKS -->
 <div class="task-section">
   <div class="section-title">📱 SOCIAL TASKS</div>
 
@@ -256,7 +281,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 </div>
 
 <div class="nav">
-  <div class="nav-item" onclick="goPage('app.html')">
+  <div class="nav-item" id="nav-home">
     <div class="icon">🏠</div>
     <span>Home</span>
   </div>
@@ -264,19 +289,19 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
     <div class="icon">📋</div>
     <span>Tasks</span>
   </div>
-  <div class="nav-item" onclick="goPage('referral.html')">
+  <div class="nav-item" id="nav-referral">
     <div class="icon">👥</div>
     <span>Referral</span>
   </div>
-  <div class="nav-item" onclick="goPage('ranking.html')">
+  <div class="nav-item" id="nav-ranking">
     <div class="icon">🏆</div>
     <span>Ranking</span>
   </div>
-  <div class="nav-item" onclick="goPage('community.html')">
+  <div class="nav-item" id="nav-community">
     <div class="icon">📝</div>
     <span>Feed</span>
   </div>
-  <div class="nav-item" onclick="goPage('settings.html')">
+  <div class="nav-item" id="nav-settings">
     <div class="icon">⚙️</div>
     <span>Settings</span>
   </div>
@@ -294,91 +319,50 @@ let isSpinning = false;
 const SPIN_REWARDS = [25, 15, 10, 25, 15, 10];
 const BOX_REWARDS = [10, 15, 25];
 
-async function init(){
-  let attempts = 0;
-  while(!window.userData?.uid && attempts < 50) {
-    await new Promise(r => setTimeout(r, 100));
-    attempts++;
-  }
-  userData = window.userData;
-
-  let displayId = userData.myReferralCode;
-  if(!displayId && userData.uid) {
-    displayId = 'RUP-' + userData.uid.substring(0,6).toUpperCase();
-  }
-  document.getElementById('userId').innerText = `ID: ${displayId || 'Guest'}`;
-
-  document.getElementById('bal').innerText = userData.balance || 0;
-  updateButtons();
-  checkSpinStatus();
-  checkLuckyBoxes();
+// ✅ FIX: Functions को Window पे Attach किया ताकि onclick काम करे
+window.goPage = function(page) {
+  window.location.href = page;
 }
 
-init();
+window.openLuckyBox = async function(boxNum) {
+  if (!userData?.uid) return alert("Login first!");
 
-document.addEventListener('visibilitychange', function() {
-  if (!document.hidden && openedTask) {
-    taskState[openedTask] = 'ready_to_claim';
-    localStorage.setItem('taskState', JSON.stringify(taskState));
-    openedTask = null;
-    updateButtons();
+  const today = new Date().toDateString();
+  const boxKey = `luckyBox${boxNum}_${today}`;
+
+  if (userData.luckyBoxes && userData.luckyBoxes[boxKey]) {
+    return alert("Already opened today!");
   }
-});
 
-function openLink(task, url) {
-  window.open(url, '_blank');
-  openedTask = task;
-  taskState[task] = 'opened';
-  localStorage.setItem('taskState', JSON.stringify(taskState));
-  updateButtons();
-}
+  const amount = BOX_REWARDS[Math.floor(Math.random() * BOX_REWARDS.length)];
 
-async function claimReward(task) {
-  if (taskState[task] === 'ready_to_claim') {
-    userData.balance = Number(userData.balance) || 0;
-    userData.balance += 20;
-    taskState[task] = 'claimed';
-    localStorage.setItem('taskState', JSON.stringify(taskState));
+  userData.balance = (userData.balance || 0) + amount;
 
-    await saveRuppyData(userData);
+  if (!userData.luckyBoxes) userData.luckyBoxes = {};
+  userData.luckyBoxes[boxKey] = amount;
 
-    const balEl = document.getElementById('bal');
-    balEl.classList.add('flash');
-    document.getElementById('bal').innerText = userData.balance;
-    setTimeout(() => balEl.classList.remove('flash'), 500);
-
-    updateButtons();
-    alert('+20 RUP Claimed!');
-  }
-}
-
-function updateButtons() {
-  const tasks = [
-    {id: 'tg', url: 'https://t.me/RUPPYfoundation', text: 'JOIN'},
-    {id: 'fb', url: 'https://www.facebook.com/share/1PjMyFivNF/?mibextid=wwXIfr', text: 'FOLLOW'},
-    {id: 'x', url: 'https://x.com/rupfoundation?s=21', text: 'FOLLOW'}
-  ];
-
-  tasks.forEach(t => {
-    let btn = document.getElementById(t.id + 'Btn');
-    if (taskState[t.id] === 'opened') {
-      btn.innerText = 'OPENED';
-      btn.className = 'bt opened';
-      btn.onclick = null;
-    } else if (taskState[t.id] === 'ready_to_claim') {
-      btn.innerText = 'CLAIM';
-      btn.className = 'bt claim';
-      btn.onclick = () => claimReward(t.id);
-    } else if (taskState[t.id] === 'claimed') {
-      btn.innerText = 'DONE';
-      btn.className = 'bt done';
-      btn.onclick = null;
-    } else {
-      btn.innerText = t.text;
-      btn.className = 'bt';
-      btn.onclick = () => openLink(t.id, t.url);
-    }
+  const userRef = ref(database, 'users/' + userData.uid);
+  await update(userRef, {
+    balance: userData.balance,
+    luckyBoxes: userData.luckyBoxes
   });
+
+  if(window.saveRuppyData) await window.saveRuppyData(userData);
+
+  const box = document.getElementById(`box${boxNum}`);
+  const rewardEl = document.getElementById(`reward${boxNum}`);
+  const statusEl = document.getElementById(`status${boxNum}`);
+
+  box.classList.add('opened');
+  rewardEl.innerText = `+${amount} RUPPY`;
+  statusEl.innerText = 'Opened ✓';
+
+  const balEl = document.getElementById('bal');
+  balEl.classList.add('flash');
+  document.getElementById('bal').innerText = userData.balance;
+  setTimeout(() => balEl.classList.remove('flash'), 500);
+
+  alert(`🎉 You won ${amount} RUPPY!`);
 }
 
 window.spinWheel = async function() {
@@ -431,45 +415,111 @@ window.spinWheel = async function() {
   }, 4000);
 }
 
-window.openLuckyBox = async function(boxNum) {
-  if (!userData?.uid) return alert("Login first!");
+async function init(){
+  let attempts = 0;
+  while(!window.userData?.uid && attempts < 50) {
+    await new Promise(r => setTimeout(r, 100));
+    attempts++;
+  }
+  userData = window.userData;
 
-  const today = new Date().toDateString();
-  const boxKey = `luckyBox${boxNum}_${today}`;
+  let displayId = userData.myReferralCode;
+  if(!displayId && userData.uid) {
+    displayId = 'RUP-' + userData.uid.substring(0,6).toUpperCase();
+  }
+  document.getElementById('userId').innerText = `ID: ${displayId || 'Guest'}`;
 
-  if (userData.luckyBoxes && userData.luckyBoxes[boxKey]) {
-    return alert("Already opened today!");
+  document.getElementById('bal').innerText = userData.balance || 0;
+  updateButtons();
+  checkSpinStatus();
+  checkLuckyBoxes();
+  attachEventListeners();
+}
+
+function attachEventListeners() {
+  // Nav Clicks
+  document.getElementById('nav-home').onclick = () => goPage('app.html');
+  document.getElementById('nav-referral').onclick = () => goPage('referral.html');
+  document.getElementById('nav-ranking').onclick = () => goPage('ranking.html');
+  document.getElementById('nav-community').onclick = () => goPage('community.html');
+  document.getElementById('nav-settings').onclick = () => goPage('settings.html');
+
+  // Spin Button
+  document.getElementById('spinBtn').onclick = spinWheel;
+  document.getElementById('spinWheel').onclick = spinWheel;
+
+  // Lucky Boxes
+  for(let i = 1; i <= 6; i++) {
+    document.getElementById(`box${i}`).onclick = () => openLuckyBox(i);
   }
 
-  const amount = BOX_REWARDS[Math.floor(Math.random() * BOX_REWARDS.length)];
+  // Social Tasks
+  document.getElementById('tgBtn').onclick = () => openLink('tg', 'https://t.me/RUPPYfoundation');
+  document.getElementById('fbBtn').onclick = () => openLink('fb', 'https://www.facebook.com/share/1PjMyFivNF/?mibextid=wwXIfr');
+  document.getElementById('xBtn').onclick = () => openLink('x', 'https://x.com/rupfoundation?s=21');
+}
 
-  userData.balance = (userData.balance || 0) + amount;
+init();
 
-  if (!userData.luckyBoxes) userData.luckyBoxes = {};
-  userData.luckyBoxes[boxKey] = amount;
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden && openedTask) {
+    taskState[openedTask] = 'ready_to_claim';
+    localStorage.setItem('taskState', JSON.stringify(taskState));
+    openedTask = null;
+    updateButtons();
+  }
+});
 
-  const userRef = ref(database, 'users/' + userData.uid);
-  await update(userRef, {
-    balance: userData.balance,
-    luckyBoxes: userData.luckyBoxes
+function openLink(task, url) {
+  window.open(url, '_blank');
+  openedTask = task;
+  taskState[task] = 'opened';
+  localStorage.setItem('taskState', JSON.stringify(taskState));
+  updateButtons();
+}
+
+async function claimReward(task) {
+  if (taskState[task] === 'ready_to_claim') {
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += 20;
+    taskState[task] = 'claimed';
+    localStorage.setItem('taskState', JSON.stringify(taskState));
+
+    await saveRuppyData(userData);
+
+    const balEl = document.getElementById('bal');
+    balEl.classList.add('flash');
+    document.getElementById('bal').innerText = userData.balance;
+    setTimeout(() => balEl.classList.remove('flash'), 500);
+
+    updateButtons();
+    alert('+20 RUP Claimed!');
+  }
+}
+
+function updateButtons() {
+  const tasks = ['tg', 'fb', 'x'];
+  const texts = ['JOIN', 'FOLLOW'];
+
+  tasks.forEach((t, idx) => {
+    let btn = document.getElementById(t + 'Btn');
+    if (taskState[t] === 'opened') {
+      btn.innerText = 'OPENED';
+      btn.className = 'bt opened';
+      btn.onclick = null;
+    } else if (taskState[t] === 'ready_to_claim') {
+      btn.innerText = 'CLAIM';
+      btn.className = 'bt claim';
+      btn.onclick = () => claimReward(t);
+    } else if (taskState[t] === 'claimed') {
+      btn.innerText = 'DONE';
+      btn.className = 'bt done';
+      btn.onclick = null;
+    } else {
+      btn.innerText = texts[idx];
+      btn.className = 'bt';
+    }
   });
-
-  if(window.saveRuppyData) await window.saveRuppyData(userData);
-
-  const box = document.getElementById(`box${boxNum}`);
-  const rewardEl = document.getElementById(`reward${boxNum}`);
-  const statusEl = document.getElementById(`status${boxNum}`);
-
-  box.classList.add('opened');
-  rewardEl.innerText = `+${amount} RUPPY`;
-  statusEl.innerText = 'Opened ✓';
-
-  const balEl = document.getElementById('bal');
-  balEl.classList.add('flash');
-  document.getElementById('bal').innerText = userData.balance;
-  setTimeout(() => balEl.classList.remove('flash'), 500);
-
-  alert(`🎉 You won ${amount} RUPPY!`);
 }
 
 function checkSpinStatus() {
@@ -498,10 +548,6 @@ function checkLuckyBoxes() {
       document.getElementById(`status${i}`).innerText = 'Opened ✓';
     }
   }
-}
-
-function goPage(page) {
-  window.location.href = page;
 }
 
 window.addEventListener('storage', function(e) {
