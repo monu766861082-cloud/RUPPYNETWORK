@@ -8,8 +8,6 @@
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
   
-  <script type="module" src="config.js"></script>
-  
   <style>
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
     body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
@@ -34,7 +32,7 @@
     .mining-circle.ready h3 {color:#000;}
     .mining-circle.mining {background:transparent; border:2px solid #FFA500; cursor:not-allowed;}
     .mining-circle.mining h3 {color:#FFA500; font-size:16px; white-space:pre-line; text-align:center;}
-    .mining-circle.processing {opacity:0.5; pointer-events:none;} /* ✅ नया CSS */
+    .mining-circle.processing {opacity:0.5; pointer-events:none;}
     .mining-text {text-align:center; margin-top:15px; color:#666; font-size:13px;}
     
     .grid {display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:25px 15px;}
@@ -161,34 +159,93 @@
   </div>
 
 <script type="module">
-  // ✅ FIX 1: Import increment for Atomic Updates
-  import { getDatabase, ref, update, increment, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, update, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
   
-  var userData = window.userData;
+  // ✅ अपनी Firebase Config यहाँ डाल - config.js से Copy कर
+  const firebaseConfig = {
+    apiKey: "AIzaSyXXXXXXXXXXXXXXXXXXX",
+    authDomain: "ruppy-network.firebaseapp.com",
+    databaseURL: "https://ruppy-network-default-rtdb.firebaseio.com",
+    projectId: "ruppy-network",
+    storageBucket: "ruppy-network.appspot.com",
+    messagingSenderId: "123456789",
+    appId: "1:123456789:web:abcdef"
+  };
+  
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  
+  // ✅ LocalStorage से Data Load - Firebase Fail हो तो भी चलेगा
+  const RUPPY_STORAGE_KEY = 'ruppyData';
+  var userData = JSON.parse(localStorage.getItem(RUPPY_STORAGE_KEY)) || {
+    uid: 'guest_' + Date.now(),
+    balance: 0,
+    taskBalance: 0,
+    lastMine: 0,
+    boostCount: 0,
+    boostResetTime: Date.now(),
+    lastGift: 0,
+    firstRewardTime: 0,
+    ultraRewardTime: 0,
+    name: 'User',
+    dp: ''
+  };
+  
   const MINING_REWARD = 30;
-  const db = window.db || getDatabase();
 
-  window.saveUser = async function() {
-    await saveRuppyData(userData);
+  async function saveUser() {
+    localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(userData));
   }
 
-  // ✅ FIX 2: Double Click Protection + Buffer Time
   window.handleMiningClick = function() {
     let now = Date.now();
     let lastMine = Number(userData.lastMine) || 0;
     let circle = document.getElementById('miningCircle');
     
-    // ✅ 3 घंटे + 5 सेकंड Buffer + Processing Check
     if((now - lastMine < 10805000 && lastMine !== 0) || circle.classList.contains('processing')) {
       return;
     }
     
-    // ✅ तुरंत Processing Mode On
     circle.classList.add('processing');
-    circle.classList.add('ready'); // Visual
+    circle.classList.add('ready');
     circle.onclick = null;
     
     startMining();
+  }
+
+  async function startMining() {
+    let now = Date.now();
+    let lastMine = Number(userData.lastMine) || 0;
+    if(now - lastMine < 10800000 && lastMine !== 0) return;
+    
+    try {
+      // Firebase Update - Fail हो तो भी Local चलेगा
+      const userRef = ref(db, `users/${userData.uid}`);
+      await update(userRef, {
+        balance: increment(MINING_REWARD),
+        taskBalance: increment(MINING_REWARD),
+        lastMine: now
+      }).catch(e => console.log('Firebase off, local only'));
+      
+      // Local Update - हमेशा चलेगा
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += MINING_REWARD;
+      userData.taskBalance = Number(userData.taskBalance) || 0;
+      userData.taskBalance += MINING_REWARD;
+      userData.lastMine = now;
+      await saveUser();
+      
+      updateBalance();
+      updateMiningCircle();
+      alert('+' + MINING_REWARD + ' RUP Claimed! 🎉');
+      
+    } catch (error) {
+      alert('Error: ' + error.message);
+      console.error(error);
+    } finally {
+      document.getElementById('miningCircle').classList.remove('processing');
+    }
   }
 
   window.handleBoostClick = function() {
@@ -211,19 +268,19 @@
 
   window.claimFirstReward = async function(){
     if(Date.now() >= userData.firstRewardTime || userData.firstRewardTime === 0){
-      const userRef = ref(db, `users/${window.userData.uid}`);
+      const userRef = ref(db, `users/${userData.uid}`);
       await update(userRef, {
         balance: increment(15),
         taskBalance: increment(15),
         firstRewardTime: Date.now() + 3600000
-      });
+      }).catch(e => console.log('Firebase off'));
       
       userData.balance = Number(userData.balance) || 0;
       userData.balance += 15;
       userData.taskBalance = Number(userData.taskBalance) || 0;
       userData.taskBalance += 15;
       userData.firstRewardTime = Date.now() + 3600000;
-      localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(userData));
+      await saveUser();
       
       updateBalance();
       updateFirstReward();
@@ -233,19 +290,19 @@
 
   window.claimUltraReward = async function(){
     if(Date.now() >= userData.ultraRewardTime || userData.ultraRewardTime === 0){
-      const userRef = ref(db, `users/${window.userData.uid}`);
+      const userRef = ref(db, `users/${userData.uid}`);
       await update(userRef, {
         balance: increment(20),
         taskBalance: increment(20),
         ultraRewardTime: Date.now() + 3600000
-      });
+      }).catch(e => console.log('Firebase off'));
       
       userData.balance = Number(userData.balance) || 0;
       userData.balance += 20;
       userData.taskBalance = Number(userData.taskBalance) || 0;
       userData.taskBalance += 20;
       userData.ultraRewardTime = Date.now() + 3600000;
-      localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(userData));
+      await saveUser();
       
       updateBalance();
       updateUltraReward();
@@ -257,19 +314,19 @@
     if(userData.boostCount >= 3) return;
     
     let boostAmount = Math.floor(MINING_REWARD * 0.10);
-    const userRef = ref(db, `users/${window.userData.uid}`);
+    const userRef = ref(db, `users/${userData.uid}`);
     await update(userRef, {
       balance: increment(boostAmount),
       taskBalance: increment(boostAmount),
       boostCount: increment(1)
-    });
+    }).catch(e => console.log('Firebase off'));
     
     userData.balance = Number(userData.balance) || 0;
     userData.balance += boostAmount;
     userData.taskBalance = Number(userData.taskBalance) || 0;
     userData.taskBalance += boostAmount;
     userData.boostCount++;
-    localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(userData));
+    await saveUser();
     
     updateBalance();
     updateBoost();
@@ -311,13 +368,6 @@
   }
 
   async function init() {
-    let attempts = 0;
-    while(!window.userData?.uid && attempts < 50) {
-      await new Promise(r => setTimeout(r, 100));
-      attempts++;
-    }
-    userData = window.userData;
-    
     loadProfileEverywhere();
     
     if(Date.now() - userData.boostResetTime > 10800000) {
@@ -355,7 +405,6 @@
     let circle = document.getElementById('miningCircle');
     let text = document.getElementById('miningText');
     
-    // ✅ Processing में है तो कुछ मत करो
     if(circle.classList.contains('processing')) return;
     
     if(diff >= cooldown || lastMine === 0) {
@@ -371,42 +420,6 @@
       circle.className = 'mining-circle mining';
       text.innerText = 'Next in\n' + String(hrs).padStart(2,'0') + ':' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
       circle.onclick = null;
-    }
-  }
-
-  // ✅ FIX 3: Atomic Transaction - Balance कभी कम नहीं होगा
-  async function startMining() {
-    let now = Date.now();
-    let lastMine = Number(userData.lastMine) || 0;
-    if(now - lastMine < 10800000 && lastMine !== 0) return;
-    
-    try {
-      // ✅ Firebase को बोलो: Balance में 30 जोड़ दो, Safety के साथ
-      const userRef = ref(db, `users/${window.userData.uid}`);
-      await update(userRef, {
-        balance: increment(MINING_REWARD),
-        taskBalance: increment(MINING_REWARD),
-        lastMine: now
-      });
-      
-      // ✅ Success के बाद Local Update
-      userData.balance = Number(userData.balance) || 0;
-      userData.balance += MINING_REWARD;
-      userData.taskBalance = Number(userData.taskBalance) || 0;
-      userData.taskBalance += MINING_REWARD;
-      userData.lastMine = now;
-      localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(userData));
-      
-      updateBalance();
-      updateMiningCircle();
-      alert('+' + MINING_REWARD + ' RUP Claimed! 🎉');
-      
-    } catch (error) {
-      alert('Error: Please try again');
-      console.error(error);
-    } finally {
-      // ✅ Processing Mode Off
-      document.getElementById('miningCircle').classList.remove('processing');
     }
   }
 
@@ -471,19 +484,19 @@
       return;
     }
     
-    const userRef = ref(db, `users/${window.userData.uid}`);
+    const userRef = ref(db, `users/${userData.uid}`);
     await update(userRef, {
       balance: increment(10),
       taskBalance: increment(10),
       lastGift: now
-    });
+    }).catch(e => console.log('Firebase off'));
     
     userData.balance = Number(userData.balance) || 0;
     userData.balance += 10;
     userData.taskBalance = Number(userData.taskBalance) || 0;
     userData.taskBalance += 10;
     userData.lastGift = now;
-    localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(userData));
+    await saveUser();
     
     updateBalance();
     updateGift();
