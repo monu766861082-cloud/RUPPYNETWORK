@@ -5,45 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruppy Network - App</title>
   
-  <!-- A-Ads Script - Bug Fixed Version -->
+  <!-- Monetag Script - तेरे 3 Zone ID यहाँ डाल 👇 -->
   <script>
-    var aads = aads || {};
-    aads.rewarded = function(options) {
-      // 🔥 पहले Check कर ID Valid है या नहीं
-      if (!options.zoneId || options.zoneId === 'YOUR_AADS_ID_HERE') {
-        console.log('A-Ads: Invalid Zone ID - Giving free reward');
-        if (options.onComplete) options.onComplete();
+    // Monetag Zone IDs - यहाँ बदल दे
+    const MONETAG_MINING_ZONE = 'YOUR_MONETAG_ZONE_ID_1'; // Mining Circle के लिए
+    const MONETAG_BONUS_ZONE = 'YOUR_MONETAG_ZONE_ID_2';  // COLLECT BONUS के लिए
+    const MONETAG_GIFT_ZONE = 'YOUR_MONETAG_ZONE_ID_3';   // ULTRA GIFT के लिए
+    
+    // Monetag Popunder Function
+    function openMonetagAd(zoneId, onComplete) {
+      if (!zoneId || zoneId.includes('YOUR_MONETAG')) {
+        console.log('Monetag: No Zone ID - Giving free reward');
+        if (onComplete) onComplete();
         return;
       }
       
-      var iframe = document.createElement('iframe');
-      iframe.src = '//acceptable.a-ads.com/' + options.zoneId + '?size=' + options.size + '&type=rewarded';
-      iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;border:0;z-index:99999;background:rgba(0,0,0,0.95)';
-      iframe.id = 'aads-rewarded-iframe';
-      document.body.appendChild(iframe);
-      
-      // 🔥 Timeout: 3 Sec में Ad नहीं Load हुआ तो Free Reward
-      var adTimeout = setTimeout(function() {
-        console.log('A-Ads: Timeout - Giving free reward');
-        iframe.remove();
-        if (options.onComplete) options.onComplete();
-      }, 3000);
-      
-      window.addEventListener('message', function handler(e) {
-        if (e.data === 'aads_rewarded_complete') {
-          clearTimeout(adTimeout);
-          iframe.remove();
-          window.removeEventListener('message', handler);
-          if (options.onComplete) options.onComplete();
-        }
-        if (e.data === 'aads_rewarded_close' || e.data === 'aads_rewarded_error') {
-          clearTimeout(adTimeout);
-          iframe.remove();
-          window.removeEventListener('message', handler);
-          if (options.onClose) options.onClose();
-        }
-      });
-    };
+      // Monetag का Script Dynamic Load
+      var script = document.createElement('script');
+      script.src = '//' + 'thaudray.com' + '/400/' + zoneId; // Monetag Domain
+      script.onload = function() {
+        console.log('Monetag Ad Triggered');
+        setTimeout(() => {
+          if (onComplete) onComplete();
+        }, 1000); // Ad दिखने के बाद Reward
+      };
+      script.onerror = function() {
+        console.log('Monetag Failed - Free reward');
+        if (onComplete) onComplete();
+      };
+      document.head.appendChild(script);
+    }
   </script>
   
   <script type="module" src="config.js"></script>
@@ -98,17 +89,15 @@
     
     #toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #FFA500; padding: 12px 20px; border-radius: 8px; border: 1px solid #FFA500; display: none; z-index: 1000; font-size: 14px; }
     
-    .aads-small-banner {position:fixed;top:5px;right:5px;z-index:998;opacity:0.5;transition:0.3s;}
-    .aads-small-banner:hover{opacity:0.8}
+    /* Timer Overlay */
+    .timer-overlay {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:none; align-items:center; justify-content:center; z-index:10000; flex-direction:column;}
+    .timer-overlay.active {display:flex;}
+    .timer-circle {width:120px; height:120px; border:3px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:36px; color:#FFA500; font-weight:bold;}
+    .timer-text {margin-top:20px; color:#888; font-size:14px;}
   </style>
   
 </head>
 <body>
-
-  <!-- A-Ads छोटा Banner - ID बदल दे यहाँ 👇 -->
-  <div class="aads-small-banner">
-    <iframe data-aa='YOUR_AADS_ID_HERE' src='//acceptable.a-ads.com/YOUR_AADS_ID_HERE' style='border:0px; padding:0; width:234px; height:60px; overflow:hidden; background-color: transparent;'></iframe>
-  </div>
 
   <div class="header">
     <div class="dp" id="userDp">👤</div>
@@ -201,14 +190,36 @@
     </div>
   </div>
 
+  <!-- Timer Overlay -->
+  <div class="timer-overlay" id="timerOverlay">
+    <div class="timer-circle" id="timerCount">5</div>
+    <div class="timer-text">Please wait... Loading Ad</div>
+  </div>
+
   <div id="toast"></div>
 
 <script type="module">
   let userData;
   const MINING_REWARD = 40;
   
-  // 🔥 A-ADS ZONE ID - यहाँ अपनी ID डाल दे 👇
-  const AADS_ZONE_ID = 'YOUR_AADS_ID_HERE'; // 👈 बदल दे इसको
+  // Timer दिखाने का Function
+  function showAdTimer(seconds, callback) {
+    const overlay = document.getElementById('timerOverlay');
+    const count = document.getElementById('timerCount');
+    overlay.classList.add('active');
+    let timeLeft = seconds;
+    count.innerText = timeLeft;
+    
+    const interval = setInterval(() => {
+      timeLeft--;
+      count.innerText = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+        overlay.classList.remove('active');
+        if (callback) callback();
+      }
+    }, 1000);
+  }
 
   async function waitForUserData() {
     let attempts = 0;
@@ -226,35 +237,17 @@
     setTimeout(() => { toast.style.display = 'none'; }, 3000);
   }
 
-  // 🔥 A-ADS REWARDED - Bug Fixed + Fallback
-  function showRewardedAd(rewardFunction, rewardAmount, adDuration) {
+  // 🔥 MONETAG REWARDED - 5-7 Sec Timer के साथ
+  function showMonetagAd(zoneId, rewardFunction, rewardAmount, timerSec) {
     let buttons = document.querySelectorAll('.grid-item, .mining-circle, .btn');
     buttons.forEach(btn => btn.style.pointerEvents = 'none');
-    showToast('Loading ad... ' + adDuration);
     
-    // 🔥 अगर Zone ID नहीं डाली तो Direct Reward दे दो
-    if (!AADS_ZONE_ID || AADS_ZONE_ID === 'YOUR_AADS_ID_HERE') {
-      console.log('A-Ads: No Zone ID - Giving free reward');
-      setTimeout(() => {
+    showAdTimer(timerSec, () => {
+      openMonetagAd(zoneId, () => {
         rewardFunction();
         buttons.forEach(btn => btn.style.pointerEvents = 'auto');
         showToast(`+${rewardAmount} RUP Claimed!`);
-      }, 500);
-      return;
-    }
-    
-    aads.rewarded({
-      zoneId: AADS_ZONE_ID,
-      size: 'fullscreen',
-      onComplete: function() {
-        rewardFunction();
-        buttons.forEach(btn => btn.style.pointerEvents = 'auto');
-        showToast(`+${rewardAmount} RUP Claimed!`);
-      },
-      onClose: function() {
-        buttons.forEach(btn => btn.style.pointerEvents = 'auto');
-        showToast('Ad closed - Try again');
-      }
+      });
     });
   }
 
@@ -346,14 +339,14 @@
     }
   }
 
-  // Event Listeners
-  document.getElementById('miningCircle').onclick = () => showRewardedAd(doMining, 40, '5-7 Sec');
+  // Event Listeners - तेरे हिसाब से Timer 👇
+  document.getElementById('miningCircle').onclick = () => showMonetagAd(MONETAG_MINING_ZONE, doMining, 40, 6); // 5-7 Sec
   document.getElementById('boostBtn').onclick = openBoostModal;
-  document.getElementById('boostModalBtn').onclick = () => showRewardedAd(doBoost, Math.floor(MINING_REWARD * 0.10), '5-7 Sec');
+  document.getElementById('boostModalBtn').onclick = () => showMonetagAd(MONETAG_BONUS_ZONE, doBoost, Math.floor(MINING_REWARD * 0.10), 6); // 5-7 Sec
   document.getElementById('closeBoostModal').onclick = closeBoostModal;
-  document.getElementById('giftBtn').onclick = () => showRewardedAd(doGift, 10, '30 Sec');
-  document.getElementById('firstRewardBtn').onclick = () => showRewardedAd(doFirstReward, 15, '30 Sec');
-  document.getElementById('ultraRewardBtn').onclick = () => showRewardedAd(doUltraReward, 20, '60 Sec');
+  document.getElementById('giftBtn').onclick = () => showMonetagAd(MONETAG_GIFT_ZONE, doGift, 10, 30); // 30 Sec
+  document.getElementById('firstRewardBtn').onclick = () => showMonetagAd(MONETAG_GIFT_ZONE, doFirstReward, 15, 30); // 30 Sec
+  document.getElementById('ultraRewardBtn').onclick = () => showMonetagAd(MONETAG_GIFT_ZONE, doUltraReward, 20, 30); // 30 Sec
 
   // Nav
   document.querySelectorAll('.nav-item').forEach(item => {
