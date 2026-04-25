@@ -1,506 +1,522 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>R U P Network - Daily Rewards App</title>
-<meta name="description" content="Join R U P Network to earn reward points daily. Complete tasks, refer friends, and unlock bonuses. 100% free rewards platform.">
-
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#000000">
-<link rel="apple-touch-icon" href="/IMG_7725.png">
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
-html,body{background:#000;color:#fff;height:100%;overflow-x:hidden}
-.login-screen{width:100%;height:100vh;display:flex;align-items:center;justify-content:center;padding:12px}
-.wrap{width:100%;max-width:480px;text-align:center}
-.pill{border:1px solid #c28840;color:#c28840;padding:4px 12px;border-radius:14px;display:inline-block;font-size:11px;margin-bottom:12px;font-weight:700}
-.coin{width:200px;height:200px;margin:0 auto 16px;border-radius:20px;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(249,168,37,0.2)}
-.coin img{width:100%;height:100%;object-fit:cover}
-h1{color:#f9a825;margin:0 0 20px;font-size:36px;font-weight:900;letter-spacing:6px;line-height:1.1}
-.input-box{margin:14px 0;text-align:left}
-.input-box label{color:#bbb;font-size:15px;display:block;margin-bottom:8px;font-weight:700}
-.input-box input{width:100%;padding:0 18px;border:2px solid #333;border-radius:16px;background:#111;color:#fff;font-size:17px;box-sizing:border-box;height:60px;text-transform:uppercase}
-.input-box input:focus{outline:none;border-color:#f9a825;box-shadow:0 0 15px rgba(249,168,37,0.4)}
-.input-box input::placeholder{color:#555;font-size:16px;text-transform:none}
-.btn{margin:18px auto 0;padding:0 24px;background:#f9a825;color:#000;border:none;border-radius:16px;font-weight:900;width:100%;cursor:pointer;font-size:18px;letter-spacing:1px;height:60px}
-.btn:disabled{background:#333;color:#666;cursor:not-allowed}
-.btn:active{transform:scale(0.97)}
-.btn-google{background:#fff;color:#000;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:18px;font-weight:700;height:60px}
-.toggle{color:#aaa;font-size:15px;margin-top:16px;cursor:pointer}
-.toggle span{color:#f9a825;text-decoration:underline;font-weight:700}
-.ft{font-size:11px;color:#666;margin-top:20px;line-height:1.6}
-a{color:#aaa;text-decoration:none}
-.error{color:#f33;font-size:14px;margin-top:10px;display:none;font-weight:600}
-.success{color:#4caf50;font-size:14px;margin-top:10px;display:none;font-weight:600}
-.referral-info{background:#111;border:1px solid #333;border-radius:12px;padding:12px;margin:14px 0;font-size:13px;color:#aaa}
-.referral-info span{color:#f9a825;font-weight:700}
-.content-section{max-width:800px;margin:60px auto;padding:0 20px;color:#ccc;line-height:1.7;text-align:left}
-.content-section h2{color:#f9a825;font-size:22px;margin:30px 0 15px}
-.content-section h3{color:#f9a825;font-size:18px;margin:25px 0 10px}
-.content-section a{color:#4a90e2;text-decoration:underline}
-.aads-top-small{position:fixed;top:5px;right:5px;z-index:999;opacity:0.7}
-.aads-top-small:hover{opacity:1}
-</style>
-
-<!-- Google AdSense - इसको नहीं छूना ✅ Google को यही चाहिए -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruppy Network - App</title>
+  
+  <!-- AdSense का Code - जैसे था वैसे ही रखा, छुआ नहीं -->
+  
+  <!-- Monetag Vignette SDK - Zone 10925298 -->
+  <script>
+    (function(s){s.dataset.zone='10925298',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
+  </script>
+  
+  <script>
+    // Monetag Zone ID - 10925298 Vignette
+    const MONETAG_ZONE = '10925298';
+    
+    // Vignette का असली Function - Timer के बाद Ad चलाता है
+    function openMonetagAd(zoneId, onComplete) {
+      if (typeof show_10925298 === 'function') {
+        show_10925298().then(() => {
+          console.log('Vignette Ad Complete');
+          if (onComplete) onComplete();
+        }).catch(() => {
+          console.log('Monetag Failed - Free reward');
+          if (onComplete) onComplete();
+        });
+      } else {
+        if (onComplete) onComplete();
+      }
+    }
+  </script>
+  
+  <script type="module" src="config.js"></script>
+  
+  <style>
+    * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
+    body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
+    .header {padding:20px 15px 10px; display:flex; align-items:center; gap:12px;}
+    .header .dp {width:40px; height:40px; border-radius:50%; background:#1a1a1a; display:flex; align-items:center; justify-content:center; font-size:18px; overflow:hidden; border:1px solid #333;}
+    .header .dp img {width:100%; height:100%; object-fit:cover;}
+    .header .info h3 {font-size:16px; font-weight:500;}
+    .header .info p {font-size:12px; color:#888;}
+    .balance-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:20px;}
+    .balance-card p:first-child {color:#888; font-size:13px;}
+    .balance-card h2 {font-size:32px; margin:5px 0; color:#FFA500; display:flex; align-items:center; gap:8px;}
+    .balance-card h2 span {color:#fff; font-size:20px;}
+    .r-coin {width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#000;box-shadow:0 0 12px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500;position:relative;flex-shrink:0}
+    .r-coin::after {content:'';position:absolute;inset:-2px;border-radius:50%;background:radial-gradient(circle,#FF6B00 0%,transparent 70%);opacity:0.4;filter:blur(3px);z-index:-1}
+    .mining-section {margin:30px 0; text-align:center;}
+    .mining-circle {width:180px; height:180px; margin:0 auto; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:0.3s; border:2px solid #FFA500;}
+    .mining-circle.ready {background:linear-gradient(135deg, #FFD700, #FFA500); border:none; box-shadow:0 0 25px rgba(255,165,0,0.6);}
+    .mining-circle.ready h3 {color:#000;}
+    .mining-circle.mining {background:transparent; border:2px solid #FFA500; cursor:not-allowed;}
+    .mining-circle.mining h3 {color:#FFA500; font-size:16px; white-space:pre-line; text-align:center;}
+    .mining-text {text-align:center; margin-top:15px; color:#666; font-size:13px;}
+    .grid {display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:25px 15px;}
+    .grid-item {background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:18px 12px; text-align:center; cursor:pointer; position:relative;}
+    .grid-item:active {transform:scale(0.97);}
+    .grid-item .badge {position:absolute; top:8px; right:8px; background:#FFA500; color:#000; font-size:11px; font-weight:600; min-width:18px; height:18px; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:0 5px;}
+    .grid-item .icon {width:35px; height:35px; margin:0 auto 10px; background:#1a1a1a; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:20px;}
+    .grid-item h4 {font-size:14px; margin-bottom:4px; color:#FFA500;}
+    .grid-item p {font-size:11px; color:#666;}
+    .timer-bar {width:100%; height:3px; background:#1a1a1a; border-radius:2px; margin-top:6px; overflow:hidden;}
+    .timer-fill {height:100%; background:#FFA500; width:0%; transition:width 1s linear;}
+    .modal {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:none; align-items:center; justify-content:center; z-index:999;}
+    .modal.active {display:flex;}
+    .modal-content {background:#0d0d0d; border:1px solid #333; border-radius:12px; padding:20px; width:90%; max-width:320px;}
+    .modal-content h3 {margin-bottom:15px; color:#FFA500; text-align:center;}
+    .modal-content p {color:#888; font-size:13px; text-align:center; margin-bottom:15px;}
+    .modal-content .boost-step {background:#000; border:1px solid #222; padding:15px; border-radius:8px; margin:10px 0;}
+    .modal-content .boost-step h4 {color:#FFA500; margin-bottom:8px;}
+    .btn {margin-top:10px; width:100%; padding:12px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:600; cursor:pointer;}
+    .btn:disabled {background:#333; color:#666; cursor:not-allowed;}
+    .close-btn {margin-top:8px; width:100%; padding:10px; background:#1a1a1a; border:1px solid #333; border-radius:8px; color:#888; cursor:pointer;}
+    .nav {position:fixed; bottom:0; left:0; right:0; background:#0d0d0d; border-top:1px solid #222; display:flex; justify-content:space-around; padding:8px 0;}
+    .nav-item {display:flex; flex-direction:column; align-items:center; gap:3px; color:#666; text-decoration:none; font-size:10px; cursor:pointer; padding:5px 0; width:16.6%;}
+    .nav-item.active {color:#FFA500;}
+    .nav-item.active::after {content:''; width:30px; height:2px; background:#FFA500; margin-top:2px;}
+    .nav-item .icon {font-size:20px;}
+    #toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #FFA500; padding: 12px 20px; border-radius: 8px; border: 1px solid #FFA500; display: none; z-index: 1000; font-size: 14px; }
+    .timer-overlay {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:none; align-items:center; justify-content:center; z-index:10000; flex-direction:column;}
+    .timer-overlay.active {display:flex;}
+    .timer-circle {width:120px; height:120px; border:3px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:36px; color:#FFA500; font-weight:bold;}
+    .timer-text {margin-top:20px; color:#888; font-size:14px;}
+  </style>
+  
 </head>
 <body>
 
-<!-- A-Ads छोटा Banner 234x60 - Right Top Corner में, छोटा सा, Click नहीं करेगा कोई 👇 YOUR_AADS_ID_HERE बदल दे -->
-<div class="aads-top-small">
-<iframe data-aa='YOUR_AADS_ID_HERE' src='//acceptable.a-ads.com/YOUR_AADS_ID_HERE' style='border:0px; padding:0; width:234px; height:60px; overflow:hidden; background-color: transparent;'></iframe>
-</div>
+  <div class="header">
+    <div class="dp" id="userDp">👤</div>
+    <div class="info">
+      <h3 id="userName">Welcome back, User</h3>
+      <p>Keep playing to collect more</p>
+    </div>
+  </div>
 
-<div class="login-screen">
-<div class="wrap">
-<div class="pill">VIP PREMIUM</div>
-<div class="coin"><img src="IMG_7999.jpeg" alt="R U P Logo"></div>
-<h1>R U P<br>NETWORK</h1>
+  <div class="balance-card">
+    <p>TOTAL BALANCE</p>
+    <h2 id="balance"><div class="r-coin">R</div> 0 <span>RUP</span></h2>
+  </div>
 
-<div id="loginForm">
-  <div class="input-box">
-    <label>Email Address</label>
-    <input type="email" id="email" placeholder="Enter your email" style="text-transform:none">
+  <div class="mining-section">
+    <div class="mining-circle ready" id="miningCircle">
+      <h3 id="miningText">WATCH AD FOR BONUS</h3>
+    </div>
+    <p class="mining-text">Watch ad to collect 40 RUP • Available every 3 hours</p>
   </div>
-  <div class="input-box">
-    <label>Password</label>
-    <input type="password" id="password" placeholder="Enter your password" style="text-transform:none">
-  </div>
-  <div class="input-box">
-    <label>Referral Code <span style="color:#666;font-size:13px;">(Optional - Missed during signup?)</span></label>
-    <input type="text" id="loginReferralCode" placeholder="Enter friend's code e.g. RUP-8X4K9M" maxlength="10">
-  </div>
-  <div class="referral-info" id="loginReferralInfo" style="display:none">
-    Referred by: <span id="loginReferrerName">Loading...</span>
-  </div>
-  <div class="error" id="errorMsg"></div>
-  <div class="success" id="successMsg"></div>
-  <button class="btn" onclick="handleLogin()" id="loginBtn">LOGIN</button>
-  <button class="btn btn-google" onclick="signInWithGoogle()">
-    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="24" height="24">
-    Sign in with Google
-  </button>
-  <div class="toggle">New user? <span onclick="showRegister()">Create Account</span></div>
-</div>
 
-<div id="registerForm" style="display:none">
-  <div class="input-box">
-    <label>Full Name</label>
-    <input type="text" id="regName" placeholder="Enter your full name" style="text-transform:none">
+  <div class="grid">
+    <div class="grid-item" id="boostBtn">
+      <div class="badge" id="boostBadge">0/3</div>
+      <div class="icon">🖥️</div>
+      <h4>COLLECT BONUS</h4>
+      <p id="boostTimer">10% Bonus Available</p>
+      <div class="timer-bar"><div class="timer-fill" id="boostBar"></div></div>
+    </div>
+    <div class="grid-item" id="giftBtn">
+      <div class="badge" id="giftBadge">✓</div>
+      <div class="icon" style="background:#6a5acd;">🎁</div>
+      <h4 style="color:#fff;">ULTRA GIFT</h4>
+      <p id="giftTimer">Ready → +10 RUP</p>
+      <div class="timer-bar"><div class="timer-fill" id="giftBar"></div></div>
+    </div>
+    <div class="grid-item" id="firstRewardBtn">
+      <div class="badge" id="firstRewardBadge" style="display:none;background:#00ff00;">READY</div>
+      <div class="icon" style="background:#FF6B35;">⚡</div>
+      <h4 style="color:#fff;">FIRST REWARD</h4>
+      <p id="firstRewardTimer">Next in 01:00:00</p>
+      <div class="timer-bar"><div class="timer-fill" id="firstRewardBar"></div></div>
+    </div>
+    <div class="grid-item" id="ultraRewardBtn">
+      <div class="badge" id="ultraRewardBadge" style="display:none;background:#00ff00;">READY</div>
+      <div class="icon" style="background:#8B5CF6;">💎</div>
+      <h4 style="color:#fff;">ULTRA REWARD</h4>
+      <p id="ultraRewardTimer">Next in 01:00:00</p>
+      <div class="timer-bar"><div class="timer-fill" id="ultraRewardBar"></div></div>
+    </div>
   </div>
-  <div class="input-box">
-    <label>Email Address</label>
-    <input type="email" id="regEmail" placeholder="Enter your email" style="text-transform:none">
+
+  <div class="modal" id="boostModal">
+    <div class="modal-content">
+      <h3>🚀 COLLECT BONUS</h3>
+      <p>Watch ads to collect extra RUP</p>
+      <div class="boost-step">
+        <h4>Step <span id="boostStep">1</span>/3</h4>
+        <p id="boostStepText">Watch ad for 10% bonus</p>
+      </div>
+      <button class="btn" id="boostModalBtn">Watch Ad for Bonus</button>
+      <button class="close-btn" id="closeBoostModal">Close</button>
+    </div>
   </div>
-  <div class="input-box">
-    <label>Password</label>
-    <input type="password" id="regPassword" placeholder="Min 6 characters" style="text-transform:none">
+
+  <div class="nav">
+    <div class="nav-item active" data-page="home">
+      <div class="icon">🏠</div>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" data-page="tasks">
+      <div class="icon">📋</div>
+      <span>Tasks</span>
+    </div>
+    <div class="nav-item" data-page="referral">
+      <div class="icon">👥</div>
+      <span>Referral</span>
+    </div>
+    <div class="nav-item" data-page="ranking">
+      <div class="icon">🏆</div>
+      <span>Ranking</span>
+    </div>
+    <div class="nav-item" data-page="community">
+      <div class="icon">📝</div>
+      <span>Feed</span>
+    </div>
+    <div class="nav-item" data-page="settings">
+      <div class="icon">⚙️</div>
+      <span>Settings</span>
+    </div>
   </div>
-  <div class="input-box">
-    <label>Confirm Password</label>
-    <input type="password" id="regConfirmPassword" placeholder="Re-enter password" style="text-transform:none">
+
+  <div class="timer-overlay" id="timerOverlay">
+    <div class="timer-circle" id="timerCount">5</div>
+    <div class="timer-text">Please wait... Loading Ad</div>
   </div>
-  <div class="input-box">
-    <label>Referral Code <span style="color:#666;font-size:13px;">(Optional)</span></label>
-    <input type="text" id="regReferralCode" placeholder="Enter friend's code e.g. RUP-8X4K9M" maxlength="10">
-  </div>
-  <div class="referral-info" id="referralInfo" style="display:none">
-    Referred by: <span id="referrerName">Loading...</span>
-  </div>
-  <div class="error" id="regErrorMsg"></div>
-  <div class="success" id="regSuccessMsg"></div>
-  <button class="btn" onclick="handleRegister()" id="registerBtn">CREATE ACCOUNT</button>
-  <div class="toggle">Already have account? <span onclick="showLogin()">Login</span></div>
-</div>
 
-<div class="ft">
-<a href="about.html">About</a> • <a href="blog.html">Blog</a> • <a href="contact.html">Contact</a> • <a href="privacy-policy.html">Privacy</a> • <a href="terms.html">Terms</a><br>
-By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Terms</a> & <a href="privacy-policy.html" style="color:#f9a825;">Privacy Policy</a>.
-</div>
-</div>
-</div>
+  <div id="toast"></div>
 
-<section class="content-section">
-  <h2>What is R U P Network?</h2>
-  <p>R U P Network is a free rewards and engagement platform launched in 2026. Our mission is to help users earn reward points through simple daily activities. No investment, purchase, or payment is ever required. Users collect points by logging in daily, completing tasks, and referring friends. The platform uses secure Google Firebase Authentication and we never share personal data with third parties.</p>
-  <h3>How Does R U P Rewards Work?</h3>
-  <p>Members earn points through our daily check-in system. After login, tap "Start Earning" to activate your daily bonus cycle. The base rate is 10 points per session. You can increase your earnings through four methods: maintaining a daily login streak for bonus multipliers, referring friends with your unique code for permanent speed boosts, completing sponsored tasks in our Task Center, and watching optional rewarded ads for extra points. Every new user who joins using your referral code grants both you and them a 20 point welcome bonus.</p>
-  <h3>Is R U P Network Safe to Use?</h3>
-  <p>Yes. R U P Network operates on a zero-investment model. We will never ask users for money, bank details, or payment to earn or withdraw rewards. The platform is currently in the community rewards phase. All balances are stored securely and linked to your Google account. Our roadmap includes account verification in Q3 2026 followed by rewards redemption launch in Q4 2026. For detailed guides on maximizing points, security tips, and platform updates, visit our <a href="/blog.html">Official Blog</a>. Learn more about our mission on the <a href="/about.html">About Page</a>.</p>
-  <h3>R U P Network Roadmap 2026-2027</h3>
-  <p>Phase 1 - Q1 2026: App Launch, user onboarding, stability improvements.<br>
-  Phase 2 - Q2 2026: AdSense integration, Task Center launch, referral contests.<br>
-  Phase 3 - Q3 2026: User verification process, Rewards Wallet beta release.<br>
-  Phase 4 - Q4 2026: Points redemption launch, gift card options, partner integrations.<br>
-  Phase 5 - 2027: Premium membership, marketplace features, merchant rewards.</p>
-</section>
-
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
-    authDomain: "ruppynetwork-50362.firebaseapp.com",
-    databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
-    projectId: "ruppynetwork-50362",
-    storageBucket: "ruppynetwork-50362.firebasestorage.app",
-    messagingSenderId: "132064610854",
-    appId: "1:132064610854:web:3c217eaf3618007f5934e7"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.database();
-  const provider = new firebase.auth.GoogleAuthProvider();
-
-  (function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const refCode = urlParams.get('ref');
-    if(refCode) {
-      const cleanCode = refCode.trim().toUpperCase();
-      localStorage.setItem('ruppy_referredBy', cleanCode);
-      setTimeout(() => {
-        if(document.getElementById('regReferralCode')) {
-          document.getElementById('regReferralCode').value = cleanCode;
-          checkReferralCode(cleanCode, 'reg');
-        }
-        if(document.getElementById('loginReferralCode')) {
-          document.getElementById('loginReferralCode').value = cleanCode;
-          checkReferralCode(cleanCode, 'login');
-        }
-      }, 500);
-    }
-  })();
-
-  function generateUniqueCode() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let code = 'RUP-';
-    for(let i = 0; i < 6; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return code;
+<script type="module">
+  let userData;
+  const MINING_REWARD = 40;
+  
+  function showAdTimer(seconds, callback) {
+    const overlay = document.getElementById('timerOverlay');
+    const count = document.getElementById('timerCount');
+    overlay.classList.add('active');
+    let timeLeft = seconds;
+    count.innerText = timeLeft;
+    
+    const interval = setInterval(() => {
+      timeLeft--;
+      count.innerText = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+        overlay.classList.remove('active');
+        if (callback) callback();
+      }
+    }, 1000);
   }
 
-  function isValidReferralCode(code) {
-    if(!code || code.length!== 10 ||!code.startsWith('RUP-')) {
-      return false;
+  async function waitForUserData() {
+    let attempts = 0;
+    while(!window.userData?.uid && attempts < 50) {
+      await new Promise(r => setTimeout(r, 100));
+      attempts++;
     }
-    return true;
+    userData = window.userData;
   }
 
-  document.addEventListener('DOMContentLoaded', function() {
-    const regRefInput = document.getElementById('regReferralCode');
-    const loginRefInput = document.getElementById('loginReferralCode');
-    if(regRefInput) {
-      regRefInput.addEventListener('input', function(e) {
-        e.target.value = e.target.value.toUpperCase();
-        checkReferralCode(e.target.value.trim(), 'reg');
+  function showToast(msg) {
+    let toast = document.getElementById('toast');
+    toast.innerText = msg;
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 3000);
+  }
+
+  function showMonetagAd(zoneId, rewardFunction, rewardAmount, timerSec) {
+    let buttons = document.querySelectorAll('.grid-item, .mining-circle, .btn');
+    buttons.forEach(btn => btn.style.pointerEvents = 'none');
+    
+    showAdTimer(timerSec, () => {
+      openMonetagAd(zoneId, () => {
+        rewardFunction();
+        buttons.forEach(btn => btn.style.pointerEvents = 'auto');
+        showToast(`+${rewardAmount} RUP Claimed!`);
       });
+    });
+  }
+
+  function doMining() {
+    let now = Date.now();
+    let lastMine = Number(userData.lastMine) || 0;
+    if(now - lastMine < 10800000 && lastMine !== 0) return;
+    
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += MINING_REWARD;
+    userData.lastMine = now;
+    saveRuppyData(userData);
+    updateBalance();
+    updateMiningCircle();
+    
+    if(window.logMineEvent) {
+      window.logMineEvent(MINING_REWARD);
     }
-    if(loginRefInput) {
-      loginRefInput.addEventListener('input', function(e) {
-        e.target.value = e.target.value.toUpperCase();
-        checkReferralCode(e.target.value.trim(), 'login');
-      });
+  }
+
+  function doBoost() {
+    if(userData.boostCount >= 3) return;
+    let boostAmount = Math.floor(MINING_REWARD * 0.10);
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += boostAmount;
+    userData.boostCount++;
+    saveRuppyData(userData);
+    updateBalance();
+    updateBoost();
+    
+    if(window.logMineEvent) {
+      window.logMineEvent(boostAmount);
     }
+    
+    if(userData.boostCount >= 3) {
+      document.getElementById('boostModalBtn').innerText = 'All Claimed!';
+      document.getElementById('boostModalBtn').disabled = true;
+      setTimeout(closeBoostModal, 1500);
+    } else {
+      document.getElementById('boostStep').innerText = userData.boostCount + 1;
+      showToast(`+${boostAmount} RUP Claimed! (${userData.boostCount}/3)`);
+    }
+  }
+
+  function doGift() {
+    let now = Date.now();
+    let lastGift = Number(userData.lastGift) || 0;
+    if(now - lastGift < 7200000 && lastGift !== 0) return;
+    
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += 10;
+    userData.lastGift = now;
+    saveRuppyData(userData);
+    updateBalance();
+    updateGift();
+    
+    if(window.logMineEvent) {
+      window.logMineEvent(10);
+    }
+  }
+
+  function doFirstReward() {
+    if(Date.now() >= userData.firstRewardTime || userData.firstRewardTime === 0){
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += 15;
+      userData.firstRewardTime = Date.now() + 3600000;
+      saveRuppyData(userData);
+      updateBalance();
+      updateFirstReward();
+      
+      if(window.logMineEvent) {
+        window.logMineEvent(15);
+      }
+    }
+  }
+
+  function doUltraReward() {
+    if(Date.now() >= userData.ultraRewardTime || userData.ultraRewardTime === 0){
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += 20;
+      userData.ultraRewardTime = Date.now() + 3600000;
+      saveRuppyData(userData);
+      updateBalance();
+      updateUltraReward();
+      
+      if(window.logMineEvent) {
+        window.logMineEvent(20);
+      }
+    }
+  }
+
+  // Monetag Zone 10925298 - सभी Button पे यही
+  document.getElementById('miningCircle').onclick = () => showMonetagAd(MONETAG_ZONE, doMining, 40, 6);
+  document.getElementById('boostBtn').onclick = openBoostModal;
+  document.getElementById('boostModalBtn').onclick = () => showMonetagAd(MONETAG_ZONE, doBoost, Math.floor(MINING_REWARD * 0.10), 6);
+  document.getElementById('closeBoostModal').onclick = closeBoostModal;
+  document.getElementById('giftBtn').onclick = () => showMonetagAd(MONETAG_ZONE, doGift, 10, 30);
+  document.getElementById('firstRewardBtn').onclick = () => showMonetagAd(MONETAG_ZONE, doFirstReward, 15, 30);
+  document.getElementById('ultraRewardBtn').onclick = () => showMonetagAd(MONETAG_ZONE, doUltraReward, 20, 30);
+
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.onclick = () => {
+      const page = item.dataset.page;
+      if(page === 'tasks') window.location.href = 'tasks.html';
+      if(page === 'referral') window.location.href = 'referral.html';
+      if(page === 'ranking') window.location.href = 'ranking.html';
+      if(page === 'community') window.location.href = 'community.html';
+      if(page === 'settings') window.location.href = 'settings.html';
+    };
   });
 
-  async function checkReferralCode(code, type) {
-    const infoBox = document.getElementById(type === 'reg'? 'referralInfo' : 'loginReferralInfo');
-    const nameSpan = document.getElementById(type === 'reg'? 'referrerName' : 'loginReferrerName');
-    if(!code || code.length < 10) {
-      infoBox.style.display = 'none';
+  function openBoostModal() {
+    if(userData.boostCount >= 3) {
+      showToast('You watched 3 ads already. Try again after 3 hours.');
       return;
     }
-    try {
-      const snapshot = await db.ref('users').orderByChild('myReferralCode').equalTo(code).once('value');
-      if(snapshot.exists()) {
-        const userData = Object.values(snapshot.val())[0];
-        nameSpan.innerText = userData.name || userData.email.split('@')[0];
-        infoBox.style.display = 'block';
-        showSuccess(type === 'reg'? 'regSuccessMsg' : 'successMsg', 'Valid referral code! 20 bonus points');
-      } else {
-        infoBox.style.display = 'none';
-        if(type === 'reg') {
-          showError('regErrorMsg', 'Invalid referral code');
-        }
-      }
-    } catch(err) {
-      console.error('Referral Check Error:', err);
-      infoBox.style.display = 'none';
-    }
+    document.getElementById('boostStep').innerText = userData.boostCount + 1;
+    document.getElementById('boostStepText').innerText = 'Watch ad for 10% bonus';
+    document.getElementById('boostModal').classList.add('active');
   }
 
-  window.signInWithGoogle = async function() {
-    const manualCode = document.getElementById('loginReferralCode').value.trim().toUpperCase();
-    if(manualCode && manualCode.startsWith('RUP-') && manualCode.length === 10) {
-      localStorage.setItem('ruppy_referredBy', manualCode);
-    }
-    try {
-      const result = await auth.signInWithPopup(provider);
-      await handleGoogleUser(result.user);
-    } catch (error) {
-      if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
-        auth.signInWithRedirect(provider);
-      } else {
-        showError('errorMsg', 'Google Error: ' + error.message);
-      }
-    }
+  function closeBoostModal() {
+    document.getElementById('boostModal').classList.remove('active');
   }
 
-  auth.getRedirectResult().then(async (result) => {
-    if (result.user) {
-      await handleGoogleUser(result.user);
-    }
-  }).catch((error) => {
-    showError('errorMsg', 'Google Error: ' + error.message);
-  });
-
-  async function logAnalyticsEvent(eventName, params) {
-    try {
-      const { getAnalytics, logEvent } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js");
-      const { getApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
-      const analytics = getAnalytics(getApp());
-      logEvent(analytics, eventName, params);
-    } catch(e) {
-      console.log('Analytics Error:', e);
-    }
+  function updateBalance() {
+    document.getElementById('balance').innerHTML = '<div class="r-coin">R</div> ' + Number(userData.balance) + ' <span>RUP</span>';
   }
 
-  async function handleGoogleUser(user) {
-    const uid = user.uid;
-    const snapshot = await db.ref('users/' + uid).get();
-
-    if(!snapshot.exists()) {
-      let userData = {
-        userId: uid,
-        name: user.displayName || user.email.split('@')[0],
-        email: user.email,
-        photoUrl: user.photoURL || "",
-        balance: 0,
-        lastMine: 0,
-        lastGift: 0,
-        boostCount: 0,
-        boostResetTime: Date.now(),
-        team: [],
-        teamCount: 0,
-        myReferralCode: generateUniqueCode(),
-        referredBy: localStorage.getItem('ruppy_referredBy') || '',
-        referralClaimed: false,
-        firstRewardTime: 0,
-        ultraRewardTime: 0,
-        createdAt: Date.now()
-      };
-
-      if(userData.referredBy && userData.referredBy.startsWith('RUP-')) {
-        userData.balance = 20;
-        userData.referralClaimed = true;
-        await updateReferrerRank(userData.referredBy, uid);
-      }
-
-      await db.ref('users/' + uid).set(userData);
-      localStorage.setItem('ruppy_user', JSON.stringify(userData));
-      logAnalyticsEvent('sign_up', { method: 'google' });
-
+  function updateMiningCircle() {
+    let now = Date.now();
+    let lastMine = Number(userData.lastMine) || 0;
+    let diff = now - lastMine;
+    let cooldown = 10800000;
+    
+    let circle = document.getElementById('miningCircle');
+    let text = document.getElementById('miningText');
+    
+    if(diff >= cooldown || lastMine === 0) {
+      circle.className = 'mining-circle ready';
+      text.innerText = 'WATCH AD FOR BONUS';
     } else {
-      let userData = snapshot.val();
-      if(!userData.name || userData.name === userData.email.split('@')[0]) {
-        userData.name = user.displayName || userData.name;
-        userData.photoUrl = user.photoURL || userData.photoUrl || "";
-        await db.ref('users/' + uid).update({
-          name: userData.name,
-          photoUrl: userData.photoUrl
-        });
-      }
-      if(!isValidReferralCode(userData.myReferralCode)) {
-        userData.myReferralCode = generateUniqueCode();
-        await db.ref('users/' + uid).update({ myReferralCode: userData.myReferralCode });
-      }
-      localStorage.setItem('ruppy_user', JSON.stringify(userData));
-      logAnalyticsEvent('login', { method: 'google' });
-    }
-
-    localStorage.removeItem('ruppy_referredBy');
-    window.location.replace('app.html');
-  }
-
-  async function updateReferrerRank(referralCode, newUserId) {
-    try {
-      const snapshot = await db.ref('users').orderByChild('myReferralCode').equalTo(referralCode).once('value');
-      if(snapshot.exists()) {
-        const referrerId = Object.keys(snapshot.val())[0];
-        const referrerData = Object.values(snapshot.val())[0];
-        const updates = {
-          balance: (referrerData.balance || 0) + 20,
-          teamCount: (referrerData.teamCount || 0) + 1,
-          [`team/${newUserId}`]: true
-        };
-        await db.ref('users/' + referrerId).update(updates);
-      }
-    } catch(err) {
-      console.error('Referral update error:', err);
+      let remaining = cooldown - diff;
+      let hrs = Math.floor(remaining / 3600000);
+      let mins = Math.floor((remaining % 3600000) / 60000);
+      let secs = Math.floor((remaining % 60000) / 1000);
+      
+      circle.className = 'mining-circle mining';
+      text.innerText = 'Next in\n' + String(hrs).padStart(2,'0') + ':' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
     }
   }
 
-  window.showRegister = function() {
-    document.getElementById('loginForm').style.display = 'none';
-    document.getElementById('registerForm').style.display = 'block';
-    document.getElementById('errorMsg').style.display = 'none';
-  }
-
-  window.showLogin = function() {
-    document.getElementById('registerForm').style.display = 'none';
-    document.getElementById('loginForm').style.display = 'block';
-    document.getElementById('regErrorMsg').style.display = 'none';
-  }
-
-  window.handleRegister = async function() {
-    const name = document.getElementById('regName').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
-    const password = document.getElementById('regPassword').value;
-    const confirmPassword = document.getElementById('regConfirmPassword').value;
-    const referralCode = document.getElementById('regReferralCode').value.trim().toUpperCase();
-    const btn = document.getElementById('registerBtn');
-
-    if (!name || name.length < 2) return showError('regErrorMsg', 'Enter your full name');
-    if (!email ||!email.includes('@')) return showError('regErrorMsg', 'Enter valid email');
-    if (password.length < 6) return showError('regErrorMsg', 'Password must be at least 6 characters');
-    if (password!== confirmPassword) return showError('regErrorMsg', 'Passwords do not match');
-
-    btn.innerText = 'CREATING...';
-    btn.disabled = true;
-
-    try {
-      let validReferrer = null;
-      if(referralCode && referralCode.startsWith('RUP-')) {
-        const refSnapshot = await db.ref('users').orderByChild('myReferralCode').equalTo(referralCode).once('value');
-        if(!refSnapshot.exists()) {
-          showError('regErrorMsg', 'Invalid referral code');
-          btn.disabled = false;
-          btn.innerText = 'CREATE ACCOUNT';
-          return;
-        }
-        validReferrer = Object.keys(refSnapshot.val())[0];
-      }
-
-      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-      const uid = userCredential.user.uid;
-
-      let userData = {
-        userId: uid,
-        name: name,
-        email: email,
-        balance: referralCode? 20 : 0,
-        lastMine: 0,
-        lastGift: 0,
-        boostCount: 0,
-        boostResetTime: Date.now(),
-        team: [],
-        teamCount: 0,
-        myReferralCode: generateUniqueCode(),
-        referredBy: referralCode || '',
-        referralClaimed: referralCode? true : false,
-        firstRewardTime: 0,
-        ultraRewardTime: 0,
-        createdAt: Date.now()
-      };
-
-      await db.ref('users/' + uid).set(userData);
-      if(validReferrer) await updateReferrerRank(referralCode, uid);
-
-      localStorage.setItem('ruppy_user', JSON.stringify(userData));
-      logAnalyticsEvent('sign_up', { method: 'email' });
-      window.location.replace('app.html');
-    } catch (error) {
-      showError('regErrorMsg', error.message);
-      btn.disabled = false;
-      btn.innerText = 'CREATE ACCOUNT';
+  function updateBoost() {
+    let now = Date.now();
+    userData.boostResetTime = Number(userData.boostResetTime) || now;
+    userData.boostCount = Number(userData.boostCount) || 0;
+    
+    if(now - userData.boostResetTime > 10800000) {
+      userData.boostCount = 0;
+      userData.boostResetTime = now;
+      saveRuppyData(userData);
+    }
+    
+    document.getElementById('boostBadge').innerText = userData.boostCount + '/3';
+    
+    if(userData.boostCount >= 3) {
+      let resetIn = 10800000 - (now - userData.boostResetTime);
+      let h = Math.floor(resetIn / 3600000);
+      let m = Math.floor((resetIn % 3600000) / 60000);
+      let s = Math.floor((resetIn % 60000) / 1000);
+      document.getElementById('boostTimer').innerText = 'Reset in ' + h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      document.getElementById('boostBar').style.width = '100%';
+      document.getElementById('boostBadge').style.background = '#00ff00';
+    } else {
+      document.getElementById('boostTimer').innerText = '10% Bonus Available';
+      document.getElementById('boostBar').style.width = (userData.boostCount / 3 * 100) + '%';
+      document.getElementById('boostBadge').style.background = '#FFA500';
     }
   }
 
-  window.handleLogin = async function() {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    const referralCode = document.getElementById('loginReferralCode').value.trim().toUpperCase();
-    const btn = document.getElementById('loginBtn');
-
-    if (!email ||!email.includes('@')) return showError('errorMsg', 'Enter valid email');
-    if (!password) return showError('errorMsg', 'Enter password');
-
-    btn.innerText = 'LOGGING IN...';
-    btn.disabled = true;
-
-    try {
-      const userCredential = await auth.signInWithEmailAndPassword(email, password);
-      const uid = userCredential.user.uid;
-      const snapshot = await db.ref('users/' + uid).get();
-      let userData = snapshot.exists()? snapshot.val() : {
-        userId: uid,
-        name: email.split('@')[0],
-        email: email,
-        balance: 0,
-        lastMine: 0,
-        lastGift: 0,
-        boostCount: 0,
-        boostResetTime: Date.now(),
-        team: [],
-        teamCount: 0,
-        myReferralCode: generateUniqueCode(),
-        referredBy: '',
-        referralClaimed: false,
-        firstRewardTime: 0,
-        ultraRewardTime: 0,
-        createdAt: Date.now()
-      };
-
-      if(!isValidReferralCode(userData.myReferralCode)) {
-        userData.myReferralCode = generateUniqueCode();
-      }
-
-      if(referralCode && referralCode.startsWith('RUP-') && referralCode.length === 10 &&!userData.referralClaimed &&!userData.referredBy) {
-        try {
-          const refSnapshot = await db.ref('users').orderByChild('myReferralCode').equalTo(referralCode).once('value');
-          if(refSnapshot.exists() && Object.keys(refSnapshot.val())[0]!== uid) {
-            userData.referredBy = referralCode;
-            userData.referralClaimed = true;
-            userData.balance = (userData.balance || 0) + 20;
-            await updateReferrerRank(referralCode, uid);
-            showSuccess('successMsg', 'Referral bonus added! +20 points');
-          }
-        } catch(e) {
-          console.log('Referral check failed, continuing login');
-        }
-      }
-
-      await db.ref('users/' + uid).update(userData);
-      localStorage.setItem('ruppy_user', JSON.stringify(userData));
-      logAnalyticsEvent('login', { method: 'email' });
-      setTimeout(() => window.location.replace('app.html'), 1000);
-    } catch (error) {
-      showError('errorMsg', 'Invalid email or password');
-      btn.disabled = false;
-      btn.innerText = 'LOGIN';
+  function updateGift() {
+    let now = Date.now();
+    let lastGift = Number(userData.lastGift) || 0;
+    let diff = now - lastGift;
+    let cooldown = 7200000;
+    
+    if(diff >= cooldown || lastGift === 0) {
+      document.getElementById('giftTimer').innerText = 'Ready → +10 RUP';
+      document.getElementById('giftBadge').innerText = '✓';
+      document.getElementById('giftBadge').style.background = '#00ff00';
+      document.getElementById('giftBar').style.width = '100%';
+    } else {
+      let remaining = cooldown - diff;
+      let hrs = Math.floor(remaining / 3600000);
+      let mins = Math.floor((remaining % 3600000) / 60000);
+      let secs = Math.floor((remaining % 60000) / 1000);
+      document.getElementById('giftTimer').innerText = 'Next in ' + String(hrs).padStart(2,'0') + ':' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
+      document.getElementById('giftBadge').innerText = '⏱';
+      document.getElementById('giftBadge').style.background = '#666';
+      
+      let percent = ((cooldown - remaining) / cooldown) * 100;
+      document.getElementById('giftBar').style.width = percent + '%';
     }
   }
 
-  function showError(id, msg) {
-    const el = document.getElementById(id);
-    el.innerText = msg;
-    el.style.display = 'block';
-    setTimeout(() => el.style.display = 'none', 4000);
+  function updateFirstReward() {
+    let now = Date.now();
+    let diff = userData.firstRewardTime - now;
+    
+    if(diff <= 0 || userData.firstRewardTime === 0){
+      document.getElementById('firstRewardTimer').innerText = 'Claim 15 RUP';
+      document.getElementById('firstRewardBadge').style.display = 'block';
+      document.getElementById('firstRewardBar').style.width = '100%';
+    } else {
+      let h = Math.floor(diff/3600000);
+      let m = Math.floor((diff%3600000)/60000);
+      let s = Math.floor((diff%60000)/1000);
+      document.getElementById('firstRewardTimer').innerText = 'Next in ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      document.getElementById('firstRewardBadge').style.display = 'none';
+      let progress = ((3600000 - diff) / 3600000) * 100;
+      document.getElementById('firstRewardBar').style.width = progress + '%';
+    }
   }
 
-  function showSuccess(id, msg) {
-    const el = document.getElementById(id);
-    el.innerText = msg;
-    el.style.display = 'block';
-    setTimeout(() => el.style.display = 'none', 4000);
+  function updateUltraReward() {
+    let now = Date.now();
+    let diff = userData.ultraRewardTime - now;
+    
+    if(diff <= 0 || userData.ultraRewardTime === 0){
+      document.getElementById('ultraRewardTimer').innerText = 'Claim 20 RUP';
+      document.getElementById('ultraRewardBadge').style.display = 'block';
+      document.getElementById('ultraRewardBar').style.width = '100%';
+    } else {
+      let h = Math.floor(diff/3600000);
+      let m = Math.floor((diff%3600000)/60000);
+      let s = Math.floor((diff%60000)/1000);
+      document.getElementById('ultraRewardTimer').innerText = 'Next in ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      document.getElementById('ultraRewardBadge').style.display = 'none';
+      let progress = ((3600000 - diff) / 3600000) * 100;
+      document.getElementById('ultraRewardBar').style.width = progress + '%';
+    }
   }
+
+  function loadProfileEverywhere() {
+    const profileDp = document.getElementById('userDp');
+    const profileName = document.getElementById('userName');
+    
+    if (userData.dp) {
+      profileDp.innerHTML = '<img src="' + userData.dp + '" alt="DP">';
+    } else {
+      profileDp.innerHTML = '👤';
+    }
+    
+    profileName.innerText = 'Welcome back, ' + (userData.name || 'User');
+  }
+
+  (async function() {
+    await waitForUserData();
+    
+    loadProfileEverywhere();
+    
+    if(Date.now() - userData.boostResetTime > 10800000) {
+      userData.boostCount = 0;
+      userData.boostResetTime = Date.now();
+      saveRuppyData(userData);
+    }
+    
+    updateBalance();
+    updateMiningCircle();
+    updateBoost();
+    updateGift();
+    updateFirstReward();
+    updateUltraReward();
+    
+    setInterval(function() {
+      updateMiningCircle();
+      updateBoost();
+      updateGift();
+      updateFirstReward();
+      updateUltraReward();
+    }, 1000);
+  })();
 </script>
 </body>
 </html>
