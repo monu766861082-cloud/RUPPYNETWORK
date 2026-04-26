@@ -67,16 +67,16 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .toast.error{background:#5c1a1a;color:#f87171}
 .toast.info{background:#1a3c5c;color:#60a5fa}
 
-/* नया Admin Box Style */
-.admin-box{background:linear-gradient(135deg, #1a1a1a, #2d2d2d);border:2px solid var(--gold);border-radius:16px;padding:20px;margin:26px 0;box-shadow:0 0 20px rgba(243,199,116,0.2)}
-.admin-title{color:var(--gold);font-size:18px;font-weight:700;margin-bottom:15px;display:flex;align-items:center;gap:8px}
-.admin-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
-.admin-row:last-child{border-bottom:none}
-.admin-label{color:#e5e7eb;font-size:14px}
-.admin-value{color:var(--gold);font-weight:600;font-size:14px;background:rgba(243,199,116,0.1);padding:4px 12px;border-radius:8px}
-.bill-status{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
-.bill-status.open{background:var(--green)}
-.bill-status.locked{background:var(--red)}
+/* Referral Earning Modal Styles */
+.bill-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+.bill-item{border:2px solid var(--border);padding:20px;text-align:center;border-radius:10px;font-weight:bold;font-size:18px}
+.bill-item.active{border-color:var(--green);background:rgba(36,196,100,0.1);color:var(--green);cursor:pointer}
+.bill-item.locked{background:#1a1a1a;color:var(--muted);position:relative}
+.bill-item.locked::after{content:'🔒';position:absolute;top:5px;right:5px}
+.info-box{background:rgba(243,199,116,0.1);border:1px solid var(--gold);border-radius:12px;padding:15px;margin:15px 0}
+.info-row{display:flex;justify-content:space-between;padding:8px 0;font-size:14px}
+.info-label{color:var(--muted)}
+.info-value{color:var(--gold);font-weight:600}
 </style>
 </head>
 <body>
@@ -95,71 +95,16 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📥</div><div class="txt">Receive RUP <span class="coming-soon">Coming Soon</span></div></div>›</div>
 <div class="row" onclick="goPage('history.html')"><div class="l"><div class="icon">📊</div><div class="txt">Transaction History</div></div>›</div>
 <div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">Loading...</span>›</div>
+
+<!-- ✅ नया Button: Referral Earning -->
+<div class="row" onclick="openReferralEarning()"><div class="l"><div class="icon">💰</div><div class="txt">Referral Earning</div></div>›</div>
+
 <div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
 <div class="row" onclick="goPage('security.html')"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
 <div class="row" onclick="toggleNotification()"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div><span class="val" id="notifStatus">Off</span>›</div>
 <div class="row" onclick="goPage('contact.html')"><div class="l"><div class="icon">❓</div><div class="txt">Help & Support</div></div>›</div>
 <div class="row" onclick="goPage('privacy.html')"><div class="l"><div class="icon">📄</div><div class="txt">Privacy Policy</div></div>›</div>
 <div class="row" onclick="goPage('terms.html')"><div class="l"><div class="icon">📋</div><div class="txt">Terms & Conditions</div></div>›</div>
-</div>
-
-<!-- ✅ नया Admin Controls Box यहाँ Add किया -->
-<div class="admin-box">
-  <div class="admin-title">🔧 App Controls</div>
-
-  <div class="admin-row">
-    <span class="admin-label">Min Withdraw Amount</span>
-    <span class="admin-value">₹20</span>
-  </div>
-
-  <div class="admin-row">
-    <span class="admin-label">Max Withdraw Amount</span>
-    <span class="admin-value">₹50</span>
-  </div>
-
-  <div class="admin-row">
-    <span class="admin-label">Refer Bonus Amount</span>
-    <span class="admin-value">₹5</span>
-  </div>
-
-  <div class="admin-row">
-    <span class="admin-label">Ranking System</span>
-    <span class="admin-value">✅ Active</span>
-  </div>
-
-  <div class="admin-row">
-    <span class="admin-label">Bill Status - ₹1</span>
-    <span class="admin-value"><span class="bill-status open"></span>Open</span>
-  </div>
-
-  <div class="admin-row">
-    <span class="admin-label">Bill Status - ₹3</span>
-    <span class="admin-value"><span class="bill-status open"></span>Open</span>
-  </div>
-
-  <div class="admin-row">
-    <span class="admin-label">Bill Status - ₹5</span>
-    <span class="admin-value"><span class="bill-status locked"></span>Locked</span>
-  </div>
-
-  <div class="admin-row">
-    <span class="admin-label">Bill Status - ₹10</span>
-    <span class="admin-value"><span class="bill-status locked"></span>Locked</span>
-  </div>
-
-  <div class="admin-row">
-    <span class="admin-label">Bill Status - ₹50</span>
-    <span class="admin-value"><span class="bill-status locked"></span>Locked</span>
-  </div>
-
-  <div class="admin-row">
-    <span class="admin-label">Telegram Payment</span>
-    <span class="admin-value">✅ Active</span>
-  </div>
-
-  <div style="margin-top:15px;padding-top:15px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);text-align:center;">
-    ⚠️ Values can only be changed from Backend
-  </div>
 </div>
 
 <button class="logout" onclick="logout()">Logout</button>
@@ -201,6 +146,62 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   </div>
 </div>
 
+<!-- ✅ नया Modal: Referral Earning System -->
+<div class="modal" id="referralModal">
+  <div class="modal-content">
+    <div class="modal-title">💰 Referral Earning System</div>
+
+    <div class="info-box">
+      <div class="info-row">
+        <span class="info-label">Refer Bonus</span>
+        <span class="info-value">₹5 Per Refer</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Min Withdraw</span>
+        <span class="info-value">₹20</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Max Withdraw</span>
+        <span class="info-value">₹50</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Payment Method</span>
+        <span class="info-value">Telegram</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Ranking System</span>
+        <span class="info-value">✅ Active</span>
+      </div>
+    </div>
+
+    <div style="margin:20px 0;">
+      <div style="font-weight:600;margin-bottom:10px;color:var(--gold)">📄 Open Bills & Earn</div>
+      <div class="bill-grid">
+        <div class="bill-item active" onclick="openBill(1)">₹1</div>
+        <div class="bill-item active" onclick="openBill(3)">₹3</div>
+        <div class="bill-item locked">₹5</div>
+        <div class="bill-item locked">₹10</div>
+        <div class="bill-item locked">₹50</div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <div style="font-size:13px;color:var(--muted);line-height:1.6">
+        <strong style="color:var(--gold)">Note:</strong><br>
+        • ₹1 और ₹3 वाले Bills Open हैं<br>
+        • बाकी Bills अभी Locked हैं<br>
+        • Withdraw Request Telegram पे आएगा<br>
+        • Payment 24 घंटे में Complete होगा
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-cancel" onclick="closeReferralEarning()">Close</button>
+      <button class="btn btn-save" onclick="goPage('referral.html')">Go to Referral Page</button>
+    </div>
+  </div>
+</div>
+
 <div class="nav">
   <div class="nav-item" onclick="goPage('app.html')">
     <div class="icon">🏠</div>
@@ -233,8 +234,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <script type="module">
   import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-  // ✅ FINAL FIX: सिर्फ config.js का Data Display करो - Generate मत करो
-  // Referral.html भी यही करता है इसलिए अब 100% Same रहेगा
   async function loadProfile(){
     let attempts = 0;
     while(!window.userData?.uid && attempts < 50) {
@@ -251,7 +250,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
       return;
     }
 
-    // ✅ config.js में जो भी Code है वही दिखाओ - कोई Generate नहीं
     const code = userData.myReferralCode || 'NOT-FOUND';
     const shortId = `RUP-${userData.uid.substring(0,4).toUpperCase()}`;
 
@@ -282,15 +280,12 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     showToast('This feature is Coming Soon! 🚀', 'info');
   }
 
-  // ✅ सिर्फ Code Copy होगा
   window.copyRefCode = function(){
     const code = document.getElementById('refCode').innerText.trim();
-
     if(!code || code === 'Loading...' || code === 'LOGIN-FIRST' || code === '-' || code === 'ERROR' || code === 'NOT-FOUND'){
       showToast('Code not ready: ' + code, 'error');
       return;
     }
-
     navigator.clipboard.writeText(code).then(() => {
       showToast('✅ Copied: ' + code, 'success');
     }).catch(() => {
@@ -318,6 +313,21 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   }
 
   window.goPage = function(page){ window.location.href = page; }
+
+  // ✅ नए Functions: Referral Earning Modal
+  window.openReferralEarning = function(){
+    document.getElementById('referralModal').classList.add('active');
+  }
+
+  window.closeReferralEarning = function(){
+    document.getElementById('referralModal').classList.remove('active');
+  }
+
+  window.openBill = function(amount){
+    // यहाँ Backend API Call लगेगी: open_bill.php
+    showToast(`Congrats! You got ₹${amount}`, 'success');
+    closeReferralEarning();
+  }
 
   window.openEditProfile = function(){
     document.getElementById('editName').value = window.userData?.name || '';
@@ -446,7 +456,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     }
   }
 
-  // ✅ config.js Update हो तो Auto Refresh
   window.addEventListener('storage', function(e){
     if(e.key === 'ruppy_user_cache') {
       loadProfile();
