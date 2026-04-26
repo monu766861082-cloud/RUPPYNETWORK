@@ -3,47 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RUPPY - Withdraw</title>
+    <title>RUPPY - Refer & Earn</title>
+    <script type="module" src="config.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif;}
         body {background: #0B0B0C; padding-bottom: 80px; color: #fff;}
-     .header {background: linear-gradient(135deg, #F3C774, #FFA500); color: #000; padding: 15px; text-align: center; font-size: 20px; font-weight: 700; display:flex; align-items:center; justify-content:space-between;}
-     .back{font-size:24px;cursor:pointer;padding:0 10px;font-weight:bold;text-decoration:none;color:#000;}
-     .card {background: #161617; margin: 15px; padding: 20px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 1px solid #2A2A2C;}
-     .balance {text-align: center; font-size: 16px; color: #9CA3AF;}
-     .balance span {font-size: 32px; font-weight: bold; color: #24C464; display: block; margin: 10px 0;}
-     .btn {width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px;}
-     .btn:active{transform:scale(0.98)}
-     .btn-primary {background: linear-gradient(135deg, #F3C774, #FFA500); color: #000;}
-     .btn-green {background: #24C464; color: white;}
-     .btn:disabled {background: #4b5563; cursor: not-allowed; opacity:0.5;}
+        .header {background: linear-gradient(135deg, #F3C774, #FFA500); color: #000; padding: 15px; text-align: center; font-size: 20px; font-weight: 700; display:flex; align-items:center; justify-content:space-between;}
+        .back{font-size:24px;cursor:pointer;padding:0 10px;font-weight:bold}
+        .card {background: #161617; margin: 15px; padding: 20px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 1px solid #2A2A2C;}
+        .balance {text-align: center; font-size: 16px; color: #9CA3AF;}
+        .balance span {font-size: 32px; font-weight: bold; color: #24C464; display: block; margin: 10px 0;}
+        .btn {width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; transition:all 0.2s;}
+        .btn:active{transform:scale(0.98)}
+        .btn-primary {background: linear-gradient(135deg, #F3C774, #FFA500); color: #000;}
+        .btn-green {background: #24C464; color: white;}
+        .btn:disabled {background: #4b5563; cursor: not-allowed; opacity:0.5;}
         input {width: 100%; padding: 12px; border: 1px solid #2A2A2C; border-radius: 12px; margin: 8px 0; font-size: 15px; background: #0B0B0C; color: #fff;}
-     .label {font-weight: 600; margin-bottom: 8px; display: block; color: #F3C774; font-size: 14px;}
-     .bill-circle{width:70px;height:70px;border-radius:50%;border:2px solid #2A2A2C;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;transition:all 0.3s;}
-     .bill-circle.active{border-color:#24C464;background:rgba(36,196,100,0.1);color:#24C464;cursor:pointer;box-shadow:0 0 15px rgba(36,196,100,0.3);}
-     .bill-circle.disabled{background:#1a1a1a;color:#666;cursor:not-allowed;opacity:0.5;}
-     .bill-circle.used{background:#2a2a2a;border-color:#444;color:#666;cursor:not-allowed;}
-     .tabs {position: fixed; bottom: 0; left: 0; right: 0; background: #0d0d0d; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); border-top:1px solid #222;}
-     .tab {flex: 1; padding: 12px 5px; text-align: center; cursor: pointer; border-top: 3px solid transparent; color: #666; font-size: 11px;}
-     .tab.active {border-top-color: #F3C774; color: #F3C774; font-weight: bold;}
-     .page {display: none;}
-     .page.active {display: block;}
-     .code-box {background: #0B0B0C; padding: 15px; border-radius: 12px; text-align: center; font-size: 20px; font-weight: bold; letter-spacing: 2px; margin: 10px 0; border: 1px solid #2A2A2C; color: #F3C774;}
-     .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:14px 24px;border-radius:12px;font-size:14px;display:none;z-index:9999;font-weight:500}
-     .toast.success{background:#1a5c1a;color:#4ade80}
-     .toast.error{background:#5c1a1a;color:#f87171}
-     .note-box{background:rgba(59,130,246,0.1);border:1px solid #3B82F6;border-radius:12px;padding:12px;margin:12px 0;font-size:12px;color:#9CA3AF}
+        .label {font-weight: 600; margin-bottom: 8px; display: block; color: #F3C774; font-size: 14px;}
+        
+        /* Circular Bills Style */
+        .bill-circle{
+          width:70px;
+          height:70px;
+          border-radius:50%;
+          border:2px solid #2A2A2C;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-weight:bold;
+          font-size:18px;
+          transition:all 0.3s;
+        }
+        .bill-circle.active{
+          border-color:#24C464;
+          background:rgba(36,196,100,0.1);
+          color:#24C464;
+          cursor:pointer;
+          box-shadow:0 0 15px rgba(36,196,100,0.3);
+        }
+        .bill-circle.active:active{transform:scale(0.9)}
+        .bill-circle.disabled{
+          background:#1a1a1a;
+          color:#666;
+          cursor:not-allowed;
+          opacity:0.5;
+        }
+        .bill-circle.used{
+          background:#2a2a2a;
+          border-color:#444;
+          color:#666;
+          cursor:not-allowed;
+        }
+        
+        .ranking-item {display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #2A2A2C; font-size:14px;}
+        .rank-no {font-weight: bold; color: #F3C774; width: 30px;}
+        .tabs {position: fixed; bottom: 0; left: 0; right: 0; background: #0d0d0d; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); border-top:1px solid #222;}
+        .tab {flex: 1; padding: 12px 5px; text-align: center; cursor: pointer; border-top: 3px solid transparent; color: #666; font-size: 11px;}
+        .tab.active {border-top-color: #F3C774; color: #F3C774; font-weight: bold;}
+        .page {display: none;}
+        .page.active {display: block;}
+        .code-box {background: #0B0B0C; padding: 15px; border-radius: 12px; text-align: center; font-size: 20px; font-weight: bold; letter-spacing: 2px; margin: 10px 0; border: 1px solid #2A2A2C; color: #F3C774;}
+        .info-box{background:rgba(243,199,116,0.1);border:1px solid #F3C774;border-radius:12px;padding:12px;margin:12px 0}
+        .info-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
+        .info-label{color:#9CA3AF}
+        .info-value{color:#F3C774;font-weight:600}
+        .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:14px 24px;border-radius:12px;font-size:14px;display:none;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);font-weight:500}
+        .toast.success{background:#1a5c1a;color:#4ade80}
+        .toast.error{background:#5c1a1a;color:#f87171}
+        .toast.info{background:#1a3c5c;color:#60a5fa}
+        .note-box{background:rgba(59,130,246,0.1);border:1px solid #3B82F6;border-radius:12px;padding:12px;margin:12px 0;font-size:12px;color:#9CA3AF}
     </style>
 </head>
 <body>
 
 <div class="header">
-  <a href="index.html" class="back">←</a>
+  <div class="back" onclick="history.back()">←</div>
   <div>💰 RUPPY EARN</div>
   <div style="width:40px"></div>
 </div>
 
+<!-- Home Page -->
 <div id="homePage" class="page active">
     <div class="card balance">
         Referral Balance
@@ -62,42 +102,99 @@
         <input type="text" id="friendCode" placeholder="Enter code to get ₹5">
         <button class="btn btn-primary" onclick="applyRefer()">Apply & Get ₹5</button>
     </div>
+
+    <div class="note-box">
+      <strong style="color:#3B82F6">Note:</strong> This Referral Balance is separate from RUP Token. 1 Mobile = 1 Account Only
+    </div>
 </div>
 
+<!-- Bills Page -->
 <div id="billsPage" class="page">
     <div class="card">
         <div class="label">📄 Daily Bills - Click to Earn</div>
         <div style="display:flex;flex-wrap:wrap;gap:15px;justify-content:center;margin-top:15px">
-            <div class="bill-circle active" onclick="openBill(1)" id="bill1"><span>₹1</span></div>
-            <div class="bill-circle active" onclick="openBill(3)" id="bill3"><span>₹3</span></div>
-            <div class="bill-circle disabled"><span>₹5</span></div>
-            <div class="bill-circle disabled"><span>₹10</span></div>
-            <div class="bill-circle disabled"><span>₹50</span></div>
+            <div class="bill-circle active" onclick="openBill(1)" id="bill1">
+              <span>₹1</span>
+            </div>
+            <div class="bill-circle active" onclick="openBill(3)" id="bill3">
+              <span>₹3</span>
+            </div>
+            <div class="bill-circle disabled">
+              <span>₹5</span>
+            </div>
+            <div class="bill-circle disabled">
+              <span>₹10</span>
+            </div>
+            <div class="bill-circle disabled">
+              <span>₹50</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-box">
+      <div class="info-row">
+        <span class="info-label">Refer Bonus</span>
+        <span class="info-value">₹5 Per Refer</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Min Withdraw</span>
+        <span class="info-value">₹20</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Max Withdraw</span>
+        <span class="info-value">₹20</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Payment Method</span>
+        <span class="info-value">Telegram</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Device Limit</span>
+        <span class="info-value">1 Mobile = 1 Account</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="font-size:13px;color:#9CA3AF;line-height:1.6">
+        <strong style="color:#F3C774">Rules:</strong><br>
+        - ₹1 and ₹3 Bills can be opened once per day<br>
+        - ₹5, ₹10, ₹50 Bills are currently locked<br>
+        - Only 1 Account per Mobile Device<br>
+        - Fixed Withdraw: ₹20 Only<br>
+        - Payment completed within 24 hours via Telegram
+      </div>
+    </div>
+</div>
+
+<!-- Ranking Page -->
+<div id="rankingPage" class="page">
+    <div class="card">
+        <div class="label">🏆 Top Referrers</div>
+        <div id="rankingList">
+            <div class="ranking-item"><span class="rank-no">#1</span><span>Rahul</span><span>45 Refer</span></div>
+            <div class="ranking-item"><span class="rank-no">#2</span><span>Amit</span><span>32 Refer</span></div>
+            <div class="ranking-item"><span class="rank-no">#3</span><span>Priya</span><span>28 Refer</span></div>
+            <div class="ranking-item"><span class="rank-no">#4</span><span>You</span><span id="yourRefers">0 Refer</span></div>
         </div>
     </div>
 </div>
 
-<div id="rankingPage" class="page">
-    <div class="card">
-        <div class="label">🏆 Top Referrers</div>
-        <div style="padding:10px;color:#9CA3AF;text-align:center">Coming Soon</div>
-    </div>
-</div>
-
+<!-- Withdraw Page -->
 <div id="withdrawPage" class="page">
     <div class="card">
         <div class="label">Withdraw Money</div>
-        <p style="color:#6b7280; font-size:13px; margin-bottom:15px;">Fixed: ₹20 per request</p>
-        <input type="number" id="withdrawAmount" value="20" disabled>
+        <p style="color:#6b7280; font-size:13px; margin-bottom:15px;">Fixed: ₹20 per request | 1 Mobile = 1 Account</p>
+        <input type="number" id="withdrawAmount" placeholder="Enter 20" min="20" max="20" value="20" disabled>
         <input type="text" id="upiId" placeholder="Enter UPI ID: 98xxxx@paytm">
-        <button class="btn btn-green" id="withdrawBtn" onclick="requestWithdraw()">Request ₹20 Withdraw</button>
+        <button class="btn btn-green" onclick="requestWithdraw()">Request ₹20 Withdraw</button>
     </div>
 
     <div class="note-box">
-      <strong style="color:#3B82F6">Important:</strong> Payment completed within 24 hours via Telegram.
+      <strong style="color:#3B82F6">Important:</strong> Referral Earning is separate from RUP Token. This is Real INR Withdraw via Telegram.
     </div>
 </div>
 
+<!-- Bottom Tabs -->
 <div class="tabs">
     <div class="tab active" onclick="showPage('homePage')">🏠<br>Home</div>
     <div class="tab" onclick="showPage('billsPage')">💵<br>Bills</div>
@@ -105,142 +202,163 @@
     <div class="tab" onclick="showPage('withdrawPage')">💸<br>Withdraw</div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast">Copied!</div>
 
-<script>
-    var refBalance = 0;
-    var BOT_TOKEN = '8721866580:AAHeD0Jrzbs6n1UzxXwUq4rrz8XvnRG3AsQ';
-    var CHAT_ID = '-1003966977699';
-
-    function showToast(msg, type) {
-        if (!type) type = 'success';
-        var t = document.getElementById('toast');
+<script type="module">
+    let refBalance = 0;
+    let totalRefers = 0;
+    
+    function showToast(msg, type = 'success'){
+        let t = document.getElementById('toast');
         t.innerText = msg;
         t.className = 'toast ' + type;
         t.style.display = 'block';
-        setTimeout(function(){ t.style.display = 'none'; }, 3000);
+        setTimeout(() => t.style.display = 'none', 3000);
     }
 
-    function loadData(){
+    // Device ID Check - 1 Mobile 1 Account
+    function getDeviceId(){
+        let deviceId = localStorage.getItem('ruppy_device_id');
+        if(!deviceId){
+            deviceId = 'dev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('ruppy_device_id', deviceId);
+        }
+        return deviceId;
+    }
+
+    async function loadData(){
+        let attempts = 0;
+        while(!window.userData?.uid && attempts < 50) {
+            await new Promise(r => setTimeout(r, 100));
+            attempts++;
+        }
+        
+        // Load Referral Balance - Separate from RUP Token
         refBalance = parseInt(localStorage.getItem('ruppy_ref_balance') || '0');
+        totalRefers = parseInt(localStorage.getItem('ruppy_total_refers') || '0');
+        
         document.getElementById('refBalance').innerText = refBalance;
+        document.getElementById('yourRefers').innerText = totalRefers + ' Refer';
+        
+        const userData = window.userData;
+        if(userData){
+            document.getElementById('myReferCode').innerText = userData.myReferralCode || 'RUP-ZTSJDZ';
+        }
         checkUsedBills();
     }
+    loadData();
+    getDeviceId();
 
-    window.onload = function() {
-        loadData();
-    }
-
-    function showPage(pageId) {
-        var pages = document.querySelectorAll('.page');
-        for(var i=0; i<pages.length; i++) pages[i].classList.remove('active');
-        var tabs = document.querySelectorAll('.tab');
-        for(var i=0; i<tabs.length; i++) tabs[i].classList.remove('active');
+    window.showPage = function(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
         event.target.closest('.tab').classList.add('active');
     }
 
-    function copyCode() {
+    window.copyCode = function() {
         navigator.clipboard.writeText(document.getElementById('myReferCode').innerText);
-        showToast('Refer Code Copied!');
+        showToast('Refer Code Copied! Share with friends');
     }
 
-    function applyRefer() {
+    window.applyRefer = function() {
+        // Check 1 Mobile 1 Account
         if(localStorage.getItem('ruppy_used_refer_code')){
-            showToast('Already used refer code', 'error');
+            showToast('You already used a refer code on this device', 'error');
             return;
         }
-        var code = document.getElementById('friendCode').value.trim();
-        if(code.length < 3) {
-            showToast('Enter valid code', 'error');
+
+        let code = document.getElementById('friendCode').value.trim();
+        if(code.length < 3) { 
+            showToast('Enter valid code', 'error'); 
+            return; 
+        }
+
+        // Self refer check
+        if(code === document.getElementById('myReferCode').innerText){
+            showToast('Cannot use your own code', 'error');
             return;
         }
+
         refBalance += 5;
         document.getElementById('refBalance').innerText = refBalance;
         localStorage.setItem('ruppy_ref_balance', refBalance);
         localStorage.setItem('ruppy_used_refer_code', code);
-        showToast('Success! ₹5 Added', 'success');
+        
+        showToast('Success! ₹5 Added to Referral Balance', 'success');
         document.getElementById('friendCode').value = '';
     }
 
-    function openBill(amount) {
+    window.openBill = function(amount) {
         if(amount!= 1 && amount!= 3){
-            showToast('This Bill is locked', 'error');
+            showToast('This Bill is currently locked', 'error');
             return;
         }
-        var today = new Date().toDateString();
-        var lastClick = localStorage.getItem('bill_' + amount + '_date');
+
+        let today = new Date().toDateString();
+        let lastClick = localStorage.getItem(`bill_${amount}_date`);
+
         if(lastClick === today){
-            showToast('Already opened today', 'error');
+            showToast('This Bill is already opened today. Try tomorrow', 'info');
             return;
         }
+
         refBalance += amount;
         document.getElementById('refBalance').innerText = refBalance;
         localStorage.setItem('ruppy_ref_balance', refBalance);
-        localStorage.setItem('bill_' + amount + '_date', today);
-        document.getElementById('bill' + amount).classList.add('used');
-        document.getElementById('bill' + amount).classList.remove('active');
-        showToast('₹' + amount + ' Added', 'success');
+
+        localStorage.setItem(`bill_${amount}_date`, today);
+        document.getElementById(`bill${amount}`).classList.add('used');
+        document.getElementById(`bill${amount}`).classList.remove('active');
+
+        showToast(`Congrats! ₹${amount} Added to Referral Balance`, 'success');
     }
 
     function checkUsedBills(){
-        var today = new Date().toDateString();
+        let today = new Date().toDateString();
         if(localStorage.getItem('bill_1_date') === today){
-            var b1 = document.getElementById('bill1');
-            if(b1) { b1.classList.add('used'); b1.classList.remove('active'); }
+            document.getElementById('bill1')?.classList.add('used');
+            document.getElementById('bill1')?.classList.remove('active');
         }
         if(localStorage.getItem('bill_3_date') === today){
-            var b3 = document.getElementById('bill3');
-            if(b3) { b3.classList.add('used'); b3.classList.remove('active'); }
+            document.getElementById('bill3')?.classList.add('used');
+            document.getElementById('bill3')?.classList.remove('active');
         }
     }
 
-    function requestWithdraw() {
-        var upi = document.getElementById('upiId').value.trim();
-        var btn = document.getElementById('withdrawBtn');
-
+    window.requestWithdraw = function() {
+        let amount = 20; // Fixed ₹20
+        let upi = document.getElementById('upiId').value.trim();
+        
         if(refBalance < 20) {
-            showToast('Minimum ₹20 required', 'error');
+            showToast('Minimum ₹20 required in Referral Balance', 'error'); 
             return;
         }
-        if(upi.indexOf('@') === -1) {
-            showToast('Enter valid UPI ID', 'error');
+        if(!upi.includes('@')) {
+            showToast('Enter valid UPI ID', 'error'); 
             return;
         }
-
-        btn.disabled = true;
-        btn.textContent = 'Processing...';
-
-        var telegramMessage = '✅ New Withdrawal Request\n\n💰 Amount: ₹20\n📱 UPI: ' + upi + '\n⏰ Time: ' + new Date().toLocaleString('en-IN') + '\n\n👤 Status: Pending\n🚀 Ruppy Earn App';
-
-        fetch('https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: CHAT_ID,
-                text: telegramMessage
-            })
-        })
-     .then(function(response) { return response.json(); })
-     .then(function(data) {
-            if (data.ok) {
-                refBalance -= 20;
-                document.getElementById('refBalance').innerText = refBalance;
-                localStorage.setItem('ruppy_ref_balance', refBalance);
-                showToast('Withdraw Sent! Check Telegram ✅', 'success');
-                document.getElementById('upiId').value = '';
-                setTimeout(function(){ showPage('homePage'); }, 1500);
-            } else {
-                showToast('Telegram Error!', 'error');
-            }
-            btn.disabled = false;
-            btn.textContent = 'Request ₹20 Withdraw';
-        })
-     .catch(function(error) {
-            showToast('Network Error!', 'error');
-            btn.disabled = false;
-            btn.textContent = 'Request ₹20 Withdraw';
+        
+        // Device ID Check
+        let deviceId = getDeviceId();
+        let withdrawHistory = JSON.parse(localStorage.getItem('ruppy_withdraw_history') || '[]');
+        
+        refBalance -= 20;
+        document.getElementById('refBalance').innerText = refBalance;
+        localStorage.setItem('ruppy_ref_balance', refBalance);
+        
+        // Save withdraw request
+        withdrawHistory.push({
+            amount: 20,
+            upi: upi,
+            deviceId: deviceId,
+            date: new Date().toISOString()
         });
+        localStorage.setItem('ruppy_withdraw_history', JSON.stringify(withdrawHistory));
+        
+        showToast('Withdraw Request Sent! ₹20 Payment in 24 hours on Telegram', 'success');
+        document.getElementById('upiId').value = '';
+        showPage('homePage');
     }
 </script>
 
