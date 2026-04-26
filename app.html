@@ -73,7 +73,7 @@
 
   <div class="mining-section">
     <div class="mining-circle ready" id="miningCircle">
-      <h3 id="miningText">CLAIM BONUS</h3>
+      <h3 id="miningText">WATCH AD</h3>
     </div>
     <p class="mining-text">Watch Ad to Collect 20 RUP</p>
   </div>
@@ -183,7 +183,7 @@
       if(callback) callback();
       if(window.logMineEvent) window.logMineEvent(rewardAmount);
       
-      UnityAds.load(UNITY_AD_UNIT); // Next Ad Ready करो
+      UnityAds.load(UNITY_AD_UNIT);
     }).catch(function(){
       showToast('Ad पूरा देखो Reward के लिए ❌', 'error');
     });
@@ -204,8 +204,8 @@
   function showToast(msg, type='success') {
     let toast = document.getElementById('toast');
     toast.innerText = msg;
-    toast.style.borderColor = type === 'error' ? '#ff0000' : '#FFA500';
-    toast.style.color = type === 'error' ? '#ff0000' : '#FFA500';
+    toast.style.borderColor = type === 'error' ? '#ff0000' : type === 'info' ? '#0099ff' : '#FFA500';
+    toast.style.color = type === 'error' ? '#ff0000' : type === 'info' ? '#0099ff' : '#FFA500';
     toast.style.display = 'block';
     setTimeout(() => { toast.style.display = 'none'; }, 3000);
   }
