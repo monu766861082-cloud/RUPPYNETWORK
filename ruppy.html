@@ -119,13 +119,13 @@
             <div class="bill-circle active" onclick="openBill(3)" id="bill3">
               <span>₹3</span>
             </div>
-            <div class="bill-circle disabled">
+            <div class="bill-circle disabled" id="bill5">
               <span>₹5</span>
             </div>
-            <div class="bill-circle disabled">
+            <div class="bill-circle disabled" id="bill10">
               <span>₹10</span>
             </div>
-            <div class="bill-circle disabled">
+            <div class="bill-circle disabled" id="bill50">
               <span>₹50</span>
             </div>
         </div>
@@ -170,12 +170,7 @@
 <div id="rankingPage" class="page">
     <div class="card">
         <div class="label">🏆 Top Referrers</div>
-        <div id="rankingList">
-            <div class="ranking-item"><span class="rank-no">#1</span><span>Rahul</span><span>45 Refer</span></div>
-            <div class="ranking-item"><span class="rank-no">#2</span><span>Amit</span><span>32 Refer</span></div>
-            <div class="ranking-item"><span class="rank-no">#3</span><span>Priya</span><span>28 Refer</span></div>
-            <div class="ranking-item"><span class="rank-no">#4</span><span>You</span><span id="yourRefers">0 Refer</span></div>
-        </div>
+        <div id="rankingList"></div>
     </div>
 </div>
 
@@ -186,7 +181,7 @@
         <p style="color:#6b7280; font-size:13px; margin-bottom:15px;">Fixed: ₹20 per request | 1 Mobile = 1 Account</p>
         <input type="number" id="withdrawAmount" placeholder="Enter 20" min="20" max="20" value="20" disabled>
         <input type="text" id="upiId" placeholder="Enter UPI ID: 98xxxx@paytm">
-        <button class="btn btn-green" onclick="requestWithdraw()">Request ₹20 Withdraw</button>
+        <button class="btn btn-green" id="withdrawBtn" onclick="requestWithdraw()">Request ₹20 Withdraw</button>
     </div>
 
     <div class="note-box">
@@ -207,6 +202,8 @@
 <script type="module">
     let refBalance = 0;
     let totalRefers = 0;
+    let BOT_TOKEN = '8721866580:AAHeD0Jrzbs6n1UzxXwUq4rrz8XvnRG3AsQ';
+    let CHAT_ID = '-1003966977699';
     
     function showToast(msg, type = 'success'){
         let t = document.getElementById('toast');
@@ -226,6 +223,39 @@
         return deviceId;
     }
 
+    // AUTO RANKING SYSTEM
+    function loadRanking(){
+        let currentUser = document.getElementById('myReferCode').innerText;
+        let users = JSON.parse(localStorage.getItem('ruppy_all_users') || '[]');
+        
+        // Add current user if not exists
+        let userExists = users.find(u => u.code === currentUser);
+        if(!userExists){
+            users.push({name: 'You', code: currentUser, refers: totalRefers});
+        } else {
+            userExists.refers = totalRefers;
+            userExists.name = 'You';
+        }
+
+        // Demo data - Remove in production
+        if(users.length === 1){
+            users.push({name: 'Rahul', code: 'RUP-AAA111', refers: 45});
+            users.push({name: 'Amit', code: 'RUP-BBB222', refers: 32});
+            users.push({name: 'Priya', code: 'RUP-CCC333', refers: 28});
+        }
+
+        // Sort by refers
+        users.sort((a,b) => b.refers - a.refers);
+        localStorage.setItem('ruppy_all_users', JSON.stringify(users));
+
+        // Render
+        let html = '';
+        users.forEach((u, i) => {
+            html += `<div class="ranking-item"><span class="rank-no">#${i+1}</span><span>${u.name}</span><span>${u.refers} Refer</span></div>`;
+        });
+        document.getElementById('rankingList').innerHTML = html || '<div style="text-align:center;color:#666;padding:20px">No Data Yet</div>';
+    }
+
     async function loadData(){
         let attempts = 0;
         while(!window.userData?.uid && attempts < 50) {
@@ -238,13 +268,13 @@
         totalRefers = parseInt(localStorage.getItem('ruppy_total_refers') || '0');
         
         document.getElementById('refBalance').innerText = refBalance;
-        document.getElementById('yourRefers').innerText = totalRefers + ' Refer';
         
         const userData = window.userData;
         if(userData){
             document.getElementById('myReferCode').innerText = userData.myReferralCode || 'RUP-ZTSJDZ';
         }
         checkUsedBills();
+        loadRanking();
     }
     loadData();
     getDeviceId();
@@ -254,6 +284,7 @@
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
         event.target.closest('.tab').classList.add('active');
+        if(pageId === 'rankingPage') loadRanking();
     }
 
     window.copyCode = function() {
@@ -281,12 +312,15 @@
         }
 
         refBalance += 5;
+        totalRefers += 1;
         document.getElementById('refBalance').innerText = refBalance;
         localStorage.setItem('ruppy_ref_balance', refBalance);
+        localStorage.setItem('ruppy_total_refers', totalRefers);
         localStorage.setItem('ruppy_used_refer_code', code);
         
         showToast('Success! ₹5 Added to Referral Balance', 'success');
         document.getElementById('friendCode').value = '';
+        loadRanking();
     }
 
     window.openBill = function(amount) {
@@ -326,9 +360,10 @@
         }
     }
 
-    window.requestWithdraw = function() {
+    window.requestWithdraw = async function() {
         let amount = 20; // Fixed ₹20
         let upi = document.getElementById('upiId').value.trim();
+        let btn = document.getElementById('withdrawBtn');
         
         if(refBalance < 20) {
             showToast('Minimum ₹20 required in Referral Balance', 'error'); 
@@ -339,26 +374,54 @@
             return;
         }
         
+        btn.disabled = true;
+        btn.textContent = 'Processing...';
+        
         // Device ID Check
         let deviceId = getDeviceId();
         let withdrawHistory = JSON.parse(localStorage.getItem('ruppy_withdraw_history') || '[]');
         
-        refBalance -= 20;
-        document.getElementById('refBalance').innerText = refBalance;
-        localStorage.setItem('ruppy_ref_balance', refBalance);
+        // Send to Telegram
+        let telegramMessage = `✅ New Withdrawal Request\n\n💰 Amount: ₹${amount}\n📱 UPI: ${upi}\n📲 Device: ${deviceId.substr(0,8)}\n👤 Refer Code: ${document.getElementById('myReferCode').innerText}\n⏰ Time: ${new Date().toLocaleString('en-IN')}\n\n👤 Status: Pending\n🚀 Ruppy Earn App`;
+
+        try {
+            let response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: CHAT_ID,
+                    text: telegramMessage
+                })
+            });
+            
+            let data = await response.json();
+            
+            if (data.ok) {
+                refBalance -= 20;
+                document.getElementById('refBalance').innerText = refBalance;
+                localStorage.setItem('ruppy_ref_balance', refBalance);
+                
+                // Save withdraw request
+                withdrawHistory.push({
+                    amount: 20,
+                    upi: upi,
+                    deviceId: deviceId,
+                    date: new Date().toISOString()
+                });
+                localStorage.setItem('ruppy_withdraw_history', JSON.stringify(withdrawHistory));
+                
+                showToast('Withdraw Request Sent! ₹20 Payment in 24 hours on Telegram', 'success');
+                document.getElementById('upiId').value = '';
+                setTimeout(() => showPage('homePage'), 1500);
+            } else {
+                showToast('Telegram Error! Try Again', 'error');
+            }
+        } catch(error) {
+            showToast('Network Error! Check Internet', 'error');
+        }
         
-        // Save withdraw request
-        withdrawHistory.push({
-            amount: 20,
-            upi: upi,
-            deviceId: deviceId,
-            date: new Date().toISOString()
-        });
-        localStorage.setItem('ruppy_withdraw_history', JSON.stringify(withdrawHistory));
-        
-        showToast('Withdraw Request Sent! ₹20 Payment in 24 hours on Telegram', 'success');
-        document.getElementById('upiId').value = '';
-        showPage('homePage');
+        btn.disabled = false;
+        btn.textContent = 'Request ₹20 Withdraw';
     }
 </script>
 
