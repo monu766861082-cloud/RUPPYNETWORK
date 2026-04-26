@@ -35,7 +35,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .txt{font-size:18px}
 .val{color:var(--muted);font-size:16px;margin-right:10px;user-select:none}
 .coming-soon{font-size:11px;color:var(--gold);background:rgba(243,199,116,0.1);padding:2px 8px;border-radius:6px;margin-left:8px}
-.sec{color:var(--muted);letter-spacing:1px;font-size:13px;margin:24px 0 12px}
 .logout{width:100%;padding:16px;border:1px solid var(--red);border-radius:16px;background:transparent;color:var(--red);font-size:16px;font-weight:600;margin-top:24px;cursor:pointer}
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0;z-index:999}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
@@ -66,17 +65,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .toast.success{background:#1a5c1a;color:#4ade80}
 .toast.error{background:#5c1a1a;color:#f87171}
 .toast.info{background:#1a3c5c;color:#60a5fa}
-
-/* Referral Earning Modal Styles */
-.bill-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
-.bill-item{border:2px solid var(--border);padding:20px;text-align:center;border-radius:10px;font-weight:bold;font-size:18px}
-.bill-item.active{border-color:var(--green);background:rgba(36,196,100,0.1);color:var(--green);cursor:pointer}
-.bill-item.locked{background:#1a1a1a;color:var(--muted);position:relative}
-.bill-item.locked::after{content:'🔒';position:absolute;top:5px;right:5px}
-.info-box{background:rgba(243,199,116,0.1);border:1px solid var(--gold);border-radius:12px;padding:15px;margin:15px 0}
-.info-row{display:flex;justify-content:space-between;padding:8px 0;font-size:14px}
-.info-label{color:var(--muted)}
-.info-value{color:var(--gold);font-weight:600}
 </style>
 </head>
 <body>
@@ -96,8 +84,14 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <div class="row" onclick="goPage('history.html')"><div class="l"><div class="icon">📊</div><div class="txt">Transaction History</div></div>›</div>
 <div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">Loading...</span>›</div>
 
-<!-- ✅ नया Button: Referral Earning -->
-<div class="row" onclick="openReferralEarning()"><div class="l"><div class="icon">💰</div><div class="txt">Referral Earning</div></div>›</div>
+<!-- ✅ Referral Earning Button - ruppy.html खोलेगा -->
+<div class="row" onclick="goPage('ruppy.html')">
+  <div class="l">
+    <div class="icon">💰</div>
+    <div class="txt">Referral Earning</div>
+  </div>
+  ›
+</div>
 
 <div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
 <div class="row" onclick="goPage('security.html')"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
@@ -142,62 +136,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     <div class="btn-group">
       <button class="btn btn-cancel" onclick="closeEditProfile()">Cancel</button>
       <button class="btn btn-save" id="saveBtn" onclick="saveProfile()">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- ✅ नया Modal: Referral Earning System -->
-<div class="modal" id="referralModal">
-  <div class="modal-content">
-    <div class="modal-title">💰 Referral Earning System</div>
-
-    <div class="info-box">
-      <div class="info-row">
-        <span class="info-label">Refer Bonus</span>
-        <span class="info-value">₹5 Per Refer</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Min Withdraw</span>
-        <span class="info-value">₹20</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Max Withdraw</span>
-        <span class="info-value">₹50</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Payment Method</span>
-        <span class="info-value">Telegram</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Ranking System</span>
-        <span class="info-value">✅ Active</span>
-      </div>
-    </div>
-
-    <div style="margin:20px 0;">
-      <div style="font-weight:600;margin-bottom:10px;color:var(--gold)">📄 Open Bills & Earn</div>
-      <div class="bill-grid">
-        <div class="bill-item active" onclick="openBill(1)">₹1</div>
-        <div class="bill-item active" onclick="openBill(3)">₹3</div>
-        <div class="bill-item locked">₹5</div>
-        <div class="bill-item locked">₹10</div>
-        <div class="bill-item locked">₹50</div>
-      </div>
-    </div>
-
-    <div class="info-box">
-      <div style="font-size:13px;color:var(--muted);line-height:1.6">
-        <strong style="color:var(--gold)">Note:</strong><br>
-        • ₹1 और ₹3 वाले Bills Open हैं<br>
-        • बाकी Bills अभी Locked हैं<br>
-        • Withdraw Request Telegram पे आएगा<br>
-        • Payment 24 घंटे में Complete होगा
-      </div>
-    </div>
-
-    <div class="btn-group">
-      <button class="btn btn-cancel" onclick="closeReferralEarning()">Close</button>
-      <button class="btn btn-save" onclick="goPage('referral.html')">Go to Referral Page</button>
     </div>
   </div>
 </div>
@@ -262,8 +200,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     document.getElementById('userBalance').innerText = (userData.balance || 0) + ' RUP';
     document.getElementById('userId').innerText = 'ID: ' + shortId;
     document.getElementById('refCode').innerText = code;
-
-    console.log('✅ Settings Code from config.js:', code);
   }
 
   loadProfile();
@@ -288,16 +224,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     }
     navigator.clipboard.writeText(code).then(() => {
       showToast('✅ Copied: ' + code, 'success');
-    }).catch(() => {
-      const temp = document.createElement('textarea');
-      temp.value = code;
-      temp.style.position = 'fixed';
-      temp.style.opacity = '0';
-      document.body.appendChild(temp);
-      temp.select();
-      document.execCommand('copy');
-      document.body.removeChild(temp);
-      showToast('✅ Copied: ' + code, 'success');
     });
   }
 
@@ -313,21 +239,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   }
 
   window.goPage = function(page){ window.location.href = page; }
-
-  // ✅ नए Functions: Referral Earning Modal
-  window.openReferralEarning = function(){
-    document.getElementById('referralModal').classList.add('active');
-  }
-
-  window.closeReferralEarning = function(){
-    document.getElementById('referralModal').classList.remove('active');
-  }
-
-  window.openBill = function(amount){
-    // यहाँ Backend API Call लगेगी: open_bill.php
-    showToast(`Congrats! You got ₹${amount}`, 'success');
-    closeReferralEarning();
-  }
 
   window.openEditProfile = function(){
     document.getElementById('editName').value = window.userData?.name || '';
@@ -441,18 +352,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
       notifEnabled = false;
       localStorage.setItem('notif_enabled', 'false');
       updateNotifStatus();
-    }
-  }
-
-  window.sendMiningNotif = function(){
-    if(localStorage.getItem('notif_enabled') === 'true'){
-      if('Notification' in window && Notification.permission === 'granted'){
-        new Notification('Rewards Ready!', {
-          body: 'Your RUP is ready to collect!',
-          icon: 'https://ruppynetwork.com/icon.png'
-        });
-        new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play();
-      }
     }
   }
 
