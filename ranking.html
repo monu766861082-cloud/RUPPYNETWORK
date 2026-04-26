@@ -6,7 +6,7 @@
   <title>Ruppy Network - Leaderboard</title>
 
   <!-- ✅ config.js सबसे पहले Load होगा -->
-  <script type="module" src="config.js"></script>
+  <script type="module" src="config.js?v=3"></script>
 
   <style>
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
@@ -78,6 +78,8 @@
 .nav-item.active {color:#FFA500;}
 .nav-item.active::after {content:''; position:absolute; bottom:2px; width:30px; height:2px; background:#FFA500; border-radius:2px;}
 .nav-item.icon {font-size:20px;}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999}
+.toast.error{background:#5c1a1a;color:#ff4d4d}
   </style>
 
 </head>
@@ -185,6 +187,8 @@
       <span>Settings</span>
     </div>
   </div>
+
+<div class="toast" id="toast">Copied!</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
@@ -485,30 +489,28 @@
     });
   }
 
+  // ✅ referral.html वाला Working Code - यहाँ लगा दिया
   window.handleReferNow = async function() {
-    if (!currentUser) return alert("Please wait, logging in...");
+    if (!currentUser) return showToast('Please wait, logging in...', 'error');
 
     const btn = document.querySelector('.btn-refer');
     btn.disabled = true;
 
-    if (!userData?.referralCode) {
-      userData.referralCode = 'RUP-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    // ✅ Auto Generate Code अगर नहीं है
+    if (!userData?.myReferralCode) {
+      userData.myReferralCode = 'RUP-' + currentUser.uid.substring(0,6).toUpperCase();
       if(window.saveRuppyData) await window.saveRuppyData(userData);
     }
 
-    const shareUrl = window.location.origin + window.location.pathname;
-    const shareData = {
-      title: 'Ruppy Network',
-      text: 'Join Ruppy Network! My Referral Code: ' + userData.referralCode + '\nDownload: ',
-      url: shareUrl
-    };
+    let inviteCode = userData.myReferralCode;
+    let text = `Join RUPPY Network & get 300 RUP Bonus! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app`;
 
     try {
-      if (navigator.share) {
-        await navigator.share(shareData);
+      if(navigator.share){
+        await navigator.share({title: 'Join RUPPY Network', text: text});
       } else {
-        await navigator.clipboard.writeText(shareData.text + shareData.url);
-        alert('Referral message copied!');
+        await navigator.clipboard.writeText(text);
+        showToast('Invite Link Copied!');
       }
 
       btn.innerText = 'LINK SHARED!';
@@ -521,6 +523,14 @@
       btn.disabled = false;
       console.error(err);
     }
+  }
+
+  function showToast(msg, type = 'success'){
+    let t = document.getElementById('toast');
+    t.innerText = msg;
+    t.className = 'toast ' + type;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 2500);
   }
 
   window.navClick = function(page) {
