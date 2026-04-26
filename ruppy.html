@@ -8,40 +8,48 @@
     <style>
         * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif;}
         body {background: #0B0B0C; padding-bottom: 80px; color: #fff;}
-       .header {background: linear-gradient(135deg, #F3C774, #FFA500); color: #000; padding: 15px; text-align: center; font-size: 20px; font-weight: 700; display:flex; align-items:center; justify-content:space-between;}
-       .back{font-size:24px;cursor:pointer;padding:0 10px;font-weight:bold}
-       .card {background: #161617; margin: 15px; padding: 20px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 1px solid #2A2A2C;}
-       .balance {text-align: center; font-size: 16px; color: #9CA3AF;}
-       .balance span {font-size: 32px; font-weight: bold; color: #24C464; display: block; margin: 10px 0;}
-       .btn {width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; transition:all 0.2s;}
-       .btn:active{transform:scale(0.98)}
-       .btn-primary {background: linear-gradient(135deg, #F3C774, #FFA500); color: #000;}
-       .btn-green {background: #24C464; color: white;}
-       .btn:disabled {background: #4b5563; cursor: not-allowed; opacity:0.5;}
+      .header {background: linear-gradient(135deg, #F3C774, #FFA500); color: #000; padding: 15px; text-align: center; font-size: 20px; font-weight: 700; display:flex; align-items:center; justify-content:space-between;}
+      .back{font-size:24px;cursor:pointer;padding:0 10px;font-weight:bold}
+      .card {background: #161617; margin: 15px; padding: 20px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 1px solid #2A2A2C;}
+      .balance {text-align: center; font-size: 16px; color: #9CA3AF;}
+      .balance span {font-size: 32px; font-weight: bold; color: #24C464; display: block; margin: 10px 0;}
+      .btn {width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; transition:all 0.2s;}
+      .btn:active{transform:scale(0.98)}
+      .btn-primary {background: linear-gradient(135deg, #F3C774, #FFA500); color: #000;}
+      .btn-green {background: #24C464; color: white;}
+      .btn:disabled {background: #4b5563; cursor: not-allowed; opacity:0.5;}
         input {width: 100%; padding: 12px; border: 1px solid #2A2A2C; border-radius: 12px; margin: 8px 0; font-size: 15px; background: #0B0B0C; color: #fff;}
-       .label {font-weight: 600; margin-bottom: 8px; display: block; color: #F3C774; font-size: 14px;}
-       .bill-circle{width:70px;height:70px;border-radius:50%;border:2px solid #2A2A2C;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;transition:all 0.3s;}
-       .bill-circle.active{border-color:#24C464;background:rgba(36,196,100,0.1);color:#24C464;cursor:pointer;box-shadow:0 0 15px rgba(36,196,100,0.3);}
-       .bill-circle.active:active{transform:scale(0.9)}
-       .bill-circle.disabled{background:#1a1a1a;color:#666;cursor:not-allowed;opacity:0.5;}
-       .bill-circle.used{background:#2a2a2a;border-color:#444;color:#666;cursor:not-allowed;}
-       .ranking-item {display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #2A2A2C; font-size:14px;}
-       .rank-no {font-weight: bold; color: #F3C774; width: 30px;}
-       .tabs {position: fixed; bottom: 0; left: 0; right: 0; background: #0d0d0d; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); border-top:1px solid #222;}
-       .tab {flex: 1; padding: 12px 5px; text-align: center; cursor: pointer; border-top: 3px solid transparent; color: #666; font-size: 11px;}
-       .tab.active {border-top-color: #F3C774; color: #F3C774; font-weight: bold;}
-       .page {display: none;}
-       .page.active {display: block;}
-       .code-box {background: #0B0B0C; padding: 15px; border-radius: 12px; text-align: center; font-size: 20px; font-weight: bold; letter-spacing: 2px; margin: 10px 0; border: 1px solid #2A2A2C; color: #F3C774;}
-       .info-box{background:rgba(243,199,116,0.1);border:1px solid #F3C774;border-radius:12px;padding:12px;margin:12px 0}
-       .info-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
-       .info-label{color:#9CA3AF}
-       .info-value{color:#F3C774;font-weight:600}
-       .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:14px 24px;border-radius:12px;font-size:14px;display:none;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);font-weight:500}
-       .toast.success{background:#1a5c1a;color:#4ade80}
-       .toast.error{background:#5c1a1a;color:#f87171}
-       .toast.info{background:#1a3c5c;color:#60a5fa}
-       .note-box{background:rgba(59,130,246,0.1);border:1px solid #3B82F6;border-radius:12px;padding:12px;margin:12px 0;font-size:12px;color:#9CA3AF}
+      .label {font-weight: 600; margin-bottom: 8px; display: block; color: #F3C774; font-size: 14px;}
+
+       /* Bill Box + Timer */
+      .bill-container{display:flex;flex-direction:column;align-items:center;gap:8px}
+      .bill-circle{width:70px;height:70px;border-radius:50%;border:2px solid #2A2A2C;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;transition:all 0.3s;position:relative;}
+      .bill-circle.active{border-color:#24C464;background:rgba(36,196,100,0.1);color:#24C464;cursor:pointer;box-shadow:0 0 15px rgba(36,196,100,0.3);}
+      .bill-circle.active:active{transform:scale(0.9)}
+      .bill-circle.disabled{background:#1a1a1a;color:#666;cursor:not-allowed;opacity:0.5;}
+      .bill-circle.used{background:#2a2a2a;border-color:#444;color:#666;cursor:not-allowed;}
+      .bill-circle.spinning{animation:spinBill 0.8s ease-in-out;}
+       @keyframes spinBill{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.2)}100%{transform:rotate(360deg) scale(1)}}
+      .bill-timer{font-size:10px;color:#F3C774;font-weight:600;min-height:14px}
+      .bill-timer.hide{opacity:0}
+
+      .ranking-item {display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #2A2A2C; font-size:14px;}
+      .rank-no {font-weight: bold; color: #F3C774; width: 30px;}
+      .tabs {position: fixed; bottom: 0; left: 0; right: 0; background: #0d0d0d; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); border-top:1px solid #222;}
+      .tab {flex: 1; padding: 12px 5px; text-align: center; cursor: pointer; border-top: 3px solid transparent; color: #666; font-size: 11px;}
+      .tab.active {border-top-color: #F3C774; color: #F3C774; font-weight: bold;}
+      .page {display: none;}
+      .page.active {display: block;}
+      .code-box {background: #0B0B0C; padding: 15px; border-radius: 12px; text-align: center; font-size: 20px; font-weight: bold; letter-spacing: 2px; margin: 10px 0; border: 1px solid #2A2A2C; color: #F3C774;}
+      .info-box{background:rgba(243,199,116,0.1);border:1px solid #F3C774;border-radius:12px;padding:12px;margin:12px 0}
+      .info-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
+      .info-label{color:#9CA3AF}
+      .info-value{color:#F3C774;font-weight:600}
+      .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:14px 24px;border-radius:12px;font-size:14px;display:none;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);font-weight:500}
+      .toast.success{background:#1a5c1a;color:#4ade80}
+      .toast.error{background:#5c1a1a;color:#f87171}
+      .toast.info{background:#1a3c5c;color:#60a5fa}
+      .note-box{background:rgba(59,130,246,0.1);border:1px solid #3B82F6;border-radius:12px;padding:12px;margin:12px 0;font-size:12px;color:#9CA3AF}
     </style>
 </head>
 <body>
@@ -82,11 +90,26 @@
     <div class="card">
         <div class="label">📄 Daily Bills - Click to Earn</div>
         <div style="display:flex;flex-wrap:wrap;gap:15px;justify-content:center;margin-top:15px">
-            <div class="bill-circle active" onclick="openBill(1)" id="bill1"><span>₹1</span></div>
-            <div class="bill-circle active" onclick="openBill(3)" id="bill3"><span>₹3</span></div>
-            <div class="bill-circle disabled" id="bill5"><span>₹5</span></div>
-            <div class="bill-circle disabled" id="bill10"><span>₹10</span></div>
-            <div class="bill-circle disabled" id="bill50"><span>₹50</span></div>
+            <div class="bill-container">
+                <div class="bill-circle active" onclick="openBill(1)" id="bill1"><span>₹1</span></div>
+                <div class="bill-timer hide" id="timer1"></div>
+            </div>
+            <div class="bill-container">
+                <div class="bill-circle active" onclick="openBill(3)" id="bill3"><span>₹3</span></div>
+                <div class="bill-timer hide" id="timer3"></div>
+            </div>
+            <div class="bill-container">
+                <div class="bill-circle disabled" id="bill5"><span>₹5</span></div>
+                <div class="bill-timer hide"></div>
+            </div>
+            <div class="bill-container">
+                <div class="bill-circle disabled" id="bill10"><span>₹10</span></div>
+                <div class="bill-timer hide"></div>
+            </div>
+            <div class="bill-container">
+                <div class="bill-circle disabled" id="bill50"><span>₹50</span></div>
+                <div class="bill-timer hide"></div>
+            </div>
         </div>
     </div>
 
@@ -101,7 +124,7 @@
     <div class="card">
       <div style="font-size:13px;color:#9CA3AF;line-height:1.6">
         <strong style="color:#F3C774">Rules:</strong><br>
-        - ₹1 and ₹3 Bills can be opened once per day<br>
+        - ₹1 and ₹3 Bills can be opened once per 24 hours<br>
         - ₹5, ₹10, ₹50 Bills are currently locked<br>
         - Only 1 Account per Mobile Device<br>
         - Fixed Withdraw: ₹20 Only<br>
@@ -148,6 +171,7 @@
     var totalRefers = 0;
     var BOT_TOKEN = '8721866580:AAHeD0Jrzbs6n1UzxXwUq4rrz8XvnRG3AsQ';
     var CHAT_ID = '-1003966977699';
+    var billTimers = {};
 
     function showToast(msg, type) {
         if (!type) type = 'success';
@@ -200,16 +224,55 @@
         document.getElementById('rankingList').innerHTML = html || '<div style="text-align:center;color:#666;padding:20px">No Data Yet</div>';
     }
 
+    function formatTime(ms){
+        var h = Math.floor(ms / 3600000);
+        var m = Math.floor((ms % 3600000) / 60000);
+        var s = Math.floor((ms % 60000) / 1000);
+        return (h<10?'0'+h:h) + ':' + (m<10?'0'+m:m) + ':' + (s<10?'0'+s:s);
+    }
+
+    function startBillTimer(amount){
+        var endTime = parseInt(localStorage.getItem('bill_' + amount + '_end'));
+        if(!endTime) return;
+
+        var timerEl = document.getElementById('timer' + amount);
+        var billEl = document.getElementById('bill' + amount);
+
+        billEl.classList.add('used');
+        billEl.classList.remove('active');
+        timerEl.classList.remove('hide');
+
+        if(billTimers[amount]) clearInterval(billTimers[amount]);
+
+        billTimers[amount] = setInterval(function(){
+            var now = Date.now();
+            var diff = endTime - now;
+
+            if(diff <= 0){
+                clearInterval(billTimers[amount]);
+                localStorage.removeItem('bill_' + amount + '_end');
+                billEl.classList.remove('used');
+                billEl.classList.add('active');
+                timerEl.classList.add('hide');
+                timerEl.innerText = '';
+                showToast('₹' + amount + ' Bill Recycled! Click Again', 'info');
+            } else {
+                timerEl.innerText = formatTime(diff);
+            }
+        }, 1000);
+    }
+
     function checkUsedBills(){
-        var today = new Date().toDateString();
-        if(localStorage.getItem('bill_1_date') === today){
-            var b1 = document.getElementById('bill1');
-            if(b1) { b1.classList.add('used'); b1.classList.remove('active'); }
-        }
-        if(localStorage.getItem('bill_3_date') === today){
-            var b3 = document.getElementById('bill3');
-            if(b3) { b3.classList.add('used'); b3.classList.remove('active'); }
-        }
+        [1,3].forEach(function(amount){
+            var endTime = localStorage.getItem('bill_' + amount + '_end');
+            if(endTime){
+                if(parseInt(endTime) > Date.now()){
+                    startBillTimer(amount);
+                } else {
+                    localStorage.removeItem('bill_' + amount + '_end');
+                }
+            }
+        });
     }
 
     function loadData(){
@@ -275,21 +338,28 @@
             return;
         }
 
-        var today = new Date().toDateString();
-        var lastClick = localStorage.getItem('bill_' + amount + '_date');
-
-        if(lastClick === today){
-            showToast('This Bill is already opened today. Try tomorrow', 'info');
+        var endTime = localStorage.getItem('bill_' + amount + '_end');
+        if(endTime && parseInt(endTime) > Date.now()){
+            showToast('Wait for timer to finish', 'info');
             return;
         }
 
-        refBalance += amount;
-        document.getElementById('refBalance').innerText = refBalance;
-        localStorage.setItem('ruppy_ref_balance', refBalance);
-        localStorage.setItem('bill_' + amount + '_date', today);
-        document.getElementById('bill' + amount).classList.add('used');
-        document.getElementById('bill' + amount).classList.remove('active');
-        showToast('Congrats! ₹' + amount + ' Added to Referral Balance', 'success');
+        var billEl = document.getElementById('bill' + amount);
+        billEl.classList.add('spinning');
+
+        setTimeout(function(){
+            billEl.classList.remove('spinning');
+
+            refBalance += amount;
+            document.getElementById('refBalance').innerText = refBalance;
+            localStorage.setItem('ruppy_ref_balance', refBalance);
+
+            var newEndTime = Date.now() + 86400000; // 24 hours
+            localStorage.setItem('bill_' + amount + '_end', newEndTime);
+
+            startBillTimer(amount);
+            showToast('Congrats! ₹' + amount + ' Added to Referral Balance', 'success');
+        }, 800);
     }
 
     function requestWithdraw() {
@@ -321,8 +391,8 @@
                 text: telegramMessage
             })
         })
-    .then(function(response) { return response.json(); })
-    .then(function(data) {
+   .then(function(response) { return response.json(); })
+   .then(function(data) {
             if (data.ok) {
                 refBalance -= 20;
                 document.getElementById('refBalance').innerText = refBalance;
@@ -345,7 +415,7 @@
             btn.disabled = false;
             btn.textContent = 'Request ₹20 Withdraw';
         })
-    .catch(function(error) {
+   .catch(function(error) {
             showToast('Network Error! Check Internet', 'error');
             btn.disabled = false;
             btn.textContent = 'Request ₹20 Withdraw';
