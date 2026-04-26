@@ -66,6 +66,17 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .toast.success{background:#1a5c1a;color:#4ade80}
 .toast.error{background:#5c1a1a;color:#f87171}
 .toast.info{background:#1a3c5c;color:#60a5fa}
+
+/* नया Admin Box Style */
+.admin-box{background:linear-gradient(135deg, #1a1a1a, #2d2d2d);border:2px solid var(--gold);border-radius:16px;padding:20px;margin:26px 0;box-shadow:0 0 20px rgba(243,199,116,0.2)}
+.admin-title{color:var(--gold);font-size:18px;font-weight:700;margin-bottom:15px;display:flex;align-items:center;gap:8px}
+.admin-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+.admin-row:last-child{border-bottom:none}
+.admin-label{color:#e5e7eb;font-size:14px}
+.admin-value{color:var(--gold);font-weight:600;font-size:14px;background:rgba(243,199,116,0.1);padding:4px 12px;border-radius:8px}
+.bill-status{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.bill-status.open{background:var(--green)}
+.bill-status.locked{background:var(--red)}
 </style>
 </head>
 <body>
@@ -90,6 +101,65 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <div class="row" onclick="goPage('contact.html')"><div class="l"><div class="icon">❓</div><div class="txt">Help & Support</div></div>›</div>
 <div class="row" onclick="goPage('privacy.html')"><div class="l"><div class="icon">📄</div><div class="txt">Privacy Policy</div></div>›</div>
 <div class="row" onclick="goPage('terms.html')"><div class="l"><div class="icon">📋</div><div class="txt">Terms & Conditions</div></div>›</div>
+</div>
+
+<!-- ✅ नया Admin Controls Box यहाँ Add किया -->
+<div class="admin-box">
+  <div class="admin-title">🔧 App Controls</div>
+
+  <div class="admin-row">
+    <span class="admin-label">Min Withdraw Amount</span>
+    <span class="admin-value">₹20</span>
+  </div>
+
+  <div class="admin-row">
+    <span class="admin-label">Max Withdraw Amount</span>
+    <span class="admin-value">₹50</span>
+  </div>
+
+  <div class="admin-row">
+    <span class="admin-label">Refer Bonus Amount</span>
+    <span class="admin-value">₹5</span>
+  </div>
+
+  <div class="admin-row">
+    <span class="admin-label">Ranking System</span>
+    <span class="admin-value">✅ Active</span>
+  </div>
+
+  <div class="admin-row">
+    <span class="admin-label">Bill Status - ₹1</span>
+    <span class="admin-value"><span class="bill-status open"></span>Open</span>
+  </div>
+
+  <div class="admin-row">
+    <span class="admin-label">Bill Status - ₹3</span>
+    <span class="admin-value"><span class="bill-status open"></span>Open</span>
+  </div>
+
+  <div class="admin-row">
+    <span class="admin-label">Bill Status - ₹5</span>
+    <span class="admin-value"><span class="bill-status locked"></span>Locked</span>
+  </div>
+
+  <div class="admin-row">
+    <span class="admin-label">Bill Status - ₹10</span>
+    <span class="admin-value"><span class="bill-status locked"></span>Locked</span>
+  </div>
+
+  <div class="admin-row">
+    <span class="admin-label">Bill Status - ₹50</span>
+    <span class="admin-value"><span class="bill-status locked"></span>Locked</span>
+  </div>
+
+  <div class="admin-row">
+    <span class="admin-label">Telegram Payment</span>
+    <span class="admin-value">✅ Active</span>
+  </div>
+
+  <div style="margin-top:15px;padding-top:15px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);text-align:center;">
+    ⚠️ Values can only be changed from Backend
+  </div>
 </div>
 
 <button class="logout" onclick="logout()">Logout</button>
