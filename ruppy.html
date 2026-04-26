@@ -1,8 +1,7 @@
-<script type="module">
+<script>
     let refBalance = 0;
     let totalRefers = 0;
     
-    // Telegram Bot Config - तेरा वाला Add किया
     const BOT_TOKEN = '8721866580:AAHeD0Jrzbs6n1UzxXwUq4rrz8XvnRG3AsQ';
     const CHAT_ID = '-1003966977699';
     
@@ -14,7 +13,6 @@
         setTimeout(() => t.style.display = 'none', 3000);
     }
 
-    // Device ID Check - 1 Mobile 1 Account
     function getDeviceId(){
         let deviceId = localStorage.getItem('ruppy_device_id');
         if(!deviceId){
@@ -24,41 +22,34 @@
         return deviceId;
     }
 
-    async function loadData(){
-        let attempts = 0;
-        while(!window.userData?.uid && attempts < 50) {
-            await new Promise(r => setTimeout(r, 100));
-            attempts++;
-        }
-        
+    function loadData(){
         refBalance = parseInt(localStorage.getItem('ruppy_ref_balance') || '0');
         totalRefers = parseInt(localStorage.getItem('ruppy_total_refers') || '0');
         
         document.getElementById('refBalance').innerText = refBalance;
         document.getElementById('yourRefers').innerText = totalRefers + ' Refer';
         
-        const userData = window.userData;
-        if(userData){
-            document.getElementById('myReferCode').innerText = userData.myReferralCode || 'RUP-ZTSJDZ';
-        }
         checkUsedBills();
     }
-    loadData();
-    getDeviceId();
+    
+    window.onload = function() {
+        loadData();
+        getDeviceId();
+    }
 
-    window.showPage = function(pageId) {
+    function showPage(pageId, element) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
-        event.target.closest('.tab').classList.add('active');
+        if(element) element.classList.add('active');
     }
 
-    window.copyCode = function() {
+    function copyCode() {
         navigator.clipboard.writeText(document.getElementById('myReferCode').innerText);
         showToast('Refer Code Copied! Share with friends');
     }
 
-    window.applyRefer = function() {
+    function applyRefer() {
         if(localStorage.getItem('ruppy_used_refer_code')){
             showToast('You already used a refer code on this device', 'error');
             return;
@@ -84,7 +75,7 @@
         document.getElementById('friendCode').value = '';
     }
 
-    window.openBill = function(amount) {
+    function openBill(amount) {
         if(amount!= 1 && amount!= 3){
             showToast('This Bill is currently locked', 'error');
             return;
@@ -112,23 +103,21 @@
     function checkUsedBills(){
         let today = new Date().toDateString();
         if(localStorage.getItem('bill_1_date') === today){
-            document.getElementById('bill1')?.classList.add('used');
-            document.getElementById('bill1')?.classList.remove('active');
+            let b1 = document.getElementById('bill1');
+            if(b1) { b1.classList.add('used'); b1.classList.remove('active'); }
         }
         if(localStorage.getItem('bill_3_date') === today){
-            document.getElementById('bill3')?.classList.add('used');
-            document.getElementById('bill3')?.classList.remove('active');
+            let b3 = document.getElementById('bill3');
+            if(b3) { b3.classList.add('used'); b3.classList.remove('active'); }
         }
     }
 
-    // Telegram Integration वाला Function
-    window.requestWithdraw = async function() {
-        let amount = 20;
+    async function requestWithdraw() {
         let upi = document.getElementById('upiId').value.trim();
         let btn = document.querySelector('#withdrawPage .btn-green');
         
         if(refBalance < 20) {
-            showToast('Minimum ₹20 required in Referral Balance', 'error'); 
+            showToast('Minimum ₹20 required', 'error'); 
             return;
         }
         if(!upi.includes('@')) {
@@ -140,10 +129,7 @@
         btn.textContent = 'Processing...';
         
         let deviceId = getDeviceId();
-        let withdrawHistory = JSON.parse(localStorage.getItem('ruppy_withdraw_history') || '[]');
-        
-        // Telegram Message
-        const telegramMessage = `✅ *New Withdrawal Request*\n\n💰 Amount: ₹20\n📱 UPI: ${upi}\n📲 Device: ${deviceId.substr(0,8)}...\n⏰ Time: ${new Date().toLocaleString('en-IN')}\n\n👤 Status: Pending\n🚀 Ruppy Earn App`;
+        const telegramMessage = `✅ New Withdrawal Request\n\n💰 Amount: ₹20\n📱 UPI: ${upi}\n📲 Device: ${deviceId.substr(0,8)}\n⏰ Time: ${new Date().toLocaleString('en-IN')}\n\n👤 Status: Pending\n🚀 Ruppy Earn App`;
         
         try {
             const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -151,8 +137,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     chat_id: CHAT_ID,
-                    text: telegramMessage,
-                    parse_mode: 'Markdown'
+                    text: telegramMessage
                 })
             });
             
@@ -163,23 +148,14 @@
                 document.getElementById('refBalance').innerText = refBalance;
                 localStorage.setItem('ruppy_ref_balance', refBalance);
                 
-                withdrawHistory.push({
-                    amount: 20,
-                    upi: upi,
-                    deviceId: deviceId,
-                    date: new Date().toISOString(),
-                    telegramSent: true
-                });
-                localStorage.setItem('ruppy_withdraw_history', JSON.stringify(withdrawHistory));
-                
-                showToast('Withdraw Request Sent! Check Telegram Group ✅', 'success');
+                showToast('Withdraw Sent! Check Telegram ✅', 'success');
                 document.getElementById('upiId').value = '';
                 setTimeout(() => showPage('homePage'), 1500);
             } else {
-                showToast('Telegram Error: ' + data.description, 'error');
+                showToast('Telegram Error!', 'error');
             }
         } catch (error) {
-            showToast('Network Error! Check Internet', 'error');
+            showToast('Network Error!', 'error');
         }
         
         btn.disabled = false;
