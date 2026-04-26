@@ -5,7 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruppy Network - App</title>
   
-  <script type="module" src="config.js"></script>
+  <script type="module">
+    // FIX 1: UserData Load + Save Function
+    window.userData = JSON.parse(localStorage.getItem('ruppyUserData')) || {
+      uid: 'user_' + Date.now(),
+      name: 'User',
+      dp: '',
+      balance: 0,
+      lastMine: 0,
+      boostCount: 0,
+      boostResetTime: Date.now(),
+      lastGift: 0,
+      firstRewardTime: 0,
+      ultraRewardTime: 0
+    };
+    
+    window.saveRuppyData = function(data) {
+      localStorage.setItem('ruppyUserData', JSON.stringify(data));
+      window.userData = data;
+    }
+  </script>
   
   <style>
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
@@ -151,29 +170,34 @@
 
   <div id="toast"></div>
 
-<!-- UNITY ADS - RUPPY NETWORK -->
+<!-- UNITY ADS - TEST MODE ON -->
 <script src="https://ads.unityads.unity3d.com/webgl/production/unityads.js"></script>
 <script type="module">
-  // Unity Ads Setup
-  const UNITY_GAME_ID = "610020";
+  // FIX 2: Unity Ads Test Mode = true कर दिया
+  const UNITY_GAME_ID = "1234567"; // Test ID
   const UNITY_AD_UNIT = "Rewarded_Android";
   let unityAdsReady = false;
 
-  UnityAds.initialize(UNITY_GAME_ID, {testMode: false}).then(() => {
+  UnityAds.initialize(UNITY_GAME_ID, {testMode: true}).then(() => {
     UnityAds.load(UNITY_AD_UNIT);
     unityAdsReady = true;
+    console.log("Unity Ready");
+  }).catch((err) => {
+    console.log("Unity Error:", err);
+    showToast('Ad SDK Load Failed', 'error');
   });
 
-  // Universal Ad Function - सब Buttons के लिए
   function showRuppyAd(rewardAmount, rewardType, callback){
     if(!unityAdsReady || !UnityAds.isReady(UNITY_AD_UNIT)){
-      showToast('Ad Loading... Try Again', 'info');
+      showToast('Ad Loading... Wait 5 Sec', 'info');
       UnityAds.load(UNITY_AD_UNIT);
+      setTimeout(() => {
+        if(UnityAds.isReady(UNITY_AD_UNIT)) showRuppyAd(rewardAmount, rewardType, callback);
+      }, 5000);
       return;
     }
     
     UnityAds.show(UNITY_AD_UNIT).then(function(){
-      // Ad पूरा देखा = Reward दे दो
       userData.balance = Number(userData.balance) || 0;
       userData.balance += rewardAmount;
       saveRuppyData(userData);
@@ -185,21 +209,12 @@
       
       UnityAds.load(UNITY_AD_UNIT);
     }).catch(function(){
-      showToast('Ad पूरा देखो Reward के लिए ❌', 'error');
+      showToast('Ad Skipped - No Reward ❌', 'error');
     });
   }
 
-  let userData;
+  let userData = window.userData;
   const MINING_REWARD = 20;
-  
-  async function waitForUserData() {
-    let attempts = 0;
-    while(!window.userData?.uid && attempts < 50) {
-      await new Promise(r => setTimeout(r, 100));
-      attempts++;
-    }
-    userData = window.userData;
-  }
 
   function showToast(msg, type='success') {
     let toast = document.getElementById('toast');
@@ -210,7 +225,6 @@
     setTimeout(() => { toast.style.display = 'none'; }, 3000);
   }
 
-  // 1. Mining Circle - 20 RUP
   function doMining() {
     let now = Date.now();
     let lastMine = Number(userData.lastMine) || 0;
@@ -223,7 +237,6 @@
     });
   }
 
-  // 2. Collect Bonus - 20 RUP
   function doBoost() {
     if(userData.boostCount >= 3) return;
     let boostAmount = 20;
@@ -243,7 +256,6 @@
     });
   }
 
-  // 3. Ultra Gift - 10 RUP
   function doGift() {
     let now = Date.now();
     let lastGift = Number(userData.lastGift) || 0;
@@ -256,7 +268,6 @@
     });
   }
 
-  // 4. First Reward - 15 RUP
   function doFirstReward() {
     if(Date.now() >= userData.firstRewardTime || userData.firstRewardTime === 0){
       showRuppyAd(15, 'FirstReward', function(){
@@ -267,7 +278,6 @@
     }
   }
 
-  // 5. Ultra Reward - 15 RUP
   function doUltraReward() {
     if(Date.now() >= userData.ultraRewardTime || userData.ultraRewardTime === 0){
       showRuppyAd(15, 'UltraReward', function(){
@@ -442,9 +452,7 @@
     profileName.innerText = 'Welcome back, ' + (userData.name || 'User');
   }
 
-  (async function() {
-    await waitForUserData();
-    
+  (function() {
     loadProfileEverywhere();
     
     if(Date.now() - userData.boostResetTime > 10800000) {
