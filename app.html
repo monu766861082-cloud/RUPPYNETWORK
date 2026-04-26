@@ -5,26 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruppy Network - App</title>
   
-  <script>
-    // LocalStorage Setup
-    window.userData = JSON.parse(localStorage.getItem('ruppyUserData')) || {
-      uid: 'user_' + Date.now(),
-      name: 'User',
-      dp: '',
-      balance: 0,
-      lastMine: 0,
-      boostCount: 0,
-      boostResetTime: Date.now(),
-      lastGift: 0,
-      firstRewardTime: 0,
-      ultraRewardTime: 0
-    };
-    
-    window.saveRuppyData = function(data) {
-      localStorage.setItem('ruppyUserData', JSON.stringify(data));
-      window.userData = data;
-    }
-  </script>
+  <script type="module" src="config.js"></script>
   
   <style>
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
@@ -39,6 +20,7 @@
     .balance-card h2 {font-size:32px; margin:5px 0; color:#FFA500; display:flex; align-items:center; gap:8px;}
     .balance-card h2 span {color:#fff; font-size:20px;}
     .r-coin {width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#000;box-shadow:0 0 12px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500;position:relative;flex-shrink:0}
+    .r-coin::after {content:'';position:absolute;inset:-2px;border-radius:50%;background:radial-gradient(circle,#FF6B00 0%,transparent 70%);opacity:0.4;filter:blur(3px);z-index:-1}
     .mining-section {margin:30px 0; text-align:center;}
     .mining-circle {width:180px; height:180px; margin:0 auto; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:0.3s; border:2px solid #FFA500;}
     .mining-circle.ready {background:linear-gradient(135deg, #FFD700, #FFA500); border:none; box-shadow:0 0 25px rgba(255,165,0,0.6);}
@@ -91,9 +73,9 @@
 
   <div class="mining-section">
     <div class="mining-circle ready" id="miningCircle">
-      <h3 id="miningText">WATCH AD</h3>
+      <h3 id="miningText">CLAIM BONUS</h3>
     </div>
-    <p class="mining-text">Watch Ad to Collect 20 RUP</p>
+    <p class="mining-text">Collect 20 RUP • Available every 3 hours</p>
   </div>
 
   <div class="grid">
@@ -101,28 +83,28 @@
       <div class="badge" id="boostBadge">0/3</div>
       <div class="icon">🖥️</div>
       <h4>COLLECT BONUS</h4>
-      <p id="boostTimer">Watch Ad → +20 RUP</p>
+      <p id="boostTimer">10% Bonus Available</p>
       <div class="timer-bar"><div class="timer-fill" id="boostBar"></div></div>
     </div>
     <div class="grid-item" id="giftBtn">
       <div class="badge" id="giftBadge">✓</div>
       <div class="icon" style="background:#6a5acd;">🎁</div>
       <h4 style="color:#fff;">ULTRA GIFT</h4>
-      <p id="giftTimer">Watch Ad → +10 RUP</p>
+      <p id="giftTimer">Ready → +10 RUP</p>
       <div class="timer-bar"><div class="timer-fill" id="giftBar"></div></div>
     </div>
     <div class="grid-item" id="firstRewardBtn">
       <div class="badge" id="firstRewardBadge" style="display:none;background:#00ff00;">READY</div>
       <div class="icon" style="background:#FF6B35;">⚡</div>
       <h4 style="color:#fff;">FIRST REWARD</h4>
-      <p id="firstRewardTimer">Watch Ad → +15 RUP</p>
+      <p id="firstRewardTimer">Next in 01:00:00</p>
       <div class="timer-bar"><div class="timer-fill" id="firstRewardBar"></div></div>
     </div>
     <div class="grid-item" id="ultraRewardBtn">
       <div class="badge" id="ultraRewardBadge" style="display:none;background:#00ff00;">READY</div>
       <div class="icon" style="background:#8B5CF6;">💎</div>
       <h4 style="color:#fff;">ULTRA REWARD</h4>
-      <p id="ultraRewardTimer">Watch Ad → +15 RUP</p>
+      <p id="ultraRewardTimer">Next in 01:00:00</p>
       <div class="timer-bar"><div class="timer-fill" id="ultraRewardBar"></div></div>
     </div>
   </div>
@@ -130,12 +112,12 @@
   <div class="modal" id="boostModal">
     <div class="modal-content">
       <h3>🚀 COLLECT BONUS</h3>
-      <p>Watch Ad to Collect Extra RUP</p>
+      <p>Collect extra RUP</p>
       <div class="boost-step">
         <h4>Step <span id="boostStep">1</span>/3</h4>
-        <p id="boostStepText">Watch Ad for +20 RUP</p>
+        <p id="boostStepText">Claim 10% bonus</p>
       </div>
-      <button class="btn" id="boostModalBtn">Watch Ad</button>
+      <button class="btn" id="boostModalBtn">Claim Bonus</button>
       <button class="close-btn" id="closeBoostModal">Close</button>
     </div>
   </div>
@@ -169,95 +151,54 @@
 
   <div id="toast"></div>
 
-<!-- FAKE AD MODAL - 100% काम करेगा -->
-<div class="modal" id="adModal">
-  <div class="modal-content" style="max-width:400px;">
-    <h3>🎬 Advertisement</h3>
-    <div style="background:#000; padding:20px; border-radius:8px; margin:15px 0; text-align:center;">
-      <p style="color:#FFA500; font-size:18px; margin-bottom:10px;">Unity Ads Test Video</p>
-      <p style="color:#888; font-size:14px;">Watch for <span id="adCountdown">5</span> seconds</p>
-      <div style="width:100%; height:4px; background:#333; margin-top:15px; border-radius:2px;">
-        <div id="adProgress" style="width:0%; height:100%; background:#FFA500; transition:width 1s linear;"></div>
-      </div>
-    </div>
-    <button class="btn" id="closeAdBtn" disabled>Close Ad (<span id="closeTimer">5</span>s)</button>
-  </div>
-</div>
-
-<script>
-// FAKE AD SYSTEM - Browser में चलेगा 100%
-let userData = window.userData;
-const MINING_REWARD = 20;
-
-function showToast(msg, type='success') {
-  let toast = document.getElementById('toast');
-  toast.innerText = msg;
-  toast.style.borderColor = type === 'error' ? '#ff0000' : type === 'info' ? '#0099ff' : '#FFA500';
-  toast.style.color = type === 'error' ? '#ff0000' : type === 'info' ? '#0099ff' : '#FFA500';
-  toast.style.display = 'block';
-  setTimeout(() => { toast.style.display = 'none'; }, 3000);
-}
-
-// FAKE AD FUNCTION - ये 100% चलेगा
-function showRuppyAd(rewardAmount, callback){
-  let seconds = 5;
-  document.getElementById('adModal').classList.add('active');
-  document.getElementById('closeAdBtn').disabled = true;
-  document.getElementById('adCountdown').innerText = seconds;
-  document.getElementById('closeTimer').innerText = seconds;
-  document.getElementById('adProgress').style.width = '0%';
+<script type="module">
+  let userData;
+  const MINING_REWARD = 20;
   
-  let interval = setInterval(() => {
-    seconds--;
-    document.getElementById('adCountdown').innerText = seconds;
-    document.getElementById('closeTimer').innerText = seconds;
-    document.getElementById('adProgress').style.width = ((5-seconds)/5*100) + '%';
-    
-    if(seconds <= 0){
-      clearInterval(interval);
-      document.getElementById('closeAdBtn').disabled = false;
-      document.getElementById('closeAdBtn').innerText = 'Claim Reward';
+  async function waitForUserData() {
+    let attempts = 0;
+    while(!window.userData?.uid && attempts < 50) {
+      await new Promise(r => setTimeout(r, 100));
+      attempts++;
     }
-  }, 1000);
-  
-  document.getElementById('closeAdBtn').onclick = function(){
-    document.getElementById('adModal').classList.remove('active');
-    
-    // Reward दे दो
-    userData.balance = Number(userData.balance) || 0;
-    userData.balance += rewardAmount;
-    saveRuppyData(userData);
-    updateBalance();
-    showToast(`+${rewardAmount} RUP Claimed! 🎉`);
-    
-    if(callback) callback();
-    
-    // Reset button
-    document.getElementById('closeAdBtn').innerText = 'Close Ad (5s)';
-    document.getElementById('closeAdBtn').disabled = true;
+    userData = window.userData;
   }
-}
 
-function doMining() {
-  let now = Date.now();
-  let lastMine = Number(userData.lastMine) || 0;
-  if(now - lastMine < 10800000 && lastMine !== 0) return;
-  
-  showRuppyAd(MINING_REWARD, function(){
+  function showToast(msg) {
+    let toast = document.getElementById('toast');
+    toast.innerText = msg;
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 3000);
+  }
+
+  function doMining() {
+    let now = Date.now();
+    let lastMine = Number(userData.lastMine) || 0;
+    if(now - lastMine < 10800000 && lastMine !== 0) return;
+    
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += MINING_REWARD;
     userData.lastMine = now;
     saveRuppyData(userData);
+    updateBalance();
     updateMiningCircle();
-  });
-}
+    showToast(`+${MINING_REWARD} RUP Claimed!`);
+    
+    if(window.logMineEvent) window.logMineEvent(MINING_REWARD);
+  }
 
-function doBoost() {
-  if(userData.boostCount >= 3) return;
-  let boostAmount = 20;
-  
-  showRuppyAd(boostAmount, function(){
+  function doBoost() {
+    if(userData.boostCount >= 3) return;
+    let boostAmount = Math.floor(MINING_REWARD * 0.10);
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += boostAmount;
     userData.boostCount++;
     saveRuppyData(userData);
+    updateBalance();
     updateBoost();
+    showToast(`+${boostAmount} RUP Claimed!`);
+    
+    if(window.logMineEvent) window.logMineEvent(boostAmount);
     
     if(userData.boostCount >= 3) {
       document.getElementById('boostModalBtn').innerText = 'All Claimed!';
@@ -266,219 +207,242 @@ function doBoost() {
     } else {
       document.getElementById('boostStep').innerText = userData.boostCount + 1;
     }
-  });
-}
+  }
 
-function doGift() {
-  let now = Date.now();
-  let lastGift = Number(userData.lastGift) || 0;
-  if(now - lastGift < 7200000 && lastGift !== 0) return;
-  
-  showRuppyAd(10, function(){
+  function doGift() {
+    let now = Date.now();
+    let lastGift = Number(userData.lastGift) || 0;
+    if(now - lastGift < 7200000 && lastGift !== 0) return;
+    
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += 10;
     userData.lastGift = now;
     saveRuppyData(userData);
+    updateBalance();
     updateGift();
-  });
-}
+    showToast('+10 RUP Claimed!');
+    
+    if(window.logMineEvent) window.logMineEvent(10);
+  }
 
-function doFirstReward() {
-  if(Date.now() >= userData.firstRewardTime || userData.firstRewardTime === 0){
-    showRuppyAd(15, function(){
+  function doFirstReward() {
+    if(Date.now() >= userData.firstRewardTime || userData.firstRewardTime === 0){
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += 10;
       userData.firstRewardTime = Date.now() + 3600000;
       saveRuppyData(userData);
+      updateBalance();
       updateFirstReward();
-    });
+      showToast('+10 RUP Claimed!');
+      
+      if(window.logMineEvent) window.logMineEvent(10);
+    }
   }
-}
 
-function doUltraReward() {
-  if(Date.now() >= userData.ultraRewardTime || userData.ultraRewardTime === 0){
-    showRuppyAd(15, function(){
+  function doUltraReward() {
+    if(Date.now() >= userData.ultraRewardTime || userData.ultraRewardTime === 0){
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += 30;
       userData.ultraRewardTime = Date.now() + 3600000;
       saveRuppyData(userData);
+      updateBalance();
       updateUltraReward();
-    });
+      showToast('+30 RUP Claimed!');
+      
+      if(window.logMineEvent) window.logMineEvent(30);
+    }
   }
-}
 
-document.getElementById('miningCircle').onclick = doMining;
-document.getElementById('boostBtn').onclick = openBoostModal;
-document.getElementById('boostModalBtn').onclick = doBoost;
-document.getElementById('closeBoostModal').onclick = closeBoostModal;
-document.getElementById('giftBtn').onclick = doGift;
-document.getElementById('firstRewardBtn').onclick = doFirstReward;
-document.getElementById('ultraRewardBtn').onclick = doUltraReward;
+  document.getElementById('miningCircle').onclick = doMining;
+  document.getElementById('boostBtn').onclick = openBoostModal;
+  document.getElementById('boostModalBtn').onclick = doBoost;
+  document.getElementById('closeBoostModal').onclick = closeBoostModal;
+  document.getElementById('giftBtn').onclick = doGift;
+  document.getElementById('firstRewardBtn').onclick = doFirstReward;
+  document.getElementById('ultraRewardBtn').onclick = doUltraReward;
 
-function openBoostModal() {
-  if(userData.boostCount >= 3) {
-    showToast('You watched 3 ads already. Try again after 3 hours.');
-    return;
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.onclick = () => {
+      const page = item.dataset.page;
+      if(page === 'tasks') window.location.href = 'tasks.html';
+      if(page === 'referral') window.location.href = 'referral.html';
+      if(page === 'ranking') window.location.href = 'ranking.html';
+      if(page === 'community') window.location.href = 'community.html';
+      if(page === 'settings') window.location.href = 'settings.html';
+    };
+  });
+
+  function openBoostModal() {
+    if(userData.boostCount >= 3) {
+      showToast('You claimed 3 bonuses already. Try again after 3 hours.');
+      return;
+    }
+    document.getElementById('boostStep').innerText = userData.boostCount + 1;
+    document.getElementById('boostStepText').innerText = 'Claim 10% bonus';
+    document.getElementById('boostModal').classList.add('active');
   }
-  document.getElementById('boostStep').innerText = userData.boostCount + 1;
-  document.getElementById('boostStepText').innerText = 'Watch Ad for +20 RUP';
-  document.getElementById('boostModal').classList.add('active');
-}
 
-function closeBoostModal() {
-  document.getElementById('boostModal').classList.remove('active');
-}
+  function closeBoostModal() {
+    document.getElementById('boostModal').classList.remove('active');
+  }
 
-function updateBalance() {
-  document.getElementById('balance').innerHTML = '<div class="r-coin">R</div> ' + Number(userData.balance) + ' <span>RUP</span>';
-}
+  function updateBalance() {
+    document.getElementById('balance').innerHTML = '<div class="r-coin">R</div> ' + Number(userData.balance) + ' <span>RUP</span>';
+  }
 
-function updateMiningCircle() {
-  let now = Date.now();
-  let lastMine = Number(userData.lastMine) || 0;
-  let diff = now - lastMine;
-  let cooldown = 10800000;
-  
-  let circle = document.getElementById('miningCircle');
-  let text = document.getElementById('miningText');
-  
-  if(diff >= cooldown || lastMine === 0) {
-    circle.className = 'mining-circle ready';
-    text.innerText = 'WATCH AD';
-  } else {
-    let remaining = cooldown - diff;
-    let hrs = Math.floor(remaining / 3600000);
-    let mins = Math.floor((remaining % 3600000) / 60000);
-    let secs = Math.floor((remaining % 60000) / 1000);
+  function updateMiningCircle() {
+    let now = Date.now();
+    let lastMine = Number(userData.lastMine) || 0;
+    let diff = now - lastMine;
+    let cooldown = 10800000;
     
-    circle.className = 'mining-circle mining';
-    text.innerText = 'Next in\n' + String(hrs).padStart(2,'0') + ':' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
-  }
-}
-
-function updateBoost() {
-  let now = Date.now();
-  userData.boostResetTime = Number(userData.boostResetTime) || now;
-  userData.boostCount = Number(userData.boostCount) || 0;
-  
-  if(now - userData.boostResetTime > 10800000) {
-    userData.boostCount = 0;
-    userData.boostResetTime = now;
-    saveRuppyData(userData);
-  }
-  
-  document.getElementById('boostBadge').innerText = userData.boostCount + '/3';
-  
-  if(userData.boostCount >= 3) {
-    let resetIn = 10800000 - (now - userData.boostResetTime);
-    let h = Math.floor(resetIn / 3600000);
-    let m = Math.floor((resetIn % 3600000) / 60000);
-    let s = Math.floor((resetIn % 60000) / 1000);
-    document.getElementById('boostTimer').innerText = 'Reset in ' + h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-    document.getElementById('boostBar').style.width = '100%';
-    document.getElementById('boostBadge').style.background = '#00ff00';
-  } else {
-    document.getElementById('boostTimer').innerText = 'Watch Ad → +20 RUP';
-    document.getElementById('boostBar').style.width = (userData.boostCount / 3 * 100) + '%';
-    document.getElementById('boostBadge').style.background = '#FFA500';
-  }
-}
-
-function updateGift() {
-  let now = Date.now();
-  let lastGift = Number(userData.lastGift) || 0;
-  let diff = now - lastGift;
-  let cooldown = 7200000;
-  
-  if(diff >= cooldown || lastGift === 0) {
-    document.getElementById('giftTimer').innerText = 'Watch Ad → +10 RUP';
-    document.getElementById('giftBadge').innerText = '✓';
-    document.getElementById('giftBadge').style.background = '#00ff00';
-    document.getElementById('giftBar').style.width = '100%';
-  } else {
-    let remaining = cooldown - diff;
-    let hrs = Math.floor(remaining / 3600000);
-    let mins = Math.floor((remaining % 3600000) / 60000);
-    let secs = Math.floor((remaining % 60000) / 1000);
-    document.getElementById('giftTimer').innerText = 'Next in ' + String(hrs).padStart(2,'0') + ':' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
-    document.getElementById('giftBadge').innerText = '⏱';
-    document.getElementById('giftBadge').style.background = '#666';
+    let circle = document.getElementById('miningCircle');
+    let text = document.getElementById('miningText');
     
-    let percent = ((cooldown - remaining) / cooldown) * 100;
-    document.getElementById('giftBar').style.width = percent + '%';
+    if(diff >= cooldown || lastMine === 0) {
+      circle.className = 'mining-circle ready';
+      text.innerText = 'CLAIM BONUS';
+    } else {
+      let remaining = cooldown - diff;
+      let hrs = Math.floor(remaining / 3600000);
+      let mins = Math.floor((remaining % 3600000) / 60000);
+      let secs = Math.floor((remaining % 60000) / 1000);
+      
+      circle.className = 'mining-circle mining';
+      text.innerText = 'Next in\n' + String(hrs).padStart(2,'0') + ':' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
+    }
   }
-}
 
-function updateFirstReward() {
-  let now = Date.now();
-  let diff = userData.firstRewardTime - now;
-  
-  if(diff <= 0 || userData.firstRewardTime === 0){
-    document.getElementById('firstRewardTimer').innerText = 'Watch Ad → +15 RUP';
-    document.getElementById('firstRewardBadge').style.display = 'block';
-    document.getElementById('firstRewardBar').style.width = '100%';
-  } else {
-    let h = Math.floor(diff/3600000);
-    let m = Math.floor((diff%3600000)/60000);
-    let s = Math.floor((diff%60000)/1000);
-    document.getElementById('firstRewardTimer').innerText = 'Next in ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-    document.getElementById('firstRewardBadge').style.display = 'none';
-    let progress = ((3600000 - diff) / 3600000) * 100;
-    document.getElementById('firstRewardBar').style.width = progress + '%';
+  function updateBoost() {
+    let now = Date.now();
+    userData.boostResetTime = Number(userData.boostResetTime) || now;
+    userData.boostCount = Number(userData.boostCount) || 0;
+    
+    if(now - userData.boostResetTime > 10800000) {
+      userData.boostCount = 0;
+      userData.boostResetTime = now;
+      saveRuppyData(userData);
+    }
+    
+    document.getElementById('boostBadge').innerText = userData.boostCount + '/3';
+    
+    if(userData.boostCount >= 3) {
+      let resetIn = 10800000 - (now - userData.boostResetTime);
+      let h = Math.floor(resetIn / 3600000);
+      let m = Math.floor((resetIn % 3600000) / 60000);
+      let s = Math.floor((resetIn % 60000) / 1000);
+      document.getElementById('boostTimer').innerText = 'Reset in ' + h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      document.getElementById('boostBar').style.width = '100%';
+      document.getElementById('boostBadge').style.background = '#00ff00';
+    } else {
+      document.getElementById('boostTimer').innerText = '10% Bonus Available';
+      document.getElementById('boostBar').style.width = (userData.boostCount / 3 * 100) + '%';
+      document.getElementById('boostBadge').style.background = '#FFA500';
+    }
   }
-}
 
-function updateUltraReward() {
-  let now = Date.now();
-  let diff = userData.ultraRewardTime - now;
-  
-  if(diff <= 0 || userData.ultraRewardTime === 0){
-    document.getElementById('ultraRewardTimer').innerText = 'Watch Ad → +15 RUP';
-    document.getElementById('ultraRewardBadge').style.display = 'block';
-    document.getElementById('ultraRewardBar').style.width = '100%';
-  } else {
-    let h = Math.floor(diff/3600000);
-    let m = Math.floor((diff%3600000)/60000);
-    let s = Math.floor((diff%60000)/1000);
-    document.getElementById('ultraRewardTimer').innerText = 'Next in ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-    document.getElementById('ultraRewardBadge').style.display = 'none';
-    let progress = ((3600000 - diff) / 3600000) * 100;
-    document.getElementById('ultraRewardBar').style.width = progress + '%';
+  function updateGift() {
+    let now = Date.now();
+    let lastGift = Number(userData.lastGift) || 0;
+    let diff = now - lastGift;
+    let cooldown = 7200000;
+    
+    if(diff >= cooldown || lastGift === 0) {
+      document.getElementById('giftTimer').innerText = 'Ready → +10 RUP';
+      document.getElementById('giftBadge').innerText = '✓';
+      document.getElementById('giftBadge').style.background = '#00ff00';
+      document.getElementById('giftBar').style.width = '100%';
+    } else {
+      let remaining = cooldown - diff;
+      let hrs = Math.floor(remaining / 3600000);
+      let mins = Math.floor((remaining % 3600000) / 60000);
+      let secs = Math.floor((remaining % 60000) / 1000);
+      document.getElementById('giftTimer').innerText = 'Next in ' + String(hrs).padStart(2,'0') + ':' + String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
+      document.getElementById('giftBadge').innerText = '⏱';
+      document.getElementById('giftBadge').style.background = '#666';
+      
+      let percent = ((cooldown - remaining) / cooldown) * 100;
+      document.getElementById('giftBar').style.width = percent + '%';
+    }
   }
-}
 
-function loadProfileEverywhere() {
-  const profileDp = document.getElementById('userDp');
-  const profileName = document.getElementById('userName');
-  
-  if (userData.dp) {
-    profileDp.innerHTML = '<img src="' + userData.dp + '" alt="DP">';
-  } else {
-    profileDp.innerHTML = '👤';
+  function updateFirstReward() {
+    let now = Date.now();
+    let diff = userData.firstRewardTime - now;
+    
+    if(diff <= 0 || userData.firstRewardTime === 0){
+      document.getElementById('firstRewardTimer').innerText = 'Claim 10 RUP';
+      document.getElementById('firstRewardBadge').style.display = 'block';
+      document.getElementById('firstRewardBar').style.width = '100%';
+    } else {
+      let h = Math.floor(diff/3600000);
+      let m = Math.floor((diff%3600000)/60000);
+      let s = Math.floor((diff%60000)/1000);
+      document.getElementById('firstRewardTimer').innerText = 'Next in ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      document.getElementById('firstRewardBadge').style.display = 'none';
+      let progress = ((3600000 - diff) / 3600000) * 100;
+      document.getElementById('firstRewardBar').style.width = progress + '%';
+    }
   }
-  
-  profileName.innerText = 'Welcome back, ' + (userData.name || 'User');
-}
 
-// INIT
-(function() {
-  loadProfileEverywhere();
-  
-  if(Date.now() - userData.boostResetTime > 10800000) {
-    userData.boostCount = 0;
-    userData.boostResetTime = Date.now();
-    saveRuppyData(userData);
+  function updateUltraReward() {
+    let now = Date.now();
+    let diff = userData.ultraRewardTime - now;
+    
+    if(diff <= 0 || userData.ultraRewardTime === 0){
+      document.getElementById('ultraRewardTimer').innerText = 'Claim 30 RUP';
+      document.getElementById('ultraRewardBadge').style.display = 'block';
+      document.getElementById('ultraRewardBar').style.width = '100%';
+    } else {
+      let h = Math.floor(diff/3600000);
+      let m = Math.floor((diff%3600000)/60000);
+      let s = Math.floor((diff%60000)/1000);
+      document.getElementById('ultraRewardTimer').innerText = 'Next in ' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      document.getElementById('ultraRewardBadge').style.display = 'none';
+      let progress = ((3600000 - diff) / 3600000) * 100;
+      document.getElementById('ultraRewardBar').style.width = progress + '%';
+    }
   }
-  
-  updateBalance();
-  updateMiningCircle();
-  updateBoost();
-  updateGift();
-  updateFirstReward();
-  updateUltraReward();
-  
-  setInterval(function() {
+
+  function loadProfileEverywhere() {
+    const profileDp = document.getElementById('userDp');
+    const profileName = document.getElementById('userName');
+    
+    if (userData.dp) {
+      profileDp.innerHTML = '<img src="' + userData.dp + '" alt="DP">';
+    } else {
+      profileDp.innerHTML = '👤';
+    }
+    
+    profileName.innerText = 'Welcome back, ' + (userData.name || 'User');
+  }
+
+  (async function() {
+    await waitForUserData();
+    
+    loadProfileEverywhere();
+    
+    if(Date.now() - userData.boostResetTime > 10800000) {
+      userData.boostCount = 0;
+      userData.boostResetTime = Date.now();
+      saveRuppyData(userData);
+    }
+    
+    updateBalance();
     updateMiningCircle();
     updateBoost();
     updateGift();
     updateFirstReward();
     updateUltraReward();
-  }, 1000);
-})();
+    
+    setInterval(function() {
+      updateMiningCircle();
+      updateBoost();
+      updateGift();
+      updateFirstReward();
+      updateUltraReward();
+    }, 1000);
+  })();
 </script>
 </body>
 </html>
