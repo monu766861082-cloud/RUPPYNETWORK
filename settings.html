@@ -21,20 +21,16 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .avatar img{width:100%;height:100%;object-fit:cover}
 .avatar span{font-size:44px;font-weight:700;color:var(--gold)}
 .name{text-align:center;font-size:26px;font-weight:600}
-.bal{display:block;width:max-content;margin:12px auto;padding:6px 18px;border:1px solid var(--green);border-radius:999px;color:var(--green);font-weight:600;font-size:15px}
 .id-box{display:block;width:max-content;margin:8px auto;padding:4px 14px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font-size:13px;cursor:pointer}
 .id-box:active{transform:scale(0.95)}
 .card{background:var(--card);border:1px solid var(--border);border-radius:24px;overflow:hidden;margin:26px 0}
 .row{display:flex;align-items:center;justify-content:space-between;padding:20px 18px;border-top:1px solid var(--border);cursor:pointer;transition:all 0.2s}
 .row:first-child{border:0}
 .row:active{background:rgba(243,199,116,0.05)}
-.row.disabled{opacity:0.5;cursor:not-allowed}
-.row.disabled:active{background:transparent}
 .l{display:flex;align-items:center}
 .icon{width:44px;height:44px;border-radius:12px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-right:16px;font-size:20px}
 .txt{font-size:18px}
 .val{color:var(--muted);font-size:16px;margin-right:10px;user-select:none}
-.coming-soon{font-size:11px;color:var(--gold);background:rgba(243,199,116,0.1);padding:2px 8px;border-radius:6px;margin-left:8px}
 .logout{width:100%;padding:16px;border:1px solid var(--red);border-radius:16px;background:transparent;color:var(--red);font-size:16px;font-weight:600;margin-top:24px;cursor:pointer}
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0;z-index:999}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
@@ -75,24 +71,11 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
 <div class="avatar" id="avatarBox"><span id="avatarLetter">R</span></div>
 <div class="name" id="userName">Loading...</div>
-<div class="bal" id="userBalance">0 RUP</div>
 <div class="id-box" id="userId" onclick="copyUserId()">ID: Loading...</div>
 
 <div class="card">
-<div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📤</div><div class="txt">Send RUP <span class="coming-soon">Coming Soon</span></div></div>›</div>
-<div class="row disabled" onclick="showComingSoon()"><div class="l"><div class="icon">📥</div><div class="txt">Receive RUP <span class="coming-soon">Coming Soon</span></div></div>›</div>
 <div class="row" onclick="goPage('history.html')"><div class="l"><div class="icon">📊</div><div class="txt">Transaction History</div></div>›</div>
 <div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">Loading...</span>›</div>
-
-<!-- ✅ Referral Earning Button - ruppy.html खोलेगा -->
-<div class="row" onclick="goPage('ruppy.html')">
-  <div class="l">
-    <div class="icon">💰</div>
-    <div class="txt">Referral Earning</div>
-  </div>
-  ›
-</div>
-
 <div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
 <div class="row" onclick="goPage('security.html')"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
 <div class="row" onclick="toggleNotification()"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div><span class="val" id="notifStatus">Off</span>›</div>
@@ -108,10 +91,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   <a href="contact.html">Contact</a> •
   <a href="privacy.html">Privacy</a> •
   <a href="terms.html">Terms</a>
-</div>
-
-<div style="font-size:9px;color:#666;text-align:center;padding:15px;line-height:1.4">
-*RUP are virtual points for entertainment & leaderboard ranking only. They have no monetary value and cannot be exchanged for real cash, prizes, or cryptocurrency.
 </div>
 
 <div class="sp"></div>
@@ -197,7 +176,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
       document.getElementById('avatarBox').innerHTML = `<span>${(userData.name || 'U').charAt(0).toUpperCase()}</span>`;
     }
     document.getElementById('userName').innerText = userData.name || 'User';
-    document.getElementById('userBalance').innerText = (userData.balance || 0) + ' RUP';
     document.getElementById('userId').innerText = 'ID: ' + shortId;
     document.getElementById('refCode').innerText = code;
   }
@@ -210,10 +188,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     t.className = 'toast ' + type;
     t.style.display = 'block';
     setTimeout(() => t.style.display = 'none', 3000);
-  }
-
-  window.showComingSoon = function(){
-    showToast('This feature is Coming Soon! 🚀', 'info');
   }
 
   window.copyRefCode = function(){
