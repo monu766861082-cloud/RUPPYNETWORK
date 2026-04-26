@@ -75,7 +75,7 @@
     <div class="mining-circle ready" id="miningCircle">
       <h3 id="miningText">CLAIM BONUS</h3>
     </div>
-    <p class="mining-text">Collect 20 RUP • Available every 3 hours</p>
+    <p class="mining-text">Watch Ad to Collect 20 RUP</p>
   </div>
 
   <div class="grid">
@@ -83,28 +83,28 @@
       <div class="badge" id="boostBadge">0/3</div>
       <div class="icon">🖥️</div>
       <h4>COLLECT BONUS</h4>
-      <p id="boostTimer">10% Bonus Available</p>
+      <p id="boostTimer">Watch Ad → +20 RUP</p>
       <div class="timer-bar"><div class="timer-fill" id="boostBar"></div></div>
     </div>
     <div class="grid-item" id="giftBtn">
       <div class="badge" id="giftBadge">✓</div>
       <div class="icon" style="background:#6a5acd;">🎁</div>
       <h4 style="color:#fff;">ULTRA GIFT</h4>
-      <p id="giftTimer">Ready → +10 RUP</p>
+      <p id="giftTimer">Watch Ad → +10 RUP</p>
       <div class="timer-bar"><div class="timer-fill" id="giftBar"></div></div>
     </div>
     <div class="grid-item" id="firstRewardBtn">
       <div class="badge" id="firstRewardBadge" style="display:none;background:#00ff00;">READY</div>
       <div class="icon" style="background:#FF6B35;">⚡</div>
       <h4 style="color:#fff;">FIRST REWARD</h4>
-      <p id="firstRewardTimer">Next in 01:00:00</p>
+      <p id="firstRewardTimer">Watch Ad → +15 RUP</p>
       <div class="timer-bar"><div class="timer-fill" id="firstRewardBar"></div></div>
     </div>
     <div class="grid-item" id="ultraRewardBtn">
       <div class="badge" id="ultraRewardBadge" style="display:none;background:#00ff00;">READY</div>
       <div class="icon" style="background:#8B5CF6;">💎</div>
       <h4 style="color:#fff;">ULTRA REWARD</h4>
-      <p id="ultraRewardTimer">Next in 01:00:00</p>
+      <p id="ultraRewardTimer">Watch Ad → +15 RUP</p>
       <div class="timer-bar"><div class="timer-fill" id="ultraRewardBar"></div></div>
     </div>
   </div>
@@ -112,12 +112,12 @@
   <div class="modal" id="boostModal">
     <div class="modal-content">
       <h3>🚀 COLLECT BONUS</h3>
-      <p>Collect extra RUP</p>
+      <p>Watch Ad to Collect Extra RUP</p>
       <div class="boost-step">
         <h4>Step <span id="boostStep">1</span>/3</h4>
-        <p id="boostStepText">Claim 10% bonus</p>
+        <p id="boostStepText">Watch Ad for +20 RUP</p>
       </div>
-      <button class="btn" id="boostModalBtn">Claim Bonus</button>
+      <button class="btn" id="boostModalBtn">Watch Ad</button>
       <button class="close-btn" id="closeBoostModal">Close</button>
     </div>
   </div>
@@ -151,7 +151,44 @@
 
   <div id="toast"></div>
 
+<!-- UNITY ADS - RUPPY NETWORK -->
+<script src="https://ads.unityads.unity3d.com/webgl/production/unityads.js"></script>
 <script type="module">
+  // Unity Ads Setup
+  const UNITY_GAME_ID = "610020";
+  const UNITY_AD_UNIT = "Rewarded_Android";
+  let unityAdsReady = false;
+
+  UnityAds.initialize(UNITY_GAME_ID, {testMode: false}).then(() => {
+    UnityAds.load(UNITY_AD_UNIT);
+    unityAdsReady = true;
+  });
+
+  // Universal Ad Function - सब Buttons के लिए
+  function showRuppyAd(rewardAmount, rewardType, callback){
+    if(!unityAdsReady || !UnityAds.isReady(UNITY_AD_UNIT)){
+      showToast('Ad Loading... Try Again', 'info');
+      UnityAds.load(UNITY_AD_UNIT);
+      return;
+    }
+    
+    UnityAds.show(UNITY_AD_UNIT).then(function(){
+      // Ad पूरा देखा = Reward दे दो
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += rewardAmount;
+      saveRuppyData(userData);
+      updateBalance();
+      showToast(`+${rewardAmount} RUP Claimed! 🎉`);
+      
+      if(callback) callback();
+      if(window.logMineEvent) window.logMineEvent(rewardAmount);
+      
+      UnityAds.load(UNITY_AD_UNIT); // Next Ad Ready करो
+    }).catch(function(){
+      showToast('Ad पूरा देखो Reward के लिए ❌', 'error');
+    });
+  }
+
   let userData;
   const MINING_REWARD = 20;
   
@@ -164,92 +201,80 @@
     userData = window.userData;
   }
 
-  function showToast(msg) {
+  function showToast(msg, type='success') {
     let toast = document.getElementById('toast');
     toast.innerText = msg;
+    toast.style.borderColor = type === 'error' ? '#ff0000' : '#FFA500';
+    toast.style.color = type === 'error' ? '#ff0000' : '#FFA500';
     toast.style.display = 'block';
     setTimeout(() => { toast.style.display = 'none'; }, 3000);
   }
 
+  // 1. Mining Circle - 20 RUP
   function doMining() {
     let now = Date.now();
     let lastMine = Number(userData.lastMine) || 0;
     if(now - lastMine < 10800000 && lastMine !== 0) return;
     
-    userData.balance = Number(userData.balance) || 0;
-    userData.balance += MINING_REWARD;
-    userData.lastMine = now;
-    saveRuppyData(userData);
-    updateBalance();
-    updateMiningCircle();
-    showToast(`+${MINING_REWARD} RUP Claimed!`);
-    
-    if(window.logMineEvent) window.logMineEvent(MINING_REWARD);
+    showRuppyAd(MINING_REWARD, 'Mining', function(){
+      userData.lastMine = now;
+      saveRuppyData(userData);
+      updateMiningCircle();
+    });
   }
 
+  // 2. Collect Bonus - 20 RUP
   function doBoost() {
     if(userData.boostCount >= 3) return;
-    let boostAmount = Math.floor(MINING_REWARD * 0.10);
-    userData.balance = Number(userData.balance) || 0;
-    userData.balance += boostAmount;
-    userData.boostCount++;
-    saveRuppyData(userData);
-    updateBalance();
-    updateBoost();
-    showToast(`+${boostAmount} RUP Claimed!`);
+    let boostAmount = 20;
     
-    if(window.logMineEvent) window.logMineEvent(boostAmount);
-    
-    if(userData.boostCount >= 3) {
-      document.getElementById('boostModalBtn').innerText = 'All Claimed!';
-      document.getElementById('boostModalBtn').disabled = true;
-      setTimeout(closeBoostModal, 1500);
-    } else {
-      document.getElementById('boostStep').innerText = userData.boostCount + 1;
-    }
+    showRuppyAd(boostAmount, 'CollectBonus', function(){
+      userData.boostCount++;
+      saveRuppyData(userData);
+      updateBoost();
+      
+      if(userData.boostCount >= 3) {
+        document.getElementById('boostModalBtn').innerText = 'All Claimed!';
+        document.getElementById('boostModalBtn').disabled = true;
+        setTimeout(closeBoostModal, 1500);
+      } else {
+        document.getElementById('boostStep').innerText = userData.boostCount + 1;
+      }
+    });
   }
 
+  // 3. Ultra Gift - 10 RUP
   function doGift() {
     let now = Date.now();
     let lastGift = Number(userData.lastGift) || 0;
     if(now - lastGift < 7200000 && lastGift !== 0) return;
     
-    userData.balance = Number(userData.balance) || 0;
-    userData.balance += 10;
-    userData.lastGift = now;
-    saveRuppyData(userData);
-    updateBalance();
-    updateGift();
-    showToast('+10 RUP Claimed!');
-    
-    if(window.logMineEvent) window.logMineEvent(10);
+    showRuppyAd(10, 'UltraGift', function(){
+      userData.lastGift = now;
+      saveRuppyData(userData);
+      updateGift();
+    });
   }
 
+  // 4. First Reward - 15 RUP
   function doFirstReward() {
     if(Date.now() >= userData.firstRewardTime || userData.firstRewardTime === 0){
-      userData.balance = Number(userData.balance) || 0;
-      userData.balance += 10;
-      userData.firstRewardTime = Date.now() + 3600000;
-      saveRuppyData(userData);
-      updateBalance();
-      updateFirstReward();
-      showToast('+10 RUP Claimed!');
-      
-      if(window.logMineEvent) window.logMineEvent(10);
+      showRuppyAd(15, 'FirstReward', function(){
+        userData.firstRewardTime = Date.now() + 3600000;
+        saveRuppyData(userData);
+        updateFirstReward();
+      });
     }
   }
 
+  // 5. Ultra Reward - 15 RUP
   function doUltraReward() {
     if(Date.now() >= userData.ultraRewardTime || userData.ultraRewardTime === 0){
-      userData.balance = Number(userData.balance) || 0;
-      userData.balance += 30;
-      userData.ultraRewardTime = Date.now() + 3600000;
-      saveRuppyData(userData);
-      updateBalance();
-      updateUltraReward();
-      showToast('+30 RUP Claimed!');
-      
-      if(window.logMineEvent) window.logMineEvent(30);
+      showRuppyAd(15, 'UltraReward', function(){
+        userData.ultraRewardTime = Date.now() + 3600000;
+        saveRuppyData(userData);
+        updateUltraReward();
+      });
     }
   }
 
@@ -274,11 +299,11 @@
 
   function openBoostModal() {
     if(userData.boostCount >= 3) {
-      showToast('You claimed 3 bonuses already. Try again after 3 hours.');
+      showToast('You watched 3 ads already. Try again after 3 hours.');
       return;
     }
     document.getElementById('boostStep').innerText = userData.boostCount + 1;
-    document.getElementById('boostStepText').innerText = 'Claim 10% bonus';
+    document.getElementById('boostStepText').innerText = 'Watch Ad for +20 RUP';
     document.getElementById('boostModal').classList.add('active');
   }
 
@@ -301,7 +326,7 @@
     
     if(diff >= cooldown || lastMine === 0) {
       circle.className = 'mining-circle ready';
-      text.innerText = 'CLAIM BONUS';
+      text.innerText = 'WATCH AD';
     } else {
       let remaining = cooldown - diff;
       let hrs = Math.floor(remaining / 3600000);
@@ -335,7 +360,7 @@
       document.getElementById('boostBar').style.width = '100%';
       document.getElementById('boostBadge').style.background = '#00ff00';
     } else {
-      document.getElementById('boostTimer').innerText = '10% Bonus Available';
+      document.getElementById('boostTimer').innerText = 'Watch Ad → +20 RUP';
       document.getElementById('boostBar').style.width = (userData.boostCount / 3 * 100) + '%';
       document.getElementById('boostBadge').style.background = '#FFA500';
     }
@@ -348,7 +373,7 @@
     let cooldown = 7200000;
     
     if(diff >= cooldown || lastGift === 0) {
-      document.getElementById('giftTimer').innerText = 'Ready → +10 RUP';
+      document.getElementById('giftTimer').innerText = 'Watch Ad → +10 RUP';
       document.getElementById('giftBadge').innerText = '✓';
       document.getElementById('giftBadge').style.background = '#00ff00';
       document.getElementById('giftBar').style.width = '100%';
@@ -371,7 +396,7 @@
     let diff = userData.firstRewardTime - now;
     
     if(diff <= 0 || userData.firstRewardTime === 0){
-      document.getElementById('firstRewardTimer').innerText = 'Claim 10 RUP';
+      document.getElementById('firstRewardTimer').innerText = 'Watch Ad → +15 RUP';
       document.getElementById('firstRewardBadge').style.display = 'block';
       document.getElementById('firstRewardBar').style.width = '100%';
     } else {
@@ -390,7 +415,7 @@
     let diff = userData.ultraRewardTime - now;
     
     if(diff <= 0 || userData.ultraRewardTime === 0){
-      document.getElementById('ultraRewardTimer').innerText = 'Claim 30 RUP';
+      document.getElementById('ultraRewardTimer').innerText = 'Watch Ad → +15 RUP';
       document.getElementById('ultraRewardBadge').style.display = 'block';
       document.getElementById('ultraRewardBar').style.width = '100%';
     } else {
