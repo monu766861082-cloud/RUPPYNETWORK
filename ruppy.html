@@ -8,49 +8,49 @@
     <style>
         * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif;}
         body {background: #0B0B0C; padding-bottom: 80px; color: #fff;}
- .header {background: linear-gradient(135deg, #F3C774, #FFA500); color: #000; padding: 15px; text-align: center; font-size: 20px; font-weight: 700; display:flex; align-items:center; justify-content:space-between;}
- .back{font-size:24px;cursor:pointer;padding:0 10px;font-weight:bold}
- .card {background: #161617; margin: 15px; padding: 20px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 1px solid #2A2A2C;}
- .balance {text-align: center; font-size: 16px; color: #9CA3AF;}
- .balance span {font-size: 32px; font-weight: bold; color: #24C464; display: block; margin: 10px 0;}
- .btn {width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; transition:all 0.2s;}
- .btn:active{transform:scale(0.98)}
- .btn-primary {background: linear-gradient(135deg, #F3C774, #FFA500); color: #000;}
- .btn-green {background: #24C464; color: white;}
- .btn:disabled {background: #4b5563; cursor: not-allowed; opacity:0.5;}
+.header {background: linear-gradient(135deg, #F3C774, #FFA500); color: #000; padding: 15px; text-align: center; font-size: 20px; font-weight: 700; display:flex; align-items:center; justify-content:space-between;}
+.back{font-size:24px;cursor:pointer;padding:0 10px;font-weight:bold}
+.card {background: #161617; margin: 15px; padding: 20px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 1px solid #2A2A2C;}
+.balance {text-align: center; font-size: 16px; color: #9CA3AF;}
+.balance span {font-size: 32px; font-weight: bold; color: #24C464; display: block; margin: 10px 0;}
+.btn {width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; transition:all 0.2s;}
+.btn:active{transform:scale(0.98)}
+.btn-primary {background: linear-gradient(135deg, #F3C774, #FFA500); color: #000;}
+.btn-green {background: #24C464; color: white;}
+.btn:disabled {background: #4b5563; cursor: not-allowed; opacity:0.5;}
         input {width: 100%; padding: 12px; border: 1px solid #2A2A2C; border-radius: 12px; margin: 8px 0; font-size: 15px; background: #0B0B0C; color: #fff;}
- .label {font-weight: 600; margin-bottom: 8px; display: block; color: #F3C774; font-size: 14px;}
+.label {font-weight: 600; margin-bottom: 8px; display: block; color: #F3C774; font-size: 14px;}
 
    /* 5 Segment Spin Wheel */
- .wheel-container{display:flex;flex-direction:column;align-items:center;gap:15px;margin:20px 0;position:relative}
- .wheel-wrapper{position:relative;width:280px;height:280px}
- .wheel{width:100%;height:100%;border-radius:50%;border:8px solid #2A2A2C;position:relative;overflow:hidden;transition:transform 4s cubic-bezier(0.17,0.67,0.12,0.99);box-shadow:0 0 30px rgba(243,199,116,0.3)}
- .wheel-segment{position:absolute;width:50%;height:50%;transform-origin:100% 100%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#000}
- .wheel-segment span{transform:rotate(-36deg);display:block;width:80px;text-align:center}
- .wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70px;height:70px;background:#0B0B0C;border:4px solid #F3C774;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#F3C774;z-index:10;cursor:pointer;text-align:center;line-height:1.2}
- .wheel-center:active{transform:translate(-50%,-50%) scale(0.95)}
- .wheel-center.disabled{background:#2a2a2a;border-color:#666;color:#666;cursor:not-allowed}
- .wheel-pointer{position:absolute;right:-15px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:15px solid transparent;border-bottom:15px solid transparent;border-left:25px solid #F3C774;z-index:5}
- .wheel-timer{font-size:14px;color:#F3C774;font-weight:600;background:rgba(243,199,116,0.1);padding:10px 20px;border-radius:12px;border:1px solid #F3C774;min-width:160px;text-align:center}
- .wheel-timer.hide{display:none}
+.wheel-container{display:flex;flex-direction:column;align-items:center;gap:15px;margin:20px 0;position:relative}
+.wheel-wrapper{position:relative;width:280px;height:280px}
+.wheel{width:100%;height:100%;border-radius:50%;border:8px solid #2A2A2C;position:relative;overflow:hidden;transition:transform 4s cubic-bezier(0.17,0.67,0.12,0.99);box-shadow:0 0 30px rgba(243,199,116,0.3)}
+.wheel-segment{position:absolute;width:50%;height:50%;transform-origin:100% 100%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#000}
+.wheel-segment span{transform:rotate(-36deg);display:block;width:80px;text-align:center}
+.wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70px;height:70px;background:#0B0B0C;border:4px solid #F3C774;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#F3C774;z-index:10;cursor:pointer;text-align:center;line-height:1.2}
+.wheel-center:active{transform:translate(-50%,-50%) scale(0.95)}
+.wheel-center.disabled{background:#2a2a2a;border-color:#666;color:#666;cursor:not-allowed}
+.wheel-pointer{position:absolute;right:-15px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:15px solid transparent;border-bottom:15px solid transparent;border-left:25px solid #F3C774;z-index:5}
+.wheel-timer{font-size:14px;color:#F3C774;font-weight:600;background:rgba(243,199,116,0.1);padding:10px 20px;border-radius:12px;border:1px solid #F3C774;min-width:160px;text-align:center}
+.wheel-timer.hide{display:none}
 
- .ranking-item {display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #2A2A2C; font-size:14px;}
- .rank-no {font-weight: bold; color: #F3C774; width: 30px;}
- .tabs {position: fixed; bottom: 0; left: 0; right: 0; background: #0d0d0d; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); border-top:1px solid #222;}
- .tab {flex: 1; padding: 12px 5px; text-align: center; cursor: pointer; border-top: 3px solid transparent; color: #666; font-size: 11px;}
- .tab.active {border-top-color: #F3C774; color: #F3C774; font-weight: bold;}
- .page {display: none;}
- .page.active {display: block;}
- .code-box {background: #0B0B0C; padding: 15px; border-radius: 12px; text-align: center; font-size: 20px; font-weight: bold; letter-spacing: 2px; margin: 10px 0; border: 1px solid #2A2A2C; color: #F3C774;}
- .info-box{background:rgba(243,199,116,0.1);border:1px solid #F3C774;border-radius:12px;padding:12px;margin:12px 0}
- .info-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
- .info-label{color:#9CA3AF}
- .info-value{color:#F3C774;font-weight:600}
- .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:14px 24px;border-radius:12px;font-size:14px;display:none;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);font-weight:500}
- .toast.success{background:#1a5c1a;color:#4ade80}
- .toast.error{background:#5c1a1a;color:#f87171}
- .toast.info{background:#1a3c5c;color:#60a5fa}
- .note-box{background:rgba(59,130,246,0.1);border:1px solid #3B82F6;border-radius:12px;padding:12px;margin:12px 0;font-size:12px;color:#9CA3AF}
+.ranking-item {display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #2A2A2C; font-size:14px;}
+.rank-no {font-weight: bold; color: #F3C774; width: 30px;}
+.tabs {position: fixed; bottom: 0; left: 0; right: 0; background: #0d0d0d; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); border-top:1px solid #222;}
+.tab {flex: 1; padding: 12px 5px; text-align: center; cursor: pointer; border-top: 3px solid transparent; color: #666; font-size: 11px;}
+.tab.active {border-top-color: #F3C774; color: #F3C774; font-weight: bold;}
+.page {display: none;}
+.page.active {display: block;}
+.code-box {background: #0B0B0C; padding: 15px; border-radius: 12px; text-align: center; font-size: 20px; font-weight: bold; letter-spacing: 2px; margin: 10px 0; border: 1px solid #2A2A2C; color: #F3C774;}
+.info-box{background:rgba(243,199,116,0.1);border:1px solid #F3C774;border-radius:12px;padding:12px;margin:12px 0}
+.info-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
+.info-label{color:#9CA3AF}
+.info-value{color:#F3C774;font-weight:600}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:14px 24px;border-radius:12px;font-size:14px;display:none;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);font-weight:500}
+.toast.success{background:#1a5c1a;color:#4ade80}
+.toast.error{background:#5c1a1a;color:#f87171}
+.toast.info{background:#1a3c5c;color:#60a5fa}
+.note-box{background:rgba(59,130,246,0.1);border:1px solid #3B82F6;border-radius:12px;padding:12px;margin:12px 0;font-size:12px;color:#9CA3AF}
     </style>
 </head>
 <body>
@@ -96,9 +96,9 @@
                 <div class="wheel" id="wheel">
                     <div class="wheel-segment" style="background:#4CAF50;transform:rotate(0deg)"><span>₹1</span></div>
                     <div class="wheel-segment" style="background:#FFC107;transform:rotate(72deg)"><span>₹3</span></div>
-                    <div class="wheel-segment" style="background:#F44336;transform:rotate(144deg)"><span>Locked</span></div>
-                    <div class="wheel-segment" style="background:#9E9E9E;transform:rotate(216deg)"><span>Locked</span></div>
-                    <div class="wheel-segment" style="background:#9E9E9E;transform:rotate(288deg)"><span>Locked</span></div>
+                    <div class="wheel-segment" style="background:#F44336;transform:rotate(144deg)"><span>₹10</span></div>
+                    <div class="wheel-segment" style="background:#9E9E9E;transform:rotate(216deg)"><span>₹50</span></div>
+                    <div class="wheel-segment" style="background:#9E9E9E;transform:rotate(288deg)"><span>₹5</span></div>
                 </div>
                 <div class="wheel-center" id="spinBtn" onclick="spinWheel()">Tap to<br>Spin</div>
             </div>
@@ -117,8 +117,8 @@
     <div class="card">
       <div style="font-size:13px;color:#9CA3AF;line-height:1.6">
         <strong style="color:#F3C774">Rules:</strong><br>
-        - Only ₹1 and ₹3 segments will open automatically<br>
-        - Other 3 segments are permanently locked<br>
+        - Only ₹1 and ₹3 segments will give rewards<br>
+        - ₹5, ₹10, ₹50 segments are inactive<br>
         - 1 Spin available every 24 hours<br>
         - Come back daily to earn more<br>
         - Fixed Withdraw: ₹20 Only
@@ -340,7 +340,7 @@
 
         spinBtn.innerHTML = 'Spinning...';
 
-        // Randomly choose ₹1 or ₹3
+        // Randomly choose ₹1 or ₹3 - Only these 2 will win
         var winAmount = Math.random() < 0.5? 1 : 3;
         var targetAngle = winAmount === 1? 0 : 72; // ₹1 at 0deg, ₹3 at 72deg
 
