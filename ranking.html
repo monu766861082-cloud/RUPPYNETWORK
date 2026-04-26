@@ -88,7 +88,7 @@
   <div class="header">
     <div class="title">
       <h3>Leaderboard</h3>
-      <p>Updates Daily • 1 Refer = 100 pts</p>
+      <p>Updates Daily • 1 Refer = 10 pts</p>
     </div>
     <div class="back-btn" onclick="window.location.href='app.html'">←</div>
   </div>
@@ -107,7 +107,7 @@
         <div class="position-name" id="userName">Loading...</div>
       </div>
       <div class="position-right">
-        <div class="label">Total Referrals</div>
+        <div class="label">Total Points</div>
         <div class="points" id="userPoints">0</div>
       </div>
     </div>
@@ -318,7 +318,7 @@
               uid: child.key,
               name: data.name || 'User',
               referralCount: refCount,
-              points: refCount * 100
+              points: refCount * 10 // ✅ 1 Refer = 10 Points
             });
           }
         });
@@ -365,7 +365,7 @@
             uid: child.key,
             name: data.name || 'User',
             referralCount: refCount,
-            points: refCount * 100
+            points: refCount * 10 // ✅ 1 Refer = 10 Points
           };
         }
       });
@@ -376,10 +376,10 @@
 
     const userIndex = allUsers.findIndex(u => u.uid === currentUser.uid);
     const userRank = userIndex >= 0? userIndex + 1 : '-';
-    const userReferrals = userIndex >= 0? allUsers[userIndex].referralCount : 0;
+    const userPoints = userIndex >= 0? allUsers[userIndex].points : 0;
 
     document.getElementById('userName').innerText = userData.name || 'User';
-    document.getElementById('userPoints').innerText = userReferrals;
+    document.getElementById('userPoints').innerText = userPoints;
     document.getElementById('userRank').innerText = userRank === '-'? '#-' : '#' + userRank;
 
     renderLeaderboard(allUsers.slice(0, 500));
@@ -474,7 +474,7 @@
           <div class="leader-rank">#${i + 1}</div>
           <div class="leader-name">${u.name}</div>
         </div>
-        <div class="leader-points">${u.referralCount} Refs</div>
+        <div class="leader-points">${u.points} Pts</div>
       </div>
     `).join('');
   }
@@ -489,14 +489,12 @@
     });
   }
 
-  // ✅ referral.html वाला Working Code - यहाँ लगा दिया
   window.handleReferNow = async function() {
     if (!currentUser) return showToast('Please wait, logging in...', 'error');
 
     const btn = document.querySelector('.btn-refer');
     btn.disabled = true;
 
-    // ✅ Auto Generate Code अगर नहीं है
     if (!userData?.myReferralCode) {
       userData.myReferralCode = 'RUP-' + currentUser.uid.substring(0,6).toUpperCase();
       if(window.saveRuppyData) await window.saveRuppyData(userData);
