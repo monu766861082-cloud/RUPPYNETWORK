@@ -108,7 +108,7 @@
 
     <div class="info-box">
       <div class="info-row"><span class="info-label">Win Chance</span><span class="info-value">1, 3 or 50 RUP Token</span></div>
-      <div class="info-row"><span class="info-label">Spin Limit</span><span class="info-value">1 Time / 24 Hours</span></div>
+      <div class="info-row"><span class="info-label">Spin Limit</span><span class="info-value">2 Times / 24 Hours</span></div>
       <div class="info-row"><span class="info-label">Refer Bonus</span><span class="info-value">5 RUP Token Per Refer</span></div>
       <div class="info-row"><span class="info-label">Min Withdraw</span><span class="info-value">20 RUP Token</span></div>
       <div class="info-row"><span class="info-label">Payment Method</span><span class="info-value">Telegram</span></div>
@@ -119,7 +119,7 @@
         <strong style="color:#F3C774">Rules:</strong><br>
         - 1, 3 and 50 RUP Token segments will give rewards<br>
         - 5, 10 RUP Token segments are inactive<br>
-        - 1 Spin available every 24 hours<br>
+        - 2 Spins available every 24 hours<br>
         - Come back daily to earn more<br>
         - Fixed Withdraw: 20 RUP Token Only
       </div>
@@ -228,14 +228,22 @@
 
     function startSpinTimer(){
         var endTime = parseInt(localStorage.getItem('spin_end_time'));
+        var spinCount = parseInt(localStorage.getItem('spin_count') || '0');
         if(!endTime) return;
 
         var timerEl = document.getElementById('wheelTimer');
         var spinBtn = document.getElementById('spinBtn');
 
-        spinBtn.classList.add('disabled');
-        spinBtn.innerHTML = 'Locked';
-        timerEl.classList.remove('hide');
+        if(spinCount >= 2){
+            spinBtn.classList.add('disabled');
+            spinBtn.innerHTML = 'Locked';
+            timerEl.classList.remove('hide');
+        } else {
+            spinBtn.classList.remove('disabled');
+            spinBtn.innerHTML = 'Tap to<br>Spin';
+            timerEl.classList.remove('hide');
+            timerEl.innerText = 'Spins Left: ' + (2 - spinCount);
+        }
 
         if(spinTimer) clearInterval(spinTimer);
 
@@ -246,13 +254,18 @@
             if(diff <= 0){
                 clearInterval(spinTimer);
                 localStorage.removeItem('spin_end_time');
+                localStorage.removeItem('spin_count');
                 spinBtn.classList.remove('disabled');
                 spinBtn.innerHTML = 'Tap to<br>Spin';
                 timerEl.classList.add('hide');
                 timerEl.innerText = '';
                 showToast('Spin Ready! Come Back Daily', 'info');
             } else {
-                timerEl.innerText = 'Next Spin: ' + formatTime(diff);
+                if(spinCount >= 2){
+                    timerEl.innerText = 'Next Spin: ' + formatTime(diff);
+                } else {
+                    timerEl.innerText = 'Spins Left: ' + (2 - spinCount) + ' | Reset: ' + formatTime(diff);
+                }
             }
         }, 1000);
     }
@@ -264,6 +277,7 @@
                 startSpinTimer();
             } else {
                 localStorage.removeItem('spin_end_time');
+                localStorage.removeItem('spin_count');
             }
         }
     }
@@ -329,8 +343,10 @@
         if(isSpinning) return;
 
         var endTime = localStorage.getItem('spin_end_time');
-        if(endTime && parseInt(endTime) > Date.now()){
-            showToast('Come back tomorrow!', 'info');
+        var spinCount = parseInt(localStorage.getItem('spin_count') || '0');
+
+        if(endTime && parseInt(endTime) > Date.now() && spinCount >= 2){
+            showToast('Daily limit reached! Come back tomorrow', 'info');
             return;
         }
 
@@ -340,7 +356,7 @@
 
         spinBtn.innerHTML = 'Spinning...';
 
-        // Now 1, 3, 50 RUP Token will win - 50 Unblocked
+        // Now 1, 3, 50 RUP Token will win
         var winOptions = [1, 3, 50];
         var winAmount = winOptions[Math.floor(Math.random() * winOptions.length)];
 
@@ -362,8 +378,13 @@
             document.getElementById('refBalance').innerText = refBalance;
             localStorage.setItem('ruppy_ref_balance', refBalance);
 
-            var newEndTime = Date.now() + 86400000;
-            localStorage.setItem('spin_end_time', newEndTime);
+            spinCount += 1;
+            localStorage.setItem('spin_count', spinCount);
+
+            if(!endTime || parseInt(endTime) < Date.now()){
+                var newEndTime = Date.now() + 86400000;
+                localStorage.setItem('spin_end_time', newEndTime);
+            }
 
             startSpinTimer();
             showToast('Congrats! You Won ' + winAmount + ' RUP Token', 'success');
