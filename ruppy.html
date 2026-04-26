@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,7 +22,7 @@
         input {width: 100%; padding: 12px; border: 1px solid #2A2A2C; border-radius: 12px; margin: 8px 0; font-size: 15px; background: #0B0B0C; color: #fff;}
         .label {font-weight: 600; margin-bottom: 8px; display: block; color: #F3C774; font-size: 14px;}
         
-        /* गोल-गोल Bill Style */
+        /* Circular Bills Style */
         .bill-circle{
           width:70px;
           height:70px;
@@ -104,7 +104,7 @@
     </div>
 
     <div class="note-box">
-      <strong style="color:#3B82F6">Note:</strong> ये Referral Balance RUP Token से अलग है। 1 Mobile = 1 Account Only
+      <strong style="color:#3B82F6">Note:</strong> This Referral Balance is separate from RUP Token. 1 Mobile = 1 Account Only
     </div>
 </div>
 
@@ -157,11 +157,11 @@
     <div class="card">
       <div style="font-size:13px;color:#9CA3AF;line-height:1.6">
         <strong style="color:#F3C774">Rules:</strong><br>
-        - ₹1 और ₹3 वाले Bills दिन में 1 बार Open कर सकते हो<br>
-        - ₹5, ₹10, ₹50 वाले Bills अभी बंद हैं<br>
-        - 1 Mobile से सिर्फ 1 Account<br>
-        - Min/Max Withdraw: ₹20 Only<br>
-        - Payment 24 घंटे में Telegram पे
+        - ₹1 and ₹3 Bills can be opened once per day<br>
+        - ₹5, ₹10, ₹50 Bills are currently locked<br>
+        - Only 1 Account per Mobile Device<br>
+        - Fixed Withdraw: ₹20 Only<br>
+        - Payment completed within 24 hours via Telegram
       </div>
     </div>
 </div>
@@ -190,7 +190,7 @@
     </div>
 
     <div class="note-box">
-      <strong style="color:#3B82F6">Important:</strong> Referral Earning RUP Token से अलग है। ये Real INR Withdraw है Telegram पे।
+      <strong style="color:#3B82F6">Important:</strong> Referral Earning is separate from RUP Token. This is Real INR Withdraw via Telegram.
     </div>
 </div>
 
@@ -233,7 +233,7 @@
             attempts++;
         }
         
-        // Load Referral Balance - RUP Token से अलग
+        // Load Referral Balance - Separate from RUP Token
         refBalance = parseInt(localStorage.getItem('ruppy_ref_balance') || '0');
         totalRefers = parseInt(localStorage.getItem('ruppy_total_refers') || '0');
         
@@ -291,7 +291,7 @@
 
     window.openBill = function(amount) {
         if(amount!= 1 && amount!= 3){
-            showToast('Ye Bill abhi band hai', 'error');
+            showToast('This Bill is currently locked', 'error');
             return;
         }
 
@@ -299,7 +299,7 @@
         let lastClick = localStorage.getItem(`bill_${amount}_date`);
 
         if(lastClick === today){
-            showToast('Aaj ye Bill open ho chuka hai. Kal try karo', 'info');
+            showToast('This Bill is already opened today. Try tomorrow', 'info');
             return;
         }
 
