@@ -1,388 +1,540 @@
-// config.js - RUPPY GLOBAL SYNC - 300 RUP REFERRAL + AUTO TEAM LIST + WEEKLY POINTS + ANALYTICS
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, get, set, update, query, orderByChild, equalTo, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruppy Network - Leaderboard</title>
+  <script type="module" src="config.js?v=5"></script>
+  <style>
+    * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
+    body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
+   .header {padding:20px 15px 10px; display:flex; align-items:center; justify-content:space-between;}
+   .header.title h3 {font-size:18px; font-weight:600;}
+   .header.title p {font-size:12px; color:#888; margin-top:2px;}
+   .header.back-btn {width:36px; height:36px; border:1px solid #333; border-radius:8px; background:#0d0d0d; display:flex; align-items:center; justify-content:center; cursor:pointer;}
+   .winner-banner {margin:15px; background:linear-gradient(135deg, #FFA500, #FF6B00); border-radius:12px; padding:16px; display:none;}
+   .winner-banner.show {display:block;}
+   .winner-banner h3 {font-size:16px; color:#000; font-weight:700; margin-bottom:8px;}
+   .winner-banner p {font-size:13px; color:#000; margin-bottom:12px;}
+   .btn-claim {width:100%; padding:12px; background:#000; border:none; border-radius:8px; color:#FFA500; font-weight:700; font-size:14px; cursor:pointer;}
+   .btn-claim:disabled {opacity:0.5;}
+   .admin-panel {margin:15px; background:#1a1a1a; border:1px solid #FFA500; border-radius:12px; padding:12px; text-align:center;}
+   .btn-admin {padding:10px 20px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:700; cursor:pointer; font-size:13px;}
+   .btn-admin:active {transform:scale(0.98);}
+   .position-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+   .position-card p:first-child {color:#888; font-size:11px; letter-spacing:0.5px; margin-bottom:10px;}
+   .position-row {display:flex; justify-content:space-between; align-items:center;}
+   .position-left {display:flex; align-items:center; gap:12px;}
+   .position-rank {width:36px; height:36px; border:2px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#FFA500;}
+   .position-name {font-size:15px; font-weight:600;}
+   .position-right {text-align:right;}
+   .position-right.label {color:#888; font-size:11px;}
+   .position-right.points {color:#FFA500; font-weight:700; font-size:20px;}
+   .winners-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+   .winners-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+   .winners-list h4 {color:#FFA500; font-size:13px;}
+   .timer-display{color:#FFA500;font-size:12px;font-weight:600;background:#1a1a1a;padding:4px 10px;border-radius:6px;border:1px solid #FFA500;}
+   .winner-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
+   .winner-row:last-child {border-bottom:none;}
+   .winner-left {display:flex; align-items:center; gap:10px;}
+   .winner-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
+   .winner-name {font-size:14px;}
+   .winner-right {text-align:right;}
+   .winner-token {color:#FFA500; font-weight:700; font-size:13px;}
+   .winner-status {font-size:10px; color:#4CAF50;}
+   .winner-status.pending {color:#888;}
+   .leaderboard-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+   .leaderboard-list h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
+   .leader-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
+   .leader-row:last-child {border-bottom:none;}
+   .leader-row.me {background:#1a1a1a;border:1px solid #FFA500;border-radius:8px;padding:10px;margin:5px 0;}
+   .leader-left {display:flex; align-items:center; gap:10px;}
+   .leader-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
+   .leader-name {font-size:14px;}
+   .leader-points {color:#FFA500; font-weight:700; font-size:14px;}
+   .campaign-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:18px;}
+   .campaign-card.tag {color:#888; font-size:11px; display:flex; align-items:center; gap:5px; margin-bottom:10px;}
+   .campaign-card h2 {font-size:20px; font-weight:700; line-height:1.3;}
+   .campaign-card h2 span {color:#FFA500;}
+   .campaign-card p {color:#666; font-size:12px; margin:10px 0 15px; line-height:1.5;}
+   .btn-refer {width:100%; padding:14px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:700; font-size:14px; cursor:pointer;}
+   .btn-refer:active {transform:scale(0.98);}
+   .btn-refer:disabled {opacity:0.6;}
+   .reward-structure {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+   .reward-structure h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
+   .reward-row {display:flex; justify-content:space-between; padding:8px 0; font-size:13px; border-bottom:1px solid #1a1a1a;}
+   .reward-row:last-child {border-bottom:none;}
+   .reward-row.rank {color:#888;}
+   .reward-row.token {color:#fff; font-weight:600;}
+   .nav {position:fixed; bottom:0; left:0; right:0; background:#0d0d0d; border-top:1px solid #222; display:flex; justify-content:space-around; padding:8px 0;}
+   .nav-item {display:flex; flex-direction:column; align-items:center; gap:3px; color:#666; text-decoration:none; font-size:11px; cursor:pointer; padding:5px 0; width:16.6%; position:relative;}
+   .nav-item.active {color:#FFA500;}
+   .nav-item.active::after {content:''; position:absolute; bottom:2px; width:30px; height:2px; background:#FFA500; border-radius:2px;}
+   .nav-item.icon {font-size:20px;}
+   .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999}
+   .toast.error{background:#5c1a1a;color:#ff4d4d}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="title">
+      <h3>Leaderboard</h3>
+      <p>Updates Daily • 1 Ad = 20 pts</p>
+    </div>
+    <div class="back-btn" onclick="window.location.href='app.html'">←</div>
+  </div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
-  authDomain: "ruppynetwork-50362.firebaseapp.com",
-  databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
-  projectId: "ruppynetwork-50362",
-  storageBucket: "ruppynetwork-50362.appspot.com",
-  messagingSenderId: "132064610854",
-  appId: "1:132064610854:web:3c217eaf3618007f5934e7",
-  measurementId: "G-BDNYBPDTQM"
-};
+  <div class="winner-banner" id="winnerBanner">
+    <h3>🏆 Congratulations!</h3>
+    <p id="winnerText">You ranked #0 last week</p>
+    <button class="btn-claim" id="claimBtn" onclick="claimReward()">CLAIM REWARD</button>
+  </div>
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const auth = getAuth(app);
-const analytics = getAnalytics(app);
+  <!-- ADMIN PANEL - Monday Miss हो तो दबा देना -->
+  <div class="admin-panel">
+    <button class="btn-admin" onclick="manualWeeklyReset()">🔄 Force Weekly Reset</button>
+    <p style="color:#666; font-size:11px; margin-top:5px;">अगर Auto Reset नहीं हुआ तो दबाओ</p>
+  </div>
 
-const RUPPY_STORAGE_KEY = 'ruppy_user_cache';
+  <div class="position-card">
+    <p>YOUR POSITION TODAY</p>
+    <div class="position-row">
+      <div class="position-left">
+        <div class="position-rank" id="userRank">#-</div>
+        <div class="position-name" id="userName">Loading...</div>
+      </div>
+      <div class="position-right">
+        <div class="label">Total Points</div>
+        <div class="points" id="userPoints">0</div>
+      </div>
+    </div>
+  </div>
 
-// 1. Default Data - RUP- Format के साथ
-function getDefaultData() {
-  return {
-    name: 'Guest',
-    dp: null,
-    balance: 0,
-    taskBalance: 0,
-    uid: null,
-    myReferralCode: null,
-    referredBy: null,
-    referralClaimed: false,
-    team: {},
-    teamCount: 0,
-    teamRewardEarned: 0,
-    referralCount: 0, // ✅ ADD किया - Leaderboard के लिए
-    weeklyPoints: 0,
-    posts: [],
-    lastMine: 0,
-    lastGift: 0,
-    boostCount: 0,
-    boostResetTime: Date.now(),
-    firstRewardTime: 0,
-    ultraRewardTime: 0,
-    createdAt: Date.now()
-  };
-}
+  <div class="winners-list">
+    <div class="winners-header">
+      <h4>🏆 LAST WEEK TOP 10 WINNERS</h4>
+      <div class="timer-display" id="countdown">Loading...</div>
+    </div>
+    <div id="winnersList">
+      <p style="color:#666; text-align:center; padding:20px 0;">No winners yet. Check back Monday!</p>
+    </div>
+  </div>
 
-// 1.1 Referral Code Generator - RUP-8X4K9M Format
-function generateReferralCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = 'RUP-';
-  for(let i = 0; i < 6; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  <div class="leaderboard-list">
+    <h4>🔥 TODAY'S TOP 500</h4>
+    <div id="leaderboardList">
+      <p style="color:#666; text-align:center; padding:20px 0;">Loading rankings...</p>
+    </div>
+  </div>
+
+  <div class="campaign-card">
+    <div class="tag">📊 DAILY CAMPAIGN</div>
+    <h2>Share More. Rank Higher.<br><span>Earn Bigger Rewards.</span></h2>
+    <p>Ranking resets every 24 hours. Winners can claim rewards every Monday!</p>
+    <button class="btn-refer" onclick="handleReferNow()">REFER NOW</button>
+  </div>
+
+  <div class="reward-structure">
+    <h4>Weekly Reward Structure:</h4>
+    <div class="reward-row"><div class="rank">#1</div><div class="token">1000 RUPPY</div></div>
+    <div class="reward-row"><div class="rank">#2 - #10</div><div class="token">800 RUPPY</div></div>
+    <div class="reward-row"><div class="rank">#11 - #50</div><div class="token">600 RUPPY</div></div>
+    <div class="reward-row"><div class="rank">#51 - #100</div><div class="token">500 RUPPY</div></div>
+    <div class="reward-row"><div class="rank">#101 - #500</div><div class="token">300 RUPPY</div></div>
+  </div>
+
+  <div class="nav">
+    <div class="nav-item" onclick="navClick('home')"><div class="icon">🏠</div><span>Home</span></div>
+    <div class="nav-item" onclick="navClick('tasks')"><div class="icon">📋</div><span>Tasks</span></div>
+    <div class="nav-item" onclick="navClick('referral')"><div class="icon">👥</div><span>Referral</span></div>
+    <div class="nav-item active"><div class="icon">🏆</div><span>Ranking</span></div>
+    <div class="nav-item" onclick="navClick('community')"><div class="icon">📝</div><span>Feed</span></div>
+    <div class="nav-item" onclick="navClick('settings')"><div class="icon">⚙️</div><span>Settings</span></div>
+  </div>
+
+  <div class="toast" id="toast">Copied!</div>
+
+<script type="module">
+  import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+
+  let currentUser = null;
+  let userRef = null;
+  let allUsersRef = null;
+  let winnersRef = null;
+
+  const REWARDS = {1: 1000, 10: 800, 50: 600, 100: 500, 500: 300};
+
+  function getRewardByRank(rank) {
+    if (rank === 1) return 1000;
+    if (rank <= 10) return 800;
+    if (rank <= 50) return 600;
+    if (rank <= 100) return 500;
+    if (rank <= 500) return 300;
+    return 0;
   }
-  return code;
-}
 
-// 1.2 पुराना Code Check
-function isValidReferralCode(code) {
-  if(!code || code.length!== 10 ||!code.startsWith('RUP-')) {
-    return false;
+  function getNextMonday() {
+    const now = new Date();
+    const nextMonday = new Date();
+    const day = now.getDay();
+    const daysUntilMonday = day === 1 && now.getHours() < 1? 0 : (day === 0? 1 : 8 - day);
+    nextMonday.setDate(now.getDate() + daysUntilMonday);
+    nextMonday.setHours(0, 0, 0, 0);
+    return nextMonday;
   }
-  return true;
-}
 
-// 2. LocalStorage से Load
-function getLocalData() {
-  try {
-    let stored = localStorage.getItem(RUPPY_STORAGE_KEY);
-    if (stored) {
-      let data = JSON.parse(stored);
-      data.balance = Number(data.balance) || 0;
-      data.taskBalance = Number(data.taskBalance) || 0;
-      data.referralCount = Number(data.referralCount) || 0; // ✅ ADD किया
-      return data;
+  function startCountdown() {
+    const nextMonday = getNextMonday();
+    function updateTimer() {
+      const diff = nextMonday - new Date();
+      if (diff <= 0) {
+        document.getElementById('countdown').textContent = 'Updating...';
+        checkWeeklySnapshot();
+        setTimeout(() => startCountdown(), 5000);
+        return;
+      }
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+      document.getElementById('countdown').textContent = `${d}d ${h}h ${m}m ${s}s`;
     }
-  } catch (e) {
-    console.error('LocalStorage Error:', e);
-  }
-  return getDefaultData();
-}
-
-// Global Variable
-window.userData = getLocalData();
-
-// 3. Balance Display
-window.updateBalanceBox = function(){
-  const totalEl = document.getElementById('totalBalance');
-  const taskEl = document.getElementById('taskBalance');
-
-  if(totalEl) {
-    totalEl.textContent = Number(window.userData.balance) || 0;
-  }
-  if(taskEl) {
-    taskEl.textContent = Number(window.userData.taskBalance) || 0;
-  }
-}
-
-// 4. Profile Display
-window.loadProfileEverywhere = function(){
-  const avatar = document.getElementById('userAvatar') || document.getElementById('userDp');
-  if(avatar && window.userData.dp){
-    avatar.innerHTML = `<img src="${window.userData.dp}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`;
-  } else if(avatar){
-    avatar.textContent = (window.userData.name || 'U')[0].toUpperCase();
+    updateTimer();
+    setInterval(updateTimer, 1000);
   }
 
-  const nameEl = document.getElementById('userName');
-  if(nameEl) nameEl.textContent = 'Welcome back, ' + (window.userData.name || 'User');
-}
+  async function init(){
+    let attempts = 0;
+    while(!window.userData?.uid && attempts < 50) {
+      await new Promise(r => setTimeout(r, 100));
+      attempts++;
+    }
 
-// 5. LOGOUT/LOGIN + REFERRAL AUTO UPGRADE + ANALYTICS
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    logEvent(analytics, 'login', { method: 'firebase' });
-    logEvent(analytics, 'app_open');
+    const {auth, database, ref} = await window.initFirebase();
+    window.firebaseAuth = auth;
+    window.firebaseDB = database;
+    window.firebaseRef = ref;
 
-    const userRef = ref(db, `users/${user.uid}`);
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        window.currentUser = user;
+        userRef = ref(database, 'users/' + user.uid);
+        window.userRef = userRef;
+        allUsersRef = ref(database, 'users');
+        winnersRef = ref(database, 'winners/thisWeek');
+
+        checkDailyReset();
+        checkWeeklySnapshot();
+        loadUserPosition();
+        loadWinnersList();
+        checkClaimStatus();
+        setupRealtimeListener();
+        startCountdown();
+      }
+    });
+  }
+
+  init();
+
+  async function checkDailyReset() {
+    const snap = await get(userRef);
+    if (snap.exists()) {
+      const data = snap.val();
+      const today = new Date().toDateString();
+      if (data.lastReset!== today) {
+        await update(userRef, {dailyShares: 0, lastReset: today});
+      }
+    }
+  }
+
+  function getWeekId(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+    return d.getUTCFullYear() + '-W' + weekNo;
+  }
+
+  // ✅ FIX 1: Auto Reset हटाया - सिर्फ Winners बनेंगे, Points Reset नहीं होंगे
+  async function checkWeeklySnapshot() {
+    const now = new Date();
+    const day = now.getDay();
+    const weekId = getWeekId(now);
+    const snap = await get(winnersRef);
+
+    if (day === 1 && (!snap.exists() || snap.val().weekId!== weekId)) {
+      // पुराने Unclaimed Log करो
+      if(snap.exists() && snap.val().winners){
+        const oldWinners = snap.val().winners;
+        const unclaimed = oldWinners.filter(w =>!w.claimed);
+        console.log('Unclaimed Last Week:', unclaimed);
+      }
+
+      const usersSnap = await get(allUsersRef);
+      const allUsers = [];
+      if (usersSnap.exists()) {
+        usersSnap.forEach((child) => {
+          const data = child.val();
+          const weekPoints = data.weeklyPoints || 0;
+          if (weekPoints > 0) {
+            allUsers.push({
+              uid: child.key,
+              name: data.name || 'User',
+              points: weekPoints
+            });
+          }
+        });
+      }
+      allUsers.sort((a, b) => b.points - a.points);
+      const top500 = allUsers.slice(0, 500).map((u, i) => ({
+        rank: i + 1,
+        uid: u.uid,
+        name: u.name,
+        points: u.points,
+        reward: getRewardByRank(i + 1),
+        claimed: false
+      }));
+
+      await set(winnersRef, {
+        weekId: weekId,
+        date: now.toISOString(),
+        winners: top500
+      });
+
+      // ❌ RESET HATA DIYA - Ab Claim karne pe hoga
+    }
+  }
+
+  // ✅ FIX 2: Manual Reset Button
+  window.manualWeeklyReset = async function() {
+    if(!confirm('पक्का? Last Week के Winners बन जाएंगे. Points Reset नहीं होंगे - Claim करने पे होंगे')) return;
+
+    const now = new Date();
+    const weekId = getWeekId(now);
+
+    const usersSnap = await get(allUsersRef);
+    const allUsers = [];
+    if (usersSnap.exists()) {
+      usersSnap.forEach((child) => {
+        const data = child.val();
+        const weekPoints = data.weeklyPoints || 0;
+        if (weekPoints > 0) {
+          allUsers.push({
+            uid: child.key,
+            name: data.name || 'User',
+            points: weekPoints
+          });
+        }
+      });
+    }
+
+    allUsers.sort((a, b) => b.points - a.points);
+    const top500 = allUsers.slice(0, 500).map((u, i) => ({
+      rank: i + 1,
+      uid: u.uid,
+      name: u.name,
+      points: u.points,
+      reward: getRewardByRank(i + 1),
+      claimed: false
+    }));
+
+    await set(winnersRef, {
+      weekId: weekId,
+      date: now.toISOString(),
+      winners: top500
+    });
+
+    showToast('✅ Winners List बन गई! Claim करो अब');
+    setTimeout(() => location.reload(), 1500);
+  }
+
+  // ✅ FIX 3: weeklyPoints से Ranking - Referral नहीं
+  async function loadUserPosition() {
+    if (!currentUser) return;
+    const snapshot = await get(allUsersRef);
+    const allUsers = [];
+    if (snapshot.exists()) {
+      snapshot.forEach((child) => {
+        const data = child.val();
+        const weekPoints = data.weeklyPoints || 0;
+        if (weekPoints > 0) {
+          allUsers.push({
+            uid: child.key,
+            name: data.name || 'User',
+            points: weekPoints
+          });
+        }
+      });
+    }
+
+    allUsers.sort((a, b) => b.points - a.points);
+    const userIndex = allUsers.findIndex(u => u.uid === currentUser.uid);
+    const userRank = userIndex >= 0? userIndex + 1 : '-';
+    const userPoints = userIndex >= 0? allUsers[userIndex].points : 0;
+
+    document.getElementById('userName').innerText = window.userData.name || 'User';
+    document.getElementById('userPoints').innerText = userPoints;
+    document.getElementById('userRank').innerText = userRank === '-'? '#-' : '#' + userRank;
+    renderLeaderboard(allUsers.slice(0, 500));
+
+    const userSnap = await get(userRef);
+    if (!userSnap.exists()) {
+      set(userRef, {
+        name: window.userData.name || 'User',
+        referralCount: window.userData.referralCount || 0,
+        balance: window.userData.balance || 0,
+        weeklyPoints: 0,
+        totalPoints: 0,
+        dailyShares: 0,
+        lastReset: new Date().toDateString(),
+        uid: currentUser.uid,
+        joinedAt: Date.now()
+      });
+    }
+  }
+
+  async function loadWinnersList() {
+    const snap = await get(winnersRef);
+    const listDiv = document.getElementById('winnersList');
+    if (!snap.exists() ||!snap.val().winners) {
+      listDiv.innerHTML = '<p style="color:#666; text-align:center; padding:20px 0;">No winners yet. Check back Monday!</p>';
+      return;
+    }
+    const winners = snap.val().winners.slice(0, 10);
+    listDiv.innerHTML = winners.map(w => `
+      <div class="winner-row">
+        <div class="winner-left">
+          <div class="winner-rank">#${w.rank}</div>
+          <div class="winner-name">${w.name}</div>
+        </div>
+        <div class="winner-right">
+          <div class="winner-token">${w.reward} RUPPY</div>
+          <div class="winner-status ${w.claimed? '' : 'pending'}">${w.claimed? 'Claimed ✅' : 'Pending ⏳'}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function checkClaimStatus() {
+    if (!currentUser) return;
+    const snap = await get(winnersRef);
+    if (!snap.exists() ||!snap.val().winners) return;
+    const winner = snap.val().winners.find(w => w.uid === currentUser.uid);
+    if (winner &&!winner.claimed) {
+      document.getElementById('winnerBanner').classList.add('show');
+      document.getElementById('winnerText').innerText = `You ranked #${winner.rank} last week! Claim your ${winner.reward} RUPPY now.`;
+      window.currentReward = winner.reward;
+      window.currentRank = winner.rank;
+    } else {
+      document.getElementById('winnerBanner').classList.remove('show');
+    }
+  }
+
+  // ✅ FIX 4: Claim करने पे ही Points Reset + Token मिले
+  window.claimReward = async function() {
+    if (!currentUser ||!window.currentReward) return;
+    const btn = document.getElementById('claimBtn');
+    btn.disabled = true;
+    btn.innerText = 'CLAIMING...';
+
+    // 1. Balance बढ़ाओ
+    window.userData.balance = (window.userData.balance || 0) + window.currentReward;
+    // 2. Weekly Points Reset - अब Reset होगा
+    window.userData.weeklyPoints = 0;
+    await window.saveRuppyData(window.userData);
+
+    // 3. Winners List Update
+    const snap = await get(winnersRef);
+    const winners = snap.val().winners;
+    const idx = winners.findIndex(w => w.uid === currentUser.uid);
+    if (idx >= 0) {
+      winners[idx].claimed = true;
+      await set(winnersRef, {...snap.val(), winners: winners});
+    }
+
+    btn.innerText = 'CLAIMED ✅';
+    showToast(`+${window.currentReward} RUPPY Claimed! Weekly Points Reset`);
+
+    setTimeout(() => {
+      document.getElementById('winnerBanner').classList.remove('show');
+      loadWinnersList();
+      loadUserPosition();
+    }, 2000);
+  }
+
+  function renderLeaderboard(users) {
+    const listDiv = document.getElementById('leaderboardList');
+    if (users.length === 0) {
+      listDiv.innerHTML = '<p style="color:#666; text-align:center; padding:20px 0;">No rankings yet. Be the first to earn points!</p>';
+      return;
+    }
+    listDiv.innerHTML = users.map((u, i) => {
+      let isMe = u.uid === currentUser?.uid;
+      return `
+      <div class="leader-row ${isMe? 'me':''}">
+        <div class="leader-left">
+          <div class="leader-rank">#${i + 1}</div>
+          <div class="leader-name">${u.name} ${isMe? '(You)':''}</div>
+        </div>
+        <div class="leader-points">${u.points} Pts</div>
+      </div>
+    `}).join('');
+  }
+
+  function setupRealtimeListener() {
+    onValue(allUsersRef, () => loadUserPosition());
+    onValue(winnersRef, () => { loadWinnersList(); checkClaimStatus(); });
+  }
+
+  window.handleReferNow = async function() {
+    if (!currentUser) return showToast('Please wait, logging in...', 'error');
+    const btn = document.querySelector('.btn-refer');
+    btn.disabled = true;
+
+    if (!window.userData?.myReferralCode) {
+      window.userData.myReferralCode = 'RUP-' + currentUser.uid.substring(0,6).toUpperCase();
+      await window.saveRuppyData(window.userData);
+    }
+
+    let inviteCode = window.userData.myReferralCode;
+    let text = `Join RUPPY Network & get 300 RUP Bonus! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app`;
 
     try {
-      const snapshot = await get(userRef);
-
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        window.userData.uid = user.uid;
-        window.userData.name = data.name || user.displayName || user.email.split('@')[0];
-        window.userData.dp = data.dp || user.photoURL || null;
-        window.userData.balance = Number(data.balance) || 0;
-        window.userData.taskBalance = Number(data.taskBalance) || 0;
-        window.userData.posts = data.posts || [];
-        window.userData.lastMine = Number(data.lastMine) || 0;
-        window.userData.lastGift = Number(data.lastGift) || 0;
-        window.userData.boostCount = Number(data.boostCount) || 0;
-        window.userData.boostResetTime = Number(data.boostResetTime) || Date.now();
-        window.userData.firstRewardTime = Number(data.firstRewardTime) || 0;
-        window.userData.ultraRewardTime = Number(data.ultraRewardTime) || 0;
-        window.userData.team = data.team || {};
-        window.userData.teamCount = Number(data.teamCount) || 0;
-        window.userData.teamRewardEarned = Number(data.teamRewardEarned) || 0;
-        window.userData.referralCount = Number(data.referralCount) || 0; // ✅ ADD किया
-        window.userData.weeklyPoints = Number(data.weeklyPoints) || 0;
-        window.userData.referredBy = data.referredBy || null;
-        window.userData.referralClaimed = data.referralClaimed || false;
-        window.userData.createdAt = data.createdAt || Date.now();
-
-        if(!isValidReferralCode(data.myReferralCode)) {
-          window.userData.myReferralCode = generateReferralCode();
-          await update(userRef, { myReferralCode: window.userData.myReferralCode });
-        } else {
-          window.userData.myReferralCode = data.myReferralCode;
-        }
-
-        // ✅ OLD USERS के लिए referralCount Fix
-        if(data.referralCount === undefined) {
-          const teamSize = data.team? Object.keys(data.team).length : 0;
-          await update(userRef, { referralCount: teamSize });
-          window.userData.referralCount = teamSize;
-        }
-
+      if(navigator.share){
+        await navigator.share({title: 'Join RUPPY Network', text: text});
       } else {
-        logEvent(analytics, 'sign_up');
-
-        window.userData.uid = user.uid;
-        window.userData.name = user.displayName || user.email.split('@')[0];
-        window.userData.dp = user.photoURL || null;
-        window.userData.myReferralCode = generateReferralCode();
-        window.userData.referralCount = 0; // ✅ New User के लिए
-        await set(userRef, window.userData);
+        await navigator.clipboard.writeText(text);
+        showToast('Invite Link Copied!');
       }
-    } catch (error) {
-      console.error('Firebase Load Error:', error);
+      btn.innerText = 'LINK SHARED!';
+      setTimeout(() => {
+        btn.innerText = 'REFER NOW';
+        btn.disabled = false;
+      }, 2000);
+    } catch (err) {
+      btn.disabled = false;
+      console.error(err);
     }
-
-    localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
-    updateBalanceBox();
-    loadProfileEverywhere();
-
-  } else {
-    localStorage.removeItem(RUPPY_STORAGE_KEY);
-    window.userData = getDefaultData();
-    updateBalanceBox();
-    loadProfileEverywhere();
-  }
-});
-
-// 6. Save Function - Firebase + Local दोनों Update
-window.saveRuppyData = async function(data){
-  data.balance = Number(data.balance) || 0;
-  data.taskBalance = Number(data.taskBalance) || 0;
-
-  localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(data));
-  window.userData = data;
-  updateBalanceBox();
-
-  if(!data.uid) return;
-  try {
-    const userRef = ref(db, `users/${data.uid}`);
-    await update(userRef, {
-      balance: data.balance,
-      taskBalance: data.taskBalance,
-      name: data.name,
-      dp: data.dp,
-      myReferralCode: data.myReferralCode,
-      referredBy: data.referredBy,
-      referralClaimed: data.referralClaimed,
-      team: data.team || {},
-      teamCount: data.teamCount || 0,
-      teamRewardEarned: data.teamRewardEarned || 0,
-      referralCount: data.referralCount || 0, // ✅ ADD किया
-      weeklyPoints: data.weeklyPoints || 0,
-      posts: data.posts || [],
-      lastMine: data.lastMine || 0,
-      lastGift: data.lastGift || 0,
-      boostCount: data.boostCount || 0,
-      boostResetTime: data.boostResetTime || Date.now(),
-      firstRewardTime: data.firstRewardTime || 0,
-      ultraRewardTime: data.ultraRewardTime || 0
-    });
-  } catch (error) {
-    console.error('Firebase Save Error:', error);
-  }
-}
-
-// 7. Post Reward +10 RUPPY + ANALYTICS
-window.addPostReward = async function() {
-  if(!window.userData.uid) return alert("पहले Login करो");
-
-  const todayPosts = window.userData.posts.filter(p => {
-    return new Date(p.time).toDateString() === new Date().toDateString();
-  });
-
-  if(todayPosts.length >= 3) {
-    return alert("आज के 3 Post पूरे हो गए");
   }
 
-  window.userData.balance = Number(window.userData.balance || 0) + 10;
-  window.userData.posts.push({time: Date.now()});
-
-  logEvent(analytics, 'post_reward', {
-    reward_amount: 10,
-    total_posts_today: todayPosts.length + 1
-  });
-
-  await window.saveRuppyData(window.userData);
-  alert("+10 RUPPY Added");
-}
-
-// 8. Page Load पे तुरंत Balance दिखाओ
-document.addEventListener('DOMContentLoaded', () => {
-  updateBalanceBox();
-  loadProfileEverywhere();
-});
-
-// 9. AUTO SYNC
-window.addEventListener('storage', (e) => {
-  if(e.key === RUPPY_STORAGE_KEY && e.newValue){
-    window.userData = JSON.parse(e.newValue);
-    updateBalanceBox();
-    loadProfileEverywhere();
-  }
-});
-
-// ✅ FIXED: REFERRAL CODE APPLY FUNCTION - 300 RUP + 10 POINTS + ANALYTICS
-window.applyReferralCodeManual = async function(code){
-  if(!window.userData.uid){
-    return {success: false, msg: 'Please login first'};
+  function showToast(msg, type = 'success'){
+    let t = document.getElementById('toast');
+    t.innerText = msg;
+    t.className = 'toast ' + type;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 2500);
   }
 
-  if(!code ||!code.startsWith('RUP-')){
-    return {success: false, msg: 'Invalid code format'};
+  window.navClick = function(page) {
+    if(page === 'home') window.location.href = 'app.html';
+    if(page === 'tasks') window.location.href = 'tasks.html';
+    if(page === 'referral') window.location.href = 'referral.html';
+    if(page === 'ranking') window.location.href = 'ranking.html';
+    if(page === 'community') window.location.href = 'community.html';
+    if(page === 'settings') window.location.href = 'settings.html';
   }
-
-  if(code === window.userData.myReferralCode){
-    return {success: false, msg: 'Cannot use your own code'};
-  }
-
-  if(window.userData.referredBy){
-    return {success: false, msg: 'Already used referral code'};
-  }
-
-  try {
-    const usersRef = ref(db, 'users');
-    const q = query(usersRef, orderByChild('myReferralCode'), equalTo(code));
-    const snapshot = await get(q);
-
-    if(!snapshot.exists()){
-      return {success: false, msg: 'Referral code not found'};
-    }
-
-    const referrerUID = Object.keys(snapshot.val())[0];
-    const referrerData = Object.values(snapshot.val())[0];
-
-    if(referrerUID === window.userData.uid){
-      return {success: false, msg: 'Cannot use your own code'};
-    }
-
-    await push(ref(db, 'referrals'), {
-      referrer_uid: referrerUID,
-      referred_uid: window.userData.uid,
-      bonus_given: 300,
-      created_at: Date.now()
-    });
-
-    const updates = {};
-    // ✅ REFERRER को Update - referralCount +1
-    updates[`users/${referrerUID}/balance`] = (referrerData.balance || 0) + 300;
-    updates[`users/${referrerUID}/teamCount`] = (referrerData.teamCount || 0) + 1;
-    updates[`users/${referrerUID}/referralCount`] = (referrerData.referralCount || 0) + 1; // ✅ ये Line Fix
-    updates[`users/${referrerUID}/teamRewardEarned`] = (referrerData.teamRewardEarned || 0) + 300;
-    updates[`users/${referrerUID}/weeklyPoints`] = (referrerData.weeklyPoints || 0) + 10;
-    updates[`users/${referrerUID}/team/${window.userData.uid}`] = {
-      name: window.userData.name || 'User',
-      uid: window.userData.uid,
-      created_at: Date.now(),
-      lastMine: Date.now()
-    };
-
-    // ✅ NEW USER को Update
-    updates[`users/${window.userData.uid}/balance`] = (window.userData.balance || 0) + 300;
-    updates[`users/${window.userData.uid}/referredBy`] = referrerUID;
-    updates[`users/${window.userData.uid}/referralClaimed`] = true;
-
-    await update(ref(db), updates);
-
-    logEvent(analytics, 'referral_applied', {
-      bonus_earned: 300,
-      referrer_id: referrerUID
-    });
-
-    window.userData.referredBy = referrerUID;
-    window.userData.referralClaimed = true;
-    window.userData.balance = (window.userData.balance || 0) + 300;
-    localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
-    updateBalanceBox();
-
-    return {success: true, msg: '✅ +300 RUP Credited! Referrer got 300 RUP + 10 Points'};
-
-  } catch(error){
-    console.error('Apply Referral Error:', error);
-    return {success: false, msg: 'Error: ' + error.message};
-  }
-}
-
-// ✅ TRANSACTION HISTORY FUNCTIONS
-window.addTransaction = async function(type, amount, note = ''){
-  if(!window.userData.uid) return;
-  try {
-    const txnData = {
-      type: type,
-      amount: Number(amount),
-      note: note,
-      timestamp: Date.now(),
-      balanceAfter: Number(window.userData.balance) || 0
-    };
-    await push(ref(db, `transactions/${window.userData.uid}`), txnData);
-  } catch(error){
-    console.error('Transaction Error:', error);
-  }
-}
-
-window.getTransactionHistory = async function(){
-  if(!window.userData.uid) return [];
-  try {
-    const txnRef = ref(db, `transactions/${window.userData.uid}`);
-    const snapshot = await get(txnRef);
-    if(snapshot.exists()){
-      const data = Object.values(snapshot.val());
-      return data.sort((a,b) => b.timestamp - a.timestamp);
-    }
-    return [];
-  } catch(error){
-    console.error('History Error:', error);
-    return [];
-  }
-}
-
-// 🔥 ANALYTICS ADDED - Line 7: Mining Function Example - अपने Mine Button में ये Call कर
-window.logMineEvent = function(tokensEarned) {
-  logEvent(analytics, 'mine_success', {
-    tokens_earned: tokensEarned,
-    user_balance: window.userData.balance,
-    timestamp: Date.now()
-  });
-}
+</script>
+</body>
+</html>
