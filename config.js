@@ -1,7 +1,7 @@
-// config.js - RUPPY GLOBAL SYNC - 300 RUP REFERRAL + AUTO TEAM LIST + WEEKLY POINTS + ANALYTICS
+// config.js - RUPPY GLOBAL SYNC - 300 RUP REFERRAL + AUTO TEAM LIST + WEEKLY POINTS + ANALYTICS + GOOGLE LOGIN FIX
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, get, set, update, query, orderByChild, equalTo, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
 const firebaseConfig = {
@@ -20,6 +20,10 @@ const db = getDatabase(app);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
 
+// ✅ GOOGLE PROVIDER - iPhone/Android Fix
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
+
 const RUPPY_STORAGE_KEY = 'ruppy_user_cache';
 
 // 1. Default Data - RUP- Format के साथ
@@ -36,7 +40,7 @@ function getDefaultData() {
     team: {},
     teamCount: 0,
     teamRewardEarned: 0,
-    referralCount: 0, // ✅ ADD किया - Leaderboard के लिए
+    referralCount: 0,
     weeklyPoints: 0,
     posts: [],
     lastMine: 0,
@@ -75,7 +79,7 @@ function getLocalData() {
       let data = JSON.parse(stored);
       data.balance = Number(data.balance) || 0;
       data.taskBalance = Number(data.taskBalance) || 0;
-      data.referralCount = Number(data.referralCount) || 0; // ✅ ADD किया
+      data.referralCount = Number(data.referralCount) || 0;
       return data;
     }
   } catch (e) {
@@ -113,6 +117,45 @@ window.loadProfileEverywhere = function(){
   if(nameEl) nameEl.textContent = 'Welcome back, ' + (window.userData.name || 'User');
 }
 
+// ✅ GOOGLE LOGIN - ये वाला Function Add किया है - Fast चलेगा
+window.googleLogin = async function() {
+  const btn = document.getElementById('googleBtn') || document.getElementById('googleLoginBtn');
+  if(btn) {
+    btn.disabled = true;
+    btn.innerText = 'Connecting...';
+  }
+
+  try {
+    // Mobile में Redirect Use करो - Popup Block होता है
+    if (/iPhone|iPad|iPod|Android/.test(navigator.userAgent)) {
+      await signInWithRedirect(auth, googleProvider);
+    } else {
+      const result = await signInWithPopup(auth, googleProvider);
+      if(result.user) {
+        logEvent(analytics, 'login', { method: 'google_popup' });
+        window.location.href = 'app.html';
+      }
+    }
+  } catch (error) {
+    console.error('Login Error:', error);
+    if(btn) {
+      btn.disabled = false;
+      btn.innerText = 'Continue with Google';
+    }
+    alert('Login Failed: ' + error.message);
+  }
+}
+
+// ✅ Redirect Result Handle - Page Load पे Auto Login
+getRedirectResult(auth).then((result) => {
+  if (result?.user) {
+    logEvent(analytics, 'login', { method: 'google_redirect' });
+    window.location.href = 'app.html';
+  }
+}).catch((error) => {
+  console.error('Redirect Error:', error);
+});
+
 // 5. LOGOUT/LOGIN + REFERRAL AUTO UPGRADE + ANALYTICS
 onAuthStateChanged(auth, async (user) => {
   if (user) {
@@ -141,7 +184,7 @@ onAuthStateChanged(auth, async (user) => {
         window.userData.team = data.team || {};
         window.userData.teamCount = Number(data.teamCount) || 0;
         window.userData.teamRewardEarned = Number(data.teamRewardEarned) || 0;
-        window.userData.referralCount = Number(data.referralCount) || 0; // ✅ ADD किया
+        window.userData.referralCount = Number(data.referralCount) || 0;
         window.userData.weeklyPoints = Number(data.weeklyPoints) || 0;
         window.userData.referredBy = data.referredBy || null;
         window.userData.referralClaimed = data.referralClaimed || false;
@@ -154,7 +197,6 @@ onAuthStateChanged(auth, async (user) => {
           window.userData.myReferralCode = data.myReferralCode;
         }
 
-        // ✅ OLD USERS के लिए referralCount Fix
         if(data.referralCount === undefined) {
           const teamSize = data.team? Object.keys(data.team).length : 0;
           await update(userRef, { referralCount: teamSize });
@@ -168,7 +210,7 @@ onAuthStateChanged(auth, async (user) => {
         window.userData.name = user.displayName || user.email.split('@')[0];
         window.userData.dp = user.photoURL || null;
         window.userData.myReferralCode = generateReferralCode();
-        window.userData.referralCount = 0; // ✅ New User के लिए
+        window.userData.referralCount = 0;
         await set(userRef, window.userData);
       }
     } catch (error) {
@@ -210,7 +252,7 @@ window.saveRuppyData = async function(data){
       team: data.team || {},
       teamCount: data.teamCount || 0,
       teamRewardEarned: data.teamRewardEarned || 0,
-      referralCount: data.referralCount || 0, // ✅ ADD किया
+      referralCount: data.referralCount || 0,
       weeklyPoints: data.weeklyPoints || 0,
       posts: data.posts || [],
       lastMine: data.lastMine || 0,
@@ -264,7 +306,7 @@ window.addEventListener('storage', (e) => {
   }
 });
 
-// ✅ FIXED: REFERRAL CODE APPLY FUNCTION - 300 RUP + 10 POINTS + ANALYTICS
+// FIXED: REFERRAL CODE APPLY FUNCTION - 300 RUP + 10 POINTS + ANALYTICS
 window.applyReferralCodeManual = async function(code){
   if(!window.userData.uid){
     return {success: false, msg: 'Please login first'};
@@ -306,10 +348,9 @@ window.applyReferralCodeManual = async function(code){
     });
 
     const updates = {};
-    // ✅ REFERRER को Update - referralCount +1
     updates[`users/${referrerUID}/balance`] = (referrerData.balance || 0) + 300;
     updates[`users/${referrerUID}/teamCount`] = (referrerData.teamCount || 0) + 1;
-    updates[`users/${referrerUID}/referralCount`] = (referrerData.referralCount || 0) + 1; // ✅ ये Line Fix
+    updates[`users/${referrerUID}/referralCount`] = (referrerData.referralCount || 0) + 1;
     updates[`users/${referrerUID}/teamRewardEarned`] = (referrerData.teamRewardEarned || 0) + 300;
     updates[`users/${referrerUID}/weeklyPoints`] = (referrerData.weeklyPoints || 0) + 10;
     updates[`users/${referrerUID}/team/${window.userData.uid}`] = {
@@ -319,7 +360,6 @@ window.applyReferralCodeManual = async function(code){
       lastMine: Date.now()
     };
 
-    // ✅ NEW USER को Update
     updates[`users/${window.userData.uid}/balance`] = (window.userData.balance || 0) + 300;
     updates[`users/${window.userData.uid}/referredBy`] = referrerUID;
     updates[`users/${window.userData.uid}/referralClaimed`] = true;
@@ -345,7 +385,7 @@ window.applyReferralCodeManual = async function(code){
   }
 }
 
-// ✅ TRANSACTION HISTORY FUNCTIONS
+// TRANSACTION HISTORY FUNCTIONS
 window.addTransaction = async function(type, amount, note = ''){
   if(!window.userData.uid) return;
   try {
@@ -378,7 +418,7 @@ window.getTransactionHistory = async function(){
   }
 }
 
-// 🔥 ANALYTICS ADDED - Line 7: Mining Function Example - अपने Mine Button में ये Call कर
+// ANALYTICS - Mining Function Example
 window.logMineEvent = function(tokensEarned) {
   logEvent(analytics, 'mine_success', {
     tokens_earned: tokensEarned,
@@ -386,3 +426,11 @@ window.logMineEvent = function(tokensEarned) {
     timestamp: Date.now()
   });
 }
+
+// EXPORT Firebase Objects for other files
+window.initFirebase = async function() {
+  return { auth, database: db, ref };
+}
+window.firebaseAuth = auth;
+window.firebaseDB = db;
+window.firebaseRef = ref;
