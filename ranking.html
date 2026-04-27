@@ -4,82 +4,91 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruppy Network - Leaderboard</title>
-  <script type="module" src="config.js?v=5"></script>
+
+  <!-- ✅ config.js सबसे पहले Load होगा -->
+  <script type="module" src="config.js?v=3"></script>
+
   <style>
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
     body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
-   .header {padding:20px 15px 10px; display:flex; align-items:center; justify-content:space-between;}
-   .header.title h3 {font-size:18px; font-weight:600;}
-   .header.title p {font-size:12px; color:#888; margin-top:2px;}
-   .header.back-btn {width:36px; height:36px; border:1px solid #333; border-radius:8px; background:#0d0d0d; display:flex; align-items:center; justify-content:center; cursor:pointer;}
-   .winner-banner {margin:15px; background:linear-gradient(135deg, #FFA500, #FF6B00); border-radius:12px; padding:16px; display:none;}
-   .winner-banner.show {display:block;}
-   .winner-banner h3 {font-size:16px; color:#000; font-weight:700; margin-bottom:8px;}
-   .winner-banner p {font-size:13px; color:#000; margin-bottom:12px;}
-   .btn-claim {width:100%; padding:12px; background:#000; border:none; border-radius:8px; color:#FFA500; font-weight:700; font-size:14px; cursor:pointer;}
-   .btn-claim:disabled {opacity:0.5;}
-   .admin-panel {margin:15px; background:#1a1a1a; border:1px solid #FFA500; border-radius:12px; padding:12px; text-align:center;}
-   .btn-admin {padding:10px 20px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:700; cursor:pointer; font-size:13px;}
-   .btn-admin:active {transform:scale(0.98);}
-   .position-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-   .position-card p:first-child {color:#888; font-size:11px; letter-spacing:0.5px; margin-bottom:10px;}
-   .position-row {display:flex; justify-content:space-between; align-items:center;}
-   .position-left {display:flex; align-items:center; gap:12px;}
-   .position-rank {width:36px; height:36px; border:2px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#FFA500;}
-   .position-name {font-size:15px; font-weight:600;}
-   .position-right {text-align:right;}
-   .position-right.label {color:#888; font-size:11px;}
-   .position-right.points {color:#FFA500; font-weight:700; font-size:20px;}
-   .winners-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-   .winners-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-   .winners-list h4 {color:#FFA500; font-size:13px;}
-   .timer-display{color:#FFA500;font-size:12px;font-weight:600;background:#1a1a1a;padding:4px 10px;border-radius:6px;border:1px solid #FFA500;}
-   .winner-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
-   .winner-row:last-child {border-bottom:none;}
-   .winner-left {display:flex; align-items:center; gap:10px;}
-   .winner-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
-   .winner-name {font-size:14px;}
-   .winner-right {text-align:right;}
-   .winner-token {color:#FFA500; font-weight:700; font-size:13px;}
-   .winner-status {font-size:10px; color:#4CAF50;}
-   .winner-status.pending {color:#888;}
-   .leaderboard-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-   .leaderboard-list h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
-   .leader-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
-   .leader-row:last-child {border-bottom:none;}
-   .leader-row.me {background:#1a1a1a;border:1px solid #FFA500;border-radius:8px;padding:10px;margin:5px 0;}
-   .leader-left {display:flex; align-items:center; gap:10px;}
-   .leader-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
-   .leader-name {font-size:14px;}
-   .leader-points {color:#FFA500; font-weight:700; font-size:14px;}
-   .campaign-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:18px;}
-   .campaign-card.tag {color:#888; font-size:11px; display:flex; align-items:center; gap:5px; margin-bottom:10px;}
-   .campaign-card h2 {font-size:20px; font-weight:700; line-height:1.3;}
-   .campaign-card h2 span {color:#FFA500;}
-   .campaign-card p {color:#666; font-size:12px; margin:10px 0 15px; line-height:1.5;}
-   .btn-refer {width:100%; padding:14px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:700; font-size:14px; cursor:pointer;}
-   .btn-refer:active {transform:scale(0.98);}
-   .btn-refer:disabled {opacity:0.6;}
-   .reward-structure {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-   .reward-structure h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
-   .reward-row {display:flex; justify-content:space-between; padding:8px 0; font-size:13px; border-bottom:1px solid #1a1a1a;}
-   .reward-row:last-child {border-bottom:none;}
-   .reward-row.rank {color:#888;}
-   .reward-row.token {color:#fff; font-weight:600;}
-   .nav {position:fixed; bottom:0; left:0; right:0; background:#0d0d0d; border-top:1px solid #222; display:flex; justify-content:space-around; padding:8px 0;}
-   .nav-item {display:flex; flex-direction:column; align-items:center; gap:3px; color:#666; text-decoration:none; font-size:11px; cursor:pointer; padding:5px 0; width:16.6%; position:relative;}
-   .nav-item.active {color:#FFA500;}
-   .nav-item.active::after {content:''; position:absolute; bottom:2px; width:30px; height:2px; background:#FFA500; border-radius:2px;}
-   .nav-item.icon {font-size:20px;}
-   .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999}
-   .toast.error{background:#5c1a1a;color:#ff4d4d}
+
+.header {padding:20px 15px 10px; display:flex; align-items:center; justify-content:space-between;}
+.header.title h3 {font-size:18px; font-weight:600;}
+.header.title p {font-size:12px; color:#888; margin-top:2px;}
+.header.back-btn {width:36px; height:36px; border:1px solid #333; border-radius:8px; background:#0d0d0d; display:flex; align-items:center; justify-content:center; cursor:pointer;}
+
+.winner-banner {margin:15px; background:linear-gradient(135deg, #FFA500, #FF6B00); border-radius:12px; padding:16px; display:none;}
+.winner-banner.show {display:block;}
+.winner-banner h3 {font-size:16px; color:#000; font-weight:700; margin-bottom:8px;}
+.winner-banner p {font-size:13px; color:#000; margin-bottom:12px;}
+.btn-claim {width:100%; padding:12px; background:#000; border:none; border-radius:8px; color:#FFA500; font-weight:700; font-size:14px; cursor:pointer;}
+.btn-claim:disabled {opacity:0.5;}
+
+.position-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+.position-card p:first-child {color:#888; font-size:11px; letter-spacing:0.5px; margin-bottom:10px;}
+.position-row {display:flex; justify-content:space-between; align-items:center;}
+.position-left {display:flex; align-items:center; gap:12px;}
+.position-rank {width:36px; height:36px; border:2px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#FFA500;}
+.position-name {font-size:15px; font-weight:600;}
+.position-right {text-align:right;}
+.position-right.label {color:#888; font-size:11px;}
+.position-right.points {color:#FFA500; font-weight:700; font-size:20px;}
+
+.winners-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+.winners-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.winners-list h4 {color:#FFA500; font-size:13px;}
+.timer-display{color:#FFA500;font-size:12px;font-weight:600;background:#1a1a1a;padding:4px 10px;border-radius:6px;border:1px solid #FFA500;}
+.winner-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
+.winner-row:last-child {border-bottom:none;}
+.winner-left {display:flex; align-items:center; gap:10px;}
+.winner-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
+.winner-name {font-size:14px;}
+.winner-right {text-align:right;}
+.winner-token {color:#FFA500; font-weight:700; font-size:13px;}
+.winner-status {font-size:10px; color:#4CAF50;}
+.winner-status.pending {color:#888;}
+
+.leaderboard-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+.leaderboard-list h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
+.leader-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
+.leader-row:last-child {border-bottom:none;}
+.leader-left {display:flex; align-items:center; gap:10px;}
+.leader-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
+.leader-name {font-size:14px;}
+.leader-points {color:#FFA500; font-weight:700; font-size:14px;}
+
+.campaign-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:18px;}
+.campaign-card.tag {color:#888; font-size:11px; display:flex; align-items:center; gap:5px; margin-bottom:10px;}
+.campaign-card h2 {font-size:20px; font-weight:700; line-height:1.3;}
+.campaign-card h2 span {color:#FFA500;}
+.campaign-card p {color:#666; font-size:12px; margin:10px 0 15px; line-height:1.5;}
+.btn-refer {width:100%; padding:14px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:700; font-size:14px; cursor:pointer;}
+.btn-refer:active {transform:scale(0.98);}
+.btn-refer:disabled {opacity:0.6;}
+
+.reward-structure {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
+.reward-structure h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
+.reward-row {display:flex; justify-content:space-between; padding:8px 0; font-size:13px; border-bottom:1px solid #1a1a1a;}
+.reward-row:last-child {border-bottom:none;}
+.reward-row.rank {color:#888;}
+.reward-row.token {color:#fff; font-weight:600;}
+
+.nav {position:fixed; bottom:0; left:0; right:0; background:#0d0d0d; border-top:1px solid #222; display:flex; justify-content:space-around; padding:8px 0;}
+.nav-item {display:flex; flex-direction:column; align-items:center; gap:3px; color:#666; text-decoration:none; font-size:11px; cursor:pointer; padding:5px 0; width:16.6%; position:relative;}
+.nav-item.active {color:#FFA500;}
+.nav-item.active::after {content:''; position:absolute; bottom:2px; width:30px; height:2px; background:#FFA500; border-radius:2px;}
+.nav-item.icon {font-size:20px;}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999}
+.toast.error{background:#5c1a1a;color:#ff4d4d}
   </style>
+
 </head>
 <body>
+
   <div class="header">
     <div class="title">
       <h3>Leaderboard</h3>
-      <p>Updates Daily • 1 Ad = 20 pts</p>
+      <p>Updates Daily • 1 Refer = 10 pts</p>
     </div>
     <div class="back-btn" onclick="window.location.href='app.html'">←</div>
   </div>
@@ -88,12 +97,6 @@
     <h3>🏆 Congratulations!</h3>
     <p id="winnerText">You ranked #0 last week</p>
     <button class="btn-claim" id="claimBtn" onclick="claimReward()">CLAIM REWARD</button>
-  </div>
-
-  <!-- ADMIN PANEL - Monday Miss हो तो दबा देना -->
-  <div class="admin-panel">
-    <button class="btn-admin" onclick="manualWeeklyReset()">🔄 Force Weekly Reset</button>
-    <p style="color:#666; font-size:11px; margin-top:5px;">अगर Auto Reset नहीं हुआ तो दबाओ</p>
   </div>
 
   <div class="position-card">
@@ -136,32 +139,81 @@
 
   <div class="reward-structure">
     <h4>Weekly Reward Structure:</h4>
-    <div class="reward-row"><div class="rank">#1</div><div class="token">1000 RUPPY</div></div>
-    <div class="reward-row"><div class="rank">#2 - #10</div><div class="token">800 RUPPY</div></div>
-    <div class="reward-row"><div class="rank">#11 - #50</div><div class="token">600 RUPPY</div></div>
-    <div class="reward-row"><div class="rank">#51 - #100</div><div class="token">500 RUPPY</div></div>
-    <div class="reward-row"><div class="rank">#101 - #500</div><div class="token">300 RUPPY</div></div>
+    <div class="reward-row">
+      <div class="rank">#1</div>
+      <div class="token">1000 RUPPY</div>
+    </div>
+    <div class="reward-row">
+      <div class="rank">#2 - #10</div>
+      <div class="token">800 RUPPY</div>
+    </div>
+    <div class="reward-row">
+      <div class="rank">#11 - #50</div>
+      <div class="token">600 RUPPY</div>
+    </div>
+    <div class="reward-row">
+      <div class="rank">#51 - #100</div>
+      <div class="token">500 RUPPY</div>
+    </div>
+    <div class="reward-row">
+      <div class="rank">#101 - #500</div>
+      <div class="token">300 RUPPY</div>
+    </div>
   </div>
 
   <div class="nav">
-    <div class="nav-item" onclick="navClick('home')"><div class="icon">🏠</div><span>Home</span></div>
-    <div class="nav-item" onclick="navClick('tasks')"><div class="icon">📋</div><span>Tasks</span></div>
-    <div class="nav-item" onclick="navClick('referral')"><div class="icon">👥</div><span>Referral</span></div>
-    <div class="nav-item active"><div class="icon">🏆</div><span>Ranking</span></div>
-    <div class="nav-item" onclick="navClick('community')"><div class="icon">📝</div><span>Feed</span></div>
-    <div class="nav-item" onclick="navClick('settings')"><div class="icon">⚙️</div><span>Settings</span></div>
+    <div class="nav-item" onclick="navClick('home')">
+      <div class="icon">🏠</div>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="navClick('tasks')">
+      <div class="icon">📋</div>
+      <span>Tasks</span>
+    </div>
+    <div class="nav-item" onclick="navClick('referral')">
+      <div class="icon">👥</div>
+      <span>Referral</span>
+    </div>
+    <div class="nav-item active">
+      <div class="icon">🏆</div>
+      <span>Ranking</span>
+    </div>
+    <div class="nav-item" onclick="navClick('community')">
+      <div class="icon">📝</div>
+      <span>Feed</span>
+    </div>
+    <div class="nav-item" onclick="navClick('settings')">
+      <div class="icon">⚙️</div>
+      <span>Settings</span>
+    </div>
   </div>
 
-  <div class="toast" id="toast">Copied!</div>
+<div class="toast" id="toast">Copied!</div>
 
 <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
   import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
-  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
+    authDomain: "ruppynetwork-50362.firebaseapp.com",
+    databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
+    projectId: "ruppynetwork-50362",
+    storageBucket: "ruppynetwork-50362.firebasestorage.app",
+    messagingSenderId: "132064610854",
+    appId: "1:132064610854:web:3c217eaf3618007f5934e7"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const database = getDatabase(app);
+
+  let userData = window.userData;
   let currentUser = null;
   let userRef = null;
-  let allUsersRef = null;
-  let winnersRef = null;
+  const allUsersRef = ref(database, 'users');
+  const winnersRef = ref(database, 'winners/thisWeek');
 
   const REWARDS = {1: 1000, 10: 800, 50: 600, 100: 500, 500: 300};
 
@@ -210,31 +262,27 @@
       await new Promise(r => setTimeout(r, 100));
       attempts++;
     }
+    userData = window.userData;
 
-    const {auth, database, ref} = await window.initFirebase();
-    window.firebaseAuth = auth;
-    window.firebaseDB = database;
-    window.firebaseRef = ref;
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        currentUser = user;
-        window.currentUser = user;
-        userRef = ref(database, 'users/' + user.uid);
-        window.userRef = userRef;
-        allUsersRef = ref(database, 'users');
-        winnersRef = ref(database, 'winners/thisWeek');
-
-        checkDailyReset();
-        checkWeeklySnapshot();
-        loadUserPosition();
-        loadWinnersList();
-        checkClaimStatus();
-        setupRealtimeListener();
-        startCountdown();
-      }
+    signInAnonymously(auth).catch((error) => {
+      console.error("Auth Error:", error);
+      alert("Login failed. Check Firebase Auth settings.");
     });
   }
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      currentUser = user;
+      userRef = ref(database, 'users/' + user.uid);
+      checkDailyReset();
+      checkWeeklySnapshot();
+      loadUserPosition();
+      loadWinnersList();
+      checkClaimStatus();
+      setupRealtimeListener();
+      startCountdown();
+    }
+  });
 
   init();
 
@@ -244,50 +292,38 @@
       const data = snap.val();
       const today = new Date().toDateString();
       if (data.lastReset!== today) {
-        await update(userRef, {dailyShares: 0, lastReset: today});
+        await update(userRef, {
+          dailyShares: 0,
+          lastReset: today
+        });
       }
     }
   }
 
-  function getWeekId(date) {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
-    return d.getUTCFullYear() + '-W' + weekNo;
-  }
-
-  // ✅ FIX 1: Auto Reset हटाया - सिर्फ Winners बनेंगे, Points Reset नहीं होंगे
   async function checkWeeklySnapshot() {
     const now = new Date();
     const day = now.getDay();
     const weekId = getWeekId(now);
+
     const snap = await get(winnersRef);
-
     if (day === 1 && (!snap.exists() || snap.val().weekId!== weekId)) {
-      // पुराने Unclaimed Log करो
-      if(snap.exists() && snap.val().winners){
-        const oldWinners = snap.val().winners;
-        const unclaimed = oldWinners.filter(w =>!w.claimed);
-        console.log('Unclaimed Last Week:', unclaimed);
-      }
-
       const usersSnap = await get(allUsersRef);
       const allUsers = [];
       if (usersSnap.exists()) {
         usersSnap.forEach((child) => {
           const data = child.val();
-          const weekPoints = data.weeklyPoints || 0;
-          if (weekPoints > 0) {
+          const refCount = data.referralCount || 0;
+          if (refCount > 0) {
             allUsers.push({
               uid: child.key,
               name: data.name || 'User',
-              points: weekPoints
+              referralCount: refCount,
+              points: refCount * 10 // ✅ 1 Refer = 10 Points
             });
           }
         });
       }
-      allUsers.sort((a, b) => b.points - a.points);
+      allUsers.sort((a, b) => b.referralCount - a.referralCount);
       const top500 = allUsers.slice(0, 500).map((u, i) => ({
         rank: i + 1,
         uid: u.uid,
@@ -302,91 +338,58 @@
         date: now.toISOString(),
         winners: top500
       });
-
-      // ❌ RESET HATA DIYA - Ab Claim karne pe hoga
     }
   }
 
-  // ✅ FIX 2: Manual Reset Button
-  window.manualWeeklyReset = async function() {
-    if(!confirm('पक्का? Last Week के Winners बन जाएंगे. Points Reset नहीं होंगे - Claim करने पे होंगे')) return;
-
-    const now = new Date();
-    const weekId = getWeekId(now);
-
-    const usersSnap = await get(allUsersRef);
-    const allUsers = [];
-    if (usersSnap.exists()) {
-      usersSnap.forEach((child) => {
-        const data = child.val();
-        const weekPoints = data.weeklyPoints || 0;
-        if (weekPoints > 0) {
-          allUsers.push({
-            uid: child.key,
-            name: data.name || 'User',
-            points: weekPoints
-          });
-        }
-      });
-    }
-
-    allUsers.sort((a, b) => b.points - a.points);
-    const top500 = allUsers.slice(0, 500).map((u, i) => ({
-      rank: i + 1,
-      uid: u.uid,
-      name: u.name,
-      points: u.points,
-      reward: getRewardByRank(i + 1),
-      claimed: false
-    }));
-
-    await set(winnersRef, {
-      weekId: weekId,
-      date: now.toISOString(),
-      winners: top500
-    });
-
-    showToast('✅ Winners List बन गई! Claim करो अब');
-    setTimeout(() => location.reload(), 1500);
+  function getWeekId(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+    return d.getUTCFullYear() + '-W' + weekNo;
   }
 
-  // ✅ FIX 3: weeklyPoints से Ranking - Referral नहीं
   async function loadUserPosition() {
     if (!currentUser) return;
+
     const snapshot = await get(allUsersRef);
-    const allUsers = [];
+    const usersMap = {};
+
     if (snapshot.exists()) {
       snapshot.forEach((child) => {
         const data = child.val();
-        const weekPoints = data.weeklyPoints || 0;
-        if (weekPoints > 0) {
-          allUsers.push({
+        const refCount = data.referralCount || 0;
+
+        if (refCount > 0) {
+          usersMap[child.key] = {
             uid: child.key,
             name: data.name || 'User',
-            points: weekPoints
-          });
+            referralCount: refCount,
+            points: refCount * 10 // ✅ 1 Refer = 10 Points
+          };
         }
       });
     }
 
-    allUsers.sort((a, b) => b.points - a.points);
+    const allUsers = Object.values(usersMap);
+    allUsers.sort((a, b) => b.referralCount - a.referralCount);
+
     const userIndex = allUsers.findIndex(u => u.uid === currentUser.uid);
     const userRank = userIndex >= 0? userIndex + 1 : '-';
     const userPoints = userIndex >= 0? allUsers[userIndex].points : 0;
 
-    document.getElementById('userName').innerText = window.userData.name || 'User';
+    document.getElementById('userName').innerText = userData.name || 'User';
     document.getElementById('userPoints').innerText = userPoints;
     document.getElementById('userRank').innerText = userRank === '-'? '#-' : '#' + userRank;
+
     renderLeaderboard(allUsers.slice(0, 500));
 
     const userSnap = await get(userRef);
     if (!userSnap.exists()) {
       set(userRef, {
-        name: window.userData.name || 'User',
-        referralCount: window.userData.referralCount || 0,
-        balance: window.userData.balance || 0,
-        weeklyPoints: 0,
-        totalPoints: 0,
+        name: userData.name || 'User',
+        referralCount: userData.referralCount || 0,
+        balance: userData.balance || 0,
         dailyShares: 0,
         lastReset: new Date().toDateString(),
         uid: currentUser.uid,
@@ -402,6 +405,7 @@
       listDiv.innerHTML = '<p style="color:#666; text-align:center; padding:20px 0;">No winners yet. Check back Monday!</p>';
       return;
     }
+
     const winners = snap.val().winners.slice(0, 10);
     listDiv.innerHTML = winners.map(w => `
       <div class="winner-row">
@@ -421,6 +425,7 @@
     if (!currentUser) return;
     const snap = await get(winnersRef);
     if (!snap.exists() ||!snap.val().winners) return;
+
     const winner = snap.val().winners.find(w => w.uid === currentUser.uid);
     if (winner &&!winner.claimed) {
       document.getElementById('winnerBanner').classList.add('show');
@@ -432,20 +437,15 @@
     }
   }
 
-  // ✅ FIX 4: Claim करने पे ही Points Reset + Token मिले
   window.claimReward = async function() {
     if (!currentUser ||!window.currentReward) return;
     const btn = document.getElementById('claimBtn');
     btn.disabled = true;
     btn.innerText = 'CLAIMING...';
 
-    // 1. Balance बढ़ाओ
-    window.userData.balance = (window.userData.balance || 0) + window.currentReward;
-    // 2. Weekly Points Reset - अब Reset होगा
-    window.userData.weeklyPoints = 0;
-    await window.saveRuppyData(window.userData);
+    userData.balance = (userData.balance || 0) + window.currentReward;
+    if(window.saveRuppyData) await window.saveRuppyData(userData);
 
-    // 3. Winners List Update
     const snap = await get(winnersRef);
     const winners = snap.val().winners;
     const idx = winners.findIndex(w => w.uid === currentUser.uid);
@@ -455,50 +455,52 @@
     }
 
     btn.innerText = 'CLAIMED ✅';
-    showToast(`+${window.currentReward} RUPPY Claimed! Weekly Points Reset`);
-
     setTimeout(() => {
       document.getElementById('winnerBanner').classList.remove('show');
       loadWinnersList();
-      loadUserPosition();
     }, 2000);
   }
 
   function renderLeaderboard(users) {
     const listDiv = document.getElementById('leaderboardList');
     if (users.length === 0) {
-      listDiv.innerHTML = '<p style="color:#666; text-align:center; padding:20px 0;">No rankings yet. Be the first to earn points!</p>';
+      listDiv.innerHTML = '<p style="color:#666; text-align:center; padding:20px 0;">No rankings yet. Be the first to refer!</p>';
       return;
     }
-    listDiv.innerHTML = users.map((u, i) => {
-      let isMe = u.uid === currentUser?.uid;
-      return `
-      <div class="leader-row ${isMe? 'me':''}">
+
+    listDiv.innerHTML = users.map((u, i) => `
+      <div class="leader-row">
         <div class="leader-left">
           <div class="leader-rank">#${i + 1}</div>
-          <div class="leader-name">${u.name} ${isMe? '(You)':''}</div>
+          <div class="leader-name">${u.name}</div>
         </div>
         <div class="leader-points">${u.points} Pts</div>
       </div>
-    `}).join('');
+    `).join('');
   }
 
   function setupRealtimeListener() {
-    onValue(allUsersRef, () => loadUserPosition());
-    onValue(winnersRef, () => { loadWinnersList(); checkClaimStatus(); });
+    onValue(allUsersRef, () => {
+      loadUserPosition();
+    });
+    onValue(winnersRef, () => {
+      loadWinnersList();
+      checkClaimStatus();
+    });
   }
 
   window.handleReferNow = async function() {
     if (!currentUser) return showToast('Please wait, logging in...', 'error');
+
     const btn = document.querySelector('.btn-refer');
     btn.disabled = true;
 
-    if (!window.userData?.myReferralCode) {
-      window.userData.myReferralCode = 'RUP-' + currentUser.uid.substring(0,6).toUpperCase();
-      await window.saveRuppyData(window.userData);
+    if (!userData?.myReferralCode) {
+      userData.myReferralCode = 'RUP-' + currentUser.uid.substring(0,6).toUpperCase();
+      if(window.saveRuppyData) await window.saveRuppyData(userData);
     }
 
-    let inviteCode = window.userData.myReferralCode;
+    let inviteCode = userData.myReferralCode;
     let text = `Join RUPPY Network & get 300 RUP Bonus! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app`;
 
     try {
@@ -508,11 +510,13 @@
         await navigator.clipboard.writeText(text);
         showToast('Invite Link Copied!');
       }
+
       btn.innerText = 'LINK SHARED!';
       setTimeout(() => {
         btn.innerText = 'REFER NOW';
         btn.disabled = false;
       }, 2000);
+
     } catch (err) {
       btn.disabled = false;
       console.error(err);
