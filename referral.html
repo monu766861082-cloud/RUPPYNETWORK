@@ -67,14 +67,14 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
     <div class="r-coin">R</div>
     <span id="teamReward">0</span> <span>RUP</span>
   </div>
-  <div class="tag">+300 RUP Per Refer</div>
+  <div class="tag">+500 RUP Per Refer</div>
 </div>
 
 <!-- ✅ REFERRAL CODE APPLY BOX -->
 <div class="apply-box" id="applyBox">
   <label>🔥 ENTER REFERRAL CODE 🔥</label>
   <input type="text" class="apply-inp" id="applyCodeInput" placeholder="RUP-XXXXXX" maxlength="10">
-  <button class="apply-bt" onclick="applyReferralCode()">✅ APPLY CODE & GET 300 RUP</button>
+  <button class="apply-bt" onclick="applyReferralCode()">✅ APPLY CODE & GET 500 RUP</button>
 </div>
 
 <div class="inv">
@@ -278,7 +278,7 @@ function copy(){
 function invite(){
   let inviteCode = document.getElementById('inviteCode').innerText;
   if(inviteCode === 'LOGIN-FIRST') return showToast('Login first!', 'error');
-  let text = `Join RUPPY Network & get 300 RUP Bonus! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app`;
+  let text = `Join RUPPY Network & get 500 RUP Bonus! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app`;
 
   if(navigator.share){
     navigator.share({title: 'Join RUPPY Network', text: text});
