@@ -55,8 +55,38 @@
     #toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #FFA500; padding: 12px 20px; border-radius: 8px; border: 1px solid #FFA500; display: none; z-index: 1000; font-size: 14px; }
   </style>
   
+  <!-- ADSTERRA SOCIAL BAR CONTROL FUNCTION - START -->
+  <script>
+    let adAlreadyShown = false;
+    
+    function showSocialBar(duration) {
+      // Double Ad Block - एक बार में 1 ही
+      if(adAlreadyShown || document.querySelector('script[src*="profitablecpmratenetwork.com"]')) {
+        return;
+      }
+      
+      adAlreadyShown = true;
+      
+      // Ad Load करो
+      var adScript = document.createElement('script');
+      adScript.src = 'https://pl29295291.profitablecpmratenetwork.com/ab/55/a6/ab55a6cc613fa1874de59c6fc8fbacd8.js';
+      document.body.appendChild(adScript);
+      
+      // Duration के बाद Ad Hide कर दो + Flag Reset
+      setTimeout(function() {
+        var adElements = document.querySelectorAll('div[id*="container-"], iframe[src*="profitablecpmratenetwork"]');
+        adElements.forEach(function(el) {
+          el.style.display = 'none';
+          el.remove();
+        });
+        adAlreadyShown = false;
+      }, duration * 1000);
+    }
+  </script>
+  <!-- ADSTERRA SOCIAL BAR CONTROL FUNCTION - END -->
+  
 </head>
-<body>
+<body onload="setTimeout(function(){ showSocialBar(10); }, 2000);">
 
   <div class="header">
     <div class="dp" id="userDp">👤</div>
@@ -185,6 +215,9 @@
     showToast(`+${MINING_REWARD} RUP Claimed!`);
     
     if(window.logMineEvent) window.logMineEvent(MINING_REWARD);
+    
+    // AD: CLAIM BONUS पे 10 Sec Ad - Balance के बाद
+    showSocialBar(10);
   }
 
   function doBoost() {
@@ -199,6 +232,9 @@
     showToast(`+${boostAmount} RUP Claimed!`);
     
     if(window.logMineEvent) window.logMineEvent(boostAmount);
+    
+    // AD: COLLECT BONUS पे 10 Sec Ad - Balance के बाद
+    showSocialBar(10);
     
     if(userData.boostCount >= 3) {
       document.getElementById('boostModalBtn').innerText = 'All Claimed!';
@@ -223,6 +259,9 @@
     showToast('+10 RUP Claimed!');
     
     if(window.logMineEvent) window.logMineEvent(10);
+    
+    // AD: ULTRA GIFT पे 30 Sec Ad - Balance के बाद
+    showSocialBar(30);
   }
 
   function doFirstReward() {
@@ -236,6 +275,9 @@
       showToast('+10 RUP Claimed!');
       
       if(window.logMineEvent) window.logMineEvent(10);
+      
+      // AD: FIRST REWARD पे 10 Sec Ad - Balance के बाद
+      showSocialBar(10);
     }
   }
 
@@ -250,6 +292,9 @@
       showToast('+30 RUP Claimed!');
       
       if(window.logMineEvent) window.logMineEvent(30);
+      
+      // AD: ULTRA REWARD पे 30 Sec Ad - Balance के बाद
+      showSocialBar(30);
     }
   }
 
