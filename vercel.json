@@ -5,5 +5,19 @@
       "headers": { "content-type": "application/json" },
       "dest": "/api/assetlinks"
     }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.profitablecpmratenetwork.com https://*.googleapis.com https://*.gstatic.com https://*.firebaseio.com https://*.firebaseapp.com https://acceptable.a-ads.com https://pagead2.googlesyndication.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
