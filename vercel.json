@@ -5,5 +5,8 @@
       "headers": { "content-type": "application/json" },
       "dest": "/api/assetlinks"
     }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
