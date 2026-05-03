@@ -141,23 +141,23 @@
     <h4>Weekly Reward Structure:</h4>
     <div class="reward-row">
       <div class="rank">#1</div>
-      <div class="token">1000 RUPPY</div>
+      <div class="token">1000 RUPY BLOCK</div>
     </div>
     <div class="reward-row">
       <div class="rank">#2 - #10</div>
-      <div class="token">800 RUPPY</div>
+      <div class="token">800 RUPY BLOCK</div>
     </div>
     <div class="reward-row">
       <div class="rank">#11 - #50</div>
-      <div class="token">600 RUPPY</div>
+      <div class="token">600 RUPY BLOCK</div>
     </div>
     <div class="reward-row">
       <div class="rank">#51 - #100</div>
-      <div class="token">500 RUPPY</div>
+      <div class="token">500 RUPY BLOCK</div>
     </div>
     <div class="reward-row">
       <div class="rank">#101 - #500</div>
-      <div class="token">300 RUPPY</div>
+      <div class="token">300 RUPY BLOCK</div>
     </div>
   </div>
 
@@ -414,7 +414,7 @@
           <div class="winner-name">${w.name}</div>
         </div>
         <div class="winner-right">
-          <div class="winner-token">${w.reward} RUPPY</div>
+          <div class="winner-token">${w.reward} RUPY BLOCK</div>
           <div class="winner-status ${w.claimed? '' : 'pending'}">${w.claimed? 'Claimed ✅' : 'Pending ⏳'}</div>
         </div>
       </div>
@@ -429,7 +429,7 @@
     const winner = snap.val().winners.find(w => w.uid === currentUser.uid);
     if (winner &&!winner.claimed) {
       document.getElementById('winnerBanner').classList.add('show');
-      document.getElementById('winnerText').innerText = `You ranked #${winner.rank} last week! Claim your ${winner.reward} RUPPY now.`;
+      document.getElementById('winnerText').innerText = `You ranked #${winner.rank} last week! Claim your ${winner.reward} RUPY BLOCK now.`;
       window.currentReward = winner.reward;
       window.currentRank = winner.rank;
     } else {
@@ -501,7 +501,7 @@
     }
 
     let inviteCode = userData.myReferralCode;
-    let text = `Join RUPPY Network & get 300 RUP Bonus! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app`;
+    let text = `Join RUPPY Network & get 300 RUPY BLOCK Bonus! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app`;
 
     try {
       if(navigator.share){
