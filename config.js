@@ -1,4 +1,4 @@
-// config.js - RUPPY GLOBAL SYNC - 300 RUP REFERRAL + AUTO TEAM LIST + WEEKLY POINTS + ANALYTICS
+// config.js - RUPPY GLOBAL SYNC - 500 RUP REFERRAL + AUTO TEAM LIST + WEEKLY POINTS + ANALYTICS
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, get, set, update, query, orderByChild, equalTo, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -36,7 +36,7 @@ function getDefaultData() {
     team: {},
     teamCount: 0,
     teamRewardEarned: 0,
-    referralCount: 0, // ✅ ADD किया - Leaderboard के लिए
+    referralCount: 0,
     weeklyPoints: 0,
     posts: [],
     lastMine: 0,
@@ -75,7 +75,7 @@ function getLocalData() {
       let data = JSON.parse(stored);
       data.balance = Number(data.balance) || 0;
       data.taskBalance = Number(data.taskBalance) || 0;
-      data.referralCount = Number(data.referralCount) || 0; // ✅ ADD किया
+      data.referralCount = Number(data.referralCount) || 0;
       return data;
     }
   } catch (e) {
@@ -141,7 +141,7 @@ onAuthStateChanged(auth, async (user) => {
         window.userData.team = data.team || {};
         window.userData.teamCount = Number(data.teamCount) || 0;
         window.userData.teamRewardEarned = Number(data.teamRewardEarned) || 0;
-        window.userData.referralCount = Number(data.referralCount) || 0; // ✅ ADD किया
+        window.userData.referralCount = Number(data.referralCount) || 0;
         window.userData.weeklyPoints = Number(data.weeklyPoints) || 0;
         window.userData.referredBy = data.referredBy || null;
         window.userData.referralClaimed = data.referralClaimed || false;
@@ -154,7 +154,6 @@ onAuthStateChanged(auth, async (user) => {
           window.userData.myReferralCode = data.myReferralCode;
         }
 
-        // ✅ OLD USERS के लिए referralCount Fix
         if(data.referralCount === undefined) {
           const teamSize = data.team? Object.keys(data.team).length : 0;
           await update(userRef, { referralCount: teamSize });
@@ -168,7 +167,7 @@ onAuthStateChanged(auth, async (user) => {
         window.userData.name = user.displayName || user.email.split('@')[0];
         window.userData.dp = user.photoURL || null;
         window.userData.myReferralCode = generateReferralCode();
-        window.userData.referralCount = 0; // ✅ New User के लिए
+        window.userData.referralCount = 0;
         await set(userRef, window.userData);
       }
     } catch (error) {
@@ -210,7 +209,7 @@ window.saveRuppyData = async function(data){
       team: data.team || {},
       teamCount: data.teamCount || 0,
       teamRewardEarned: data.teamRewardEarned || 0,
-      referralCount: data.referralCount || 0, // ✅ ADD किया
+      referralCount: data.referralCount || 0,
       weeklyPoints: data.weeklyPoints || 0,
       posts: data.posts || [],
       lastMine: data.lastMine || 0,
@@ -264,7 +263,7 @@ window.addEventListener('storage', (e) => {
   }
 });
 
-// ✅ FIXED: REFERRAL CODE APPLY FUNCTION - 300 RUP + 10 POINTS + ANALYTICS
+// ✅ FIXED: REFERRAL CODE APPLY FUNCTION - 500 RUP + 10 POINTS + ANALYTICS
 window.applyReferralCodeManual = async function(code){
   if(!window.userData.uid){
     return {success: false, msg: 'Please login first'};
@@ -301,16 +300,16 @@ window.applyReferralCodeManual = async function(code){
     await push(ref(db, 'referrals'), {
       referrer_uid: referrerUID,
       referred_uid: window.userData.uid,
-      bonus_given: 300,
+      bonus_given: 500,
       created_at: Date.now()
     });
 
     const updates = {};
-    // ✅ REFERRER को Update - referralCount +1
-    updates[`users/${referrerUID}/balance`] = (referrerData.balance || 0) + 300;
+    // ✅ REFERRER को Update - 500 RUP
+    updates[`users/${referrerUID}/balance`] = (referrerData.balance || 0) + 500;
     updates[`users/${referrerUID}/teamCount`] = (referrerData.teamCount || 0) + 1;
-    updates[`users/${referrerUID}/referralCount`] = (referrerData.referralCount || 0) + 1; // ✅ ये Line Fix
-    updates[`users/${referrerUID}/teamRewardEarned`] = (referrerData.teamRewardEarned || 0) + 300;
+    updates[`users/${referrerUID}/referralCount`] = (referrerData.referralCount || 0) + 1;
+    updates[`users/${referrerUID}/teamRewardEarned`] = (referrerData.teamRewardEarned || 0) + 500;
     updates[`users/${referrerUID}/weeklyPoints`] = (referrerData.weeklyPoints || 0) + 10;
     updates[`users/${referrerUID}/team/${window.userData.uid}`] = {
       name: window.userData.name || 'User',
@@ -319,25 +318,25 @@ window.applyReferralCodeManual = async function(code){
       lastMine: Date.now()
     };
 
-    // ✅ NEW USER को Update
-    updates[`users/${window.userData.uid}/balance`] = (window.userData.balance || 0) + 300;
+    // ✅ NEW USER को Update - 500 RUP
+    updates[`users/${window.userData.uid}/balance`] = (window.userData.balance || 0) + 500;
     updates[`users/${window.userData.uid}/referredBy`] = referrerUID;
     updates[`users/${window.userData.uid}/referralClaimed`] = true;
 
     await update(ref(db), updates);
 
     logEvent(analytics, 'referral_applied', {
-      bonus_earned: 300,
+      bonus_earned: 500,
       referrer_id: referrerUID
     });
 
     window.userData.referredBy = referrerUID;
     window.userData.referralClaimed = true;
-    window.userData.balance = (window.userData.balance || 0) + 300;
+    window.userData.balance = (window.userData.balance || 0) + 500;
     localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
     updateBalanceBox();
 
-    return {success: true, msg: '✅ +300 RUP Credited! Referrer got 300 RUP + 10 Points'};
+    return {success: true, msg: '✅ +500 RUP Credited! Referrer got 500 RUP + 10 Points'};
 
   } catch(error){
     console.error('Apply Referral Error:', error);
