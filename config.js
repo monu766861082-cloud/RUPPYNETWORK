@@ -3,6 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getDatabase, ref, get, set, update, query, orderByChild, equalTo, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+import { getDynamicLink } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-dynamic-links.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
@@ -113,6 +114,121 @@ window.loadProfileEverywhere = function(){
   if(nameEl) nameEl.textContent = 'Welcome back, ' + (window.userData.name || 'User');
 }
 
+// ✅ FIXED: REFERRAL CODE APPLY FUNCTION - 500 RUP + 10 POINTS + ANALYTICS
+window.applyReferralCodeManual = async function(code){
+  if(!window.userData.uid){
+    return {success: false, msg: 'Please login first'};
+  }
+
+  if(!code ||!code.startsWith('RUP-')){
+    return {success: false, msg: 'Invalid code format'};
+  }
+
+  if(code === window.userData.myReferralCode){
+    return {success: false, msg: 'Cannot use your own code'};
+  }
+
+  if(window.userData.referredBy){
+    return {success: false, msg: 'Already used referral code'};
+  }
+
+  try {
+    const usersRef = ref(db, 'users');
+    const q = query(usersRef, orderByChild('myReferralCode'), equalTo(code));
+    const snapshot = await get(q);
+
+    if(!snapshot.exists()){
+      return {success: false, msg: 'Referral code not found'};
+    }
+
+    const referrerUID = Object.keys(snapshot.val())[0];
+    const referrerData = Object.values(snapshot.val())[0];
+
+    if(referrerUID === window.userData.uid){
+      return {success: false, msg: 'Cannot use your own code'};
+    }
+
+    await push(ref(db, 'referrals'), {
+      referrer_uid: referrerUID,
+      referred_uid: window.userData.uid,
+      bonus_given: 500,
+      created_at: Date.now()
+    });
+
+    const updates = {};
+    // ✅ REFERRER को Update - 500 RUP
+    updates[`users/${referrerUID}/balance`] = (referrerData.balance || 0) + 500;
+    updates[`users/${referrerUID}/teamCount`] = (referrerData.teamCount || 0) + 1;
+    updates[`users/${referrerUID}/referralCount`] = (referrerData.referralCount || 0) + 1;
+    updates[`users/${referrerUID}/teamRewardEarned`] = (referrerData.teamRewardEarned || 0) + 500;
+    updates[`users/${referrerUID}/weeklyPoints`] = (referrerData.weeklyPoints || 0) + 10;
+    updates[`users/${referrerUID}/team/${window.userData.uid}`] = {
+      name: window.userData.name || 'User',
+      uid: window.userData.uid,
+      created_at: Date.now(),
+      lastMine: Date.now()
+    };
+
+    // ✅ NEW USER को Update - 500 RUP
+    updates[`users/${window.userData.uid}/balance`] = (window.userData.balance || 0) + 500;
+    updates[`users/${window.userData.uid}/referredBy`] = referrerUID;
+    updates[`users/${window.userData.uid}/referralClaimed`] = true;
+
+    await update(ref(db), updates);
+
+    logEvent(analytics, 'referral_applied', {
+      bonus_earned: 500,
+      referrer_id: referrerUID
+    });
+
+    window.userData.referredBy = referrerUID;
+    window.userData.referralClaimed = true;
+    window.userData.balance = (window.userData.balance || 0) + 500;
+    localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
+    updateBalanceBox();
+
+    return {success: true, msg: '✅ +500 RUP Credited! Referrer got 500 RUP + 10 Points'};
+
+  } catch(error){
+    console.error('Apply Referral Error:', error);
+    return {success: false, msg: 'Error: ' + error.message};
+  }
+}
+
+// ✅ AUTO CAPTURE DYNAMIC LINK + URL PARAM ON SIGNUP
+async function checkAndApplyReferral() {
+  if(!window.userData.uid || window.userData.referredBy) return;
+
+  let refCode = null;
+
+  // 1. Check URL Parameter First
+  const urlParams = new URLSearchParams(window.location.search);
+  refCode = urlParams.get('ref');
+
+  // 2. If no URL param, check Firebase Dynamic Link
+  if(!refCode) {
+    try {
+      const dynamicLink = await getDynamicLink();
+      if (dynamicLink && dynamicLink.link) {
+        const url = new URL(dynamicLink.link);
+        refCode = url.searchParams.get('ref');
+      }
+    } catch(e) {
+      console.log('Dynamic Link Error:', e);
+    }
+  }
+
+  // 3. Apply if valid code found
+  if (refCode && isValidReferralCode(refCode)) {
+    console.log('Auto Applying Referral:', refCode);
+    const result = await window.applyReferralCodeManual(refCode);
+    console.log('Referral Result:', result.msg);
+    if(result.success) {
+      alert(result.msg);
+    }
+  }
+}
+
 // 5. LOGOUT/LOGIN + REFERRAL AUTO UPGRADE + ANALYTICS
 onAuthStateChanged(auth, async (user) => {
   if (user) {
@@ -161,6 +277,7 @@ onAuthStateChanged(auth, async (user) => {
         }
 
       } else {
+        // ✅ NEW USER SIGNUP
         logEvent(analytics, 'sign_up');
 
         window.userData.uid = user.uid;
@@ -168,7 +285,11 @@ onAuthStateChanged(auth, async (user) => {
         window.userData.dp = user.photoURL || null;
         window.userData.myReferralCode = generateReferralCode();
         window.userData.referralCount = 0;
+
         await set(userRef, window.userData);
+
+        // ✅ AUTO APPLY REFERRAL AFTER SIGNUP
+        await checkAndApplyReferral();
       }
     } catch (error) {
       console.error('Firebase Load Error:', error);
@@ -262,87 +383,6 @@ window.addEventListener('storage', (e) => {
     loadProfileEverywhere();
   }
 });
-
-// ✅ FIXED: REFERRAL CODE APPLY FUNCTION - 500 RUP + 10 POINTS + ANALYTICS
-window.applyReferralCodeManual = async function(code){
-  if(!window.userData.uid){
-    return {success: false, msg: 'Please login first'};
-  }
-
-  if(!code ||!code.startsWith('RUP-')){
-    return {success: false, msg: 'Invalid code format'};
-  }
-
-  if(code === window.userData.myReferralCode){
-    return {success: false, msg: 'Cannot use your own code'};
-  }
-
-  if(window.userData.referredBy){
-    return {success: false, msg: 'Already used referral code'};
-  }
-
-  try {
-    const usersRef = ref(db, 'users');
-    const q = query(usersRef, orderByChild('myReferralCode'), equalTo(code));
-    const snapshot = await get(q);
-
-    if(!snapshot.exists()){
-      return {success: false, msg: 'Referral code not found'};
-    }
-
-    const referrerUID = Object.keys(snapshot.val())[0];
-    const referrerData = Object.values(snapshot.val())[0];
-
-    if(referrerUID === window.userData.uid){
-      return {success: false, msg: 'Cannot use your own code'};
-    }
-
-    await push(ref(db, 'referrals'), {
-      referrer_uid: referrerUID,
-      referred_uid: window.userData.uid,
-      bonus_given: 500,
-      created_at: Date.now()
-    });
-
-    const updates = {};
-    // ✅ REFERRER को Update - 500 RUP
-    updates[`users/${referrerUID}/balance`] = (referrerData.balance || 0) + 500;
-    updates[`users/${referrerUID}/teamCount`] = (referrerData.teamCount || 0) + 1;
-    updates[`users/${referrerUID}/referralCount`] = (referrerData.referralCount || 0) + 1;
-    updates[`users/${referrerUID}/teamRewardEarned`] = (referrerData.teamRewardEarned || 0) + 500;
-    updates[`users/${referrerUID}/weeklyPoints`] = (referrerData.weeklyPoints || 0) + 10;
-    updates[`users/${referrerUID}/team/${window.userData.uid}`] = {
-      name: window.userData.name || 'User',
-      uid: window.userData.uid,
-      created_at: Date.now(),
-      lastMine: Date.now()
-    };
-
-    // ✅ NEW USER को Update - 500 RUP
-    updates[`users/${window.userData.uid}/balance`] = (window.userData.balance || 0) + 500;
-    updates[`users/${window.userData.uid}/referredBy`] = referrerUID;
-    updates[`users/${window.userData.uid}/referralClaimed`] = true;
-
-    await update(ref(db), updates);
-
-    logEvent(analytics, 'referral_applied', {
-      bonus_earned: 500,
-      referrer_id: referrerUID
-    });
-
-    window.userData.referredBy = referrerUID;
-    window.userData.referralClaimed = true;
-    window.userData.balance = (window.userData.balance || 0) + 500;
-    localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
-    updateBalanceBox();
-
-    return {success: true, msg: '✅ +500 RUP Credited! Referrer got 500 RUP + 10 Points'};
-
-  } catch(error){
-    console.error('Apply Referral Error:', error);
-    return {success: false, msg: 'Error: ' + error.message};
-  }
-}
 
 // ✅ TRANSACTION HISTORY FUNCTIONS
 window.addTransaction = async function(type, amount, note = ''){
