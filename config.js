@@ -3,7 +3,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getDatabase, ref, get, set, update, query, orderByChild, equalTo, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-import { getDynamicLink } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-dynamic-links.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
@@ -114,7 +113,7 @@ window.loadProfileEverywhere = function(){
   if(nameEl) nameEl.textContent = 'Welcome back, ' + (window.userData.name || 'User');
 }
 
-// ✅ FIXED: REFERRAL CODE APPLY FUNCTION - 500 RUP + 10 POINTS + ANALYTICS
+// ✅ REFERRAL CODE APPLY FUNCTION - 500 RUP + 10 POINTS + ANALYTICS
 window.applyReferralCodeManual = async function(code){
   if(!window.userData.uid){
     return {success: false, msg: 'Please login first'};
@@ -195,30 +194,15 @@ window.applyReferralCodeManual = async function(code){
   }
 }
 
-// ✅ AUTO CAPTURE DYNAMIC LINK + URL PARAM ON SIGNUP
+// ✅ AUTO CAPTURE URL PARAM ON SIGNUP - WEBSITE KE LIYE
 async function checkAndApplyReferral() {
   if(!window.userData.uid || window.userData.referredBy) return;
 
-  let refCode = null;
-
-  // 1. Check URL Parameter First
+  // Check URL Parameter
   const urlParams = new URLSearchParams(window.location.search);
-  refCode = urlParams.get('ref');
+  const refCode = urlParams.get('ref');
 
-  // 2. If no URL param, check Firebase Dynamic Link
-  if(!refCode) {
-    try {
-      const dynamicLink = await getDynamicLink();
-      if (dynamicLink && dynamicLink.link) {
-        const url = new URL(dynamicLink.link);
-        refCode = url.searchParams.get('ref');
-      }
-    } catch(e) {
-      console.log('Dynamic Link Error:', e);
-    }
-  }
-
-  // 3. Apply if valid code found
+  // Apply if valid code found
   if (refCode && isValidReferralCode(refCode)) {
     console.log('Auto Applying Referral:', refCode);
     const result = await window.applyReferralCodeManual(refCode);
@@ -277,18 +261,23 @@ onAuthStateChanged(auth, async (user) => {
         }
 
       } else {
-        // ✅ NEW USER SIGNUP
+        // ✅ NEW USER SIGNUP - FIXED 100% - BALANCE SAFE
         logEvent(analytics, 'sign_up');
 
+        // 1. Pehle Default Data Load karo - Balance 0 से Start
+        window.userData = getDefaultData();
+
+        // 2. User की Details भर दो
         window.userData.uid = user.uid;
         window.userData.name = user.displayName || user.email.split('@')[0];
         window.userData.dp = user.photoURL || null;
         window.userData.myReferralCode = generateReferralCode();
-        window.userData.referralCount = 0;
+        window.userData.createdAt = Date.now();
 
+        // 3. अब Firebase में Save करो - पूरा Data जाएगा
         await set(userRef, window.userData);
 
-        // ✅ AUTO APPLY REFERRAL AFTER SIGNUP
+        // 4. Signup के बाद Referral Check करो
         await checkAndApplyReferral();
       }
     } catch (error) {
