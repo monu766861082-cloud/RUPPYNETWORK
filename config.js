@@ -22,7 +22,7 @@ const analytics = getAnalytics(app);
 
 const RUPPY_STORAGE_KEY = 'ruppy_user_cache';
 
-// 1. Default Data - RUP- Format के साथ
+// 1. Default Data
 function getDefaultData() {
   return {
     name: 'Guest',
@@ -49,7 +49,7 @@ function getDefaultData() {
   };
 }
 
-// 1.1 Referral Code Generator - RUP-8X4K9M Format
+// 1.1 Generate Referral Code - RUP-8X4K9M Format
 function generateReferralCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code = 'RUP-';
@@ -59,7 +59,7 @@ function generateReferralCode() {
   return code;
 }
 
-// 1.2 पुराना Code Check
+// 1.2 Validate Referral Code
 function isValidReferralCode(code) {
   if(!code || code.length!== 10 ||!code.startsWith('RUP-')) {
     return false;
@@ -67,7 +67,7 @@ function isValidReferralCode(code) {
   return true;
 }
 
-// 2. LocalStorage से Load
+// 2. Load from LocalStorage
 function getLocalData() {
   try {
     let stored = localStorage.getItem(RUPPY_STORAGE_KEY);
@@ -87,7 +87,7 @@ function getLocalData() {
 // Global Variable
 window.userData = getLocalData();
 
-// 3. Balance Display
+// 3. Update Balance Display
 window.updateBalanceBox = function(){
   const totalEl = document.getElementById('totalBalance');
   const taskEl = document.getElementById('taskBalance');
@@ -100,7 +100,7 @@ window.updateBalanceBox = function(){
   }
 }
 
-// 4. Profile Display
+// 4. Load Profile + Team List
 window.loadProfileEverywhere = function(){
   const avatar = document.getElementById('userAvatar') || document.getElementById('userDp');
   if(avatar && window.userData.dp){
@@ -111,9 +111,38 @@ window.loadProfileEverywhere = function(){
 
   const nameEl = document.getElementById('userName');
   if(nameEl) nameEl.textContent = 'Welcome back, ' + (window.userData.name || 'User');
+
+  // Show My Invite Code
+  const myCodeEl = document.querySelector('[class*="invite"] span') || document.getElementById('myReferralCode');
+  if(myCodeEl) myCodeEl.textContent = window.userData.myReferralCode || 'RUP-XXXXXX';
+
+  // Show Team Counts
+  const totalEl = document.querySelector('div:contains("TOTAL")');
+  if(totalEl) totalEl.innerHTML = (window.userData.teamCount || 0) + 'TOTAL';
+
+  // Show Team List
+  const teamListEl = document.querySelector('[class*="Inactive Users"]') || document.getElementById('teamList');
+  if(teamListEl && window.userData.team) {
+    const teamArray = Object.values(window.userData.team);
+    if(teamArray.length > 0) {
+      let html = `<table style="width:100%;color:#fff;border-collapse:collapse;">
+        <tr style="background:#222;"><th>Sr</th><th>Name</th><th>Join Date</th><th>Status</th></tr>`;
+      teamArray.forEach((m,i) => {
+        const isActive = Date.now() - (m.lastMine || 0) < 86400000;
+        html += `<tr style="border-bottom:1px solid #333;">
+          <td style="padding:8px;">${i+1}</td>
+          <td style="padding:8px;">${m.name}</td>
+          <td style="padding:8px;">${new Date(m.created_at).toLocaleDateString()}</td>
+          <td style="padding:8px;">${isActive? 'Active 🟢' : 'Inactive 🔴'}</td>
+        </tr>`;
+      });
+      html += `</table>`;
+      teamListEl.innerHTML = html;
+    }
+  }
 }
 
-// ✅ REFERRAL CODE APPLY FUNCTION - 500 RUP + 10 POINTS + ANALYTICS
+// APPLY REFERRAL CODE FUNCTION - 500 RUP + 10 POINTS
 window.applyReferralCodeManual = async function(code){
   if(!window.userData.uid){
     return {success: false, msg: 'Please login first'};
@@ -155,7 +184,6 @@ window.applyReferralCodeManual = async function(code){
     });
 
     const updates = {};
-    // ✅ REFERRER को Update - 500 RUP
     updates[`users/${referrerUID}/balance`] = (referrerData.balance || 0) + 500;
     updates[`users/${referrerUID}/teamCount`] = (referrerData.teamCount || 0) + 1;
     updates[`users/${referrerUID}/referralCount`] = (referrerData.referralCount || 0) + 1;
@@ -168,7 +196,6 @@ window.applyReferralCodeManual = async function(code){
       lastMine: Date.now()
     };
 
-    // ✅ NEW USER को Update - 500 RUP
     updates[`users/${window.userData.uid}/balance`] = (window.userData.balance || 0) + 500;
     updates[`users/${window.userData.uid}/referredBy`] = referrerUID;
     updates[`users/${window.userData.uid}/referralClaimed`] = true;
@@ -186,7 +213,7 @@ window.applyReferralCodeManual = async function(code){
     localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
     updateBalanceBox();
 
-    return {success: true, msg: '✅ +500 RUP Credited! Referrer got 500 RUP + 10 Points'};
+    return {success: true, msg: 'Success! +500 RUP Credited. Referrer got 500 RUP + 10 Points'};
 
   } catch(error){
     console.error('Apply Referral Error:', error);
@@ -194,15 +221,13 @@ window.applyReferralCodeManual = async function(code){
   }
 }
 
-// ✅ AUTO CAPTURE URL PARAM ON SIGNUP - WEBSITE KE LIYE
+// AUTO CAPTURE URL PARAM ON SIGNUP
 async function checkAndApplyReferral() {
   if(!window.userData.uid || window.userData.referredBy) return;
 
-  // Check URL Parameter
   const urlParams = new URLSearchParams(window.location.search);
   const refCode = urlParams.get('ref');
 
-  // Apply if valid code found
   if (refCode && isValidReferralCode(refCode)) {
     console.log('Auto Applying Referral:', refCode);
     const result = await window.applyReferralCodeManual(refCode);
@@ -213,7 +238,7 @@ async function checkAndApplyReferral() {
   }
 }
 
-// 5. LOGOUT/LOGIN + REFERRAL AUTO UPGRADE + ANALYTICS
+// 5. AUTH STATE CHANGE
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     logEvent(analytics, 'login', { method: 'firebase' });
@@ -254,30 +279,18 @@ onAuthStateChanged(auth, async (user) => {
           window.userData.myReferralCode = data.myReferralCode;
         }
 
-        if(data.referralCount === undefined) {
-          const teamSize = data.team? Object.keys(data.team).length : 0;
-          await update(userRef, { referralCount: teamSize });
-          window.userData.referralCount = teamSize;
-        }
-
       } else {
-        // ✅ NEW USER SIGNUP - FIXED 100% - BALANCE SAFE
+        // NEW USER SIGNUP
         logEvent(analytics, 'sign_up');
 
-        // 1. Pehle Default Data Load karo - Balance 0 से Start
         window.userData = getDefaultData();
-
-        // 2. User की Details भर दो
         window.userData.uid = user.uid;
         window.userData.name = user.displayName || user.email.split('@')[0];
         window.userData.dp = user.photoURL || null;
         window.userData.myReferralCode = generateReferralCode();
         window.userData.createdAt = Date.now();
 
-        // 3. अब Firebase में Save करो - पूरा Data जाएगा
         await set(userRef, window.userData);
-
-        // 4. Signup के बाद Referral Check करो
         await checkAndApplyReferral();
       }
     } catch (error) {
@@ -296,7 +309,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-// 6. Save Function - Firebase + Local दोनों Update
+// 6. Save Function
 window.saveRuppyData = async function(data){
   data.balance = Number(data.balance) || 0;
   data.taskBalance = Number(data.taskBalance) || 0;
@@ -308,42 +321,22 @@ window.saveRuppyData = async function(data){
   if(!data.uid) return;
   try {
     const userRef = ref(db, `users/${data.uid}`);
-    await update(userRef, {
-      balance: data.balance,
-      taskBalance: data.taskBalance,
-      name: data.name,
-      dp: data.dp,
-      myReferralCode: data.myReferralCode,
-      referredBy: data.referredBy,
-      referralClaimed: data.referralClaimed,
-      team: data.team || {},
-      teamCount: data.teamCount || 0,
-      teamRewardEarned: data.teamRewardEarned || 0,
-      referralCount: data.referralCount || 0,
-      weeklyPoints: data.weeklyPoints || 0,
-      posts: data.posts || [],
-      lastMine: data.lastMine || 0,
-      lastGift: data.lastGift || 0,
-      boostCount: data.boostCount || 0,
-      boostResetTime: data.boostResetTime || Date.now(),
-      firstRewardTime: data.firstRewardTime || 0,
-      ultraRewardTime: data.ultraRewardTime || 0
-    });
+    await update(userRef, data);
   } catch (error) {
     console.error('Firebase Save Error:', error);
   }
 }
 
-// 7. Post Reward +10 RUPPY + ANALYTICS
+// 7. Post Reward
 window.addPostReward = async function() {
-  if(!window.userData.uid) return alert("पहले Login करो");
+  if(!window.userData.uid) return alert("Please login first");
 
   const todayPosts = window.userData.posts.filter(p => {
     return new Date(p.time).toDateString() === new Date().toDateString();
   });
 
   if(todayPosts.length >= 3) {
-    return alert("आज के 3 Post पूरे हो गए");
+    return alert("Daily limit reached");
   }
 
   window.userData.balance = Number(window.userData.balance || 0) + 10;
@@ -358,7 +351,7 @@ window.addPostReward = async function() {
   alert("+10 RUPPY Added");
 }
 
-// 8. Page Load पे तुरंत Balance दिखाओ
+// 8. Page Load
 document.addEventListener('DOMContentLoaded', () => {
   updateBalanceBox();
   loadProfileEverywhere();
@@ -373,7 +366,7 @@ window.addEventListener('storage', (e) => {
   }
 });
 
-// ✅ TRANSACTION HISTORY FUNCTIONS
+// TRANSACTION HISTORY
 window.addTransaction = async function(type, amount, note = ''){
   if(!window.userData.uid) return;
   try {
@@ -406,7 +399,7 @@ window.getTransactionHistory = async function(){
   }
 }
 
-// 🔥 ANALYTICS ADDED - Line 7: Mining Function Example - अपने Mine Button में ये Call कर
+// ANALYTICS
 window.logMineEvent = function(tokensEarned) {
   logEvent(analytics, 'mine_success', {
     tokens_earned: tokensEarned,
@@ -414,3 +407,51 @@ window.logMineEvent = function(tokensEarned) {
     timestamp: Date.now()
   });
 }
+
+// APPLY CODE BUTTON LISTENER - GREEN BUTTON
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const buttons = document.querySelectorAll('button, div[role="button"]');
+    let applyBtn = null;
+
+    buttons.forEach(btn => {
+      if(btn.innerText.includes('APPLY CODE') || btn.innerText.includes('500 RUPY')) {
+        applyBtn = btn;
+      }
+    });
+
+    if(applyBtn) {
+      console.log('APPLY CODE Button Found');
+
+      applyBtn.onclick = async function(e) {
+        e.preventDefault();
+
+        const codeInput = document.querySelector('input[placeholder*="RUP"]') ||
+                         applyBtn.previousElementSibling.querySelector('input');
+
+        const code = codeInput? codeInput.value.trim().toUpperCase() : '';
+
+        if(!code || code === 'RUP-XXXXXX') {
+          alert('Enter valid code');
+          return;
+        }
+
+        console.log('Applying Code:', code);
+        applyBtn.innerText = 'PROCESSING...';
+        applyBtn.style.pointerEvents = 'none';
+
+        const result = await window.applyReferralCodeManual(code);
+
+        alert(result.msg);
+
+        if(result.success) {
+          codeInput.value = '';
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          applyBtn.innerText = 'APPLY CODE & GET 500 RUPY BLOCK';
+          applyBtn.style.pointerEvents = 'auto';
+        }
+      };
+    }
+  }, 3000);
+});
