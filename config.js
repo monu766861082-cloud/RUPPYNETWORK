@@ -1,4 +1,4 @@
-// config.js - RUPPY GLOBAL SYNC - 500 RUP REFERRAL + AUTO TEAM LIST + WEEKLY POINTS + ANALYTICS
+// config.js - RUPX GLOBAL SYNC - 500 RUPX REFERRAL + AUTO TEAM LIST + WEEKLY POINTS + ANALYTICS
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, get, set, update, query, orderByChild, equalTo, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -20,7 +20,7 @@ const db = getDatabase(app);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
 
-const RUPPY_STORAGE_KEY = 'ruppy_user_cache';
+const RUPX_STORAGE_KEY = 'rupx_user_cache'; // 🔥 Changed
 
 // 1. Default Data
 function getDefaultData() {
@@ -49,10 +49,10 @@ function getDefaultData() {
   };
 }
 
-// 1.1 Generate Referral Code - RUP-8X4K9M Format
+// 1.1 Generate Referral Code - RUPX-8X4K9M Format
 function generateReferralCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = 'RUP-';
+  let code = 'RUPX-'; // 🔥 Changed
   for(let i = 0; i < 6; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -61,7 +61,7 @@ function generateReferralCode() {
 
 // 1.2 Validate Referral Code
 function isValidReferralCode(code) {
-  if(!code || code.length!== 10 ||!code.startsWith('RUP-')) {
+  if(!code || code.length!== 11 ||!code.startsWith('RUPX-')) { // 🔥 Changed
     return false;
   }
   return true;
@@ -70,7 +70,7 @@ function isValidReferralCode(code) {
 // 2. Load from LocalStorage - FIXED: Null Check
 function getLocalData() {
   try {
-    let stored = localStorage.getItem(RUPPY_STORAGE_KEY);
+    let stored = localStorage.getItem(RUPX_STORAGE_KEY); // 🔥 Changed
     if (stored) {
       let data = JSON.parse(stored);
       // 🔥 FIX 1: Firebase से null आया तो पुराना Balance रखो
@@ -115,7 +115,7 @@ window.loadProfileEverywhere = function(){
 
   // Show My Invite Code
   const myCodeEl = document.querySelector('[class*="invite"] span') || document.getElementById('myReferralCode');
-  if(myCodeEl) myCodeEl.textContent = window.userData.myReferralCode || 'RUP-XXXXXX';
+  if(myCodeEl) myCodeEl.textContent = window.userData.myReferralCode || 'RUPX-XXXXXX'; // 🔥 Changed
 
   // Show Team Counts
   const totalEl = document.querySelector('div:contains("TOTAL")');
@@ -143,13 +143,13 @@ window.loadProfileEverywhere = function(){
   }
 }
 
-// APPLY REFERRAL CODE FUNCTION - 500 RUP + 10 POINTS
+// APPLY REFERRAL CODE FUNCTION - 500 RUPX + 10 POINTS
 window.applyReferralCodeManual = async function(code){
   if(!window.userData.uid){
     return {success: false, msg: 'Please login first'};
   }
 
-  if(!code ||!code.startsWith('RUP-')){
+  if(!code ||!code.startsWith('RUPX-')){ // 🔥 Changed
     return {success: false, msg: 'Invalid code format'};
   }
 
@@ -211,10 +211,10 @@ window.applyReferralCodeManual = async function(code){
     window.userData.referredBy = referrerUID;
     window.userData.referralClaimed = true;
     window.userData.balance = (window.userData.balance || 0) + 500;
-    localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
+    localStorage.setItem(RUPX_STORAGE_KEY, JSON.stringify(window.userData)); // 🔥 Changed
     updateBalanceBox();
 
-    return {success: true, msg: 'Success! +500 RUP Credited. Referrer got 500 RUP + 10 Points'};
+    return {success: true, msg: 'Success! +500 RUPX Credited. Referrer got 500 RUPX + 10 Points'}; // 🔥 Changed
 
   } catch(error){
     console.error('Apply Referral Error:', error);
@@ -299,12 +299,12 @@ onAuthStateChanged(auth, async (user) => {
       console.error('Firebase Load Error:', error);
     }
 
-    localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
+    localStorage.setItem(RUPX_STORAGE_KEY, JSON.stringify(window.userData)); // 🔥 Changed
     updateBalanceBox();
     loadProfileEverywhere();
 
   } else {
-    localStorage.removeItem(RUPPY_STORAGE_KEY);
+    localStorage.removeItem(RUPX_STORAGE_KEY); // 🔥 Changed
     window.userData = getDefaultData();
     updateBalanceBox();
     loadProfileEverywhere();
@@ -317,7 +317,7 @@ window.saveRuppyData = async function(data){
   data.balance = Number(data.balance?? window.userData.balance?? 0);
   data.taskBalance = Number(data.taskBalance?? window.userData.taskBalance?? 0);
 
-  localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(data));
+  localStorage.setItem(RUPX_STORAGE_KEY, JSON.stringify(data)); // 🔥 Changed
   window.userData = data;
   updateBalanceBox();
 
@@ -351,7 +351,7 @@ window.addPostReward = async function() {
   });
 
   await window.saveRuppyData(window.userData);
-  alert("+10 RUPPY Added");
+  alert("+10 RUPX Added"); // 🔥 Changed
 }
 
 // 8. Page Load
@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 9. AUTO SYNC
 window.addEventListener('storage', (e) => {
-  if(e.key === RUPPY_STORAGE_KEY && e.newValue){
+  if(e.key === RUPX_STORAGE_KEY && e.newValue){ // 🔥 Changed
     window.userData = JSON.parse(e.newValue);
     updateBalanceBox();
     loadProfileEverywhere();
@@ -418,7 +418,7 @@ window.addEventListener('load', () => {
     let applyBtn = null;
 
     buttons.forEach(btn => {
-      if(btn.innerText.includes('APPLY CODE') || btn.innerText.includes('500 RUPY')) {
+      if(btn.innerText.includes('APPLY CODE') || btn.innerText.includes('500 RUPX')) { // 🔥 Changed
         applyBtn = btn;
       }
     });
@@ -429,12 +429,12 @@ window.addEventListener('load', () => {
       applyBtn.onclick = async function(e) {
         e.preventDefault();
 
-        const codeInput = document.querySelector('input[placeholder*="RUP"]') ||
+        const codeInput = document.querySelector('input[placeholder*="RUPX"]') || // 🔥 Changed
                          applyBtn.previousElementSibling.querySelector('input');
 
         const code = codeInput? codeInput.value.trim().toUpperCase() : '';
 
-        if(!code || code === 'RUP-XXXXXX') {
+        if(!code || code === 'RUPX-XXXXXX') { // 🔥 Changed
           alert('Enter valid code');
           return;
         }
@@ -451,7 +451,7 @@ window.addEventListener('load', () => {
           codeInput.value = '';
           setTimeout(() => location.reload(), 1000);
         } else {
-          applyBtn.innerText = 'APPLY CODE & GET 500 RUPY BLOCK';
+          applyBtn.innerText = 'APPLY CODE & GET 500 RUPX'; // 🔥 Changed
           applyBtn.style.pointerEvents = 'auto';
         }
       };
