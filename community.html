@@ -1,544 +1,706 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RN Gaming - Leaderboard</title>
-
-  <!-- ✅ config.js सबसे पहले Load होगा -->
-  <script type="module" src="config.js?v=3"></script>
-
-  <style>
-    * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
-    body {background:#000; color:#fff; min-height:100vh; padding-bottom:80px;}
-
-.header {padding:20px 15px 10px; display:flex; align-items:center; justify-content:space-between;}
-.header.title h3 {font-size:18px; font-weight:600;}
-.header.title p {font-size:12px; color:#888; margin-top:2px;}
-.header.back-btn {width:36px; height:36px; border:1px solid #333; border-radius:8px; background:#0d0d0d; display:flex; align-items:center; justify-content:center; cursor:pointer;}
-
-.winner-banner {margin:15px; background:linear-gradient(135deg, #FFA500, #FF6B00); border-radius:12px; padding:16px; display:none;}
-.winner-banner.show {display:block;}
-.winner-banner h3 {font-size:16px; color:#000; font-weight:700; margin-bottom:8px;}
-.winner-banner p {font-size:13px; color:#000; margin-bottom:12px;}
-.btn-claim {width:100%; padding:12px; background:#000; border:none; border-radius:8px; color:#FFA500; font-weight:700; font-size:14px; cursor:pointer;}
-.btn-claim:disabled {opacity:0.5;}
-
-.position-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-.position-card p:first-child {color:#888; font-size:11px; letter-spacing:0.5px; margin-bottom:10px;}
-.position-row {display:flex; justify-content:space-between; align-items:center;}
-.position-left {display:flex; align-items:center; gap:12px;}
-.position-rank {width:36px; height:36px; border:2px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#FFA500;}
-.position-name {font-size:15px; font-weight:600;}
-.position-right {text-align:right;}
-.position-right.label {color:#888; font-size:11px;}
-.position-right.points {color:#FFA500; font-weight:700; font-size:20px;}
-
-.winners-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-.winners-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-.winners-list h4 {color:#FFA500; font-size:13px;}
-.timer-display{color:#FFA500;font-size:12px;font-weight:600;background:#1a1a1a;padding:4px 10px;border-radius:6px;border:1px solid #FFA500;}
-.winner-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
-.winner-row:last-child {border-bottom:none;}
-.winner-left {display:flex; align-items:center; gap:10px;}
-.winner-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
-.winner-name {font-size:14px;}
-.winner-right {text-align:right;}
-.winner-token {color:#FFA500; font-weight:700; font-size:13px;}
-.winner-status {font-size:10px; color:#4CAF50;}
-.winner-status.pending {color:#888;}
-
-.leaderboard-list {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-.leaderboard-list h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
-.leader-row {display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a;}
-.leader-row:last-child {border-bottom:none;}
-.leader-left {display:flex; align-items:center; gap:10px;}
-.leader-rank {width:28px; height:28px; border:1px solid #FFA500; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FFA500; font-weight:600;}
-.leader-name {font-size:14px;}
-.leader-points {color:#FFA500; font-weight:700; font-size:14px;}
-
-.campaign-card {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:18px;}
-.campaign-card.tag {color:#888; font-size:11px; display:flex; align-items:center; gap:5px; margin-bottom:10px;}
-.campaign-card h2 {font-size:20px; font-weight:700; line-height:1.3;}
-.campaign-card h2 span {color:#FFA500;}
-.campaign-card p {color:#666; font-size:12px; margin:10px 0 15px; line-height:1.5;}
-.btn-refer {width:100%; padding:14px; background:#FFA500; border:none; border-radius:8px; color:#000; font-weight:700; font-size:14px; cursor:pointer;}
-.btn-refer:active {transform:scale(0.98);}
-.btn-refer:disabled {opacity:0.6;}
-
-.reward-structure {margin:15px; background:#0d0d0d; border:1px solid #222; border-radius:12px; padding:16px;}
-.reward-structure h4 {color:#FFA500; font-size:13px; margin-bottom:12px;}
-.reward-row {display:flex; justify-content:space-between; padding:8px 0; font-size:13px; border-bottom:1px solid #1a1a1a;}
-.reward-row:last-child {border-bottom:none;}
-.reward-row.rank {color:#888;}
-.reward-row.token {color:#fff; font-weight:600;}
-
-.nav {position:fixed; bottom:0; left:0; right:0; background:#0d0d0d; border-top:1px solid #222; display:flex; justify-content:space-around; padding:8px 0;}
-.nav-item {display:flex; flex-direction:column; align-items:center; gap:3px; color:#666; text-decoration:none; font-size:11px; cursor:pointer; padding:5px 0; width:16.6%; position:relative;}
-.nav-item.active {color:#FFA500;}
-.nav-item.active::after {content:''; position:absolute; bottom:2px; width:30px; height:2px; background:#FFA500; border-radius:2px;}
-.nav-item.icon {font-size:20px;}
-.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999}
-.toast.error{background:#5c1a1a;color:#ff4d4d}
-  </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RUP Hub</title>
+<script type="module" src="config.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
+body{background:#0a0a0a;color:#fff;padding-bottom:70px;-webkit-tap-highlight-color:transparent}
+.hub-header{position:sticky;top:0;background:linear-gradient(180deg,#0a0a0a 0%,#0a0a0a 80%,transparent 100%);backdrop-filter:blur(10px);padding:16px 20px;z-index:100;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a1a1a}
+.hub-logo{display:flex;align-items:center;gap:8px}
+.hub-logo h1{font-size:24px;font-weight:800;background:linear-gradient(90deg,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hub-logo span{font-size:12px;color:#666;background:#1a1a1a;padding:2px 8px;border-radius:10px}
+.create-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 4px 15px rgba(255,215,0,0.3)}
+.stats-bar{display:flex;gap:10px;padding:16px 20px;overflow-x:auto}
+.stats-bar::-webkit-scrollbar{display:none}
+.stat-card{background:linear-gradient(135deg,#1a1a1a,#0d0d0d);border:1px solid #252525;border-radius:16px;padding:12px 16px;min-width:110px;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,0.5)}
+.stat-card h3{font-size:20px;font-weight:700;color:#FFD700;margin-bottom:2px}
+.stat-card p{font-size:11px;color:#888}
+.reward-banner{margin:0 20px 16px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:10px}
+.reward-banner span{font-size:14px;color:#92400E;font-weight:700}
+.create-card{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:20px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
+.create-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden}
+.create-avatar img{width:100%;height:100%;object-fit:cover}
+.word-limit-text{font-size:12px;color:#FFA500;margin-bottom:8px;font-weight:600}
+.create-card textarea{width:100%;background:#0a0a0a;border:1px solid #222;border-radius:12px;padding:12px;color:#fff;font-size:15px;resize:none;font-family:inherit;min-height:60px}
+.create-card textarea::placeholder{color:#555}
+.create-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.create-actions.left{display:flex;gap:12px}
+.icon-btn{background:#1a1a1a;border:1px solid #333;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;user-select:none}
+.post-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 24px;color:#000;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 15px rgba(255,215,0,0.3)}
+.post-btn:disabled{opacity:0.3;cursor:not-allowed}
+.feed{padding:0 20px}
+.post-card{background:#111;border:1px solid #222;border-radius:24px;margin-bottom:16px;overflow:hidden;box-shadow:0 8px 25px rgba(0,0,0,0.6)}
+.post-card-head{padding:16px;display:flex;align-items:center;gap:12px}
+.post-avatar{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden}
+.post-avatar img{width:100%;height:100%;object-fit:cover}
+.post-info{flex:1}
+.post-info h4{font-size:15px;font-weight:600;margin-bottom:2px}
+.post-info p{font-size:12px;color:#666}
+.post-more{background:#1a1a1a;border:none;border-radius:8px;width:32px;height:32px;color:#888;font-size:20px;cursor:pointer}
+.post-content{padding:0 16px 16px;font-size:15px;line-height:1.5;color:#ddd}
+.post-media{width:100%;max-height:400px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.post-media img,.post-media video{width:100%;height:auto;display:block}
+.claim-btn{width:calc(100% - 32px);background:#22C55E;border:none;border-radius:12px;padding:12px;color:#ffffff;font-weight:700;font-size:14px;cursor:pointer;margin:0 16px 12px;box-shadow:0 4px 12px rgba(34,197,94,0.4);transition:all 0.2s}
+.claim-btn:active{transform:scale(0.98)}
+.claim-btn.claimed{background:#1a1a1a;color:#666;box-shadow:none;cursor:not-allowed;border:1px solid #333}
+.claim-btn:disabled{opacity:0.6;cursor:not-allowed}
+.post-footer{padding:12px 16px;border-top:1px solid #252525;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,#161616,#101010);box-shadow:inset 0 1px 0 rgba(255,215,0,0.15)}
+.post-stats{display:flex;gap:8px}
+.stat-btn{background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:6px 14px;color:#000000;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-width:85px;box-shadow:0 0 10px rgba(251,191,36,0.4);transition:transform 0.1s ease;user-select:none;-webkit-user-select:none}
+.stat-btn:active{transform:scale(0.92);background:#FDE68A}
+.stat-btn.liked{background:#FDE68A;border:1px solid #FDE68A;color:#000}
+.share-btn{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:9px 16px;color:#FFD700;font-size:13px;font-weight:700;cursor:pointer;transition:0.2s}
+.share-btn:active{transform:scale(0.92);background:#222}
+.comments-box{display:none;padding:16px;border-top:1px solid #1a1a1a;background:#0d0d0d;max-height:300px;overflow-y:auto}
+.view-more{color:#FFD700;font-size:13px;font-weight:600;padding:8px 0;cursor:pointer;text-align:center;margin-bottom:10px}
+.view-more:active{opacity:0.6}
+.comment{display:flex;gap:10px;margin-bottom:14px}
+.comment-avatar{width:32px;height:32px;border-radius:10px;background:#FFD700;color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;overflow:hidden}
+.comment-avatar img{width:100%;height:100%;object-fit:cover}
+.comment-body{flex:1;background:#1a1a1a;border-radius:12px;padding:10px 12px}
+.comment-body b{font-size:13px;font-weight:600;display:block;margin-bottom:2px}
+.comment-body span{font-size:14px;line-height:1.4;color:#ddd}
+.comment-input{display:flex;gap:10px;padding:12px 16px;border-top:1px solid #1a1a1a}
+.comment-input input{flex:1;background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:10px 14px;color:#fff;font-size:14px;outline:none}
+.comment-input button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer}
+.ruppy-nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:10px;cursor:pointer;padding:5px 0;width:16.6%}
+.nav-item.active{color:#FFD700}
+.nav-item.active::after{content:'';width:30px;height:2px;background:#FFD700;margin-top:2px}
+.nav-item.icon{width:35px;height:35px;background:#1a1a1a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.empty-hub{text-align:center;padding:80px 40px}
+.empty-hub h3{font-size:24px;font-weight:800;margin-bottom:8px;background:linear-gradient(90deg,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.empty-hub p{font-size:14px;color:#666;margin-bottom:20px}
+.empty-hub button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:14px 28px;color:#000;font-weight:700;font-size:15px;cursor:pointer}
+#fileInput{display:none}
+.loading{text-align:center;padding:20px;color:#666;font-size:14px}
+.end-message{text-align:center;padding:30px;color:#666;font-size:14px}
+#scrollTrigger{height:10px}
+</style>
 </head>
 <body>
 
-  <div class="header">
-    <div class="title">
-      <h3>Leaderboard</h3>
-      <p>Updates Daily • 1 Refer = 10 pts</p>
-    </div>
-    <div class="back-btn" onclick="window.location.href='app.html'">←</div>
+<div class="hub-header">
+  <div class="hub-logo">
+    <h1>RUP</h1>
+    <span>HUB</span>
   </div>
+  <button class="create-btn" onclick="openCreate()">
+    <span>✨</span> Create
+  </button>
+</div>
 
-  <div class="winner-banner" id="winnerBanner">
-    <h3>🏆 Congratulations!</h3>
-    <p id="winnerText">You ranked #0 last week</p>
-    <button class="btn-claim" id="claimBtn" onclick="claimReward()">CLAIM REWARD</button>
+<div class="stats-bar">
+  <div class="stat-card">
+    <p>Task Balance</p>
+    <h3 id="taskBalance">0</h3>
   </div>
-
-  <div class="position-card">
-    <p>YOUR POSITION TODAY</p>
-    <div class="position-row">
-      <div class="position-left">
-        <div class="position-rank" id="userRank">#-</div>
-        <div class="position-name" id="userName">Loading...</div>
-      </div>
-      <div class="position-right">
-        <div class="label">Total Points</div>
-        <div class="points" id="userPoints">0</div>
-      </div>
-    </div>
+  <div class="stat-card">
+    <p>Total Balance</p>
+    <h3 id="totalBalance">0</h3>
   </div>
+</div>
 
-  <div class="winners-list">
-    <div class="winners-header">
-      <h4>🏆 LAST WEEK TOP 10 WINNERS</h4>
-      <div class="timer-display" id="countdown">Loading...</div>
-    </div>
-    <div id="winnersList">
-      <p style="color:#666; text-align:center; padding:20px 0;">No winners yet. Check back Monday!</p>
+<div class="reward-banner" id="rewardBanner">
+  <span id="limitText">Loading...</span>
+</div>
+
+<div class="create-card">
+  <div class="create-top">
+    <div class="create-avatar" id="userAvatar">U</div>
+    <div style="flex:1">
+      <div class="word-limit-text">No word limit - Write as much as you want!</div>
+      <textarea id="postText" placeholder="Share your RUPPY update..." rows="2"></textarea>
     </div>
   </div>
-
-  <div class="leaderboard-list">
-    <h4>🔥 TODAY'S TOP 500</h4>
-    <div id="leaderboardList">
-      <p style="color:#666; text-align:center; padding:20px 0;">Loading rankings...</p>
+  <div class="create-actions">
+    <div class="left">
+      <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📷</button>
+      <button class="icon-btn" onclick="addEmoji()">😊</button>
     </div>
+    <button class="post-btn" id="postBtn" onclick="createPost()">Post</button>
   </div>
+  <input type="file" id="fileInput" accept="image/*,video/*">
+  <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
+</div>
 
-  <div class="campaign-card">
-    <div class="tag">📊 DAILY CAMPAIGN</div>
-    <h2>Share More. Rank Higher.<br><span>Earn Bigger Rewards.</span></h2>
-    <p>Ranking resets every 24 hours. Winners can claim rewards every Monday!</p>
-    <button class="btn-refer" onclick="handleReferNow()">REFER NOW</button>
+<div class="feed" id="feed"><div class="loading">Loading posts...</div></div>
+<div id="scrollTrigger"></div>
+
+<div class="ruppy-nav">
+  <div class="nav-item" onclick="location.href='app.html'">
+    <div class="icon">🏠</div>
+    <span>Home</span>
   </div>
-
-  <div class="reward-structure">
-    <h4>Weekly Reward Structure:</h4>
-    <div class="reward-row">
-      <div class="rank">#1</div>
-      <div class="token">1000 RN POINTS</div>
-    </div>
-    <div class="reward-row">
-      <div class="rank">#2 - #10</div>
-      <div class="token">800 RN POINTS</div>
-    </div>
-    <div class="reward-row">
-      <div class="rank">#11 - #50</div>
-      <div class="token">600 RN POINTS</div>
-    </div>
-    <div class="reward-row">
-      <div class="rank">#51 - #100</div>
-      <div class="token">500 RN POINTS</div>
-    </div>
-    <div class="reward-row">
-      <div class="rank">#101 - #500</div>
-      <div class="token">300 RN POINTS</div>
-    </div>
+  <div class="nav-item" onclick="location.href='tasks.html'">
+    <div class="icon">📋</div>
+    <span>Tasks</span>
   </div>
-
-  <div class="nav">
-    <div class="nav-item" onclick="navClick('home')">
-      <div class="icon">🏠</div>
-      <span>Home</span>
-    </div>
-    <div class="nav-item" onclick="navClick('tasks')">
-      <div class="icon">📋</div>
-      <span>Tasks</span>
-    </div>
-    <div class="nav-item" onclick="navClick('referral')">
-      <div class="icon">👥</div>
-      <span>Referral</span>
-    </div>
-    <div class="nav-item active">
-      <div class="icon">🏆</div>
-      <span>Ranking</span>
-    </div>
-    <div class="nav-item" onclick="navClick('community')">
-      <div class="icon">📝</div>
-      <span>Feed</span>
-    </div>
-    <div class="nav-item" onclick="navClick('settings')">
-      <div class="icon">⚙️</div>
-      <span>Settings</span>
-    </div>
+  <div class="nav-item" onclick="location.href='referral.html'">
+    <div class="icon">👥</div>
+    <span>Referral</span>
   </div>
-
-<div class="toast" id="toast">Copied!</div>
+  <div class="nav-item" onclick="location.href='ranking.html'">
+    <div class="icon">🏆</div>
+    <span>Ranking</span>
+  </div>
+  <div class="nav-item active">
+    <div class="icon">📝</div>
+    <span>Feed</span>
+  </div>
+  <div class="nav-item" onclick="location.href='settings.html'">
+    <div class="icon">⚙️</div>
+    <span>Settings</span>
+  </div>
+</div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
-  import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, update, get, query, orderByChild, equalTo, limitToLast, runTransaction, endBefore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
-    authDomain: "ruppynetwork-50362.firebaseapp.com",
-    databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
-    projectId: "ruppynetwork-50362",
-    storageBucket: "ruppynetwork-50362.firebasestorage.app",
-    messagingSenderId: "132064610854",
-    appId: "1:132064610854:web:3c217eaf3618007f5934e7"
-  };
+const POST_REWARD = 5; // ✅ 40 से 5 कर दिया
+const DAILY_POST_LIMIT = 3;
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const database = getDatabase(app);
-
-  let userData = window.userData;
-  let currentUser = null;
-  let userRef = null;
-  const allUsersRef = ref(database, 'users');
-  const winnersRef = ref(database, 'winners/thisWeek');
-
-  const REWARDS = {1: 1000, 10: 800, 50: 600, 100: 500, 500: 300};
-
-  function getRewardByRank(rank) {
-    if (rank === 1) return 1000;
-    if (rank <= 10) return 800;
-    if (rank <= 50) return 600;
-    if (rank <= 100) return 500;
-    if (rank <= 500) return 300;
-    return 0;
-  }
-
-  function getNextMonday() {
-    const now = new Date();
-    const nextMonday = new Date();
-    const day = now.getDay();
-    const daysUntilMonday = day === 1 && now.getHours() < 1? 0 : (day === 0? 1 : 8 - day);
-    nextMonday.setDate(now.getDate() + daysUntilMonday);
-    nextMonday.setHours(0, 0, 0, 0);
-    return nextMonday;
-  }
-
-  function startCountdown() {
-    const nextMonday = getNextMonday();
-    function updateTimer() {
-      const diff = nextMonday - new Date();
-      if (diff <= 0) {
-        document.getElementById('countdown').textContent = 'Updating...';
-        checkWeeklySnapshot();
-        setTimeout(() => startCountdown(), 5000);
-        return;
-      }
-      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60));
-      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const s = Math.floor((diff % (1000 * 60)) / 1000);
-      document.getElementById('countdown').textContent = `${d}d ${h}h ${m}m ${s}s`;
-    }
-    updateTimer();
-    setInterval(updateTimer, 1000);
-  }
-
-  async function init(){
-    let attempts = 0;
-    while(!window.userData?.uid && attempts < 50) {
-      await new Promise(r => setTimeout(r, 100));
-      attempts++;
-    }
-    userData = window.userData;
-
-    signInAnonymously(auth).catch((error) => {
-      console.error("Auth Error:", error);
-      alert("Login failed. Check Firebase Auth settings.");
-    });
-  }
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      currentUser = user;
-      userRef = ref(database, 'users/' + user.uid);
-      checkDailyReset();
-      checkWeeklySnapshot();
-      loadUserPosition();
-      loadWinnersList();
-      checkClaimStatus();
-      setupRealtimeListener();
-      startCountdown();
+function waitForConfig() {
+  return new Promise(resolve => {
+    if (window.userData && window.updateBalanceBox) {
+      resolve();
+    } else {
+      const interval = setInterval(() => {
+        if (window.userData && window.updateBalanceBox) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
     }
   });
+}
 
-  init();
+let db;
+let currentUser = "Guest";
+let currentUserId = "";
+let allLoadedPosts = [];
+let claimedPosts = new Set();
 
-  async function checkDailyReset() {
-    const snap = await get(userRef);
-    if (snap.exists()) {
-      const data = snap.val();
-      const today = new Date().toDateString();
-      if (data.lastReset!== today) {
-        await update(userRef, {
-          dailyShares: 0,
-          lastReset: today
-        });
+async function initFeed() {
+  await waitForConfig();
+  console.log("Config.js Loaded, User:", window.userData.name);
+
+  db = window.db || getDatabase();
+  currentUser = window.userData.name || 'Guest';
+  currentUserId = window.userData.uid || 'guest';
+
+  window.updateBalanceBox();
+  window.loadProfileEverywhere();
+
+  listenToPosts();
+  setupEventListeners();
+}
+
+initFeed();
+
+const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
+function checkContent(text){
+  let lower = text.toLowerCase();
+  return bannedWords.some(word => lower.includes(word));
+}
+
+function getTodayKey(){
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+
+async function checkPostLimit(){
+  if(!window.userData || window.userData.uid === "guest"){
+    return { canPost: false, reason: 'login' };
+  }
+
+  const userRef = ref(db, `users/${window.userData.uid}`);
+  const snap = await get(userRef);
+  const data = snap.val() || {};
+
+  const todayKey = getTodayKey();
+  const postsToday = data.postsToday || 0;
+  const lastPostDate = data.lastPostDate || '';
+
+  if(lastPostDate!== todayKey){
+    await update(userRef, { postsToday: 0, lastPostDate: todayKey });
+    return { canPost: true, count: 0, left: DAILY_POST_LIMIT };
+  }
+
+  if(postsToday < DAILY_POST_LIMIT){
+    return { canPost: true, count: postsToday, left: DAILY_POST_LIMIT - postsToday };
+  }
+
+  return { canPost: false, count: postsToday, left: 0, reason: 'limit' };
+}
+
+async function getUnclaimedPost(){
+  const todayKey = getTodayKey();
+  const postsRef = ref(db, 'posts');
+  const userPostsQuery = query(postsRef, orderByChild('userId'), equalTo(window.userData.uid));
+  const snapshot = await get(userPostsQuery).catch(()=>null);
+
+  if(snapshot && snapshot.exists()){
+    let found = null;
+    snapshot.forEach(child => {
+      let post = {id: child.key,...child.val()};
+      if(post.postDateKey === todayKey &&!post.claimed){
+        found = post;
       }
+    });
+    return found;
+  }
+  return null;
+}
+
+async function markPostClaimed(postId){
+  if(claimedPosts.has(postId)) return false;
+
+  const postRef = ref(db, `posts/${postId}`);
+  const snap = await get(postRef);
+  const postData = snap.val();
+
+  if(postData.claimed === true){
+    claimedPosts.add(postId);
+    return false;
+  }
+
+  await update(postRef, { claimed: true });
+  claimedPosts.add(postId);
+
+  if(window.userData && window.userData.uid && window.userData.uid!== "guest"){
+    window.userData.balance = (Number(window.userData.balance) || 0) + POST_REWARD;
+    window.userData.taskBalance = (Number(window.userData.taskBalance) || 0) + POST_REWARD;
+    if(typeof window.saveRuppyData === 'function'){
+      await window.saveRuppyData(window.userData);
+    }
+  }
+  return true;
+}
+
+function countWords(text){
+  return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+}
+
+async function updateRewardBanner(){
+  let bannerText = document.getElementById('limitText');
+  let postBtn = document.getElementById('postBtn');
+  let text = document.getElementById('postText').value.trim();
+
+  if(!window.userData || window.userData.uid === "guest"){
+    bannerText.textContent = 'Login to earn rewards';
+    postBtn.disabled =!text &&!selectedFile;
+    return;
+  }
+
+  const limitCheck = await checkPostLimit();
+  const unclaimed = await getUnclaimedPost();
+
+  if(!limitCheck.canPost && limitCheck.reason === 'limit'){
+    bannerText.textContent = `Daily limit reached ${DAILY_POST_LIMIT}/${DAILY_POST_LIMIT}. Come back tomorrow`;
+    postBtn.textContent = 'Limit Reached';
+    postBtn.disabled = true;
+  } else if(unclaimed){
+    bannerText.textContent = `⚠️ Claim Post | ${limitCheck.left}/${DAILY_POST_LIMIT} left`;
+    postBtn.textContent = `Claim First`;
+    postBtn.disabled = true;
+  } else {
+    bannerText.textContent = `🎁 +${POST_REWARD} RUP reward per post | ${limitCheck.left}/${DAILY_POST_LIMIT} left`;
+    postBtn.textContent = `Post`;
+    postBtn.disabled =!text &&!selectedFile; // ✅ Word limit हटा दिया
+  }
+}
+
+let selectedFile = null;
+
+function setupEventListeners(){
+  document.getElementById('postText').oninput = function(){
+    updateRewardBanner();
+  }
+
+  document.getElementById('fileInput').onchange = function(e){
+    selectedFile = e.target.files[0];
+    if(selectedFile){
+      let reader = new FileReader();
+      reader.onload = function(e){
+        let preview = document.getElementById('preview');
+        preview.style.display = 'block';
+        preview.innerHTML = selectedFile.type.includes('video')
+? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
+          : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
+        updateRewardBanner();
+      }
+      reader.readAsDataURL(selectedFile);
+    }
+  }
+}
+
+window.openCreate = function(){
+  document.getElementById('postText').focus();
+}
+
+window.addEmoji = function(){
+  document.getElementById('postText').value += ' 🔥';
+  updateRewardBanner();
+}
+
+window.claimPost = async function(postId){
+  const btn = document.querySelector(`#post-${postId}.claim-btn`);
+  if(btn) {
+    btn.disabled = true;
+    btn.textContent = 'Claiming...';
+  }
+
+  const success = await markPostClaimed(postId);
+
+  if(success){
+    alert(`${POST_REWARD} RUP Claimed! 🎉`);
+    if(btn){
+      btn.textContent = 'Claimed';
+      btn.classList.add('claimed');
+    }
+  } else {
+    alert('Already claimed!');
+    if(btn){
+      btn.textContent = 'Claimed';
+      btn.classList.add('claimed');
     }
   }
 
-  async function checkWeeklySnapshot() {
-    const now = new Date();
-    const day = now.getDay();
-    const weekId = getWeekId(now);
+  await updateRewardBanner();
+}
 
-    const snap = await get(winnersRef);
-    if (day === 1 && (!snap.exists() || snap.val().weekId!== weekId)) {
-      const usersSnap = await get(allUsersRef);
-      const allUsers = [];
-      if (usersSnap.exists()) {
-        usersSnap.forEach((child) => {
-          const data = child.val();
-          const refCount = data.referralCount || 0;
-          if (refCount > 0) {
-            allUsers.push({
-              uid: child.key,
-              name: data.name || 'User',
-              referralCount: refCount,
-              points: refCount * 10 // ✅ 1 Refer = 10 Points
-            });
-          }
-        });
-      }
-      allUsers.sort((a, b) => b.referralCount - a.referralCount);
-      const top500 = allUsers.slice(0, 500).map((u, i) => ({
-        rank: i + 1,
-        uid: u.uid,
-        name: u.name,
-        points: u.points,
-        reward: getRewardByRank(i + 1),
-        claimed: false
-      }));
+window.createPost = async function(){
+  if(!window.userData || window.userData.uid === "guest"){
+    return alert('पहले Login करो');
+  }
 
-      await set(winnersRef, {
-        weekId: weekId,
-        date: now.toISOString(),
-        winners: top500
+  let text = document.getElementById('postText').value.trim();
+
+  // ✅ 200 Words वाला Check हटा दिया
+  if(!text &&!selectedFile){
+    alert('Write something or add image');
+    return;
+  }
+
+  document.getElementById('postBtn').disabled = true;
+  document.getElementById('postBtn').textContent = 'Checking...';
+
+  const limitCheck = await checkPostLimit();
+  if(!limitCheck.canPost){
+    updateRewardBanner();
+    alert(`Daily limit reached ${DAILY_POST_LIMIT}/${DAILY_POST_LIMIT}. Come back tomorrow`);
+    return;
+  }
+
+  const unclaimed = await getUnclaimedPost();
+  if(unclaimed){
+    alert('Claim your last post first');
+    document.getElementById('postBtn').disabled = false;
+    await updateRewardBanner();
+    return;
+  }
+
+  if(checkContent(text)){
+    alert('Inappropriate content detected');
+    document.getElementById('postBtn').disabled = false;
+    await updateRewardBanner();
+    return;
+  }
+
+  document.getElementById('postBtn').textContent = 'Posting...';
+
+  let mediaUrl = null;
+  let mediaType = null;
+
+  try {
+    if(selectedFile){
+      document.getElementById('postBtn').textContent = 'Uploading...';
+      const data = new FormData();
+      data.append("file", selectedFile);
+      data.append("upload_preset", "ruppy_posts");
+      const res = await fetch(`https://api.cloudinary.com/v1_1/dr12i9orc/image/upload`, {
+        method: "POST",
+        body: data
       });
+      const result = await res.json();
+      if(result.error) throw new Error(result.error.message);
+      mediaUrl = result.secure_url;
+      mediaType = selectedFile.type.includes('video')? 'video' : 'image';
     }
+
+    const userRef = ref(db, `users/${window.userData.uid}`);
+    const result = await runTransaction(userRef, (userData) => {
+      if(userData){
+        const todayKey = getTodayKey();
+        if(userData.lastPostDate!== todayKey){
+          userData.postsToday = 1;
+          userData.lastPostDate = todayKey;
+        } else {
+          if((userData.postsToday || 0) >= DAILY_POST_LIMIT){
+            return;
+          }
+          userData.postsToday = (userData.postsToday || 0) + 1;
+        }
+      }
+      return userData;
+    });
+
+    if(!result.committed){
+      alert(`Daily limit reached ${DAILY_POST_LIMIT}/${DAILY_POST_LIMIT}`);
+      await updateRewardBanner();
+      return;
+    }
+
+    await push(ref(db, 'posts'), {
+      user: currentUser,
+      userId: window.userData.uid,
+      userDp: window.userData.dp || null,
+      text: text,
+      media: mediaUrl,
+      mediaType: mediaType,
+      time: Date.now(),
+      postDateKey: getTodayKey(),
+      likes: 0,
+      likedBy: {},
+      comments: [],
+      reports: 0,
+      claimed: false
+    });
+
+    document.getElementById('postText').value = '';
+    document.getElementById('preview').style.display = 'none';
+    document.getElementById('preview').innerHTML = '';
+    document.getElementById('fileInput').value = '';
+    selectedFile = null;
+
+  } catch (error) {
+    alert('Error: ' + error.message);
+    console.error(error);
   }
 
-  function getWeekId(date) {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
-    return d.getUTCFullYear() + '-W' + weekNo;
-  }
+  await updateRewardBanner();
+}
 
-  async function loadUserPosition() {
-    if (!currentUser) return;
-
-    const snapshot = await get(allUsersRef);
-    const usersMap = {};
-
-    if (snapshot.exists()) {
-      snapshot.forEach((child) => {
-        const data = child.val();
-        const refCount = data.referralCount || 0;
-
-        if (refCount > 0) {
-          usersMap[child.key] = {
-            uid: child.key,
-            name: data.name || 'User',
-            referralCount: refCount,
-            points: refCount * 10 // ✅ 1 Refer = 10 Points
-          };
+function listenToPosts(){
+  const postsRef = ref(db, 'posts');
+  onValue(postsRef, (snapshot) => {
+    let posts = [];
+    if(snapshot.exists()){
+      snapshot.forEach((childSnapshot) => {
+        let post = { id: childSnapshot.key,...childSnapshot.val(), showAllComments: false };
+        if((post.reports || 0) < 3) {
+          posts.push(post);
         }
       });
-    }
-
-    const allUsers = Object.values(usersMap);
-    allUsers.sort((a, b) => b.referralCount - a.referralCount);
-
-    const userIndex = allUsers.findIndex(u => u.uid === currentUser.uid);
-    const userRank = userIndex >= 0? userIndex + 1 : '-';
-    const userPoints = userIndex >= 0? allUsers[userIndex].points : 0;
-
-    document.getElementById('userName').innerText = userData.name || 'User';
-    document.getElementById('userPoints').innerText = userPoints;
-    document.getElementById('userRank').innerText = userRank === '-'? '#-' : '#' + userRank;
-
-    renderLeaderboard(allUsers.slice(0, 500));
-
-    const userSnap = await get(userRef);
-    if (!userSnap.exists()) {
-      set(userRef, {
-        name: userData.name || 'User',
-        referralCount: userData.referralCount || 0,
-        balance: userData.balance || 0,
-        dailyShares: 0,
-        lastReset: new Date().toDateString(),
-        uid: currentUser.uid,
-        joinedAt: Date.now()
-      });
-    }
-  }
-
-  async function loadWinnersList() {
-    const snap = await get(winnersRef);
-    const listDiv = document.getElementById('winnersList');
-    if (!snap.exists() ||!snap.val().winners) {
-      listDiv.innerHTML = '<p style="color:#666; text-align:center; padding:20px 0;">No winners yet. Check back Monday!</p>';
-      return;
-    }
-
-    const winners = snap.val().winners.slice(0, 10);
-    listDiv.innerHTML = winners.map(w => `
-      <div class="winner-row">
-        <div class="winner-left">
-          <div class="winner-rank">#${w.rank}</div>
-          <div class="winner-name">${w.name}</div>
-        </div>
-        <div class="winner-right">
-          <div class="winner-token">${w.reward} RN POINTS</div>
-          <div class="winner-status ${w.claimed? '' : 'pending'}">${w.claimed? 'Claimed ✅' : 'Pending ⏳'}</div>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  async function checkClaimStatus() {
-    if (!currentUser) return;
-    const snap = await get(winnersRef);
-    if (!snap.exists() ||!snap.val().winners) return;
-
-    const winner = snap.val().winners.find(w => w.uid === currentUser.uid);
-    if (winner &&!winner.claimed) {
-      document.getElementById('winnerBanner').classList.add('show');
-      document.getElementById('winnerText').innerText = `You ranked #${winner.rank} last week! Claim your ${winner.reward} RN POINTS now.`;
-      window.currentReward = winner.reward;
-      window.currentRank = winner.rank;
+      posts.sort((a,b) => b.time - a.time);
+      allLoadedPosts = posts;
+      renderFeed(allLoadedPosts);
     } else {
-      document.getElementById('winnerBanner').classList.remove('show');
+      renderFeed([]);
     }
+    updateRewardBanner();
+  });
+}
+
+function renderFeed(posts){
+  let feed = document.getElementById('feed');
+  if(posts.length === 0){
+    feed.innerHTML = `
+      <div class="empty-hub">
+        <h3>Welcome to RUPPY Hub</h3>
+        <p>Start the conversation. Share your first update!</p>
+        <button onclick="openCreate()">Create Post</button>
+      </div>`;
+    return;
   }
 
-  window.claimReward = async function() {
-    if (!currentUser ||!window.currentReward) return;
-    const btn = document.getElementById('claimBtn');
-    btn.disabled = true;
-    btn.innerText = 'CLAIMING...';
-
-    userData.balance = (userData.balance || 0) + window.currentReward;
-    if(window.saveRuppyData) await window.saveRuppyData(userData);
-
-    const snap = await get(winnersRef);
-    const winners = snap.val().winners;
-    const idx = winners.findIndex(w => w.uid === currentUser.uid);
-    if (idx >= 0) {
-      winners[idx].claimed = true;
-      await set(winnersRef, {...snap.val(), winners: winners});
-    }
-
-    btn.innerText = 'CLAIMED ✅';
-    setTimeout(() => {
-      document.getElementById('winnerBanner').classList.remove('show');
-      loadWinnersList();
-    }, 2000);
-  }
-
-  function renderLeaderboard(users) {
-    const listDiv = document.getElementById('leaderboardList');
-    if (users.length === 0) {
-      listDiv.innerHTML = '<p style="color:#666; text-align:center; padding:20px 0;">No rankings yet. Be the first to refer!</p>';
-      return;
-    }
-
-    listDiv.innerHTML = users.map((u, i) => `
-      <div class="leader-row">
-        <div class="leader-left">
-          <div class="leader-rank">#${i + 1}</div>
-          <div class="leader-name">${u.name}</div>
-        </div>
-        <div class="leader-points">${u.points} Pts</div>
-      </div>
-    `).join('');
-  }
-
-  function setupRealtimeListener() {
-    onValue(allUsersRef, () => {
-      loadUserPosition();
-    });
-    onValue(winnersRef, () => {
-      loadWinnersList();
-      checkClaimStatus();
-    });
-  }
-
-  window.handleReferNow = async function() {
-    if (!currentUser) return showToast('Please wait, logging in...', 'error');
-
-    const btn = document.querySelector('.btn-refer');
-    btn.disabled = true;
-
-    if (!userData?.myReferralCode) {
-      userData.myReferralCode = 'RUP-' + currentUser.uid.substring(0,6).toUpperCase();
-      if(window.saveRuppyData) await window.saveRuppyData(userData);
-    }
-
-    let inviteCode = userData.myReferralCode;
-    let text = `Join RN Gaming & get 300 RN Points Bonus! 💰\nUse my code: ${inviteCode}\nhttps://ruppynetwork.vercel.app`;
-
-    try {
-      if(navigator.share){
-        await navigator.share({title: 'Join RN Gaming', text: text});
+  feed.innerHTML = '';
+  posts.forEach(post => {
+    let mediaHTML = '';
+    if(post.media){
+      if(post.mediaType === 'video'){
+        mediaHTML = `<div class="post-media"><video src="${post.media}" controls preload="metadata"></video></div>`;
       } else {
-        await navigator.clipboard.writeText(text);
-        showToast('Invite Link Copied!');
+        mediaHTML = `<div class="post-media"><img src="${post.media}" loading="lazy" ondblclick="likePost('${post.id}')"></div>`;
       }
-
-      btn.innerText = 'LINK SHARED!';
-      setTimeout(() => {
-        btn.innerText = 'REFER NOW';
-        btn.disabled = false;
-      }, 2000);
-
-    } catch (err) {
-      btn.disabled = false;
-      console.error(err);
     }
+
+    let timeAgo = getTimeAgo(post.time);
+    let isLiked = post.likedBy && post.likedBy[currentUserId];
+    let commentsToShow = post.showAllComments? (post.comments || []) : (post.comments || []).slice(-2);
+    let hiddenCount = (post.comments || []).length - commentsToShow.length;
+
+    let isClaimed = post.claimed || claimedPosts.has(post.id);
+    let claimBtnHTML = '';
+    if(post.userId === currentUserId &&!isClaimed){
+      claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +${POST_REWARD} RUP</button>`;
+    } else if(post.userId === currentUserId && isClaimed){
+      claimBtnHTML = `<button class="claim-btn claimed" disabled>Claimed</button>`;
+    }
+
+    let postUserDpHTML = post.userDp? `<img src="${post.userDp}" loading="lazy">` : (post.user || 'U')[0].toUpperCase();
+
+    feed.innerHTML += `
+    <div class="post-card" id="post-${post.id}">
+      <div class="post-card-head">
+        <div class="post-avatar">${postUserDpHTML}</div>
+        <div class="post-info">
+          <h4>${post.user}</h4>
+          <p>${timeAgo}</p>
+        </div>
+        <button class="post-more" onclick="reportPost('${post.id}')">⋯</button>
+      </div>
+      ${post.text? `<div class="post-content">${post.text}</div>` : ''}
+      ${mediaHTML}
+      ${claimBtnHTML}
+      <div class="post-footer">
+        <div class="post-stats">
+          <button class="stat-btn ${isLiked? 'liked' : ''}" id="like-btn-${post.id}" onclick="likePost('${post.id}')">
+            Like ❤️ <span id="like-count-${post.id}">${post.likes || 0}</span>
+          </button>
+          <button class="stat-btn" onclick="toggleComments('${post.id}')">
+            Comment 💬 ${(post.comments || []).length}
+          </button>
+        </div>
+        <button class="share-btn" onclick="sharePost('${post.id}')">Share</button>
+      </div>
+      <div class="comments-box" id="comments-${post.id}">
+        ${hiddenCount > 0 &&!post.showAllComments? `<div class="view-more" onclick="showAllComments('${post.id}')">View ${hiddenCount} more comments</div>` : ''}
+        ${commentsToShow.map(c => `
+          <div class="comment">
+            <div class="comment-avatar">${c.userDp? `<img src="${c.userDp}">` : (c.user || 'U')[0].toUpperCase()}</div>
+            <div class="comment-body">
+              <b>${c.user}</b>
+              <span>${c.text}</span>
+            </div>
+          </div>`).join('')}
+        <div class="comment-input">
+          <input type="text" placeholder="Add a comment..." id="commentInput-${post.id}" onkeypress="if(event.key==='Enter') addComment('${post.id}')">
+          <button onclick="addComment('${post.id}')">Send</button>
+        </div>
+      </div>
+    </div>`;
+  });
+}
+
+function getTimeAgo(time){
+  if(!time || isNaN(time)) return '';
+  let seconds = Math.floor((Date.now() - Number(time)) / 1000);
+  if(seconds < 60) return 'now';
+  let minutes = Math.floor(seconds / 60);
+  if(minutes < 60) return `${minutes}m ago`;
+  let hours = Math.floor(minutes / 60);
+  if(hours < 24) return `${hours}h ago`;
+  let days = Math.floor(hours / 24);
+  if(days < 7) return `${days}d ago`;
+  return new Date(time).toLocaleDateString();
+}
+
+window.likePost = async function(id){
+  if(!window.userData || window.userData.uid === "guest" ||!currentUserId){
+    alert('Please login to like posts');
+    return;
   }
 
-  function showToast(msg, type = 'success'){
-    let t = document.getElementById('toast');
-    t.innerText = msg;
-    t.className = 'toast ' + type;
-    t.style.display = 'block';
-    setTimeout(() => t.style.display = 'none', 2500);
+  const postIndex = allLoadedPosts.findIndex(p => p.id === id);
+  if(postIndex === -1) return;
+
+  const post = allLoadedPosts[postIndex];
+  let isLiked = post.likedBy && post.likedBy[currentUserId];
+
+  const likeBtn = document.getElementById(`like-btn-${id}`);
+  const likeCount = document.getElementById(`like-count-${id}`);
+
+  if(isLiked){
+    post.likes = Math.max(0, (post.likes || 0) - 1);
+    delete post.likedBy[currentUserId];
+    if(likeBtn) likeBtn.classList.remove('liked');
+    if(likeCount) likeCount.textContent = post.likes;
+  } else {
+    post.likes = (post.likes || 0) + 1;
+    if(!post.likedBy) post.likedBy = {};
+    post.likedBy[currentUserId] = true;
+    if(likeBtn) likeBtn.classList.add('liked');
+    if(likeCount) likeCount.textContent = post.likes;
   }
 
-  window.navClick = function(page) {
-    if(page === 'home') window.location.href = 'app.html';
-    if(page === 'tasks') window.location.href = 'tasks.html';
-    if(page === 'referral') window.location.href = 'referral.html';
-    if(page === 'ranking') window.location.href = 'ranking.html';
-    if(page === 'community') window.location.href = 'community.html';
-    if(page === 'settings') window.location.href = 'settings.html';
+  const postRef = ref(db, `posts/${id}`);
+  let updates = {};
+  if(isLiked){
+    updates[`posts/${id}/likes`] = Math.max(0, (post.likes || 0) - 1);
+    updates[`posts/${id}/likedBy/${currentUserId}`] = null;
+  } else {
+    updates[`posts/${id}/likes`] = (post.likes || 0) + 1;
+    updates[`posts/${id}/likedBy/${currentUserId}`] = true;
   }
+  await update(ref(db), updates);
+}
+
+window.toggleComments = function(id){
+  let box = document.getElementById(`comments-${id}`);
+  box.style.display = box.style.display === 'block'? 'none' : 'block';
+}
+
+window.showAllComments = function(id){
+  const postIndex = allLoadedPosts.findIndex(p => p.id === id);
+  if(postIndex!== -1){
+    allLoadedPosts[postIndex].showAllComments = true;
+    renderFeed(allLoadedPosts);
+  }
+}
+
+window.addComment = async function(id){
+  if(!window.userData || window.userData.uid === "guest"){
+    alert('Please login to comment');
+    return;
+  }
+
+  let input = document.getElementById(`commentInput-${id}`);
+  let text = input.value.trim();
+  if(!text) return;
+  if(checkContent(text)){
+    alert('Inappropriate content');
+    return;
+  }
+  const postRef = ref(db, `posts/${id}`);
+  const snapshot = await get(postRef);
+  const post = snapshot.val();
+  const comments = post.comments || [];
+  comments.push({user: currentUser, userDp: window.userData?.dp || null, userId: currentUserId, text: text, time: Date.now()});
+  await update(postRef, { comments: comments });
+  input.value = '';
+}
+
+window.sharePost = function(id){
+  let shareData = {
+    title: 'RUPPY Hub Post',
+    text: 'Check this post on RUPPY Hub',
+    url: window.location.href
+  };
+  if(navigator.share){
+    navigator.share(shareData).catch(err => console.log('Share failed'));
+  } else {
+    let whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`;
+    window.open(whatsappUrl, '_blank');
+  }
+}
+
+window.reportPost = async function(id){
+  if(confirm('Report this post?')){
+    const postRef = ref(db, `posts/${id}`);
+    const snapshot = await get(postRef);
+    const post = snapshot.val();
+    await update(postRef, { reports: (post.reports || 0) + 1 });
+    alert('Reported');
+  }
+}
 </script>
+
 </body>
 </html>
