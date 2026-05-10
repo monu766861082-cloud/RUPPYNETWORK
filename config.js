@@ -67,14 +67,15 @@ function isValidReferralCode(code) {
   return true;
 }
 
-// 2. Load from LocalStorage
+// 2. Load from LocalStorage - FIXED: Null Check
 function getLocalData() {
   try {
     let stored = localStorage.getItem(RUPPY_STORAGE_KEY);
     if (stored) {
       let data = JSON.parse(stored);
-      data.balance = Number(data.balance) || 0;
-      data.taskBalance = Number(data.taskBalance) || 0;
+      // 🔥 FIX 1: Firebase से null आया तो पुराना Balance रखो
+      data.balance = data.balance!== null && data.balance!== undefined? Number(data.balance) : (window.userData?.balance || 0);
+      data.taskBalance = data.taskBalance!== null && data.taskBalance!== undefined? Number(data.taskBalance) : (window.userData?.taskBalance || 0);
       data.referralCount = Number(data.referralCount) || 0;
       return data;
     }
@@ -238,7 +239,7 @@ async function checkAndApplyReferral() {
   }
 }
 
-// 5. AUTH STATE CHANGE
+// 5. AUTH STATE CHANGE - FIXED: Null Check
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     logEvent(analytics, 'login', { method: 'firebase' });
@@ -254,8 +255,9 @@ onAuthStateChanged(auth, async (user) => {
         window.userData.uid = user.uid;
         window.userData.name = data.name || user.displayName || user.email.split('@')[0];
         window.userData.dp = data.dp || user.photoURL || null;
-        window.userData.balance = Number(data.balance) || 0;
-        window.userData.taskBalance = Number(data.taskBalance) || 0;
+        // 🔥 FIX 2: Firebase से null/undefined आया तो पुराना Balance रखो
+        window.userData.balance = data.balance!== null && data.balance!== undefined? Number(data.balance) : (window.userData.balance || 0);
+        window.userData.taskBalance = data.taskBalance!== null && data.taskBalance!== undefined? Number(data.taskBalance) : (window.userData.taskBalance || 0);
         window.userData.posts = data.posts || [];
         window.userData.lastMine = Number(data.lastMine) || 0;
         window.userData.lastGift = Number(data.lastGift) || 0;
@@ -309,10 +311,11 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-// 6. Save Function
+// 6. Save Function - FIXED: Null Check
 window.saveRuppyData = async function(data){
-  data.balance = Number(data.balance) || 0;
-  data.taskBalance = Number(data.taskBalance) || 0;
+  // 🔥 FIX 3: Nullish Coalescing - null/undefined हो तो पुराना value रखो
+  data.balance = Number(data.balance?? window.userData.balance?? 0);
+  data.taskBalance = Number(data.taskBalance?? window.userData.taskBalance?? 0);
 
   localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(data));
   window.userData = data;
