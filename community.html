@@ -160,18 +160,18 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px;-webkit-tap-highlight-col
 </div>
 
 <script type="module">
-import { getDatabase, ref, push, onValue, update, get, query, orderByChild, equalTo, limitToLast, runTransaction, endBefore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, update, get, query, orderByChild, equalTo, limitToLast, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-const POST_REWARD = 5; // ✅ 40 से 5 कर दिया
+const POST_REWARD = 5;
 const DAILY_POST_LIMIT = 3;
 
 function waitForConfig() {
   return new Promise(resolve => {
-    if (window.userData && window.updateBalanceBox) {
+    if (window.userData && window.db && window.updateBalanceBox) {
       resolve();
     } else {
       const interval = setInterval(() => {
-        if (window.userData && window.updateBalanceBox) {
+        if (window.userData && window.db && window.updateBalanceBox) {
           clearInterval(interval);
           resolve();
         }
@@ -190,7 +190,7 @@ async function initFeed() {
   await waitForConfig();
   console.log("Config.js Loaded, User:", window.userData.name);
 
-  db = window.db || getDatabase();
+  db = window.db; // 🔥 Fix: config.js से db ले रहे
   currentUser = window.userData.name || 'Guest';
   currentUserId = window.userData.uid || 'guest';
 
@@ -283,10 +283,6 @@ async function markPostClaimed(postId){
   return true;
 }
 
-function countWords(text){
-  return text.trim().split(/\s+/).filter(word => word.length > 0).length;
-}
-
 async function updateRewardBanner(){
   let bannerText = document.getElementById('limitText');
   let postBtn = document.getElementById('postBtn');
@@ -312,7 +308,7 @@ async function updateRewardBanner(){
   } else {
     bannerText.textContent = `🎁 +${POST_REWARD} RUP reward per post | ${limitCheck.left}/${DAILY_POST_LIMIT} left`;
     postBtn.textContent = `Post`;
-    postBtn.disabled =!text &&!selectedFile; // ✅ Word limit हटा दिया
+    postBtn.disabled =!text &&!selectedFile;
   }
 }
 
@@ -331,7 +327,7 @@ function setupEventListeners(){
         let preview = document.getElementById('preview');
         preview.style.display = 'block';
         preview.innerHTML = selectedFile.type.includes('video')
-? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
+         ? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
           : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
         updateRewardBanner();
       }
@@ -382,7 +378,6 @@ window.createPost = async function(){
 
   let text = document.getElementById('postText').value.trim();
 
-  // ✅ 200 Words वाला Check हटा दिया
   if(!text &&!selectedFile){
     alert('Write something or add image');
     return;
@@ -465,6 +460,7 @@ window.createPost = async function(){
       media: mediaUrl,
       mediaType: mediaType,
       time: Date.now(),
+      createdAt: Date.now(), // 🔥 Fix: createdAt Add किया
       postDateKey: getTodayKey(),
       likes: 0,
       likedBy: {},
@@ -489,7 +485,8 @@ window.createPost = async function(){
 
 function listenToPosts(){
   const postsRef = ref(db, 'posts');
-  onValue(postsRef, (snapshot) => {
+  const q = query(postsRef, orderByChild('createdAt'), limitToLast(50)); // 🔥 Fix: createdAt से Sort
+  onValue(q, (snapshot) => {
     let posts = [];
     if(snapshot.exists()){
       snapshot.forEach((childSnapshot) => {
@@ -498,7 +495,7 @@ function listenToPosts(){
           posts.push(post);
         }
       });
-      posts.sort((a,b) => b.time - a.time);
+      posts.reverse(); // Latest पहले
       allLoadedPosts = posts;
       renderFeed(allLoadedPosts);
     } else {
@@ -669,38 +666,4 @@ window.addComment = async function(id){
     return;
   }
   const postRef = ref(db, `posts/${id}`);
-  const snapshot = await get(postRef);
-  const post = snapshot.val();
-  const comments = post.comments || [];
-  comments.push({user: currentUser, userDp: window.userData?.dp || null, userId: currentUserId, text: text, time: Date.now()});
-  await update(postRef, { comments: comments });
-  input.value = '';
-}
-
-window.sharePost = function(id){
-  let shareData = {
-    title: 'RUPPY Hub Post',
-    text: 'Check this post on RUPPY Hub',
-    url: window.location.href
-  };
-  if(navigator.share){
-    navigator.share(shareData).catch(err => console.log('Share failed'));
-  } else {
-    let whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`;
-    window.open(whatsappUrl, '_blank');
-  }
-}
-
-window.reportPost = async function(id){
-  if(confirm('Report this post?')){
-    const postRef = ref(db, `posts/${id}`);
-    const snapshot = await get(postRef);
-    const post = snapshot.val();
-    await update(postRef, { reports: (post.reports || 0) + 1 });
-    alert('Reported');
-  }
-}
-</script>
-
-</body>
-</html>
+  const snapshot = await get(postRef
