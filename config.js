@@ -1,4 +1,4 @@
-// config.js - RUPX GLOBAL SYNC - 500 RUPX REFERRAL + AUTO TEAM LIST + WEEKLY POINTS + ANALYTICS
+// config.js - RUPX GLOBAL SYNC - FIXED LOGIN BUG
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, get, set, update, query, orderByChild, equalTo, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -20,7 +20,7 @@ const db = getDatabase(app);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
 
-const RUPX_STORAGE_KEY = 'rupx_user_cache'; // 🔥 Changed
+const RUPX_STORAGE_KEY = 'rupx_user_cache';
 
 // 1. Default Data
 function getDefaultData() {
@@ -30,6 +30,7 @@ function getDefaultData() {
     balance: 0,
     taskBalance: 0,
     uid: null,
+    email: null, // 👈 Email Add किया
     myReferralCode: null,
     referredBy: null,
     referralClaimed: false,
@@ -45,6 +46,7 @@ function getDefaultData() {
     boostResetTime: Date.now(),
     firstRewardTime: 0,
     ultraRewardTime: 0,
+    lastSpinTime: 0, // 👈 Spin के लिए Add किया
     createdAt: Date.now()
   };
 }
@@ -52,7 +54,7 @@ function getDefaultData() {
 // 1.1 Generate Referral Code - RUPX-8X4K9M Format
 function generateReferralCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = 'RUPX-'; // 🔥 Changed
+  let code = 'RUPX-';
   for(let i = 0; i < 6; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -61,7 +63,7 @@ function generateReferralCode() {
 
 // 1.2 Validate Referral Code
 function isValidReferralCode(code) {
-  if(!code || code.length!== 11 ||!code.startsWith('RUPX-')) { // 🔥 Changed
+  if(!code || code.length!== 11 ||!code.startsWith('RUPX-')) {
     return false;
   }
   return true;
@@ -70,12 +72,12 @@ function isValidReferralCode(code) {
 // 2. Load from LocalStorage - FIXED: Null Check
 function getLocalData() {
   try {
-    let stored = localStorage.getItem(RUPX_STORAGE_KEY); // 🔥 Changed
+    let stored = localStorage.getItem(RUPX_STORAGE_KEY);
     if (stored) {
       let data = JSON.parse(stored);
-      // 🔥 FIX 1: Firebase से null आया तो पुराना Balance रखो
-      data.balance = data.balance!== null && data.balance!== undefined? Number(data.balance) : (window.userData?.balance || 0);
-      data.taskBalance = data.taskBalance!== null && data.taskBalance!== undefined? Number(data.taskBalance) : (window.userData?.taskBalance || 0);
+      // 🔥 FIX: Firebase से null आया तो Local वाला रखो
+      data.balance = data.balance!== null && data.balance!== undefined? Number(data.balance) : 0;
+      data.taskBalance = data.taskBalance!== null && data.taskBalance!== undefined? Number(data.taskBalance) : 0;
       data.referralCount = Number(data.referralCount) || 0;
       return data;
     }
@@ -92,13 +94,11 @@ window.userData = getLocalData();
 window.updateBalanceBox = function(){
   const totalEl = document.getElementById('totalBalance');
   const taskEl = document.getElementById('taskBalance');
+  const balEl = document.getElementById('bal'); // app.html के लिए
 
-  if(totalEl) {
-    totalEl.textContent = Number(window.userData.balance) || 0;
-  }
-  if(taskEl) {
-    taskEl.textContent = Number(window.userData.taskBalance) || 0;
-  }
+  if(totalEl) totalEl.textContent = Number(window.userData.balance) || 0;
+  if(taskEl) taskEl.textContent = Number(window.userData.taskBalance) || 0;
+  if(balEl) balEl.textContent = Number(window.userData.balance) || 0;
 }
 
 // 4. Load Profile + Team List
@@ -113,15 +113,12 @@ window.loadProfileEverywhere = function(){
   const nameEl = document.getElementById('userName');
   if(nameEl) nameEl.textContent = 'Welcome back, ' + (window.userData.name || 'User');
 
-  // Show My Invite Code
   const myCodeEl = document.querySelector('[class*="invite"] span') || document.getElementById('myReferralCode');
-  if(myCodeEl) myCodeEl.textContent = window.userData.myReferralCode || 'RUPX-XXXXXX'; // 🔥 Changed
+  if(myCodeEl) myCodeEl.textContent = window.userData.myReferralCode || 'RUPX-XXXXXX';
 
-  // Show Team Counts
   const totalEl = document.querySelector('div:contains("TOTAL")');
   if(totalEl) totalEl.innerHTML = (window.userData.teamCount || 0) + 'TOTAL';
 
-  // Show Team List
   const teamListEl = document.querySelector('[class*="Inactive Users"]') || document.getElementById('teamList');
   if(teamListEl && window.userData.team) {
     const teamArray = Object.values(window.userData.team);
@@ -149,7 +146,7 @@ window.applyReferralCodeManual = async function(code){
     return {success: false, msg: 'Please login first'};
   }
 
-  if(!code ||!code.startsWith('RUPX-')){ // 🔥 Changed
+  if(!code ||!code.startsWith('RUPX-')){
     return {success: false, msg: 'Invalid code format'};
   }
 
@@ -211,10 +208,10 @@ window.applyReferralCodeManual = async function(code){
     window.userData.referredBy = referrerUID;
     window.userData.referralClaimed = true;
     window.userData.balance = (window.userData.balance || 0) + 500;
-    localStorage.setItem(RUPX_STORAGE_KEY, JSON.stringify(window.userData)); // 🔥 Changed
+    localStorage.setItem(RUPX_STORAGE_KEY, JSON.stringify(window.userData));
     updateBalanceBox();
 
-    return {success: true, msg: 'Success! +500 RUPX Credited. Referrer got 500 RUPX + 10 Points'}; // 🔥 Changed
+    return {success: true, msg: 'Success! +500 RUPX Credited. Referrer got 500 RUPX + 10 Points'};
 
   } catch(error){
     console.error('Apply Referral Error:', error);
@@ -239,7 +236,7 @@ async function checkAndApplyReferral() {
   }
 }
 
-// 5. AUTH STATE CHANGE - FIXED: Null Check
+// 5. AUTH STATE CHANGE - 🔥 FIXED: EMAIL से CHECK
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     logEvent(analytics, 'login', { method: 'firebase' });
@@ -248,14 +245,34 @@ onAuthStateChanged(auth, async (user) => {
     const userRef = ref(db, `users/${user.uid}`);
 
     try {
-      const snapshot = await get(userRef);
+      // 🔥 FIX 1: पहले UID से Check कर
+      let snapshot = await get(userRef);
+      let data = null;
+      let actualUID = user.uid;
 
       if (snapshot.exists()) {
-        const data = snapshot.val();
-        window.userData.uid = user.uid;
+        data = snapshot.val();
+      } else {
+        // 🔥 FIX 2: UID नहीं मिला तो EMAIL से ढूंढ
+        const emailQuery = query(ref(db, 'users'), orderByChild('email'), equalTo(user.email));
+        const emailSnapshot = await get(emailQuery);
+
+        if (emailSnapshot.exists()) {
+          // पुराना Account मिल गया Email से
+          actualUID = Object.keys(emailSnapshot.val())[0];
+          data = Object.values(emailSnapshot.val())[0];
+          console.log('Old Account Found by Email:', actualUID);
+        }
+      }
+
+      if (data) {
+        // पुराना User मिला
+        window.userData.uid = actualUID; // सही UID Use कर
+        window.userData.email = user.email;
         window.userData.name = data.name || user.displayName || user.email.split('@')[0];
         window.userData.dp = data.dp || user.photoURL || null;
-        // 🔥 FIX 2: Firebase से null/undefined आया तो पुराना Balance रखो
+
+        // 🔥 FIX 3: Null Check - Firebase में null हो तो Local रखो
         window.userData.balance = data.balance!== null && data.balance!== undefined? Number(data.balance) : (window.userData.balance || 0);
         window.userData.taskBalance = data.taskBalance!== null && data.taskBalance!== undefined? Number(data.taskBalance) : (window.userData.taskBalance || 0);
         window.userData.posts = data.posts || [];
@@ -265,6 +282,7 @@ onAuthStateChanged(auth, async (user) => {
         window.userData.boostResetTime = Number(data.boostResetTime) || Date.now();
         window.userData.firstRewardTime = Number(data.firstRewardTime) || 0;
         window.userData.ultraRewardTime = Number(data.ultraRewardTime) || 0;
+        window.userData.lastSpinTime = Number(data.lastSpinTime) || 0;
         window.userData.team = data.team || {};
         window.userData.teamCount = Number(data.teamCount) || 0;
         window.userData.teamRewardEarned = Number(data.teamRewardEarned) || 0;
@@ -276,17 +294,18 @@ onAuthStateChanged(auth, async (user) => {
 
         if(!isValidReferralCode(data.myReferralCode)) {
           window.userData.myReferralCode = generateReferralCode();
-          await update(userRef, { myReferralCode: window.userData.myReferralCode });
+          await update(ref(db, `users/${actualUID}`), { myReferralCode: window.userData.myReferralCode });
         } else {
           window.userData.myReferralCode = data.myReferralCode;
         }
 
       } else {
-        // NEW USER SIGNUP
+        // 🔥 NEW USER SIGNUP - सिर्फ तभी जब Email से भी न मिले
         logEvent(analytics, 'sign_up');
 
         window.userData = getDefaultData();
         window.userData.uid = user.uid;
+        window.userData.email = user.email; // Email Save कर
         window.userData.name = user.displayName || user.email.split('@')[0];
         window.userData.dp = user.photoURL || null;
         window.userData.myReferralCode = generateReferralCode();
@@ -299,12 +318,12 @@ onAuthStateChanged(auth, async (user) => {
       console.error('Firebase Load Error:', error);
     }
 
-    localStorage.setItem(RUPX_STORAGE_KEY, JSON.stringify(window.userData)); // 🔥 Changed
+    localStorage.setItem(RUPX_STORAGE_KEY, JSON.stringify(window.userData));
     updateBalanceBox();
     loadProfileEverywhere();
 
   } else {
-    localStorage.removeItem(RUPX_STORAGE_KEY); // 🔥 Changed
+    localStorage.removeItem(RUPX_STORAGE_KEY);
     window.userData = getDefaultData();
     updateBalanceBox();
     loadProfileEverywhere();
@@ -313,11 +332,11 @@ onAuthStateChanged(auth, async (user) => {
 
 // 6. Save Function - FIXED: Null Check
 window.saveRuppyData = async function(data){
-  // 🔥 FIX 3: Nullish Coalescing - null/undefined हो तो पुराना value रखो
-  data.balance = Number(data.balance?? window.userData.balance?? 0);
-  data.taskBalance = Number(data.taskBalance?? window.userData.taskBalance?? 0);
+  // 🔥 FIX 4: Null हो तो पुराना value रखो
+  data.balance = data.balance!== null && data.balance!== undefined? Number(data.balance) : (window.userData.balance || 0);
+  data.taskBalance = data.taskBalance!== null && data.taskBalance!== undefined? Number(data.taskBalance) : (window.userData.taskBalance || 0);
 
-  localStorage.setItem(RUPX_STORAGE_KEY, JSON.stringify(data)); // 🔥 Changed
+  localStorage.setItem(RUPX_STORAGE_KEY, JSON.stringify(data));
   window.userData = data;
   updateBalanceBox();
 
@@ -351,7 +370,7 @@ window.addPostReward = async function() {
   });
 
   await window.saveRuppyData(window.userData);
-  alert("+10 RUPX Added"); // 🔥 Changed
+  alert("+10 RUPX Added");
 }
 
 // 8. Page Load
@@ -362,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 9. AUTO SYNC
 window.addEventListener('storage', (e) => {
-  if(e.key === RUPX_STORAGE_KEY && e.newValue){ // 🔥 Changed
+  if(e.key === RUPX_STORAGE_KEY && e.newValue){
     window.userData = JSON.parse(e.newValue);
     updateBalanceBox();
     loadProfileEverywhere();
@@ -418,7 +437,7 @@ window.addEventListener('load', () => {
     let applyBtn = null;
 
     buttons.forEach(btn => {
-      if(btn.innerText.includes('APPLY CODE') || btn.innerText.includes('500 RUPX')) { // 🔥 Changed
+      if(btn.innerText.includes('APPLY CODE') || btn.innerText.includes('500 RUPX')) {
         applyBtn = btn;
       }
     });
@@ -429,12 +448,12 @@ window.addEventListener('load', () => {
       applyBtn.onclick = async function(e) {
         e.preventDefault();
 
-        const codeInput = document.querySelector('input[placeholder*="RUPX"]') || // 🔥 Changed
+        const codeInput = document.querySelector('input[placeholder*="RUPX"]') ||
                          applyBtn.previousElementSibling.querySelector('input');
 
         const code = codeInput? codeInput.value.trim().toUpperCase() : '';
 
-        if(!code || code === 'RUPX-XXXXXX') { // 🔥 Changed
+        if(!code || code === 'RUPX-XXXXXX') {
           alert('Enter valid code');
           return;
         }
@@ -451,7 +470,7 @@ window.addEventListener('load', () => {
           codeInput.value = '';
           setTimeout(() => location.reload(), 1000);
         } else {
-          applyBtn.innerText = 'APPLY CODE & GET 500 RUPX'; // 🔥 Changed
+          applyBtn.innerText = 'APPLY CODE & GET 500 RUPX';
           applyBtn.style.pointerEvents = 'auto';
         }
       };
