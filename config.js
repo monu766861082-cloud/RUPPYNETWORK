@@ -1,4 +1,4 @@
-// config.js - RUPX GLOBAL SYNC - FIXED LOGIN BUG + DB EXPORT
+// config.js - RUPX GLOBAL SYNC - FIXED LOGIN BUG
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, get, set, update, query, orderByChild, equalTo, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -20,11 +20,6 @@ const db = getDatabase(app);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
 
-// 🔥 FIX: community.html के लिए Export कर दिया
-window.db = db;
-window.auth = auth;
-window.analytics = analytics;
-
 const RUPX_STORAGE_KEY = 'rupx_user_cache';
 
 // 1. Default Data
@@ -35,7 +30,7 @@ function getDefaultData() {
     balance: 0,
     taskBalance: 0,
     uid: null,
-    email: null,
+    email: null, // 👈 Email Add किया
     myReferralCode: null,
     referredBy: null,
     referralClaimed: false,
@@ -51,7 +46,7 @@ function getDefaultData() {
     boostResetTime: Date.now(),
     firstRewardTime: 0,
     ultraRewardTime: 0,
-    lastSpinTime: 0,
+    lastSpinTime: 0, // 👈 Spin के लिए Add किया
     createdAt: Date.now()
   };
 }
@@ -80,6 +75,7 @@ function getLocalData() {
     let stored = localStorage.getItem(RUPX_STORAGE_KEY);
     if (stored) {
       let data = JSON.parse(stored);
+      // 🔥 FIX: Firebase से null आया तो Local वाला रखो
       data.balance = data.balance!== null && data.balance!== undefined? Number(data.balance) : 0;
       data.taskBalance = data.taskBalance!== null && data.taskBalance!== undefined? Number(data.taskBalance) : 0;
       data.referralCount = Number(data.referralCount) || 0;
@@ -98,7 +94,7 @@ window.userData = getLocalData();
 window.updateBalanceBox = function(){
   const totalEl = document.getElementById('totalBalance');
   const taskEl = document.getElementById('taskBalance');
-  const balEl = document.getElementById('bal');
+  const balEl = document.getElementById('bal'); // app.html के लिए
 
   if(totalEl) totalEl.textContent = Number(window.userData.balance) || 0;
   if(taskEl) taskEl.textContent = Number(window.userData.taskBalance) || 0;
@@ -249,6 +245,7 @@ onAuthStateChanged(auth, async (user) => {
     const userRef = ref(db, `users/${user.uid}`);
 
     try {
+      // 🔥 FIX 1: पहले UID से Check कर
       let snapshot = await get(userRef);
       let data = null;
       let actualUID = user.uid;
@@ -256,10 +253,12 @@ onAuthStateChanged(auth, async (user) => {
       if (snapshot.exists()) {
         data = snapshot.val();
       } else {
+        // 🔥 FIX 2: UID नहीं मिला तो EMAIL से ढूंढ
         const emailQuery = query(ref(db, 'users'), orderByChild('email'), equalTo(user.email));
         const emailSnapshot = await get(emailQuery);
 
         if (emailSnapshot.exists()) {
+          // पुराना Account मिल गया Email से
           actualUID = Object.keys(emailSnapshot.val())[0];
           data = Object.values(emailSnapshot.val())[0];
           console.log('Old Account Found by Email:', actualUID);
@@ -267,10 +266,13 @@ onAuthStateChanged(auth, async (user) => {
       }
 
       if (data) {
-        window.userData.uid = actualUID;
+        // पुराना User मिला
+        window.userData.uid = actualUID; // सही UID Use कर
         window.userData.email = user.email;
         window.userData.name = data.name || user.displayName || user.email.split('@')[0];
         window.userData.dp = data.dp || user.photoURL || null;
+
+        // 🔥 FIX 3: Null Check - Firebase में null हो तो Local रखो
         window.userData.balance = data.balance!== null && data.balance!== undefined? Number(data.balance) : (window.userData.balance || 0);
         window.userData.taskBalance = data.taskBalance!== null && data.taskBalance!== undefined? Number(data.taskBalance) : (window.userData.taskBalance || 0);
         window.userData.posts = data.posts || [];
@@ -298,11 +300,12 @@ onAuthStateChanged(auth, async (user) => {
         }
 
       } else {
+        // 🔥 NEW USER SIGNUP - सिर्फ तभी जब Email से भी न मिले
         logEvent(analytics, 'sign_up');
 
         window.userData = getDefaultData();
         window.userData.uid = user.uid;
-        window.userData.email = user.email;
+        window.userData.email = user.email; // Email Save कर
         window.userData.name = user.displayName || user.email.split('@')[0];
         window.userData.dp = user.photoURL || null;
         window.userData.myReferralCode = generateReferralCode();
@@ -329,6 +332,7 @@ onAuthStateChanged(auth, async (user) => {
 
 // 6. Save Function - FIXED: Null Check
 window.saveRuppyData = async function(data){
+  // 🔥 FIX 4: Null हो तो पुराना value रखो
   data.balance = data.balance!== null && data.balance!== undefined? Number(data.balance) : (window.userData.balance || 0);
   data.taskBalance = data.taskBalance!== null && data.taskBalance!== undefined? Number(data.taskBalance) : (window.userData.taskBalance || 0);
 
