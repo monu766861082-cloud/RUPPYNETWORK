@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RN Gaming - Hub</title>
+<title>RUP Hub</title>
 <script type="module" src="config.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -87,7 +87,7 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px;-webkit-tap-highlight-col
 
 <div class="hub-header">
   <div class="hub-logo">
-    <h1>RN</h1>
+    <h1>RUP</h1>
     <span>HUB</span>
   </div>
   <button class="create-btn" onclick="openCreate()">
@@ -115,8 +115,9 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px;-webkit-tap-highlight-col
     <div class="create-avatar" id="userAvatar">U</div>
     <div style="flex:1">
       <div class="word-limit-text">No word limit - Write as much as you want!</div>
-      <textarea id="postText" placeholder="Share your RN Gaming update..." rows="2"></textarea>
+      <textarea id="postText" placeholder="Share your RUPPY update..." rows="2"></textarea>
     </div>
+  </div>
   <div class="create-actions">
     <div class="left">
       <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📷</button>
@@ -278,6 +279,7 @@ async function markPostClaimed(postId){
     if(typeof window.saveRuppyData === 'function'){
       await window.saveRuppyData(window.userData);
     }
+  }
   return true;
 }
 
@@ -308,7 +310,7 @@ async function updateRewardBanner(){
     postBtn.textContent = `Claim First`;
     postBtn.disabled = true;
   } else {
-    bannerText.textContent = `🎁 +${POST_REWARD} RN Points per post | ${limitCheck.left}/${DAILY_POST_LIMIT} left`;
+    bannerText.textContent = `🎁 +${POST_REWARD} RUP reward per post | ${limitCheck.left}/${DAILY_POST_LIMIT} left`;
     postBtn.textContent = `Post`;
     postBtn.disabled =!text &&!selectedFile; // ✅ Word limit हटा दिया
   }
@@ -357,7 +359,7 @@ window.claimPost = async function(postId){
   const success = await markPostClaimed(postId);
 
   if(success){
-    alert(`${POST_REWARD} RN Points Claimed! 🎉`);
+    alert(`${POST_REWARD} RUP Claimed! 🎉`);
     if(btn){
       btn.textContent = 'Claimed';
       btn.classList.add('claimed');
@@ -511,7 +513,7 @@ function renderFeed(posts){
   if(posts.length === 0){
     feed.innerHTML = `
       <div class="empty-hub">
-        <h3>Welcome to RN Gaming Hub</h3>
+        <h3>Welcome to RUPPY Hub</h3>
         <p>Start the conversation. Share your first update!</p>
         <button onclick="openCreate()">Create Post</button>
       </div>`;
@@ -537,7 +539,7 @@ function renderFeed(posts){
     let isClaimed = post.claimed || claimedPosts.has(post.id);
     let claimBtnHTML = '';
     if(post.userId === currentUserId &&!isClaimed){
-      claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +${POST_REWARD} RN Points</button>`;
+      claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +${POST_REWARD} RUP</button>`;
     } else if(post.userId === currentUserId && isClaimed){
       claimBtnHTML = `<button class="claim-btn claimed" disabled>Claimed</button>`;
     }
@@ -677,8 +679,8 @@ window.addComment = async function(id){
 
 window.sharePost = function(id){
   let shareData = {
-    title: 'RN Gaming Hub Post',
-    text: 'Check this post on RN Gaming Hub',
+    title: 'RUPPY Hub Post',
+    text: 'Check this post on RUPPY Hub',
     url: window.location.href
   };
   if(navigator.share){
