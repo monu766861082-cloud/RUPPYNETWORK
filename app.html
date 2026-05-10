@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ruppy Network - App</title>
+  <title>RN Gaming - App</title>
   
   <script type="module" src="config.js"></script>
   
@@ -67,15 +67,15 @@
   </div>
 
   <div class="balance-card">
-    <p>TOTAL BALANCE</p>
-    <h2 id="balance"><div class="r-coin">R</div> 0 <span>RUPY BLOCK</span></h2>
+    <p>TOTAL RN POINTS</p>
+    <h2 id="balance"><div class="r-coin">R</div> 0 <span>RN POINTS</span></h2>
   </div>
 
   <div class="mining-section">
     <div class="mining-circle ready" id="miningCircle">
       <h3 id="miningText">CLAIM BONUS</h3>
     </div>
-    <p class="mining-text">Collect 20 RUPY BLOCK • Available every 3 hours</p>
+    <p class="mining-text">Collect 20 RN Points • Available every 3 hours</p>
   </div>
 
   <div class="grid">
@@ -90,7 +90,7 @@
       <div class="badge" id="giftBadge">✓</div>
       <div class="icon" style="background:#6a5acd;">🎁</div>
       <h4 style="color:#fff;">ULTRA GIFT</h4>
-      <p id="giftTimer">Ready → +10 RUPY BLOCK</p>
+      <p id="giftTimer">Ready → +10 RN Points</p>
       <div class="timer-bar"><div class="timer-fill" id="giftBar"></div></div>
     </div>
     <div class="grid-item" id="firstRewardBtn">
@@ -112,7 +112,7 @@
   <div class="modal" id="boostModal">
     <div class="modal-content">
       <h3>🚀 COLLECT BONUS</h3>
-      <p>Collect extra RUPY BLOCK</p>
+      <p>Collect extra RN Points</p>
       <div class="boost-step">
         <h4>Step <span id="boostStep">1</span>/3</h4>
         <p id="boostStepText">Claim 10% bonus</p>
@@ -182,7 +182,7 @@
     saveRuppyData(userData);
     updateBalance();
     updateMiningCircle();
-    showToast(`+${MINING_REWARD} RUPY BLOCK Claimed!`);
+    showToast(`+${MINING_REWARD} RN Points Claimed!`);
     
     if(window.logMineEvent) window.logMineEvent(MINING_REWARD);
   }
@@ -196,7 +196,7 @@
     saveRuppyData(userData);
     updateBalance();
     updateBoost();
-    showToast(`+${boostAmount} RUPY BLOCK Claimed!`);
+    showToast(`+${boostAmount} RN Points Claimed!`);
     
     if(window.logMineEvent) window.logMineEvent(boostAmount);
     
@@ -220,7 +220,7 @@
     saveRuppyData(userData);
     updateBalance();
     updateGift();
-    showToast('+10 RUPY BLOCK Claimed!');
+    showToast('+10 RN Points Claimed!');
     
     if(window.logMineEvent) window.logMineEvent(10);
   }
@@ -233,7 +233,7 @@
       saveRuppyData(userData);
       updateBalance();
       updateFirstReward();
-      showToast('+10 RUPY BLOCK Claimed!');
+      showToast('+10 RN Points Claimed!');
       
       if(window.logMineEvent) window.logMineEvent(10);
     }
@@ -247,7 +247,7 @@
       saveRuppyData(userData);
       updateBalance();
       updateUltraReward();
-      showToast('+30 RUPY BLOCK Claimed!');
+      showToast('+30 RN Points Claimed!');
       
       if(window.logMineEvent) window.logMineEvent(30);
     }
@@ -287,7 +287,7 @@
   }
 
   function updateBalance() {
-    document.getElementById('balance').innerHTML = '<div class="r-coin">R</div> ' + Number(userData.balance) + ' <span>RUPY BLOCK</span>';
+    document.getElementById('balance').innerHTML = '<div class="r-coin">R</div> ' + Number(userData.balance) + ' <span>RN POINTS</span>';
   }
 
   function updateMiningCircle() {
@@ -348,7 +348,7 @@
     let cooldown = 7200000;
     
     if(diff >= cooldown || lastGift === 0) {
-      document.getElementById('giftTimer').innerText = 'Ready → +10 RUPY BLOCK';
+      document.getElementById('giftTimer').innerText = 'Ready → +10 RN Points';
       document.getElementById('giftBadge').innerText = '✓';
       document.getElementById('giftBadge').style.background = '#00ff00';
       document.getElementById('giftBar').style.width = '100%';
@@ -371,7 +371,7 @@
     let diff = userData.firstRewardTime - now;
     
     if(diff <= 0 || userData.firstRewardTime === 0){
-      document.getElementById('firstRewardTimer').innerText = 'Claim 10 RUPY BLOCK';
+      document.getElementById('firstRewardTimer').innerText = 'Claim 10 RN Points';
       document.getElementById('firstRewardBadge').style.display = 'block';
       document.getElementById('firstRewardBar').style.width = '100%';
     } else {
@@ -390,7 +390,7 @@
     let diff = userData.ultraRewardTime - now;
     
     if(diff <= 0 || userData.ultraRewardTime === 0){
-      document.getElementById('ultraRewardTimer').innerText = 'Claim 30 RUPY BLOCK';
+      document.getElementById('ultraRewardTimer').innerText = 'Claim 30 RN Points';
       document.getElementById('ultraRewardBadge').style.display = 'block';
       document.getElementById('ultraRewardBar').style.width = '100%';
     } else {
