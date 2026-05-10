@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ruppy Tasks</title>
+<title>RN Gaming - Tasks</title>
 
 <!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
@@ -91,50 +91,50 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 <body>
 <div class="hdr">
   <h1>DAILY TASKS</h1>
-  <p>RUPY BLOCK</p>
+  <p>RN GAMING</p>
   <small id="userId">ID: Loading...</small>
 </div>
 
-<div class="tokenBal">Your Balance: <div class="r-coin">R</div> <b id="bal">0</b> RUPY BLOCK</div>
+<div class="tokenBal">Your Balance: <div class="r-coin">R</div> <b id="bal">0</b> RN POINTS</div>
 
-<!-- ✅ SPIN WHEEL CARD - RUPY BLOCK लिखा -->
+<!-- ✅ SPIN WHEEL CARD - RN POINTS लिखा -->
 <div class="spin-card">
     <h3>🎡 Lucky Spin - Win Big!</h3>
     <div class="wheel-container">
         <div class="wheel-wrapper">
             <div class="wheel-pointer"></div>
             <div class="wheel" id="wheel">
-                <div class="wheel-segment" style="background:#4CAF50;transform:rotate(0deg)"><span>100<br>RUPY BLOCK</span></div>
-                <div class="wheel-segment" style="background:#FFC107;transform:rotate(72deg)"><span>200<br>RUPY BLOCK</span></div>
-                <div class="wheel-segment" style="background:#F44336;transform:rotate(144deg)"><span>500<br>RUPY BLOCK</span></div>
-                <div class="wheel-segment" style="background:#2196F3;transform:rotate(216deg)"><span>10<br>RUPY BLOCK</span></div>
-                <div class="wheel-segment" style="background:#9C27B0;transform:rotate(288deg)"><span>20<br>RUPY BLOCK</span></div>
+                <div class="wheel-segment" style="background:#4CAF50;transform:rotate(0deg)"><span>100<br>RN POINTS</span></div>
+                <div class="wheel-segment" style="background:#FFC107;transform:rotate(72deg)"><span>200<br>RN POINTS</span></div>
+                <div class="wheel-segment" style="background:#F44336;transform:rotate(144deg)"><span>500<br>RN POINTS</span></div>
+                <div class="wheel-segment" style="background:#2196F3;transform:rotate(216deg)"><span>10<br>RN POINTS</span></div>
+                <div class="wheel-segment" style="background:#9C27B0;transform:rotate(288deg)"><span>20<br>RN POINTS</span></div>
             </div>
             <div class="wheel-center" id="spinBtn" onclick="spinWheel()">Tap to<br>Spin</div>
         </div>
         <div class="wheel-timer hide" id="wheelTimer"></div>
     </div>
     <div class="spin-info">
-      🎯 Win 10 or 20 RUPY BLOCK • Opens 9AM & 9PM Daily<br>
+      🎯 Win 10 or 20 RN Points • Opens 9AM & 9PM Daily<br>
       ⏰ 2 Spins Every 24 Hours
     </div>
 </div>
 
 <div class="card">
   <div class="ic tg">✈️</div>
-  <div class="txt"><b>Join Telegram</b><span>Reward: <div class="mini-coin">R</div> 20 RUPY BLOCK</span></div>
+  <div class="txt"><b>Join Telegram</b><span>Reward: <div class="mini-coin">R</div> 20 RN Points</span></div>
   <a class="bt" id="tgBtn">JOIN</a>
 </div>
 
 <div class="card">
   <div class="ic fb">f</div>
-  <div class="txt"><b>Follow on Facebook</b><span>Reward: <div class="mini-coin">R</div> 20 RUPY BLOCK</span></div>
+  <div class="txt"><b>Follow on Facebook</b><span>Reward: <div class="mini-coin">R</div> 20 RN Points</span></div>
   <a class="bt" id="fbBtn">FOLLOW</a>
 </div>
 
 <div class="card">
   <div class="ic x">X</div>
-  <div class="txt"><b>Follow on X</b><span>Reward: <div class="mini-coin">R</div> 20 RUPY BLOCK</span></div>
+  <div class="txt"><b>Follow on X</b><span>Reward: <div class="mini-coin">R</div> 20 RN Points</span></div>
   <a class="bt" id="xBtn">FOLLOW</a>
 </div>
 
@@ -226,7 +226,7 @@ async function claimReward(task) {
     
     document.getElementById('bal').innerText = userData.balance;
     updateButtons();
-    showToast('+20 RUPY BLOCK Claimed!');
+    showToast('+20 RN Points Claimed!');
   }
 }
 
@@ -329,7 +329,7 @@ function checkSpinStatus(){
     }
 }
 
-// ✅ UPDATED: 20 RUPY BLOCK = 70% Chance, 10 RUPY BLOCK = 30% Chance
+// ✅ UPDATED: 20 RN Points = 70% Chance, 10 RN Points = 30% Chance
 async function spinWheel() {
     if(isSpinning) return;
 
@@ -345,16 +345,16 @@ async function spinWheel() {
 
     spinBtn.innerHTML = 'Spinning...';
 
-    // ✅ 70% Chance 20 RUPY BLOCK, 30% Chance 10 RUPY BLOCK
+    // ✅ 70% Chance 20 RN Points, 30% Chance 10 RN Points
     var rand = Math.random();
     var winAmount, targetAngle;
     
     if(rand < 0.7){
-        winAmount = 20; // 20 RUPY BLOCK - 70% Chance
-        targetAngle = 288; // 20 RUPY BLOCK Segment
+        winAmount = 20; // 20 RN Points - 70% Chance
+        targetAngle = 288; // 20 RN Points Segment
     } else {
-        winAmount = 10; // 10 RUPY BLOCK - 30% Chance
-        targetAngle = 216; // 10 RUPY BLOCK Segment
+        winAmount = 10; // 10 RN Points - 30% Chance
+        targetAngle = 216; // 10 RN Points Segment
     }
 
     var extraSpins = Math.floor(Math.random() * 3) + 5;
@@ -378,7 +378,7 @@ async function spinWheel() {
         localStorage.setItem('spin_next_time', nextSpinTime.getTime());
 
         startSpinTimer();
-        showToast('🎉 Congrats! You Won ' + winAmount + ' RUPY BLOCK!');
+        showToast('🎉 Congrats! You Won ' + winAmount + ' RN Points!');
     }, 4000);
 }
 
