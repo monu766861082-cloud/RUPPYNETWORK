@@ -3,704 +3,409 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RUP Hub</title>
+<title>RUPX Tasks</title>
+
+<!-- Google AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
+
+<!-- ✅ FIX: config.js Add करा Balance Sync के लिए -->
 <script type="module" src="config.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
-body{background:#0a0a0a;color:#fff;padding-bottom:70px;-webkit-tap-highlight-color:transparent}
-.hub-header{position:sticky;top:0;background:linear-gradient(180deg,#0a0a0a 0%,#0a0a0a 80%,transparent 100%);backdrop-filter:blur(10px);padding:16px 20px;z-index:100;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a1a1a}
-.hub-logo{display:flex;align-items:center;gap:8px}
-.hub-logo h1{font-size:24px;font-weight:800;background:linear-gradient(90deg,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hub-logo span{font-size:12px;color:#666;background:#1a1a1a;padding:2px 8px;border-radius:10px}
-.create-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 4px 15px rgba(255,215,0,0.3)}
-.stats-bar{display:flex;gap:10px;padding:16px 20px;overflow-x:auto}
-.stats-bar::-webkit-scrollbar{display:none}
-.stat-card{background:linear-gradient(135deg,#1a1a1a,#0d0d0d);border:1px solid #252525;border-radius:16px;padding:12px 16px;min-width:110px;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,0.5)}
-.stat-card h3{font-size:20px;font-weight:700;color:#FFD700;margin-bottom:2px}
-.stat-card p{font-size:11px;color:#888}
-.reward-banner{margin:0 20px 16px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:10px}
-.reward-banner span{font-size:14px;color:#92400E;font-weight:700}
-.create-card{margin:0 20px 16px;background:#111;border:1px solid #222;border-radius:20px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
-.create-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
-.create-avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden}
-.create-avatar img{width:100%;height:100%;object-fit:cover}
-.word-limit-text{font-size:12px;color:#FFA500;margin-bottom:8px;font-weight:600}
-.create-card textarea{width:100%;background:#0a0a0a;border:1px solid #222;border-radius:12px;padding:12px;color:#fff;font-size:15px;resize:none;font-family:inherit;min-height:60px}
-.create-card textarea::placeholder{color:#555}
-.create-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
-.create-actions.left{display:flex;gap:12px}
-.icon-btn{background:#1a1a1a;border:1px solid #333;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;user-select:none}
-.post-btn{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 24px;color:#000;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 15px rgba(255,215,0,0.3)}
-.post-btn:disabled{opacity:0.3;cursor:not-allowed}
-.feed{padding:0 20px}
-.post-card{background:#111;border:1px solid #222;border-radius:24px;margin-bottom:16px;overflow:hidden;box-shadow:0 8px 25px rgba(0,0,0,0.6)}
-.post-card-head{padding:16px;display:flex;align-items:center;gap:12px}
-.post-avatar{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FFD700,#FFA500);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:16px;overflow:hidden}
-.post-avatar img{width:100%;height:100%;object-fit:cover}
-.post-info{flex:1}
-.post-info h4{font-size:15px;font-weight:600;margin-bottom:2px}
-.post-info p{font-size:12px;color:#666}
-.post-more{background:#1a1a1a;border:none;border-radius:8px;width:32px;height:32px;color:#888;font-size:20px;cursor:pointer}
-.post-content{padding:0 16px 16px;font-size:15px;line-height:1.5;color:#ddd}
-.post-media{width:100%;max-height:400px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.post-media img,.post-media video{width:100%;height:auto;display:block}
-.claim-btn{width:calc(100% - 32px);background:#22C55E;border:none;border-radius:12px;padding:12px;color:#ffffff;font-weight:700;font-size:14px;cursor:pointer;margin:0 16px 12px;box-shadow:0 4px 12px rgba(34,197,94,0.4);transition:all 0.2s}
-.claim-btn:active{transform:scale(0.98)}
-.claim-btn.claimed{background:#1a1a1a;color:#666;box-shadow:none;cursor:not-allowed;border:1px solid #333}
-.claim-btn:disabled{opacity:0.6;cursor:not-allowed}
-.post-footer{padding:12px 16px;border-top:1px solid #252525;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,#161616,#101010);box-shadow:inset 0 1px 0 rgba(255,215,0,0.15)}
-.post-stats{display:flex;gap:8px}
-.stat-btn{background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:6px 14px;color:#000000;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-width:85px;box-shadow:0 0 10px rgba(251,191,36,0.4);transition:transform 0.1s ease;user-select:none;-webkit-user-select:none}
-.stat-btn:active{transform:scale(0.92);background:#FDE68A}
-.stat-btn.liked{background:#FDE68A;border:1px solid #FDE68A;color:#000}
-.share-btn{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:9px 16px;color:#FFD700;font-size:13px;font-weight:700;cursor:pointer;transition:0.2s}
-.share-btn:active{transform:scale(0.92);background:#222}
-.comments-box{display:none;padding:16px;border-top:1px solid #1a1a1a;background:#0d0d0d;max-height:300px;overflow-y:auto}
-.view-more{color:#FFD700;font-size:13px;font-weight:600;padding:8px 0;cursor:pointer;text-align:center;margin-bottom:10px}
-.view-more:active{opacity:0.6}
-.comment{display:flex;gap:10px;margin-bottom:14px}
-.comment-avatar{width:32px;height:32px;border-radius:10px;background:#FFD700;color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;overflow:hidden}
-.comment-avatar img{width:100%;height:100%;object-fit:cover}
-.comment-body{flex:1;background:#1a1a1a;border-radius:12px;padding:10px 12px}
-.comment-body b{font-size:13px;font-weight:600;display:block;margin-bottom:2px}
-.comment-body span{font-size:14px;line-height:1.4;color:#ddd}
-.comment-input{display:flex;gap:10px;padding:12px 16px;border-top:1px solid #1a1a1a}
-.comment-input input{flex:1;background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:10px 14px;color:#fff;font-size:14px;outline:none}
-.comment-input button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:10px;padding:10px 16px;color:#000;font-weight:700;font-size:13px;cursor:pointer}
-.ruppy-nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:10px;cursor:pointer;padding:5px 0;width:16.6%}
-.nav-item.active{color:#FFD700}
-.nav-item.active::after{content:'';width:30px;height:2px;background:#FFD700;margin-top:2px}
-.nav-item.icon{width:35px;height:35px;background:#1a1a1a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
-.empty-hub{text-align:center;padding:80px 40px}
-.empty-hub h3{font-size:24px;font-weight:800;margin-bottom:8px;background:linear-gradient(90deg,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.empty-hub p{font-size:14px;color:#666;margin-bottom:20px}
-.empty-hub button{background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:12px;padding:14px 28px;color:#000;font-weight:700;font-size:15px;cursor:pointer}
-#fileInput{display:none}
-.loading{text-align:center;padding:20px;color:#666;font-size:14px}
-.end-message{text-align:center;padding:30px;color:#666;font-size:14px}
-#scrollTrigger{height:10px}
+body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
+.hdr{padding:20px}
+.hdr h1{margin:0;font-size:28px}
+.hdr p{margin:4px 0 0;color:#FFA500;font-weight:bold}
+.hdr small{color:#888}
+.tokenBal{background:#0d0d0d;border:1px solid #FFA500;border-radius:12px;padding:15px;margin:0 15px;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
+.tokenBal b{color:#FFA500;font-size:24px}
+
+.r-coin {width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;box-shadow:0 0 10px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500;position:relative;flex-shrink:0}
+.r-coin::after {content:'';position:absolute;inset:-2px;border-radius:50%;background:radial-gradient(circle,#FF6B00 0%,transparent 70%);opacity:0.4;filter:blur(3px);z-index:-1}
+
+.card{border:1px solid #333;border-radius:12px;padding:14px;margin:12px 15px;display:flex;align-items:center;background:#0d0d0d}
+.ic{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:20px}
+.tg{background:#0088cc}.fb{background:#1877f2}.x{background:#fff;color:#000}
+.txt{flex:1}.txt b{display:block;font-size:15px}.txt span{color:#FFA500;font-size:12px;display:flex;align-items:center;gap:4px}
+.txt .mini-coin {width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:8px;color:#000}
+.bt{border:1px solid #FFA500;color:#FFA500;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;min-width:70px;text-align:center;font-weight:600}
+.bt.claim{background:#FFA500;color:#000}
+.bt.done{background:#333;color:#666;border-color:#333;cursor:not-allowed}
+.bt.opened{background:#1a1a1a;color:#888;border-color:#444}
+
+/* ✅ UNIQUE SPIN CARD - App Theme */
+.spin-card{
+  border:2px solid transparent;
+  border-radius:16px;
+  padding:18px;
+  margin:12px 15px;
+  background:linear-gradient(#0d0d0d,#0d0d0d) padding-box,
+             linear-gradient(135deg,#FFA500,#F3C774,#FFA500) border-box;
+  box-shadow:0 0 25px rgba(255,165,0,0.15);
+  position:relative;
+  overflow:hidden;
+}
+.spin-card::before{
+  content:'';
+  position:absolute;
+  top:-50%;left:-50%;
+  width:200%;height:200%;
+  background:radial-gradient(circle,rgba(255,165,0,0.08) 0%,transparent 70%);
+  animation:rotate 15s linear infinite;
+}
+@keyframes rotate{100%{transform:rotate(360deg)}}
+.spin-card h3{
+  margin:0 0 12px;
+  color:#FFA500;
+  text-align:center;
+  font-size:20px;
+  font-weight:800;
+  letter-spacing:1px;
+  text-shadow:0 0 15px rgba(255,165,0,0.5);
+  position:relative;
+  z-index:1;
+}
+
+.wheel-container{display:flex;flex-direction:column;align-items:center;gap:15px;margin:15px 0;position:relative;z-index:1}
+.wheel-wrapper{position:relative;width:280px;height:280px}
+.wheel{width:100%;height:100%;border-radius:50%;border:8px solid #2A2A2C;position:relative;overflow:hidden;transition:transform 4s cubic-bezier(0.17,0.67,0.12,0.99);box-shadow:0 0 30px rgba(243,199,116,0.3)}
+.wheel-segment{position:absolute;width:50%;height:50%;transform-origin:100% 100%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#000}
+.wheel-segment span{transform:rotate(-36deg);display:block;width:95px;text-align:center;line-height:1.3}
+.wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:75px;height:75px;background:#0B0B0C;border:4px solid #F3C774;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#F3C774;z-index:10;cursor:pointer;text-align:center;line-height:1.2;box-shadow:0 0 20px rgba(243,199,116,0.4)}
+.wheel-center:active{transform:translate(-50%,-50%) scale(0.95)}
+.wheel-center.disabled{background:#2a2a2a;border-color:#666;color:#666;cursor:not-allowed}
+.wheel-pointer{position:absolute;right:-15px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:15px solid transparent;border-bottom:15px solid transparent;border-left:25px solid #F3C774;z-index:5;filter:drop-shadow(0 0 8px #F3C774)}
+.wheel-timer{font-size:14px;color:#F3C774;font-weight:700;background:rgba(243,199,116,0.1);padding:12px 24px;border-radius:12px;border:2px solid #F3C774;min-width:180px;text-align:center;box-shadow:0 0 15px rgba(243,199,116,0.2)}
+.wheel-timer.hide{display:none}
+.spin-info{font-size:12px;color:#F3C774;text-align:center;margin-top:12px;line-height:1.6;font-weight:600;position:relative;z-index:1}
+
+.nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
+.nav-item.active{color:#FFA500}
+.nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
+.nav-item.icon{font-size:20px}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999}
+.toast.error{background:#5c1a1a;color:#ff4d4d}
 </style>
 </head>
 <body>
-
-<div class="hub-header">
-  <div class="hub-logo">
-    <h1>RUP</h1>
-    <span>HUB</span>
-  </div>
-  <button class="create-btn" onclick="openCreate()">
-    <span>✨</span> Create
-  </button>
+<div class="hdr">
+  <h1>DAILY TASKS</h1>
+  <p>RUPX Block</p>
+  <small id="userId">ID: Loading...</small>
 </div>
 
-<div class="stats-bar">
-  <div class="stat-card">
-    <p>Task Balance</p>
-    <h3 id="taskBalance">0</h3>
-  </div>
-  <div class="stat-card">
-    <p>Total Balance</p>
-    <h3 id="totalBalance">0</h3>
-  </div>
-</div>
+<div class="tokenBal">Your Balance: <div class="r-coin">R</div> <b id="bal">0</b> RUPX Block</div>
 
-<div class="reward-banner" id="rewardBanner">
-  <span id="limitText">Loading...</span>
-</div>
-
-<div class="create-card">
-  <div class="create-top">
-    <div class="create-avatar" id="userAvatar">U</div>
-    <div style="flex:1">
-      <div class="word-limit-text">No word limit - Write as much as you want!</div>
-      <textarea id="postText" placeholder="Share your RUPPY update..." rows="2"></textarea>
+<!-- ✅ SPIN WHEEL CARD - RUPX Block लिखा -->
+<div class="spin-card">
+    <h3>🎡 Lucky Spin - Win Big!</h3>
+    <div class="wheel-container">
+        <div class="wheel-wrapper">
+            <div class="wheel-pointer"></div>
+            <div class="wheel" id="wheel">
+                <div class="wheel-segment" style="background:#4CAF50;transform:rotate(0deg)"><span>100<br>RUPX Block</span></div>
+                <div class="wheel-segment" style="background:#FFC107;transform:rotate(72deg)"><span>200<br>RUPX Block</span></div>
+                <div class="wheel-segment" style="background:#F44336;transform:rotate(144deg)"><span>500<br>RUPX Block</span></div>
+                <div class="wheel-segment" style="background:#2196F3;transform:rotate(216deg)"><span>10<br>RUPX Block</span></div>
+                <div class="wheel-segment" style="background:#9C27B0;transform:rotate(288deg)"><span>20<br>RUPX Block</span></div>
+            </div>
+            <div class="wheel-center" id="spinBtn" onclick="spinWheel()">Tap to<br>Spin</div>
+        </div>
+        <div class="wheel-timer hide" id="wheelTimer"></div>
     </div>
-  </div>
-  <div class="create-actions">
-    <div class="left">
-      <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📷</button>
-      <button class="icon-btn" onclick="addEmoji()">😊</button>
+    <div class="spin-info">
+      🎯 Win 10 or 20 RUPX Block • Opens 9AM & 9PM Daily<br>
+      ⏰ 2 Spins Every 24 Hours
     </div>
-    <button class="post-btn" id="postBtn" onclick="createPost()">Post</button>
-  </div>
-  <input type="file" id="fileInput" accept="image/*,video/*">
-  <div id="preview" style="margin-top:12px;border-radius:12px;overflow:hidden;display:none"></div>
 </div>
 
-<div class="feed" id="feed"><div class="loading">Loading posts...</div></div>
-<div id="scrollTrigger"></div>
+<div class="card">
+  <div class="ic tg">✈️</div>
+  <div class="txt"><b>Join Telegram</b><span>Reward: <div class="mini-coin">R</div> 20 RUPX Block</span></div>
+  <a class="bt" id="tgBtn">JOIN</a>
+</div>
 
-<div class="ruppy-nav">
-  <div class="nav-item" onclick="location.href='app.html'">
+<div class="card">
+  <div class="ic fb">f</div>
+  <div class="txt"><b>Follow on Facebook</b><span>Reward: <div class="mini-coin">R</div> 20 RUPX Block</span></div>
+  <a class="bt" id="fbBtn">FOLLOW</a>
+</div>
+
+<div class="card">
+  <div class="ic x">X</div>
+  <div class="txt"><b>Follow on X</b><span>Reward: <div class="mini-coin">R</div> 20 RUPX Block</span></div>
+  <a class="bt" id="xBtn">FOLLOW</a>
+</div>
+
+<div class="nav">
+  <div class="nav-item" onclick="goPage('app.html')">
     <div class="icon">🏠</div>
     <span>Home</span>
   </div>
-  <div class="nav-item" onclick="location.href='tasks.html'">
+  <div class="nav-item active">
     <div class="icon">📋</div>
     <span>Tasks</span>
   </div>
-  <div class="nav-item" onclick="location.href='referral.html'">
+  <div class="nav-item" onclick="goPage('referral.html')">
     <div class="icon">👥</div>
     <span>Referral</span>
   </div>
-  <div class="nav-item" onclick="location.href='ranking.html'">
+  <div class="nav-item" onclick="goPage('ranking.html')">
     <div class="icon">🏆</div>
     <span>Ranking</span>
   </div>
-  <div class="nav-item active">
+  <div class="nav-item" onclick="goPage('community.html')">
     <div class="icon">📝</div>
     <span>Feed</span>
   </div>
-  <div class="nav-item" onclick="location.href='settings.html'">
+  <div class="nav-item" onclick="goPage('settings.html')">
     <div class="icon">⚙️</div>
     <span>Settings</span>
   </div>
 </div>
 
-<script type="module">
-import { getDatabase, ref, push, onValue, update, get, query, orderByChild, equalTo, limitToLast, runTransaction, endBefore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+<div class="toast" id="toast">Copied!</div>
 
-const POST_REWARD = 5; // ✅ 40 से 5 कर दिया
-const DAILY_POST_LIMIT = 3;
+<script>
+var userData = window.userData;
+let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
+let openedTask = null;
 
-function waitForConfig() {
-  return new Promise(resolve => {
-    if (window.userData && window.updateBalanceBox) {
-      resolve();
+// ✅ SPIN VARIABLES
+var spinTimer = null;
+var currentRotation = 0;
+var isSpinning = false;
+
+async function init(){
+  let attempts = 0;
+  while(!window.userData?.uid && attempts < 50) {
+    await new Promise(r => setTimeout(r, 100));
+    attempts++;
+  }
+  userData = window.userData;
+  
+  let displayId = userData.myReferralCode;
+  if(!displayId && userData.uid) {
+    displayId = 'RUPX-' + userData.uid.substring(0,6).toUpperCase();
+  }
+  document.getElementById('userId').innerText = `ID: ${displayId || 'Loading...'}`;
+  
+  document.getElementById('bal').innerText = userData.balance || 0;
+  updateButtons();
+  checkSpinStatus();
+}
+
+init();
+
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden && openedTask) {
+    taskState[openedTask] = 'ready_to_claim';
+    localStorage.setItem('taskState', JSON.stringify(taskState));
+    openedTask = null;
+    updateButtons();
+  }
+});
+
+function openLink(task, url) {
+  window.open(url, '_blank');
+  openedTask = task;
+  taskState[task] = 'opened';
+  localStorage.setItem('taskState', JSON.stringify(taskState));
+  updateButtons();
+}
+
+async function claimReward(task) {
+  if (taskState[task] === 'ready_to_claim') {
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += 20;
+    taskState[task] = 'claimed';
+    localStorage.setItem('taskState', JSON.stringify(taskState));
+    
+    if(window.saveRuppyData) await window.saveRuppyData(userData);
+    
+    document.getElementById('bal').innerText = userData.balance;
+    updateButtons();
+    showToast('+20 RUPX Block Claimed!');
+  }
+}
+
+function updateButtons() {
+  const tasks = [
+    {id: 'tg', url: 'https://t.me/RUPPYfoundation', text: 'JOIN'},
+    {id: 'fb', url: 'https://www.facebook.com/share/1PjMyFivNF/?mibextid=wwXIfr', text: 'FOLLOW'},
+    {id: 'x', url: 'https://x.com/rupfoundation?s=21', text: 'FOLLOW'}
+  ];
+
+  tasks.forEach(t => {
+    let btn = document.getElementById(t.id + 'Btn');
+    if (taskState[t.id] === 'opened') {
+      btn.innerText = 'OPENED';
+      btn.className = 'bt opened';
+      btn.onclick = null;
+    } else if (taskState[t.id] === 'ready_to_claim') {
+      btn.innerText = 'CLAIM';
+      btn.className = 'bt claim';
+      btn.onclick = () => claimReward(t.id);
+    } else if (taskState[t.id] === 'claimed') {
+      btn.innerText = 'DONE';
+      btn.className = 'bt done';
+      btn.onclick = null;
     } else {
-      const interval = setInterval(() => {
-        if (window.userData && window.updateBalanceBox) {
-          clearInterval(interval);
-          resolve();
-        }
-      }, 100);
+      btn.innerText = t.text;
+      btn.className = 'bt';
+      btn.onclick = () => openLink(t.id, t.url);
     }
   });
 }
 
-let db;
-let currentUser = "Guest";
-let currentUserId = "";
-let allLoadedPosts = [];
-let claimedPosts = new Set();
-
-async function initFeed() {
-  await waitForConfig();
-  console.log("Config.js Loaded, User:", window.userData.name);
-
-  db = window.db || getDatabase();
-  currentUser = window.userData.name || 'Guest';
-  currentUserId = window.userData.uid || 'guest';
-
-  window.updateBalanceBox();
-  window.loadProfileEverywhere();
-
-  listenToPosts();
-  setupEventListeners();
-}
-
-initFeed();
-
-const bannedWords = ['sex','porn','xxx','nude','fuck','bitch','chut','lund','randi','gand','boobs','dick','pussy','scam','betting','casino','gambling'];
-function checkContent(text){
-  let lower = text.toLowerCase();
-  return bannedWords.some(word => lower.includes(word));
-}
-
-function getTodayKey(){
-  const d = new Date();
-  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-}
-
-async function checkPostLimit(){
-  if(!window.userData || window.userData.uid === "guest"){
-    return { canPost: false, reason: 'login' };
-  }
-
-  const userRef = ref(db, `users/${window.userData.uid}`);
-  const snap = await get(userRef);
-  const data = snap.val() || {};
-
-  const todayKey = getTodayKey();
-  const postsToday = data.postsToday || 0;
-  const lastPostDate = data.lastPostDate || '';
-
-  if(lastPostDate!== todayKey){
-    await update(userRef, { postsToday: 0, lastPostDate: todayKey });
-    return { canPost: true, count: 0, left: DAILY_POST_LIMIT };
-  }
-
-  if(postsToday < DAILY_POST_LIMIT){
-    return { canPost: true, count: postsToday, left: DAILY_POST_LIMIT - postsToday };
-  }
-
-  return { canPost: false, count: postsToday, left: 0, reason: 'limit' };
-}
-
-async function getUnclaimedPost(){
-  const todayKey = getTodayKey();
-  const postsRef = ref(db, 'posts');
-  const userPostsQuery = query(postsRef, orderByChild('userId'), equalTo(window.userData.uid));
-  const snapshot = await get(userPostsQuery).catch(()=>null);
-
-  if(snapshot && snapshot.exists()){
-    let found = null;
-    snapshot.forEach(child => {
-      let post = {id: child.key,...child.val()};
-      if(post.postDateKey === todayKey &&!post.claimed){
-        found = post;
-      }
-    });
-    return found;
-  }
-  return null;
-}
-
-async function markPostClaimed(postId){
-  if(claimedPosts.has(postId)) return false;
-
-  const postRef = ref(db, `posts/${postId}`);
-  const snap = await get(postRef);
-  const postData = snap.val();
-
-  if(postData.claimed === true){
-    claimedPosts.add(postId);
-    return false;
-  }
-
-  await update(postRef, { claimed: true });
-  claimedPosts.add(postId);
-
-  if(window.userData && window.userData.uid && window.userData.uid!== "guest"){
-    window.userData.balance = (Number(window.userData.balance) || 0) + POST_REWARD;
-    window.userData.taskBalance = (Number(window.userData.taskBalance) || 0) + POST_REWARD;
-    if(typeof window.saveRuppyData === 'function'){
-      await window.saveRuppyData(window.userData);
+// ✅ SPIN WHEEL FUNCTIONS - Updated Timer Logic
+function getNextSpinTime(){
+    const now = new Date();
+    const today9AM = new Date(now);
+    today9AM.setHours(9, 0, 0, 0);
+    
+    const today9PM = new Date(now);
+    today9PM.setHours(21, 0, 0, 0);
+    
+    if(now < today9AM){
+        return today9AM;
+    } else if(now < today9PM){
+        return today9PM;
+    } else {
+        const tomorrow9AM = new Date(now);
+        tomorrow9AM.setDate(now.getDate() + 1);
+        tomorrow9AM.setHours(9, 0, 0, 0);
+        return tomorrow9AM;
     }
-  }
-  return true;
 }
 
-function countWords(text){
-  return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+function formatTime(ms){
+    var h = Math.floor(ms / 3600000);
+    var m = Math.floor((ms % 3600000) / 60000);
+    var s = Math.floor((ms % 60000) / 1000);
+    return (h<10?'0'+h:h) + ':' + (m<10?'0'+m:m) + ':' + (s<10?'0'+s:s);
 }
 
-async function updateRewardBanner(){
-  let bannerText = document.getElementById('limitText');
-  let postBtn = document.getElementById('postBtn');
-  let text = document.getElementById('postText').value.trim();
+function startSpinTimer(){
+    var endTime = parseInt(localStorage.getItem('spin_next_time'));
+    if(!endTime) return;
 
-  if(!window.userData || window.userData.uid === "guest"){
-    bannerText.textContent = 'Login to earn rewards';
-    postBtn.disabled =!text &&!selectedFile;
-    return;
-  }
+    var timerEl = document.getElementById('wheelTimer');
+    var spinBtn = document.getElementById('spinBtn');
 
-  const limitCheck = await checkPostLimit();
-  const unclaimed = await getUnclaimedPost();
+    spinBtn.classList.add('disabled');
+    spinBtn.innerHTML = 'Locked';
+    timerEl.classList.remove('hide');
 
-  if(!limitCheck.canPost && limitCheck.reason === 'limit'){
-    bannerText.textContent = `Daily limit reached ${DAILY_POST_LIMIT}/${DAILY_POST_LIMIT}. Come back tomorrow`;
-    postBtn.textContent = 'Limit Reached';
-    postBtn.disabled = true;
-  } else if(unclaimed){
-    bannerText.textContent = `⚠️ Claim Post | ${limitCheck.left}/${DAILY_POST_LIMIT} left`;
-    postBtn.textContent = `Claim First`;
-    postBtn.disabled = true;
-  } else {
-    bannerText.textContent = `🎁 +${POST_REWARD} RUP reward per post | ${limitCheck.left}/${DAILY_POST_LIMIT} left`;
-    postBtn.textContent = `Post`;
-    postBtn.disabled =!text &&!selectedFile; // ✅ Word limit हटा दिया
-  }
-}
+    if(spinTimer) clearInterval(spinTimer);
 
-let selectedFile = null;
+    spinTimer = setInterval(function(){
+        var now = Date.now();
+        var diff = endTime - now;
 
-function setupEventListeners(){
-  document.getElementById('postText').oninput = function(){
-    updateRewardBanner();
-  }
-
-  document.getElementById('fileInput').onchange = function(e){
-    selectedFile = e.target.files[0];
-    if(selectedFile){
-      let reader = new FileReader();
-      reader.onload = function(e){
-        let preview = document.getElementById('preview');
-        preview.style.display = 'block';
-        preview.innerHTML = selectedFile.type.includes('video')
-? `<video src="${e.target.result}" controls style="width:100%;border-radius:12px"></video>`
-          : `<img src="${e.target.result}" style="width:100%;border-radius:12px">`;
-        updateRewardBanner();
-      }
-      reader.readAsDataURL(selectedFile);
-    }
-  }
-}
-
-window.openCreate = function(){
-  document.getElementById('postText').focus();
-}
-
-window.addEmoji = function(){
-  document.getElementById('postText').value += ' 🔥';
-  updateRewardBanner();
-}
-
-window.claimPost = async function(postId){
-  const btn = document.querySelector(`#post-${postId}.claim-btn`);
-  if(btn) {
-    btn.disabled = true;
-    btn.textContent = 'Claiming...';
-  }
-
-  const success = await markPostClaimed(postId);
-
-  if(success){
-    alert(`${POST_REWARD} RUP Claimed! 🎉`);
-    if(btn){
-      btn.textContent = 'Claimed';
-      btn.classList.add('claimed');
-    }
-  } else {
-    alert('Already claimed!');
-    if(btn){
-      btn.textContent = 'Claimed';
-      btn.classList.add('claimed');
-    }
-  }
-
-  await updateRewardBanner();
-}
-
-window.createPost = async function(){
-  if(!window.userData || window.userData.uid === "guest"){
-    return alert('पहले Login करो');
-  }
-
-  let text = document.getElementById('postText').value.trim();
-
-  // ✅ 200 Words वाला Check हटा दिया
-  if(!text &&!selectedFile){
-    alert('Write something or add image');
-    return;
-  }
-
-  document.getElementById('postBtn').disabled = true;
-  document.getElementById('postBtn').textContent = 'Checking...';
-
-  const limitCheck = await checkPostLimit();
-  if(!limitCheck.canPost){
-    updateRewardBanner();
-    alert(`Daily limit reached ${DAILY_POST_LIMIT}/${DAILY_POST_LIMIT}. Come back tomorrow`);
-    return;
-  }
-
-  const unclaimed = await getUnclaimedPost();
-  if(unclaimed){
-    alert('Claim your last post first');
-    document.getElementById('postBtn').disabled = false;
-    await updateRewardBanner();
-    return;
-  }
-
-  if(checkContent(text)){
-    alert('Inappropriate content detected');
-    document.getElementById('postBtn').disabled = false;
-    await updateRewardBanner();
-    return;
-  }
-
-  document.getElementById('postBtn').textContent = 'Posting...';
-
-  let mediaUrl = null;
-  let mediaType = null;
-
-  try {
-    if(selectedFile){
-      document.getElementById('postBtn').textContent = 'Uploading...';
-      const data = new FormData();
-      data.append("file", selectedFile);
-      data.append("upload_preset", "ruppy_posts");
-      const res = await fetch(`https://api.cloudinary.com/v1_1/dr12i9orc/image/upload`, {
-        method: "POST",
-        body: data
-      });
-      const result = await res.json();
-      if(result.error) throw new Error(result.error.message);
-      mediaUrl = result.secure_url;
-      mediaType = selectedFile.type.includes('video')? 'video' : 'image';
-    }
-
-    const userRef = ref(db, `users/${window.userData.uid}`);
-    const result = await runTransaction(userRef, (userData) => {
-      if(userData){
-        const todayKey = getTodayKey();
-        if(userData.lastPostDate!== todayKey){
-          userData.postsToday = 1;
-          userData.lastPostDate = todayKey;
+        if(diff <= 0){
+            clearInterval(spinTimer);
+            localStorage.removeItem('spin_next_time');
+            spinBtn.classList.remove('disabled');
+            spinBtn.innerHTML = 'Tap to<br>Spin';
+            timerEl.classList.add('hide');
+            timerEl.innerText = '';
+            showToast('Spin Ready! 🎉');
         } else {
-          if((userData.postsToday || 0) >= DAILY_POST_LIMIT){
-            return;
-          }
-          userData.postsToday = (userData.postsToday || 0) + 1;
+            timerEl.innerText = 'Next Spin: ' + formatTime(diff);
         }
-      }
-      return userData;
-    });
-
-    if(!result.committed){
-      alert(`Daily limit reached ${DAILY_POST_LIMIT}/${DAILY_POST_LIMIT}`);
-      await updateRewardBanner();
-      return;
-    }
-
-    await push(ref(db, 'posts'), {
-      user: currentUser,
-      userId: window.userData.uid,
-      userDp: window.userData.dp || null,
-      text: text,
-      media: mediaUrl,
-      mediaType: mediaType,
-      time: Date.now(),
-      postDateKey: getTodayKey(),
-      likes: 0,
-      likedBy: {},
-      comments: [],
-      reports: 0,
-      claimed: false
-    });
-
-    document.getElementById('postText').value = '';
-    document.getElementById('preview').style.display = 'none';
-    document.getElementById('preview').innerHTML = '';
-    document.getElementById('fileInput').value = '';
-    selectedFile = null;
-
-  } catch (error) {
-    alert('Error: ' + error.message);
-    console.error(error);
-  }
-
-  await updateRewardBanner();
+    }, 1000);
 }
 
-function listenToPosts(){
-  const postsRef = ref(db, 'posts');
-  onValue(postsRef, (snapshot) => {
-    let posts = [];
-    if(snapshot.exists()){
-      snapshot.forEach((childSnapshot) => {
-        let post = { id: childSnapshot.key,...childSnapshot.val(), showAllComments: false };
-        if((post.reports || 0) < 3) {
-          posts.push(post);
+function checkSpinStatus(){
+    var nextTime = localStorage.getItem('spin_next_time');
+    if(nextTime){
+        if(parseInt(nextTime) > Date.now()){
+            startSpinTimer();
+        } else {
+            localStorage.removeItem('spin_next_time');
         }
-      });
-      posts.sort((a,b) => b.time - a.time);
-      allLoadedPosts = posts;
-      renderFeed(allLoadedPosts);
+    }
+}
+
+// ✅ UPDATED: 20 RUPX Block = 70% Chance, 10 RUPX Block = 30% Chance
+async function spinWheel() {
+    if(isSpinning) return;
+
+    var nextTime = localStorage.getItem('spin_next_time');
+    if(nextTime && parseInt(nextTime) > Date.now()){
+        showToast('Next spin at 9AM or 9PM!', 'error');
+        return;
+    }
+
+    isSpinning = true;
+    var wheel = document.getElementById('wheel');
+    var spinBtn = document.getElementById('spinBtn');
+
+    spinBtn.innerHTML = 'Spinning...';
+
+    // ✅ 70% Chance 20 RUPX Block, 30% Chance 10 RUPX Block
+    var rand = Math.random();
+    var winAmount, targetAngle;
+    
+    if(rand < 0.7){
+        winAmount = 20; // 20 RUPX Block - 70% Chance
+        targetAngle = 288; // 20 RUPX Block Segment
     } else {
-      renderFeed([]);
-    }
-    updateRewardBanner();
-  });
-}
-
-function renderFeed(posts){
-  let feed = document.getElementById('feed');
-  if(posts.length === 0){
-    feed.innerHTML = `
-      <div class="empty-hub">
-        <h3>Welcome to RUPPY Hub</h3>
-        <p>Start the conversation. Share your first update!</p>
-        <button onclick="openCreate()">Create Post</button>
-      </div>`;
-    return;
-  }
-
-  feed.innerHTML = '';
-  posts.forEach(post => {
-    let mediaHTML = '';
-    if(post.media){
-      if(post.mediaType === 'video'){
-        mediaHTML = `<div class="post-media"><video src="${post.media}" controls preload="metadata"></video></div>`;
-      } else {
-        mediaHTML = `<div class="post-media"><img src="${post.media}" loading="lazy" ondblclick="likePost('${post.id}')"></div>`;
-      }
+        winAmount = 10; // 10 RUPX Block - 30% Chance
+        targetAngle = 216; // 10 RUPX Block Segment
     }
 
-    let timeAgo = getTimeAgo(post.time);
-    let isLiked = post.likedBy && post.likedBy[currentUserId];
-    let commentsToShow = post.showAllComments? (post.comments || []) : (post.comments || []).slice(-2);
-    let hiddenCount = (post.comments || []).length - commentsToShow.length;
+    var extraSpins = Math.floor(Math.random() * 3) + 5;
+    var totalRotation = extraSpins * 360 + targetAngle;
 
-    let isClaimed = post.claimed || claimedPosts.has(post.id);
-    let claimBtnHTML = '';
-    if(post.userId === currentUserId &&!isClaimed){
-      claimBtnHTML = `<button class="claim-btn" onclick="claimPost('${post.id}')">Claim +${POST_REWARD} RUP</button>`;
-    } else if(post.userId === currentUserId && isClaimed){
-      claimBtnHTML = `<button class="claim-btn claimed" disabled>Claimed</button>`;
+    currentRotation += totalRotation;
+    wheel.style.transform = 'rotate(' + currentRotation + 'deg)';
+
+    setTimeout(async function(){
+        isSpinning = false;
+
+        // ✅ Balance में Add करो + Firebase Save
+        userData.balance = Number(userData.balance) || 0;
+        userData.balance += winAmount;
+        if(window.saveRuppyData) await window.saveRuppyData(userData);
+        
+        document.getElementById('bal').innerText = userData.balance;
+
+        // ✅ Next Spin Time Set - 9AM or 9PM
+        var nextSpinTime = getNextSpinTime();
+        localStorage.setItem('spin_next_time', nextSpinTime.getTime());
+
+        startSpinTimer();
+        showToast('🎉 Congrats! You Won ' + winAmount + ' RUPX Block!');
+    }, 4000);
+}
+
+function showToast(msg, type = 'success'){
+  let t = document.getElementById('toast');
+  t.innerText = msg;
+  t.className = 'toast ' + type;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2500);
+}
+
+function goPage(page) {
+  window.location.href = page;
+}
+
+window.addEventListener('storage', function(e) {
+  if (e.key === 'rupx_user_cache') {
+    userData = JSON.parse(e.newValue);
+    document.getElementById('bal').innerText = userData.balance;
+    
+    let displayId = userData.myReferralCode;
+    if(!displayId && userData.uid) {
+      displayId = 'RUPX-' + userData.uid.substring(0,6).toUpperCase();
     }
-
-    let postUserDpHTML = post.userDp? `<img src="${post.userDp}" loading="lazy">` : (post.user || 'U')[0].toUpperCase();
-
-    feed.innerHTML += `
-    <div class="post-card" id="post-${post.id}">
-      <div class="post-card-head">
-        <div class="post-avatar">${postUserDpHTML}</div>
-        <div class="post-info">
-          <h4>${post.user}</h4>
-          <p>${timeAgo}</p>
-        </div>
-        <button class="post-more" onclick="reportPost('${post.id}')">⋯</button>
-      </div>
-      ${post.text? `<div class="post-content">${post.text}</div>` : ''}
-      ${mediaHTML}
-      ${claimBtnHTML}
-      <div class="post-footer">
-        <div class="post-stats">
-          <button class="stat-btn ${isLiked? 'liked' : ''}" id="like-btn-${post.id}" onclick="likePost('${post.id}')">
-            Like ❤️ <span id="like-count-${post.id}">${post.likes || 0}</span>
-          </button>
-          <button class="stat-btn" onclick="toggleComments('${post.id}')">
-            Comment 💬 ${(post.comments || []).length}
-          </button>
-        </div>
-        <button class="share-btn" onclick="sharePost('${post.id}')">Share</button>
-      </div>
-      <div class="comments-box" id="comments-${post.id}">
-        ${hiddenCount > 0 &&!post.showAllComments? `<div class="view-more" onclick="showAllComments('${post.id}')">View ${hiddenCount} more comments</div>` : ''}
-        ${commentsToShow.map(c => `
-          <div class="comment">
-            <div class="comment-avatar">${c.userDp? `<img src="${c.userDp}">` : (c.user || 'U')[0].toUpperCase()}</div>
-            <div class="comment-body">
-              <b>${c.user}</b>
-              <span>${c.text}</span>
-            </div>
-          </div>`).join('')}
-        <div class="comment-input">
-          <input type="text" placeholder="Add a comment..." id="commentInput-${post.id}" onkeypress="if(event.key==='Enter') addComment('${post.id}')">
-          <button onclick="addComment('${post.id}')">Send</button>
-        </div>
-      </div>
-    </div>`;
-  });
-}
-
-function getTimeAgo(time){
-  if(!time || isNaN(time)) return '';
-  let seconds = Math.floor((Date.now() - Number(time)) / 1000);
-  if(seconds < 60) return 'now';
-  let minutes = Math.floor(seconds / 60);
-  if(minutes < 60) return `${minutes}m ago`;
-  let hours = Math.floor(minutes / 60);
-  if(hours < 24) return `${hours}h ago`;
-  let days = Math.floor(hours / 24);
-  if(days < 7) return `${days}d ago`;
-  return new Date(time).toLocaleDateString();
-}
-
-window.likePost = async function(id){
-  if(!window.userData || window.userData.uid === "guest" ||!currentUserId){
-    alert('Please login to like posts');
-    return;
+    document.getElementById('userId').innerText = `ID: ${displayId || 'Loading...'}`;
   }
-
-  const postIndex = allLoadedPosts.findIndex(p => p.id === id);
-  if(postIndex === -1) return;
-
-  const post = allLoadedPosts[postIndex];
-  let isLiked = post.likedBy && post.likedBy[currentUserId];
-
-  const likeBtn = document.getElementById(`like-btn-${id}`);
-  const likeCount = document.getElementById(`like-count-${id}`);
-
-  if(isLiked){
-    post.likes = Math.max(0, (post.likes || 0) - 1);
-    delete post.likedBy[currentUserId];
-    if(likeBtn) likeBtn.classList.remove('liked');
-    if(likeCount) likeCount.textContent = post.likes;
-  } else {
-    post.likes = (post.likes || 0) + 1;
-    if(!post.likedBy) post.likedBy = {};
-    post.likedBy[currentUserId] = true;
-    if(likeBtn) likeBtn.classList.add('liked');
-    if(likeCount) likeCount.textContent = post.likes;
-  }
-
-  const postRef = ref(db, `posts/${id}`);
-  let updates = {};
-  if(isLiked){
-    updates[`posts/${id}/likes`] = Math.max(0, (post.likes || 0) - 1);
-    updates[`posts/${id}/likedBy/${currentUserId}`] = null;
-  } else {
-    updates[`posts/${id}/likes`] = (post.likes || 0) + 1;
-    updates[`posts/${id}/likedBy/${currentUserId}`] = true;
-  }
-  await update(ref(db), updates);
-}
-
-window.toggleComments = function(id){
-  let box = document.getElementById(`comments-${id}`);
-  box.style.display = box.style.display === 'block'? 'none' : 'block';
-}
-
-window.showAllComments = function(id){
-  const postIndex = allLoadedPosts.findIndex(p => p.id === id);
-  if(postIndex!== -1){
-    allLoadedPosts[postIndex].showAllComments = true;
-    renderFeed(allLoadedPosts);
-  }
-}
-
-window.addComment = async function(id){
-  if(!window.userData || window.userData.uid === "guest"){
-    alert('Please login to comment');
-    return;
-  }
-
-  let input = document.getElementById(`commentInput-${id}`);
-  let text = input.value.trim();
-  if(!text) return;
-  if(checkContent(text)){
-    alert('Inappropriate content');
-    return;
-  }
-  const postRef = ref(db, `posts/${id}`);
-  const snapshot = await get(postRef);
-  const post = snapshot.val();
-  const comments = post.comments || [];
-  comments.push({user: currentUser, userDp: window.userData?.dp || null, userId: currentUserId, text: text, time: Date.now()});
-  await update(postRef, { comments: comments });
-  input.value = '';
-}
-
-window.sharePost = function(id){
-  let shareData = {
-    title: 'RUPPY Hub Post',
-    text: 'Check this post on RUPPY Hub',
-    url: window.location.href
-  };
-  if(navigator.share){
-    navigator.share(shareData).catch(err => console.log('Share failed'));
-  } else {
-    let whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`;
-    window.open(whatsappUrl, '_blank');
-  }
-}
-
-window.reportPost = async function(id){
-  if(confirm('Report this post?')){
-    const postRef = ref(db, `posts/${id}`);
-    const snapshot = await get(postRef);
-    const post = snapshot.val();
-    await update(postRef, { reports: (post.reports || 0) + 1 });
-    alert('Reported');
-  }
-}
+});
 </script>
-
 </body>
 </html>
