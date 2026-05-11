@@ -1,4 +1,4 @@
-// config.js - RUPX GLOBAL SYNC - FIXED LOGIN BUG + WINDOW.DB
+// config.js - RUPPY GLOBAL SYNC - 500 RUP REFERRAL + AUTO TEAM LIST + WEEKLY POINTS + ANALYTICS
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, get, set, update, query, orderByChild, equalTo, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -20,9 +20,9 @@ const db = getDatabase(app);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
 
-const RUPX_STORAGE_KEY = 'rupx_user_cache';
+const RUPPY_STORAGE_KEY = 'ruppy_user_cache';
 
-// 1. Default Data
+// 1. Default Data - RUP- Format के साथ
 function getDefaultData() {
   return {
     name: 'Guest',
@@ -30,7 +30,6 @@ function getDefaultData() {
     balance: 0,
     taskBalance: 0,
     uid: null,
-    email: null,
     myReferralCode: null,
     referredBy: null,
     referralClaimed: false,
@@ -46,37 +45,36 @@ function getDefaultData() {
     boostResetTime: Date.now(),
     firstRewardTime: 0,
     ultraRewardTime: 0,
-    lastSpinTime: 0,
     createdAt: Date.now()
   };
 }
 
-// 1.1 Generate Referral Code - RUPX-8X4K9M Format
+// 1.1 Referral Code Generator - RUP-8X4K9M Format
 function generateReferralCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = 'RUPX-';
+  let code = 'RUP-';
   for(let i = 0; i < 6; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return code;
 }
 
-// 1.2 Validate Referral Code
+// 1.2 पुराना Code Check
 function isValidReferralCode(code) {
-  if(!code || code.length!== 11 ||!code.startsWith('RUPX-')) {
+  if(!code || code.length!== 10 ||!code.startsWith('RUP-')) {
     return false;
   }
   return true;
 }
 
-// 2. Load from LocalStorage - FIXED: Null Check
+// 2. LocalStorage से Load
 function getLocalData() {
   try {
-    let stored = localStorage.getItem(RUPX_STORAGE_KEY);
+    let stored = localStorage.getItem(RUPPY_STORAGE_KEY);
     if (stored) {
       let data = JSON.parse(stored);
-      data.balance = data.balance!== null && data.balance!== undefined? Number(data.balance) : 0;
-      data.taskBalance = data.taskBalance!== null && data.taskBalance!== undefined? Number(data.taskBalance) : 0;
+      data.balance = Number(data.balance) || 0;
+      data.taskBalance = Number(data.taskBalance) || 0;
       data.referralCount = Number(data.referralCount) || 0;
       return data;
     }
@@ -89,18 +87,20 @@ function getLocalData() {
 // Global Variable
 window.userData = getLocalData();
 
-// 3. Update Balance Display
+// 3. Balance Display
 window.updateBalanceBox = function(){
   const totalEl = document.getElementById('totalBalance');
   const taskEl = document.getElementById('taskBalance');
-  const balEl = document.getElementById('bal');
 
-  if(totalEl) totalEl.textContent = Number(window.userData.balance) || 0;
-  if(taskEl) taskEl.textContent = Number(window.userData.taskBalance) || 0;
-  if(balEl) balEl.textContent = Number(window.userData.balance) || 0;
+  if(totalEl) {
+    totalEl.textContent = Number(window.userData.balance) || 0;
+  }
+  if(taskEl) {
+    taskEl.textContent = Number(window.userData.taskBalance) || 0;
+  }
 }
 
-// 4. Load Profile + Team List
+// 4. Profile Display
 window.loadProfileEverywhere = function(){
   const avatar = document.getElementById('userAvatar') || document.getElementById('userDp');
   if(avatar && window.userData.dp){
@@ -111,41 +111,165 @@ window.loadProfileEverywhere = function(){
 
   const nameEl = document.getElementById('userName');
   if(nameEl) nameEl.textContent = 'Welcome back, ' + (window.userData.name || 'User');
+}
 
-  const myCodeEl = document.querySelector('[class*="invite"] span') || document.getElementById('myReferralCode');
-  if(myCodeEl) myCodeEl.textContent = window.userData.myReferralCode || 'RUPX-XXXXXX';
+// 5. LOGOUT/LOGIN + REFERRAL AUTO UPGRADE + ANALYTICS
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    logEvent(analytics, 'login', { method: 'firebase' });
+    logEvent(analytics, 'app_open');
 
-  const totalEl = document.querySelector('div:contains("TOTAL")');
-  if(totalEl) totalEl.innerHTML = (window.userData.teamCount || 0) + 'TOTAL';
+    const userRef = ref(db, `users/${user.uid}`);
 
-  const teamListEl = document.querySelector('[class*="Inactive Users"]') || document.getElementById('teamList');
-  if(teamListEl && window.userData.team) {
-    const teamArray = Object.values(window.userData.team);
-    if(teamArray.length > 0) {
-      let html = `<table style="width:100%;color:#fff;border-collapse:collapse;">
-        <tr style="background:#222;"><th>Sr</th><th>Name</th><th>Join Date</th><th>Status</th></tr>`;
-      teamArray.forEach((m,i) => {
-        const isActive = Date.now() - (m.lastMine || 0) < 86400000;
-        html += `<tr style="border-bottom:1px solid #333;">
-          <td style="padding:8px;">${i+1}</td>
-          <td style="padding:8px;">${m.name}</td>
-          <td style="padding:8px;">${new Date(m.created_at).toLocaleDateString()}</td>
-          <td style="padding:8px;">${isActive? 'Active 🟢' : 'Inactive 🔴'}</td>
-        </tr>`;
-      });
-      html += `</table>`;
-      teamListEl.innerHTML = html;
+    try {
+      const snapshot = await get(userRef);
+
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        window.userData.uid = user.uid;
+        window.userData.name = data.name || user.displayName || user.email.split('@')[0];
+        window.userData.dp = data.dp || user.photoURL || null;
+        window.userData.balance = Number(data.balance) || 0;
+        window.userData.taskBalance = Number(data.taskBalance) || 0;
+        window.userData.posts = data.posts || [];
+        window.userData.lastMine = Number(data.lastMine) || 0;
+        window.userData.lastGift = Number(data.lastGift) || 0;
+        window.userData.boostCount = Number(data.boostCount) || 0;
+        window.userData.boostResetTime = Number(data.boostResetTime) || Date.now();
+        window.userData.firstRewardTime = Number(data.firstRewardTime) || 0;
+        window.userData.ultraRewardTime = Number(data.ultraRewardTime) || 0;
+        window.userData.team = data.team || {};
+        window.userData.teamCount = Number(data.teamCount) || 0;
+        window.userData.teamRewardEarned = Number(data.teamRewardEarned) || 0;
+        window.userData.referralCount = Number(data.referralCount) || 0;
+        window.userData.weeklyPoints = Number(data.weeklyPoints) || 0;
+        window.userData.referredBy = data.referredBy || null;
+        window.userData.referralClaimed = data.referralClaimed || false;
+        window.userData.createdAt = data.createdAt || Date.now();
+
+        if(!isValidReferralCode(data.myReferralCode)) {
+          window.userData.myReferralCode = generateReferralCode();
+          await update(userRef, { myReferralCode: window.userData.myReferralCode });
+        } else {
+          window.userData.myReferralCode = data.myReferralCode;
+        }
+
+        if(data.referralCount === undefined) {
+          const teamSize = data.team? Object.keys(data.team).length : 0;
+          await update(userRef, { referralCount: teamSize });
+          window.userData.referralCount = teamSize;
+        }
+
+      } else {
+        logEvent(analytics, 'sign_up');
+
+        window.userData.uid = user.uid;
+        window.userData.name = user.displayName || user.email.split('@')[0];
+        window.userData.dp = user.photoURL || null;
+        window.userData.myReferralCode = generateReferralCode();
+        window.userData.referralCount = 0;
+        await set(userRef, window.userData);
+      }
+    } catch (error) {
+      console.error('Firebase Load Error:', error);
     }
+
+    localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
+    updateBalanceBox();
+    loadProfileEverywhere();
+
+  } else {
+    localStorage.removeItem(RUPPY_STORAGE_KEY);
+    window.userData = getDefaultData();
+    updateBalanceBox();
+    loadProfileEverywhere();
+  }
+});
+
+// 6. Save Function - Firebase + Local दोनों Update
+window.saveRuppyData = async function(data){
+  data.balance = Number(data.balance) || 0;
+  data.taskBalance = Number(data.taskBalance) || 0;
+
+  localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(data));
+  window.userData = data;
+  updateBalanceBox();
+
+  if(!data.uid) return;
+  try {
+    const userRef = ref(db, `users/${data.uid}`);
+    await update(userRef, {
+      balance: data.balance,
+      taskBalance: data.taskBalance,
+      name: data.name,
+      dp: data.dp,
+      myReferralCode: data.myReferralCode,
+      referredBy: data.referredBy,
+      referralClaimed: data.referralClaimed,
+      team: data.team || {},
+      teamCount: data.teamCount || 0,
+      teamRewardEarned: data.teamRewardEarned || 0,
+      referralCount: data.referralCount || 0,
+      weeklyPoints: data.weeklyPoints || 0,
+      posts: data.posts || [],
+      lastMine: data.lastMine || 0,
+      lastGift: data.lastGift || 0,
+      boostCount: data.boostCount || 0,
+      boostResetTime: data.boostResetTime || Date.now(),
+      firstRewardTime: data.firstRewardTime || 0,
+      ultraRewardTime: data.ultraRewardTime || 0
+    });
+  } catch (error) {
+    console.error('Firebase Save Error:', error);
   }
 }
 
-// APPLY REFERRAL CODE FUNCTION - 500 RUPX + 10 POINTS
+// 7. Post Reward +10 RUPPY + ANALYTICS
+window.addPostReward = async function() {
+  if(!window.userData.uid) return alert("पहले Login करो");
+
+  const todayPosts = window.userData.posts.filter(p => {
+    return new Date(p.time).toDateString() === new Date().toDateString();
+  });
+
+  if(todayPosts.length >= 3) {
+    return alert("आज के 3 Post पूरे हो गए");
+  }
+
+  window.userData.balance = Number(window.userData.balance || 0) + 10;
+  window.userData.posts.push({time: Date.now()});
+
+  logEvent(analytics, 'post_reward', {
+    reward_amount: 10,
+    total_posts_today: todayPosts.length + 1
+  });
+
+  await window.saveRuppyData(window.userData);
+  alert("+10 RUPPY Added");
+}
+
+// 8. Page Load पे तुरंत Balance दिखाओ
+document.addEventListener('DOMContentLoaded', () => {
+  updateBalanceBox();
+  loadProfileEverywhere();
+});
+
+// 9. AUTO SYNC
+window.addEventListener('storage', (e) => {
+  if(e.key === RUPPY_STORAGE_KEY && e.newValue){
+    window.userData = JSON.parse(e.newValue);
+    updateBalanceBox();
+    loadProfileEverywhere();
+  }
+});
+
+// ✅ FIXED: REFERRAL CODE APPLY FUNCTION - 500 RUP + 10 POINTS + ANALYTICS
 window.applyReferralCodeManual = async function(code){
   if(!window.userData.uid){
     return {success: false, msg: 'Please login first'};
   }
 
-  if(!code ||!code.startsWith('RUPX-')){
+  if(!code ||!code.startsWith('RUP-')){
     return {success: false, msg: 'Invalid code format'};
   }
 
@@ -181,6 +305,7 @@ window.applyReferralCodeManual = async function(code){
     });
 
     const updates = {};
+    // ✅ REFERRER को Update - 500 RUP
     updates[`users/${referrerUID}/balance`] = (referrerData.balance || 0) + 500;
     updates[`users/${referrerUID}/teamCount`] = (referrerData.teamCount || 0) + 1;
     updates[`users/${referrerUID}/referralCount`] = (referrerData.referralCount || 0) + 1;
@@ -193,6 +318,7 @@ window.applyReferralCodeManual = async function(code){
       lastMine: Date.now()
     };
 
+    // ✅ NEW USER को Update - 500 RUP
     updates[`users/${window.userData.uid}/balance`] = (window.userData.balance || 0) + 500;
     updates[`users/${window.userData.uid}/referredBy`] = referrerUID;
     updates[`users/${window.userData.uid}/referralClaimed`] = true;
@@ -207,10 +333,10 @@ window.applyReferralCodeManual = async function(code){
     window.userData.referredBy = referrerUID;
     window.userData.referralClaimed = true;
     window.userData.balance = (window.userData.balance || 0) + 500;
-    localStorage.setItem(RUPX_STORAGE_KEY, JSON.stringify(window.userData));
+    localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
     updateBalanceBox();
 
-    return {success: true, msg: 'Success! +500 RUPX Credited. Referrer got 500 RUPX + 10 Points'};
+    return {success: true, msg: '✅ +500 RUP Credited! Referrer got 500 RUP + 10 Points'};
 
   } catch(error){
     console.error('Apply Referral Error:', error);
@@ -218,168 +344,7 @@ window.applyReferralCodeManual = async function(code){
   }
 }
 
-// AUTO CAPTURE URL PARAM ON SIGNUP
-async function checkAndApplyReferral() {
-  if(!window.userData.uid || window.userData.referredBy) return;
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const refCode = urlParams.get('ref');
-
-  if (refCode && isValidReferralCode(refCode)) {
-    console.log('Auto Applying Referral:', refCode);
-    const result = await window.applyReferralCodeManual(refCode);
-    console.log('Referral Result:', result.msg);
-    if(result.success) {
-      alert(result.msg);
-    }
-  }
-}
-
-// 5. AUTH STATE CHANGE - FIXED: EMAIL से CHECK
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    logEvent(analytics, 'login', { method: 'firebase' });
-    logEvent(analytics, 'app_open');
-
-    const userRef = ref(db, `users/${user.uid}`);
-
-    try {
-      let snapshot = await get(userRef);
-      let data = null;
-      let actualUID = user.uid;
-
-      if (snapshot.exists()) {
-        data = snapshot.val();
-      } else {
-        const emailQuery = query(ref(db, 'users'), orderByChild('email'), equalTo(user.email));
-        const emailSnapshot = await get(emailQuery);
-
-        if (emailSnapshot.exists()) {
-          actualUID = Object.keys(emailSnapshot.val())[0];
-          data = Object.values(emailSnapshot.val())[0];
-          console.log('Old Account Found by Email:', actualUID);
-        }
-      }
-
-      if (data) {
-        window.userData.uid = actualUID;
-        window.userData.email = user.email;
-        window.userData.name = data.name || user.displayName || user.email.split('@')[0];
-        window.userData.dp = data.dp || user.photoURL || null;
-        window.userData.balance = data.balance!== null && data.balance!== undefined? Number(data.balance) : (window.userData.balance || 0);
-        window.userData.taskBalance = data.taskBalance!== null && data.taskBalance!== undefined? Number(data.taskBalance) : (window.userData.taskBalance || 0);
-        window.userData.posts = data.posts || [];
-        window.userData.lastMine = Number(data.lastMine) || 0;
-        window.userData.lastGift = Number(data.lastGift) || 0;
-        window.userData.boostCount = Number(data.boostCount) || 0;
-        window.userData.boostResetTime = Number(data.boostResetTime) || Date.now();
-        window.userData.firstRewardTime = Number(data.firstRewardTime) || 0;
-        window.userData.ultraRewardTime = Number(data.ultraRewardTime) || 0;
-        window.userData.lastSpinTime = Number(data.lastSpinTime) || 0;
-        window.userData.team = data.team || {};
-        window.userData.teamCount = Number(data.teamCount) || 0;
-        window.userData.teamRewardEarned = Number(data.teamRewardEarned) || 0;
-        window.userData.referralCount = Number(data.referralCount) || 0;
-        window.userData.weeklyPoints = Number(data.weeklyPoints) || 0;
-        window.userData.referredBy = data.referredBy || null;
-        window.userData.referralClaimed = data.referralClaimed || false;
-        window.userData.createdAt = data.createdAt || Date.now();
-
-        if(!isValidReferralCode(data.myReferralCode)) {
-          window.userData.myReferralCode = generateReferralCode();
-          await update(ref(db, `users/${actualUID}`), { myReferralCode: window.userData.myReferralCode });
-        } else {
-          window.userData.myReferralCode = data.myReferralCode;
-        }
-
-      } else {
-        logEvent(analytics, 'sign_up');
-
-        window.userData = getDefaultData();
-        window.userData.uid = user.uid;
-        window.userData.email = user.email;
-        window.userData.name = user.displayName || user.email.split('@')[0];
-        window.userData.dp = user.photoURL || null;
-        window.userData.myReferralCode = generateReferralCode();
-        window.userData.createdAt = Date.now();
-
-        await set(userRef, window.userData);
-        await checkAndApplyReferral();
-      }
-    } catch (error) {
-      console.error('Firebase Load Error:', error);
-    }
-
-    localStorage.setItem(RUPX_STORAGE_KEY, JSON.stringify(window.userData));
-    updateBalanceBox();
-    loadProfileEverywhere();
-
-  } else {
-    localStorage.removeItem(RUPX_STORAGE_KEY);
-    window.userData = getDefaultData();
-    updateBalanceBox();
-    loadProfileEverywhere();
-  }
-});
-
-// 6. Save Function - FIXED: Null Check
-window.saveRuppyData = async function(data){
-  data.balance = data.balance!== null && data.balance!== undefined? Number(data.balance) : (window.userData.balance || 0);
-  data.taskBalance = data.taskBalance!== null && data.taskBalance!== undefined? Number(data.taskBalance) : (window.userData.taskBalance || 0);
-
-  localStorage.setItem(RUPX_STORAGE_KEY, JSON.stringify(data));
-  window.userData = data;
-  updateBalanceBox();
-
-  if(!data.uid) return;
-  try {
-    const userRef = ref(db, `users/${data.uid}`);
-    await update(userRef, data);
-  } catch (error) {
-    console.error('Firebase Save Error:', error);
-  }
-}
-
-// 7. Post Reward
-window.addPostReward = async function() {
-  if(!window.userData.uid) return alert("Please login first");
-
-  const todayPosts = window.userData.posts.filter(p => {
-    return new Date(p.time).toDateString() === new Date().toDateString();
-  });
-
-  if(todayPosts.length >= 3) {
-    return alert("Daily limit reached");
-  }
-
-  window.userData.balance = Number(window.userData.balance || 0) + 10;
-  window.userData.posts.push({time: Date.now()});
-
-  logEvent(analytics, 'post_reward', {
-    reward_amount: 10,
-    total_posts_today: todayPosts.length + 1
-  });
-
-  await window.saveRuppyData(window.userData);
-  alert("+10 RUPX Added");
-}
-
-// 8. Page Load
-document.addEventListener('DOMContentLoaded', () => {
-  updateBalanceBox();
-  loadProfileEverywhere();
-});
-
-// 9. AUTO SYNC
-window.addEventListener('storage', (e) => {
-  if(e.key === RUPX_STORAGE_KEY && e.newValue){
-    window.userData = JSON.parse(e.newValue);
-    updateBalanceBox();
-    loadProfileEverywhere();
-  }
-});
-
-// TRANSACTION HISTORY
+// ✅ TRANSACTION HISTORY FUNCTIONS
 window.addTransaction = async function(type, amount, note = ''){
   if(!window.userData.uid) return;
   try {
@@ -412,7 +377,7 @@ window.getTransactionHistory = async function(){
   }
 }
 
-// ANALYTICS
+// 🔥 ANALYTICS ADDED - Line 7: Mining Function Example - अपने Mine Button में ये Call कर
 window.logMineEvent = function(tokensEarned) {
   logEvent(analytics, 'mine_success', {
     tokens_earned: tokensEarned,
@@ -420,56 +385,3 @@ window.logMineEvent = function(tokensEarned) {
     timestamp: Date.now()
   });
 }
-
-// APPLY CODE BUTTON LISTENER - GREEN BUTTON
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    const buttons = document.querySelectorAll('button, div[role="button"]');
-    let applyBtn = null;
-
-    buttons.forEach(btn => {
-      if(btn.innerText.includes('APPLY CODE') || btn.innerText.includes('500 RUPX')) {
-        applyBtn = btn;
-      }
-    });
-
-    if(applyBtn) {
-      console.log('APPLY CODE Button Found');
-
-      applyBtn.onclick = async function(e) {
-        e.preventDefault();
-
-        const codeInput = document.querySelector('input[placeholder*="RUPX"]') ||
-                         applyBtn.previousElementSibling.querySelector('input');
-
-        const code = codeInput? codeInput.value.trim().toUpperCase() : '';
-
-        if(!code || code === 'RUPX-XXXXXX') {
-          alert('Enter valid code');
-          return;
-        }
-
-        console.log('Applying Code:', code);
-        applyBtn.innerText = 'PROCESSING...';
-        applyBtn.style.pointerEvents = 'none';
-
-        const result = await window.applyReferralCodeManual(code);
-
-        alert(result.msg);
-
-        if(result.success) {
-          codeInput.value = '';
-          setTimeout(() => location.reload(), 1000);
-        } else {
-          applyBtn.innerText = 'APPLY CODE & GET 500 RUPX';
-          applyBtn.style.pointerEvents = 'auto';
-        }
-      };
-    }
-  }, 3000);
-});
-
-// 🔥🔥🔥 सबसे जरूरी 3 Line - ये नहीं डाली तो Community.html काम नहीं करेगा 🔥🔥🔥
-window.db = db;
-window.auth = auth;
-window.analytics = analytics;
