@@ -1,43 +1,164 @@
-<!-- 🔥 Coming Soon Banner - Plans Section के ऊपर डाल -->
-<div style="background:linear-gradient(135deg,#7C3AED,#F3C774);border-radius:16px;padding:20px;margin-bottom:20px;text-align:center">
+<!-- 🔥 FULL SCREEN COMING SOON - 3 PAGE SCROLL -->
+<style>
+.coming-soon-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: #F3C774; /* Yellow */
+  color: #000; /* Black */
+  z-index: 9999;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+}
+.coming-page {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  text-align: center;
+  scroll-snap-align: start;
+  position: relative;
+}
+.coming-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+.coming-text {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.8;
+  max-width: 400px;
+}
+.coming-check {
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.scroll-hint {
+  position: absolute;
+  bottom: 40px;
+  font-size: 14px;
+  font-weight: 600;
+  animation: bounce 2s infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(10px); }
+}
+.close-coming {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #000;
+  color: #F3C774;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+.page-indicator {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.3);
+}
+.dot.active {
+  background: #000;
+}
+</style>
+
+<div class="coming-soon-wrapper" id="comingSoon">
+  <button class="close-coming" onclick="closeComingSoon()">Skip →</button>
   
-  <!-- English -->
-  <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.2)">
-    <div style="font-size:18px;font-weight:700;margin-bottom:8px">🚀 Coming Soon After One Month</div>
-    <div style="font-size:13px;line-height:1.6">
-      After 50,000 users join our app:<br>
-      ✅ Token rewards will be available<br>
-      ✅ Full recharge system will be live<br>
-      ✅ Railway ticket booking option<br>
-      ✅ Flight ticket booking option<br>
-      <b>All services can be used with tokens!</b>
-    </div>
+  <div class="page-indicator">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
   </div>
 
-  <!-- Hindi -->
-  <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.2)">
-    <div style="font-size:18px;font-weight:700;margin-bottom:8px">🚀 एक महीने बाद जल्द आ रहा है</div>
-    <div style="font-size:13px;line-height:1.6">
-      जब ऐप में 50,000 यूजर पूरे हो जाएंगे:<br>
-      ✅ टोकन रिवार्ड्स मिलेंगे<br>
-      ✅ पूरा रिचार्ज सिस्टम लाइव होगा<br>
-      ✅ रेलवे टिकट बुकिंग ऑप्शन<br>
-      ✅ फ्लाइट टिकट बुकिंग ऑप्शन<br>
-      <b>सभी सेवाएं टोकन से यूज कर सकते हैं!</b>
+  <!-- PAGE 1: ENGLISH -->
+  <div class="coming-page">
+    <div class="coming-title">🚀 Coming Soon<br>After One Month</div>
+    <div class="coming-text">
+      <div style="margin-bottom:20px;font-size:20px">After 50,000 users join our app:</div>
+      <div class="coming-check">✅ Token rewards will be available</div>
+      <div class="coming-check">✅ Full recharge system will be live</div>
+      <div class="coming-check">✅ Railway ticket booking option</div>
+      <div class="coming-check">✅ Flight ticket booking option</div>
+      <div style="margin-top:20px;font-size:20px;font-weight:800">All services can be used with tokens!</div>
     </div>
+    <div class="scroll-hint">↓ Scroll for Hindi</div>
   </div>
 
-  <!-- Arabic -->
-  <div style="direction:rtl">
-    <div style="font-size:18px;font-weight:700;margin-bottom:8px">🚀 قريباً بعد شهر واحد</div>
-    <div style="font-size:13px;line-height:1.6">
-      عندما يصل التطبيق إلى 50,000 مستخدم:<br>
-      ✅ ستتوفر مكافآت الرموز<br>
-      ✅ سيكون نظام إعادة الشحن الكامل مباشراً<br>
-      ✅ خيار حجز تذاكر القطار<br>
-      ✅ خيار حجز تذاكر الطيران<br>
-      <b>يمكن استخدام جميع الخدمات بالرموز!</b>
+  <!-- PAGE 2: HINDI -->
+  <div class="coming-page">
+    <div class="coming-title">🚀 एक महीने बाद<br>जल्द आ रहा है</div>
+    <div class="coming-text">
+      <div style="margin-bottom:20px;font-size:20px">जब ऐप में 50,000 यूजर पूरे हो जाएंगे:</div>
+      <div class="coming-check">✅ टोकन रिवार्ड्स मिलेंगे</div>
+      <div class="coming-check">✅ पूरा रिचार्ज सिस्टम लाइव होगा</div>
+      <div class="coming-check">✅ रेलवे टिकट बुकिंग ऑप्शन</div>
+      <div class="coming-check">✅ फ्लाइट टिकट बुकिंग ऑप्शन</div>
+      <div style="margin-top:20px;font-size:20px;font-weight:800">सभी सेवाएं टोकन से यूज कर सकते हैं!</div>
     </div>
+    <div class="scroll-hint">↓ Scroll for Arabic</div>
   </div>
 
+  <!-- PAGE 3: ARABIC -->
+  <div class="coming-page" style="direction:rtl">
+    <div class="coming-title">🚀 قريباً بعد<br>شهر واحد</div>
+    <div class="coming-text">
+      <div style="margin-bottom:20px;font-size:20px">عندما يصل التطبيق إلى 50,000 مستخدم:</div>
+      <div class="coming-check">✅ ستتوفر مكافآت الرموز</div>
+      <div class="coming-check">✅ سيكون نظام إعادة الشحن الكامل مباشراً</div>
+      <div class="coming-check">✅ خيار حجز تذاكر القطار</div>
+      <div class="coming-check">✅ خيار حجز تذاكر الطيران</div>
+      <div style="margin-top:20px;font-size:20px;font-weight:800">يمكن استخدام جميع الخدمات بالرموز!</div>
+    </div>
+    <div class="scroll-hint">↑ Scroll to top</div>
+  </div>
 </div>
+
+<script>
+// Close Coming Soon & Show Recharge
+function closeComingSoon() {
+  document.getElementById('comingSoon').style.display = 'none';
+  localStorage.setItem('comingSoonSeen', 'true');
+}
+
+// Auto show only first time
+if(localStorage.getItem('comingSoonSeen')) {
+  document.getElementById('comingSoon').style.display = 'none';
+}
+
+// Update dots on scroll
+document.getElementById('comingSoon').addEventListener('scroll', function() {
+  const scrollPos = this.scrollTop;
+  const pageHeight = window.innerHeight;
+  const page = Math.round(scrollPos / pageHeight);
+  
+  document.querySelectorAll('.dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === page);
+  });
+});
+</script>
