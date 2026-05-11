@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RUPPY Admin Panel</title>
+  <title>RUPPY Admin Panel - SECURE</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
@@ -12,6 +12,42 @@
       color: #fff; 
       padding: 20px;
     }
+    #loginScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0a0a0a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .login-box {
+      background: #1a1a1a;
+      border: 3px solid #F3C774;
+      border-radius: 16px;
+      padding: 40px;
+      text-align: center;
+      max-width: 400px;
+    }
+    .login-box h2 {
+      color: #F3C774;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    .login-btn {
+      background: #F3C774;
+      color: #000;
+      padding: 16px 40px;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      margin-top: 20px;
+    }
     .admin-header {
       background: #F3C774;
       color: #000;
@@ -19,375 +55,201 @@
       border-radius: 12px;
       margin-bottom: 20px;
       text-align: center;
-    }
-    .admin-header h1 {
-      font-size: 28px;
-      font-weight: 900;
-    }
-    .tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .tab-btn {
-      flex: 1;
-      padding: 14px;
-      background: #1a1a1a;
-      border: 2px solid #F3C774;
-      border-radius: 8px;
-      color: #F3C774;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-    }
-    .tab-btn.active {
-      background: #F3C774;
-      color: #000;
-    }
-    .tab-content {
       display: none;
     }
-    .tab-content.active {
-      display: block;
-    }
-    .filter-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-    .search-box {
-      flex: 1;
-      min-width: 200px;
-    }
-    .search-box input, .date-input {
-      width: 100%;
-      padding: 14px;
-      background: #1a1a1a;
-      border: 2px solid #F3C774;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 16px;
-    }
-    .filter-btn {
-      padding: 14px 20px;
-      background: #1a1a1a;
-      border: 2px solid #F3C774;
-      border-radius: 8px;
-      color: #F3C774;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .filter-btn.active {
-      background: #F3C774;
-      color: #000;
-    }
-    .bulk-action {
-      background: #1a1a1a;
-      border: 2px solid #4CAF50;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
-      display: none;
-    }
-    .bulk-action.show {
-      display: block;
-    }
-    .bulk-action.all-users {
-      border: 2px solid #2196F3;
-    }
-    .bulk-row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .bulk-row input {
-      flex: 1;
-      padding: 12px;
-      background: #0a0a0a;
-      border: 1px solid #333;
-      border-radius: 6px;
-      color: #fff;
-      font-size: 16px;
-    }
-    .bulk-btn {
-      padding: 12px 24px;
-      background: #4CAF50;
-      border: none;
-      border-radius: 6px;
-      color: #fff;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .bulk-btn.all {
-      background: #2196F3;
-    }
-    .user-card {
-      background: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
-    }
-    .user-card.zero-balance {
-      border: 1px solid #f44336;
-    }
-    .user-card.top-miner {
-      border: 2px solid #FFD700;
-      background: linear-gradient(135deg, #1a1a1a 0%, #2a2000 100%);
-    }
-    .user-info {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .user-name {
-      font-size: 18px;
-      font-weight: 700;
-      color: #F3C774;
-    }
-    .user-email {
-      font-size: 12px;
-      color: #888;
-    }
-    .mining-badge {
-      background: #FFD700;
-      color: #000;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 900;
-    }
-    .user-stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .stat-box {
-      background: #0a0a0a;
-      padding: 10px;
-      border-radius: 8px;
-      text-align: center;
-    }
-    .stat-label {
-      font-size: 11px;
-      color: #888;
-    }
-    .stat-value {
-      font-size: 18px;
-      font-weight: 700;
-      color: #F3C774;
-    }
-    .stat-value.zero {
-      color: #f44336;
-    }
-    .stat-value.percent {
-      color: #4CAF50;
-    }
-    .action-row {
-      display: flex;
-      gap: 8px;
-    }
-    .action-row input {
-      flex: 1;
-      padding: 10px;
-      background: #0a0a0a;
-      border: 1px solid #333;
-      border-radius: 6px;
-      color: #fff;
-      font-size: 14px;
-    }
-    .btn {
-      padding: 10px 16px;
-      border: none;
-      border-radius: 6px;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .btn-add {
-      background: #4CAF50;
-      color: #fff;
-    }
-    .btn-remove {
+    .admin-header h1 { font-size: 28px; font-weight: 900; }
+    .logout-btn {
       background: #f44336;
       color: #fff;
-    }
-    .btn-set {
-      background: #F3C774;
-      color: #000;
-    }
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: #888;
-    }
-    .stats-header {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .stat-card {
-      background: #1a1a1a;
-      padding: 16px;
-      border-radius: 12px;
-      text-align: center;
-      border: 1px solid #F3C774;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .stat-card:hover {
-      background: #2a2a2a;
-      transform: scale(1.02);
-    }
-    .stat-card-value {
-      font-size: 24px;
-      font-weight: 900;
-      color: #F3C774;
-    }
-    .stat-card-label {
-      font-size: 12px;
-      color: #888;
-      margin-top: 4px;
-    }
-    .selected-count {
-      color: #F3C774;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
       font-weight: 700;
-      margin-left: 10px;
+      cursor: pointer;
+      margin-top: 10px;
     }
-    .mining-table {
-      width: 100%;
-      background: #1a1a1a;
-      border-radius: 12px;
-      overflow: hidden;
-      margin-top: 20px;
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; display: none; }
+    .tab-btn {
+      flex: 1; padding: 14px; background: #1a1a1a; border: 2px solid #F3C774;
+      border-radius: 8px; color: #F3C774; font-weight: 700; cursor: pointer; text-align: center;
     }
-    .mining-table th {
-      background: #F3C774;
-      color: #000;
-      padding: 12px;
-      text-align: left;
-      font-weight: 900;
+    .tab-btn.active { background: #F3C774; color: #000; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .filter-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .search-box { flex: 1; min-width: 200px; }
+    .search-box input, .date-input {
+      width: 100%; padding: 14px; background: #1a1a1a; border: 2px solid #F3C774;
+      border-radius: 8px; color: #fff; font-size: 16px;
     }
-    .mining-table td {
-      padding: 12px;
-      border-bottom: 1px solid #333;
+    .filter-btn {
+      padding: 14px 20px; background: #1a1a1a; border: 2px solid #F3C774;
+      border-radius: 8px; color: #F3C774; font-weight: 700; cursor: pointer; white-space: nowrap;
     }
-    .mining-table tr:hover {
-      background: #222;
+    .filter-btn.active { background: #F3C774; color: #000; }
+    .bulk-action {
+      background: #1a1a1a; border: 2px solid #4CAF50; border-radius: 12px;
+      padding: 16px; margin-bottom: 12px; display: none;
     }
-    .progress-bar {
-      width: 100%;
-      height: 20px;
-      background: #0a0a0a;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-top: 5px;
+    .bulk-action.show { display: block; }
+    .bulk-action.all-users { border: 2px solid #2196F3; }
+    .bulk-row { display: flex; gap: 10px; align-items: center; }
+    .bulk-row input {
+      flex: 1; padding: 12px; background: #0a0a0a; border: 1px solid #333;
+      border-radius: 6px; color: #fff; font-size: 16px;
     }
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #4CAF50, #8BC34A);
-      transition: 0.3s;
+    .bulk-btn {
+      padding: 12px 24px; background: #4CAF50; border: none; border-radius: 6px;
+      color: #fff; font-weight: 700; cursor: pointer; font-size: 16px;
     }
+    .bulk-btn.all { background: #2196F3; }
+    .user-card {
+      background: #1a1a1a; border: 1px solid #333; border-radius: 12px;
+      padding: 16px; margin-bottom: 12px;
+    }
+    .user-card.zero-balance { border: 1px solid #f44336; }
+    .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .user-name { font-size: 18px; font-weight: 700; color: #F3C774; }
+    .user-email { font-size: 12px; color: #888; }
+    .user-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+    .stat-box { background: #0a0a0a; padding: 10px; border-radius: 8px; text-align: center; }
+    .stat-label { font-size: 11px; color: #888; }
+    .stat-value { font-size: 18px; font-weight: 700; color: #F3C774; }
+    .stat-value.zero { color: #f44336; }
+    .action-row { display: flex; gap: 8px; }
+    .action-row input {
+      flex: 1; padding: 10px; background: #0a0a0a; border: 1px solid #333;
+      border-radius: 6px; color: #fff; font-size: 14px;
+    }
+    .btn { padding: 10px 16px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 14px; }
+    .btn-add { background: #4CAF50; color: #fff; }
+    .btn-remove { background: #f44336; color: #fff; }
+    .btn-set { background: #F3C774; color: #000; }
+    .loading { text-align: center; padding: 40px; color: #888; }
+    .stats-header { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .stat-card {
+      background: #1a1a1a; padding: 16px; border-radius: 12px; text-align: center;
+      border: 1px solid #F3C774; cursor: pointer; transition: 0.2s;
+    }
+    .stat-card:hover { background: #2a2a2a; transform: scale(1.02); }
+    .stat-card-value { font-size: 24px; font-weight: 900; color: #F3C774; }
+    .stat-card-label { font-size: 12px; color: #888; margin-top: 4px; }
+    .selected-count { color: #F3C774; font-weight: 700; margin-left: 10px; }
+    .mining-table { width: 100%; background: #1a1a1a; border-radius: 12px; overflow: hidden; margin-top: 20px; }
+    .mining-table th { background: #F3C774; color: #000; padding: 12px; text-align: left; font-weight: 900; }
+    .mining-table td { padding: 12px; border-bottom: 1px solid #333; }
+    .mining-table tr:hover { background: #222; }
+    .progress-bar { width: 100%; height: 20px; background: #0a0a0a; border-radius: 10px; overflow: hidden; margin-top: 5px; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); transition: 0.3s; }
   </style>
 </head>
 <body>
 
-  <div class="admin-header">
-    <h1>🔥 RUPPY ADMIN PANEL</h1>
-    <div style="font-size:14px;margin-top:8px">Full Control - Add/Edit Tokens + Mining Analytics</div>
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen">
+    <div class="login-box">
+      <h2>🔐 ADMIN LOGIN</h2>
+      <p style="color:#888;margin-bottom:20px">RUPPY Network Admin Panel</p>
+      <p style="color:#F3C774;font-size:14px">Only: farmanking7867@gmail.com</p>
+      <button class="login-btn" onclick="doLogin()">🔑 Login with Google</button>
+    </div>
   </div>
 
-  <div class="tabs">
-    <div class="tab-btn active" onclick="switchTab('users')">👥 Users Management</div>
-    <div class="tab-btn" onclick="switchTab('mining')">⛏️ Mining Analytics</div>
-  </div>
-
-  <!-- USERS TAB -->
-  <div id="usersTab" class="tab-content active">
-    <div class="stats-header">
-      <div class="stat-card" onclick="showAllUsers()">
-        <div class="stat-card-value" id="totalUsers">0</div>
-        <div class="stat-card-label">Total Users</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-value" id="totalTokens">0</div>
-        <div class="stat-card-label">Total RUPY</div>
-      </div>
-      <div class="stat-card" onclick="showReferralUsers()">
-        <div class="stat-card-value" id="totalReferrals">0</div>
-        <div class="stat-card-label">Total Referrals</div>
-      </div>
-      <div class="stat-card" onclick="showZeroBalanceUsers()">
-        <div class="stat-card-value" id="zeroBalanceCount">0</div>
-        <div class="stat-card-label">Zero Balance</div>
-      </div>
+  <!-- ADMIN PANEL -->
+  <div id="adminPanel" style="display:none">
+    <div class="admin-header" id="adminHeader">
+      <h1>🔥 RUPPY ADMIN PANEL</h1>
+      <div style="font-size:14px;margin-top:8px">Full Control - Add/Edit Tokens + Mining Analytics</div>
+      <div style="font-size:12px;margin-top:8px;color:#000">Logged in: <span id="adminEmail"></span></div>
+      <button class="logout-btn" onclick="doLogout()">🚪 Logout</button>
     </div>
 
-    <div class="filter-row">
-      <div class="search-box">
-        <input type="text" id="searchUser" placeholder="🔍 Search by Name, Email, or Code..." onkeyup="filterUsers()">
-      </div>
-      <button class="filter-btn" id="filterZeroBtn" onclick="toggleZeroFilter()">💰 Show Zero Balance</button>
-      <button class="filter-btn" id="bulkAllBtn" onclick="toggleBulkAll()">🚀 Bulk All Users</button>
+    <div class="tabs" id="tabs">
+      <div class="tab-btn active" onclick="switchTab('users')">👥 Users Management</div>
+      <div class="tab-btn" onclick="switchTab('mining')">⛏️ Mining Analytics</div>
     </div>
 
-    <div class="bulk-action" id="bulkActionBox">
-      <div class="bulk-row">
-        <input type="number" id="bulkAmount" placeholder="Amount to Add" value="100">
-        <button class="bulk-btn" onclick="bulkAddTokens()">⚡ Add to Zero Balance Users <span class="selected-count" id="selectedCount">0</span></button>
+    <!-- USERS TAB -->
+    <div id="usersTab" class="tab-content active">
+      <div class="stats-header">
+        <div class="stat-card" onclick="showAllUsers()">
+          <div class="stat-card-value" id="totalUsers">0</div>
+          <div class="stat-card-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value" id="totalTokens">0</div>
+          <div class="stat-card-label">Total RUPY</div>
+        </div>
+        <div class="stat-card" onclick="showReferralUsers()">
+          <div class="stat-card-value" id="totalReferrals">0</div>
+          <div class="stat-card-label">Total Referrals</div>
+        </div>
+        <div class="stat-card" onclick="showZeroBalanceUsers()">
+          <div class="stat-card-value" id="zeroBalanceCount">0</div>
+          <div class="stat-card-label">Zero Balance</div>
+        </div>
       </div>
+
+      <div class="filter-row">
+        <div class="search-box">
+          <input type="text" id="searchUser" placeholder="🔍 Search by Name, Email, or Code..." onkeyup="filterUsers()">
+        </div>
+        <button class="filter-btn" id="filterZeroBtn" onclick="toggleZeroFilter()">💰 Show Zero Balance</button>
+        <button class="filter-btn" id="bulkAllBtn" onclick="toggleBulkAll()">🚀 Bulk All Users</button>
+      </div>
+
+      <div class="bulk-action" id="bulkActionBox">
+        <div class="bulk-row">
+          <input type="number" id="bulkAmount" placeholder="Amount to Add" value="100">
+          <button class="bulk-btn" onclick="bulkAddTokens()">⚡ Add to Zero Balance Users <span class="selected-count" id="selectedCount">0</span></button>
+        </div>
+      </div>
+
+      <div class="bulk-action all-users" id="bulkAllBox">
+        <div class="bulk-row">
+          <input type="number" id="bulkAllAmount" placeholder="Amount to Add to All" value="1000">
+          <button class="bulk-btn all" onclick="bulkAddToAllUsers()">🚀 Add to ALL Users <span class="selected-count" id="totalUserCount">0</span></button>
+        </div>
+      </div>
+
+      <div id="usersList" class="loading">Loading users...</div>
     </div>
 
-    <div class="bulk-action all-users" id="bulkAllBox">
-      <div class="bulk-row">
-        <input type="number" id="bulkAllAmount" placeholder="Amount to Add to All" value="1000">
-        <button class="bulk-btn all" onclick="bulkAddToAllUsers()">🚀 Add to ALL Users <span class="selected-count" id="totalUserCount">0</span></button>
+    <!-- MINING TAB -->
+    <div id="miningTab" class="tab-content">
+      <div class="filter-row">
+        <input type="date" class="date-input" id="miningDate" onchange="loadMiningData()">
+        <button class="filter-btn" onclick="loadTodayMining()">📅 Today</button>
+        <button class="filter-btn" onclick="loadWeekMining()">📊 This Week</button>
       </div>
+
+      <div class="stats-header">
+        <div class="stat-card">
+          <div class="stat-card-value" id="totalMinedToday">0</div>
+          <div class="stat-card-label">Total Mined Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value" id="activeMiners">0</div>
+          <div class="stat-card-label">Active Miners</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value" id="topMinerName">-</div>
+          <div class="stat-card-label">Top Miner</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value" id="avgMining">0</div>
+          <div class="stat-card-label">Avg Mining/User</div>
+        </div>
+      </div>
+
+      <div id="miningList" class="loading">Select a date to view mining data...</div>
     </div>
-
-    <div id="usersList" class="loading">Loading users...</div>
-  </div>
-
-  <!-- MINING TAB -->
-  <div id="miningTab" class="tab-content">
-    <div class="filter-row">
-      <input type="date" class="date-input" id="miningDate" onchange="loadMiningData()">
-      <button class="filter-btn" onclick="loadTodayMining()">📅 Today</button>
-      <button class="filter-btn" onclick="loadWeekMining()">📊 This Week</button>
-    </div>
-
-    <div class="stats-header">
-      <div class="stat-card">
-        <div class="stat-card-value" id="totalMinedToday">0</div>
-        <div class="stat-card-label">Total Mined Today</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-value" id="activeMiners">0</div>
-        <div class="stat-card-label">Active Miners</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-value" id="topMinerName">-</div>
-        <div class="stat-card-label">Top Miner</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-value" id="avgMining">0</div>
-        <div class="stat-card-label">Avg Mining/User</div>
-      </div>
-    </div>
-
-    <div id="miningList" class="loading">Select a date to view mining data...</div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, get, update, set, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getDatabase, ref, get, update, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
@@ -402,33 +264,43 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
     const ADMIN_EMAIL = "farmanking7867@gmail.com";
-
     let allUsers = [];
     let showZeroOnly = false;
     let showBulkAll = false;
-    let currentTab = 'users';
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        alert("Login Required!");
-        window.location.href = "login.html";
-        return;
-      }
-      
-      if (user.email !== ADMIN_EMAIL) {
-        alert("❌ Access Denied! Admin Only");
-        window.location.href = "index.html";
-        return;
-      }
+    // 🔥 हर बार Session Login - Browser बंद होते ही Logout
+    setPersistence(auth, browserSessionPersistence);
 
-      loadAllUsers();
-      document.getElementById('miningDate').valueAsDate = new Date();
-    });
+    window.doLogin = function() {
+      signInWithPopup(auth, provider).then((result) => {
+        if (result.user.email !== ADMIN_EMAIL) {
+          alert("❌ Access Denied! Admin Only");
+          signOut(auth);
+        } else {
+          document.getElementById('loginScreen').style.display = 'none';
+          document.getElementById('adminPanel').style.display = 'block';
+          document.getElementById('adminHeader').style.display = 'block';
+          document.getElementById('tabs').style.display = 'flex';
+          document.getElementById('adminEmail').textContent = result.user.email;
+          loadAllUsers();
+          document.getElementById('miningDate').valueAsDate = new Date();
+        }
+      }).catch(err => {
+        alert("Login Failed: " + err.message);
+      });
+    }
 
+    window.doLogout = function() {
+      signOut(auth).then(() => {
+        location.reload();
+      });
+    }
+
+    // बाकी Functions Same...
     window.switchTab = function(tab) {
-      currentTab = tab;
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
       
@@ -483,7 +355,6 @@
 
     function renderUsers(users) {
       let displayUsers = users;
-      
       if (showZeroOnly) {
         displayUsers = users.filter(u => (parseInt(u.balance) || 0) === 0);
       }
@@ -503,26 +374,12 @@
               <div class="user-email">Code: ${user.myReferralCode || 'N/A'} | Joined: ${joinDate}</div>
             </div>
           </div>
-          
           <div class="user-stats">
-            <div class="stat-box">
-              <div class="stat-label">Balance</div>
-              <div class="stat-value ${isZero ? 'zero' : ''}">${bal.toLocaleString()}</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-label">Total Refs</div>
-              <div class="stat-value">${parseInt(user.totalReferrals) || 0}</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-label">Active Refs</div>
-              <div class="stat-value">${parseInt(user.activeReferrals) || 0}</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-label">Last Mining</div>
-              <div class="stat-value" style="font-size:12px">${lastMining}</div>
-            </div>
+            <div class="stat-box"><div class="stat-label">Balance</div><div class="stat-value ${isZero ? 'zero' : ''}">${bal.toLocaleString()}</div></div>
+            <div class="stat-box"><div class="stat-label">Total Refs</div><div class="stat-value">${parseInt(user.totalReferrals) || 0}</div></div>
+            <div class="stat-box"><div class="stat-label">Active Refs</div><div class="stat-value">${parseInt(user.activeReferrals) || 0}</div></div>
+            <div class="stat-box"><div class="stat-label">Last Mining</div><div class="stat-value" style="font-size:12px">${lastMining}</div></div>
           </div>
-
           <div class="action-row">
             <input type="number" id="amount-${user.uid}" placeholder="Amount" value="100">
             <button class="btn btn-add" onclick="addTokens('${user.uid}')">+ Add</button>
@@ -535,7 +392,6 @@
       document.getElementById('usersList').innerHTML = html || '<div class="loading">No users found</div>';
     }
 
-    // MINING ANALYTICS FUNCTIONS
     window.loadTodayMining = function() {
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('miningDate').value = today;
@@ -544,13 +400,10 @@
 
     window.loadWeekMining = async function() {
       document.getElementById('miningList').innerHTML = '<div class="loading">Loading week data...</div>';
-      
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
-      
       let totalMined = 0;
       let miners = {};
-      
       for (const user of allUsers) {
         const miningLogs = user.miningLogs || {};
         for (const timestamp in miningLogs) {
@@ -561,27 +414,21 @@
           }
         }
       }
-      
-      renderMiningTable(miners, totalMined, 7);
+      renderMiningTable(miners, totalMined);
     }
 
     window.loadMiningData = async function() {
       const selectedDate = document.getElementById('miningDate').value;
       if (!selectedDate) return;
-      
       document.getElementById('miningList').innerHTML = '<div class="loading">Loading mining data...</div>';
-      
       const targetDate = new Date(selectedDate);
       const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0)).getTime();
       const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999)).getTime();
-      
       let totalMined = 0;
       let miners = {};
-      
       for (const user of allUsers) {
         const miningLogs = user.miningLogs || {};
         let userTotal = 0;
-        
         for (const timestamp in miningLogs) {
           const ts = parseInt(timestamp);
           if (ts >= startOfDay && ts <= endOfDay) {
@@ -590,22 +437,16 @@
             userTotal += amount;
           }
         }
-        
-        if (userTotal > 0) {
-          miners[user.uid] = userTotal;
-        }
+        if (userTotal > 0) miners[user.uid] = userTotal;
       }
-      
-      renderMiningTable(miners, totalMined, 1);
+      renderMiningTable(miners, totalMined);
     }
 
-    function renderMiningTable(miners, totalMined, days) {
-      const sortedMiners = Object.entries(miners)
-        .map(([uid, amount]) => {
-          const user = allUsers.find(u => u.uid === uid);
-          return { uid, amount, user };
-        })
-        .sort((a, b) => b.amount - a.amount);
+    function renderMiningTable(miners, totalMined) {
+      const sortedMiners = Object.entries(miners).map(([uid, amount]) => {
+        const user = allUsers.find(u => u.uid === uid);
+        return { uid, amount, user };
+      }).sort((a, b) => b.amount - a.amount);
       
       const activeMiners = sortedMiners.length;
       const avgMining = activeMiners > 0 ? Math.round(totalMined / activeMiners) : 0;
@@ -617,45 +458,27 @@
       document.getElementById('avgMining').textContent = avgMining.toLocaleString();
       
       if (sortedMiners.length === 0) {
-        document.getElementById('miningList').innerHTML = '<div class="loading">No mining activity found for this period</div>';
+        document.getElementById('miningList').innerHTML = '<div class="loading">No mining activity found</div>';
         return;
       }
       
       const maxAmount = sortedMiners[0].amount;
-      
       const tableHtml = `
         <table class="mining-table">
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>User</th>
-              <th>Mined</th>
-              <th>% of Total</th>
-              <th>Progress</th>
-              <th>Join Date</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Rank</th><th>User</th><th>Mined</th><th>% of Total</th><th>Progress</th><th>Join Date</th></tr></thead>
           <tbody>
             ${sortedMiners.map((miner, index) => {
               const percent = ((miner.amount / totalMined) * 100).toFixed(2);
               const progressWidth = (miner.amount / maxAmount) * 100;
               const isTopMiner = index === 0;
               const joinDate = miner.user.joinedAt ? new Date(miner.user.joinedAt).toLocaleDateString() : 'N/A';
-              
               return `
-                <tr class="${isTopMiner ? 'top-miner' : ''}">
+                <tr>
                   <td><strong>#${index + 1}</strong> ${isTopMiner ? '👑' : ''}</td>
-                  <td>
-                    <strong>${miner.user.name}</strong><br>
-                    <small style="color:#888">${miner.user.email}</small>
-                  </td>
+                  <td><strong>${miner.user.name}</strong><br><small style="color:#888">${miner.user.email}</small></td>
                   <td><strong>${miner.amount.toLocaleString()}</strong> RUPY</td>
                   <td><strong style="color:#4CAF50">${percent}%</strong></td>
-                  <td>
-                    <div class="progress-bar">
-                      <div class="progress-fill" style="width:${progressWidth}%"></div>
-                    </div>
-                  </td>
+                  <td><div class="progress-bar"><div class="progress-fill" style="width:${progressWidth}%"></div></div></td>
                   <td>${joinDate}</td>
                 </tr>
               `;
@@ -663,7 +486,6 @@
           </tbody>
         </table>
       `;
-      
       document.getElementById('miningList').innerHTML = tableHtml;
     }
 
@@ -684,7 +506,6 @@
       const bulkBox = document.getElementById('bulkActionBox');
       const bulkAllBox = document.getElementById('bulkAllBox');
       const bulkAllBtn = document.getElementById('bulkAllBtn');
-      
       if (showZeroOnly) {
         btn.classList.add('active');
         btn.textContent = '👥 Show All Users';
@@ -706,7 +527,6 @@
       const bulkBox = document.getElementById('bulkActionBox');
       const bulkAllBox = document.getElementById('bulkAllBox');
       const filterZeroBtn = document.getElementById('filterZeroBtn');
-      
       if (showBulkAll) {
         btn.classList.add('active');
         bulkAllBox.classList.add('show');
@@ -756,17 +576,13 @@
     window.bulkAddTokens = async function() {
       const amount = parseInt(document.getElementById('bulkAmount').value) || 0;
       if (amount <= 0) return alert('Enter valid amount');
-      
       const zeroUsers = allUsers.filter(u => (parseInt(u.balance) || 0) === 0);
       if (zeroUsers.length === 0) return alert('No zero balance users found');
-      
       if (!confirm(`Add ${amount} RUPY to ${zeroUsers.length} zero balance users?`)) return;
-      
       const updates = {};
       zeroUsers.forEach(user => {
         updates[`users/${user.uid}/balance`] = amount;
       });
-      
       await update(ref(db), updates);
       alert(`✅ Added ${amount} RUPY to ${zeroUsers.length} users`);
       await loadAllUsers();
@@ -775,15 +591,12 @@
     window.bulkAddToAllUsers = async function() {
       const amount = parseInt(document.getElementById('bulkAllAmount').value) || 0;
       if (amount <= 0) return alert('Enter valid amount');
-      
       if (!confirm(`⚠️ WARNING\nAdd ${amount} RUPY to ALL ${allUsers.length} users?\nTotal: ${(amount * allUsers.length).toLocaleString()} RUPY`)) return;
-      
       const updates = {};
       allUsers.forEach(user => {
         const currentBal = parseInt(user.balance) || 0;
         updates[`users/${user.uid}/balance`] = currentBal + amount;
       });
-      
       await update(ref(db), updates);
       alert(`✅ Added ${amount} RUPY to ALL ${allUsers.length} users\nTotal Distributed: ${(amount * allUsers.length).toLocaleString()} RUPY`);
       await loadAllUsers();
@@ -792,11 +605,9 @@
     window.addTokens = async function(uid) {
       const amount = parseInt(document.getElementById(`amount-${uid}`).value) || 0;
       if (amount <= 0) return alert('Enter valid amount');
-      
       const userSnap = await get(ref(db, `users/${uid}/balance`));
       const currentBal = parseInt(userSnap.val()) || 0;
       const newBalance = currentBal + amount;
-      
       await set(ref(db, `users/${uid}/balance`), newBalance);
       alert(`✅ ADDED\n${currentBal.toLocaleString()} + ${amount} = ${newBalance.toLocaleString()}`);
       await loadAllUsers();
@@ -805,11 +616,9 @@
     window.removeTokens = async function(uid) {
       const amount = parseInt(document.getElementById(`amount-${uid}`).value) || 0;
       if (amount <= 0) return alert('Enter valid amount');
-      
       const userSnap = await get(ref(db, `users/${uid}/balance`));
       const currentBal = parseInt(userSnap.val()) || 0;
       const newBalance = Math.max(0, currentBal - amount);
-      
       await set(ref(db, `users/${uid}/balance`), newBalance);
       alert(`✅ REMOVED\n${currentBal.toLocaleString()} - ${amount} = ${newBalance.toLocaleString()}`);
       await loadAllUsers();
@@ -818,7 +627,6 @@
     window.setTokens = async function(uid) {
       const amount = parseInt(document.getElementById(`amount-${uid}`).value) || 0;
       if (amount < 0) return alert('Enter valid amount');
-      
       await set(ref(db, `users/${uid}/balance`), amount);
       alert(`✅ SET Balance = ${amount.toLocaleString()}`);
       await loadAllUsers();
