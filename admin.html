@@ -189,6 +189,12 @@
       border-radius: 12px;
       text-align: center;
       border: 1px solid #F3C774;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .stat-card:hover {
+      background: #2a2a2a;
+      transform: scale(1.02);
     }
     .stat-card-value {
       font-size: 24px;
@@ -215,7 +221,7 @@
   </div>
 
   <div class="stats-header">
-    <div class="stat-card">
+    <div class="stat-card" onclick="showAllUsers()">
       <div class="stat-card-value" id="totalUsers">0</div>
       <div class="stat-card-label">Total Users</div>
     </div>
@@ -223,11 +229,11 @@
       <div class="stat-card-value" id="totalTokens">0</div>
       <div class="stat-card-label">Total RUPY</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" onclick="showReferralUsers()">
       <div class="stat-card-value" id="totalReferrals">0</div>
       <div class="stat-card-label">Total Referrals</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" onclick="showZeroBalanceUsers()">
       <div class="stat-card-value" id="zeroBalanceCount">0</div>
       <div class="stat-card-label">Zero Balance</div>
     </div>
@@ -401,6 +407,31 @@
       renderUsers(allUsers);
     }
 
+    window.showZeroBalanceUsers = function() {
+      showZeroOnly = true;
+      document.getElementById('filterZeroBtn').classList.add('active');
+      document.getElementById('filterZeroBtn').textContent = '👥 Show All Users';
+      document.getElementById('bulkActionBox').classList.add('show');
+      renderUsers(allUsers);
+    }
+
+    window.showAllUsers = function() {
+      showZeroOnly = false;
+      document.getElementById('filterZeroBtn').classList.remove('active');
+      document.getElementById('filterZeroBtn').textContent = '💰 Show Zero Balance';
+      document.getElementById('bulkActionBox').classList.remove('show');
+      renderUsers(allUsers);
+    }
+
+    window.showReferralUsers = function() {
+      showZeroOnly = false;
+      const refUsers = allUsers.filter(u => (parseInt(u.totalReferrals) || 0) > 0);
+      document.getElementById('filterZeroBtn').classList.remove('active');
+      document.getElementById('filterZeroBtn').textContent = '💰 Show Zero Balance';
+      document.getElementById('bulkActionBox').classList.remove('show');
+      renderUsers(refUsers);
+    }
+
     window.bulkAddTokens = async function() {
       const amount = parseInt(document.getElementById('bulkAmount').value) || 0;
       if (amount <= 0) return alert('Enter valid amount');
@@ -429,7 +460,7 @@
       const newBalance = currentBal + amount;
       
       await set(ref(db, `users/${uid}/balance`), newBalance);
-      alert(`✅ ADDED\n${currentBal} + ${amount} = ${newBalance}`);
+      alert(`✅ ADDED\n${currentBal.toLocaleString()} + ${amount} = ${newBalance.toLocaleString()}`);
       await loadAllUsers();
     }
 
@@ -442,7 +473,7 @@
       const newBalance = Math.max(0, currentBal - amount);
       
       await set(ref(db, `users/${uid}/balance`), newBalance);
-      alert(`✅ REMOVED\n${currentBal} - ${amount} = ${newBalance}`);
+      alert(`✅ REMOVED\n${currentBal.toLocaleString()} - ${amount} = ${newBalance.toLocaleString()}`);
       await loadAllUsers();
     }
 
@@ -451,7 +482,7 @@
       if (amount < 0) return alert('Enter valid amount');
       
       await set(ref(db, `users/${uid}/balance`), amount);
-      alert(`✅ SET Balance = ${amount}`);
+      alert(`✅ SET Balance = ${amount.toLocaleString()}`);
       await loadAllUsers();
     }
   </script>
