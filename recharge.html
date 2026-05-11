@@ -106,8 +106,6 @@ body{background:var(--bg);color:#fff;padding:0 0 90px 0}
 
     <div class="plan-list" id="planList"></div>
   </div>
-
-  <div id="loader" class="loader" style="display:none">Loading plans...</div>
 </div>
 
 <div class="bottom-bar" id="bottomBar" style="display:none">
@@ -120,38 +118,22 @@ let currentOperator = '';
 let currentNumber = '';
 let allPlans = [];
 
+// 🔥 TELEGRAM CONFIG - बस Chat ID डाल दे
+const TELEGRAM_BOT_TOKEN = '8721866580:AAHeD0Jrzbs6n1UzxXwUq4rrz8XvnRG3AsQ';
+const TELEGRAM_CHAT_ID = 'PASTE_YOUR_CHAT_ID_HERE'; // ← यहाँ Chat ID डाल
+
 const plansData = {
   'Vi': [
-    {price: 10, validity: 'Unlimited', data: 'Talk Time ₹7.47', desc: 'Talktime Plan - No Service Validity', type: 'Talk Time'},
-    {price: 20, validity: 'Unlimited', data: 'Talk Time ₹14.95', desc: 'Talktime Plan - No Service Validity', type: 'Talk Time'},
-    {price: 30, validity: 'Unlimited', data: 'Talk Time ₹22.42', desc: 'Talktime Plan - No Service Validity', type: 'Talk Time'},
-    {price: 50, validity: 'Unlimited', data: 'Talk Time ₹39.37', desc: 'Talktime Plan - No Service Validity', type: 'Talk Time'},
-    {price: 100, validity: 'Unlimited', data: 'Talk Time ₹81.75', desc: 'Talktime Plan - No Service Validity', type: 'Talk Time'},
+    {price: 10, validity: 'Unlimited', data: 'Talk Time ₹7.47', desc: 'Talktime Plan', type: 'Talk Time'},
+    {price: 20, validity: 'Unlimited', data: 'Talk Time ₹14.95', desc: 'Talktime Plan', type: 'Talk Time'},
+    {price: 50, validity: 'Unlimited', data: 'Talk Time ₹39.37', desc: 'Talktime Plan', type: 'Talk Time'},
+    {price: 100, validity: 'Unlimited', data: 'Talk Time ₹81.75', desc: 'Talktime Plan', type: 'Talk Time'},
     {price: 199, validity: '28 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan', popular: true},
     {price: 239, validity: '28 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day + Vi Movies & TV', type: 'Validity Plan', popular: true},
-    {price: 299, validity: '28 Days', data: '1GB/Day', desc: 'Truly Unlimited Local & National Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 319, validity: '31 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 340, validity: '28 Days', data: '1GB/Day + 1GB', desc: 'Get 1GB/Day + 1GB Fixed Data + Unlimited Calls', type: 'Combo'},
-    {price: 359, validity: '28 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 365, validity: '28 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day + Hotstar Mobile', type: 'Validity Plan', popular: true},
-    {price: 368, validity: '30 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 409, validity: '28 Days', data: '2.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 475, validity: '28 Days', data: '3GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
+    {price: 299, validity: '28 Days', data: '1GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
+    {price: 365, validity: '28 Days', data: '2GB/Day', desc: 'Unlimited Calls + Hotstar Mobile', type: 'Validity Plan'},
     {price: 479, validity: '56 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 499, validity: '70 Days', data: '3GB', desc: 'Unlimited Calls + 300 SMS', type: 'Validity Plan'},
-    {price: 509, validity: '84 Days', data: '6GB', desc: 'Unlimited Calls + 1000 SMS', type: 'Validity Plan'},
-    {price: 666, validity: '77 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
     {price: 719, validity: '84 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 839, validity: '84 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day + Disney+ Hotstar', type: 'Validity Plan'},
-    {price: 901, validity: '70 Days', data: '3GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 1449, validity: '180 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 1749, validity: '180 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 2899, validity: '365 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 3099, validity: '365 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 49, validity: '1 Day', data: '6GB', desc: 'Data Only', type: 'Data Plan'},
-    {price: 98, validity: '14 Days', data: '9GB', desc: 'Data Only', type: 'Data Plan'},
-    {price: 145, validity: '28 Days', data: '1GB/Day', desc: '~Rs5/Day for 1GB', type: 'Data Plan'},
-    {price: 248, validity: '28 Days', data: '50GB', desc: 'Data Only', type: 'Data Plan'},
   ],
   'Jio': [
     {price: 10, validity: 'Unlimited', data: 'Talk Time ₹7.47', desc: 'Talktime Plan', type: 'Talk Time'},
@@ -160,93 +142,49 @@ const plansData = {
     {price: 100, validity: 'Unlimited', data: 'Talk Time ₹81.75', desc: 'Talktime Plan', type: 'Talk Time'},
     {price: 149, validity: '20 Days', data: '1GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
     {price: 199, validity: '28 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 209, validity: '28 Days', data: '1GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
     {price: 239, validity: '28 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan', popular: true},
-    {price: 249, validity: '28 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
     {price: 299, validity: '28 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan', popular: true},
-    {price: 349, validity: '28 Days', data: '2.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 399, validity: '28 Days', data: '3GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
     {price: 479, validity: '56 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 529, validity: '56 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 589, validity: '56 Days', data: '2.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 666, validity: '84 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
     {price: 719, validity: '84 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 749, validity: '90 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 899, validity: '90 Days', data: '2.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 1199, validity: '84 Days', data: '3GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 1559, validity: '365 Days', data: '24GB', desc: 'Unlimited Calls + 3600 SMS', type: 'Validity Plan'},
-    {price: 2999, validity: '365 Days', data: '2.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
   ],
   'Airtel': [
     {price: 10, validity: 'Unlimited', data: 'Talk Time ₹7.47', desc: 'Talktime Plan', type: 'Talk Time'},
     {price: 20, validity: 'Unlimited', data: 'Talk Time ₹14.95', desc: 'Talktime Plan', type: 'Talk Time'},
     {price: 50, validity: 'Unlimited', data: 'Talk Time ₹39.37', desc: 'Talktime Plan', type: 'Talk Time'},
     {price: 100, validity: 'Unlimited', data: 'Talk Time ₹81.75', desc: 'Talktime Plan', type: 'Talk Time'},
-    {price: 179, validity: '28 Days', data: '2GB', desc: 'Unlimited Calls + 300 SMS', type: 'Validity Plan'},
     {price: 199, validity: '28 Days', data: '3GB', desc: 'Unlimited Calls + 300 SMS', type: 'Validity Plan'},
-    {price: 209, validity: '21 Days', data: '1GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
     {price: 239, validity: '24 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 265, validity: '28 Days', data: '1GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
     {price: 299, validity: '28 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan', popular: true},
-    {price: 319, validity: '1 Month', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
     {price: 359, validity: '28 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 399, validity: '28 Days', data: '2.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 449, validity: '28 Days', data: '3GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 455, validity: '84 Days', data: '6GB', desc: 'Unlimited Calls + 900 SMS', type: 'Validity Plan'},
     {price: 479, validity: '56 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 499, validity: '28 Days', data: '3GB/Day + 5GB', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 549, validity: '56 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 666, validity: '77 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 699, validity: '84 Days', data: '3GB', desc: 'Unlimited Calls + 900 SMS', type: 'Validity Plan'},
     {price: 719, validity: '84 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 779, validity: '84 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 839, validity: '84 Days', data: '2.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 999, validity: '84 Days', data: '3GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 1799, validity: '365 Days', data: '24GB', desc: 'Unlimited Calls + 3600 SMS', type: 'Validity Plan'},
-    {price: 2999, validity: '365 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
   ],
   'BSNL': [
     {price: 10, validity: 'Unlimited', data: 'Talk Time ₹7', desc: 'Talktime Plan', type: 'Talk Time'},
-    {price: 20, validity: 'Unlimited', data: 'Talk Time ₹14', desc: 'Talktime Plan', type: 'Talk Time'},
     {price: 50, validity: 'Unlimited', data: 'Talk Time ₹40', desc: 'Talktime Plan', type: 'Talk Time'},
     {price: 100, validity: 'Unlimited', data: 'Talk Time ₹80', desc: 'Talktime Plan', type: 'Talk Time'},
-    {price: 87, validity: '14 Days', data: '1GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 97, validity: '18 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
     {price: 147, validity: '30 Days', data: '10GB', desc: 'Unlimited Calls', type: 'Validity Plan'},
-    {price: 153, validity: '26 Days', data: '1GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 187, validity: '28 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
     {price: 199, validity: '30 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
     {price: 247, validity: '30 Days', data: '3GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan', popular: true},
-    {price: 347, validity: '56 Days', data: '2GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 429, validity: '81 Days', data: '1GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 485, validity: '90 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 666, validity: '120 Days', data: '1.5GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 997, validity: '180 Days', data: '3GB/Day', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
-    {price: 1499, validity: '365 Days', data: '24GB', desc: 'Unlimited Calls + 100 SMS/Day', type: 'Validity Plan'},
   ]
 };
 
 window.detectOperator = function(num) {
   if(num.length === 10) {
     currentNumber = num;
-    const first = num[0];
+    if(num.startsWith('9') || num.startsWith('8')) currentOperator = 'Jio';
+    else if(num.startsWith('7')) currentOperator = 'Airtel';
+    else if(num.startsWith('6')) currentOperator = 'Vi';
+    else currentOperator = 'BSNL';
     
-    if(['6','7','8','9'].includes(first)) {
-      if(num.startsWith('9') || num.startsWith('8')) currentOperator = 'Jio';
-      else if(num.startsWith('7')) currentOperator = 'Airtel';
-      else if(num.startsWith('6')) currentOperator = 'Vi';
-      else currentOperator = 'BSNL';
-      
-      document.getElementById('mobileInput').style.display = 'none';
-      document.getElementById('mobileDisplay').style.display = 'block';
-      document.getElementById('mobileNum').innerText = num;
-      document.getElementById('mobileMeta').innerText = `${currentOperator} Prepaid • Uttar Pradesh West`;
-      document.getElementById('opLogo').innerText = currentOperator.substring(0,2).toUpperCase();
-      document.getElementById('plansSection').style.display = 'block';
-      document.getElementById('bottomBar').style.display = 'block';
-      
-      loadPlans(currentOperator);
-    }
+    document.getElementById('mobileInput').style.display = 'none';
+    document.getElementById('mobileDisplay').style.display = 'block';
+    document.getElementById('mobileNum').innerText = num;
+    document.getElementById('mobileMeta').innerText = `${currentOperator} Prepaid`;
+    document.getElementById('opLogo').innerText = currentOperator.substring(0,2).toUpperCase();
+    document.getElementById('plansSection').style.display = 'block';
+    document.getElementById('bottomBar').style.display = 'block';
+    loadPlans(currentOperator);
   }
 }
 
@@ -268,37 +206,26 @@ function renderPlans(plans) {
   const suggested = plans.filter(p => p.popular).slice(0, 2);
   if(suggested.length === 0) suggested.push(...plans.slice(0, 2));
   
-  document.getElementById('suggestedPlans').innerHTML = suggested.map((p, i) => `
+  document.getElementById('suggestedPlans').innerHTML = suggested.map((p) => `
     <div class="plan-card" onclick='selectPlan(${JSON.stringify(p)})'>
       ${p.popular? '<div class="popular-badge">POPULAR</div>' : ''}
-      <div class="plan-price">
-        ₹${p.price}
-        <div class="plan-arrow">›</div>
-      </div>
+      <div class="plan-price">₹${p.price}<div class="plan-arrow">›</div></div>
       <div class="plan-type">${p.type}</div>
       <div class="plan-data">${p.data} • ${p.validity}</div>
-      <div class="plan-details">Details</div>
     </div>
   `).join('');
   
-  document.getElementById('planList').innerHTML = plans.map((p, i) => `
+  document.getElementById('planList').innerHTML = plans.map((p) => `
     <div class="list-plan" onclick='selectPlan(${JSON.stringify(p)})'>
       <div class="list-top">
         <div class="list-price">₹${p.price}</div>
         <div style="color:var(--muted)">›</div>
       </div>
       <div class="list-meta">
-        <div class="meta-item">
-          <div class="meta-label">Validity</div>
-          <div class="meta-value">${p.validity}</div>
-        </div>
-        <div class="meta-item">
-          <div class="meta-label">Data</div>
-          <div class="meta-value">${p.data}</div>
-        </div>
+        <div class="meta-item"><div class="meta-label">Validity</div><div class="meta-value">${p.validity}</div></div>
+        <div class="meta-item"><div class="meta-label">Data</div><div class="meta-value">${p.data}</div></div>
       </div>
       <div class="list-desc">${p.desc}</div>
-      ${p.type === 'Data Plan'? '<div class="list-bottom"><div class="badge">DATA ONLY</div><div class="plan-details">Details</div></div>' : ''}
     </div>
   `).join('');
 }
@@ -314,22 +241,17 @@ window.selectPlan = function(plan) {
 window.setFilter = function(type) {
   document.querySelectorAll('.filter-chip').forEach(el => el.classList.remove('active'));
   event.currentTarget.classList.add('active');
-  
   let filtered = allPlans;
   if(type === 'talk') filtered = allPlans.filter(p => p.type === 'Talk Time');
   else if(type === '1gb') filtered = allPlans.filter(p => p.data.includes('1GB/Day') &&!p.data.includes('1.5'));
   else if(type === '1.5gb') filtered = allPlans.filter(p => p.data.includes('1.5GB/Day'));
   else if(type === '2gb') filtered = allPlans.filter(p => p.data.includes('2GB/Day') &&!p.data.includes('2.5'));
-  else if(type === 'long') filtered = allPlans.filter(p => p.validity.includes('84') || p.validity.includes('365') || p.validity.includes('180'));
-  
+  else if(type === 'long') filtered = allPlans.filter(p => p.validity.includes('84') || p.validity.includes('365'));
   renderPlans(filtered);
 }
 
 window.filterPlans = function(query) {
-  if(!query) {
-    renderPlans(allPlans);
-    return;
-  }
+  if(!query) { renderPlans(allPlans); return; }
   const filtered = allPlans.filter(p => 
     p.price.toString().includes(query) || 
     p.validity.toLowerCase().includes(query.toLowerCase()) ||
@@ -338,16 +260,29 @@ window.filterPlans = function(query) {
   renderPlans(filtered);
 }
 
+// 🔥 TELEGRAM पे Message भेज
+async function sendToTelegram(message) {
+  const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: message,
+        parse_mode: 'HTML'
+      })
+    });
+  } catch(e) {
+    console.log('Telegram Error:', e);
+  }
+}
+
 window.doRecharge = async function() {
   if(!selectedPlan) return;
   
   // ✅ 10000 RUP = 300 Rs | 1 Rs = 33.33 RUP
-  let tokensNeeded;
-  if(selectedPlan.price === 300) {
-    tokensNeeded = 10000; // 300 Rs = 10000 RUP Fixed
-  } else {
-    tokensNeeded = Math.round(selectedPlan.price * 10000 / 300); // बाकी सब: 1 Rs = 33.33 RUP
-  }
+  let tokensNeeded = Math.round(selectedPlan.price * 10000 / 300);
   
   if(!window.userData?.uid) {
     alert('Please login first');
@@ -364,32 +299,21 @@ window.doRecharge = async function() {
   }
   
   try {
+    // 1. Balance काट
     window.userData.balance -= tokensNeeded;
     await window.saveRuppyData(window.userData);
     
-    const { getDatabase, ref, push } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js");
-    const db = getDatabase();
+    // 2. Telegram पे Request भेज
+    const msg = `🔔 <b>NEW RECHARGE REQUEST</b>\n\n📱 <b>Mobile:</b> ${currentNumber}\n📡 <b>Operator:</b> ${currentOperator}\n💰 <b>Amount:</b> ₹${selectedPlan.price}\n📊 <b>Plan:</b> ${selectedPlan.data}\n📅 <b>Validity:</b> ${selectedPlan.validity}\n🏷️ <b>Type:</b> ${selectedPlan.type}\n🪙 <b>Tokens Deducted:</b> ${tokensNeeded} RUP\n👤 <b>User:</b> ${window.userData.name || 'User'}\n🆔 <b>UID:</b> ${window.userData.uid}\n\n⏰ <b>Time:</b> ${new Date().toLocaleString('en-IN')}`;
     
-    await push(ref(db, 'recharge_requests'), {
-      uid: window.userData.uid,
-      name: window.userData.name || 'User',
-      mobile: currentNumber,
-      operator: currentOperator,
-      amount: selectedPlan.price,
-      plan: selectedPlan.data,
-      validity: selectedPlan.validity,
-      type: selectedPlan.type,
-      tokens: tokensNeeded,
-      status: 'pending',
-      time: Date.now()
-    });
+    await sendToTelegram(msg);
     
-    alert(`✅ Success!\n₹${selectedPlan.price} ${currentOperator} Recharge\n${currentNumber} पे 10 मिनट में हो जाएगा`);
+    alert(`✅ Success!\n₹${selectedPlan.price} ${currentOperator} Recharge Request Sent\n\nAdmin 10 मिनट में कर देगा`);
     history.back();
     
   } catch(error) {
     alert('Error: ' + error.message);
-    window.userData.balance += tokensNeeded;
+    window.userData.balance += tokensNeeded; // Refund
   }
 }
 </script>
