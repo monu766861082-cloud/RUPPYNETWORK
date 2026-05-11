@@ -118,9 +118,9 @@ let currentOperator = '';
 let currentNumber = '';
 let allPlans = [];
 
-// 🔥 TELEGRAM CONFIG - बस Chat ID डाल दे
+// 🔥 TELEGRAM CONFIG
 const TELEGRAM_BOT_TOKEN = '8721866580:AAHeD0Jrzbs6n1UzxXwUq4rrz8XvnRG3AsQ';
-const TELEGRAM_CHAT_ID = 'PASTE_YOUR_CHAT_ID_HERE'; // ← यहाँ Chat ID डाल
+const TELEGRAM_CHAT_ID = 'PASTE_YOUR_CHAT_ID_HERE'; // ← Paste your Chat ID here
 
 const plansData = {
   'Vi': [
@@ -260,7 +260,7 @@ window.filterPlans = function(query) {
   renderPlans(filtered);
 }
 
-// 🔥 TELEGRAM पे Message भेज
+// 🔥 Send to Telegram
 async function sendToTelegram(message) {
   const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
   try {
@@ -290,25 +290,27 @@ window.doRecharge = async function() {
   }
   
   if(window.userData.balance < tokensNeeded) {
-    alert(`Insufficient balance\nNeed: ${tokensNeeded} RUP\nYou have: ${window.userData.balance} RUP`);
+    alert(`Insufficient balance\nRequired: ${tokensNeeded} RUP\nYou have: ${window.userData.balance} RUP`);
     return;
   }
   
+  // 🔥 ENGLISH CONFIRM DIALOG
   if(!confirm(`Confirm Recharge:\n\nMobile: ${currentNumber}\nOperator: ${currentOperator}\nPlan: ₹${selectedPlan.price}\nData: ${selectedPlan.data}\nValidity: ${selectedPlan.validity}\nTokens: ${tokensNeeded} RUP\n\nProceed?`)) {
     return;
   }
   
   try {
-    // 1. Balance काट
+    // 1. Deduct balance
     window.userData.balance -= tokensNeeded;
     await window.saveRuppyData(window.userData);
     
-    // 2. Telegram पे Request भेज
+    // 2. Send to Telegram Bot
     const msg = `🔔 <b>NEW RECHARGE REQUEST</b>\n\n📱 <b>Mobile:</b> ${currentNumber}\n📡 <b>Operator:</b> ${currentOperator}\n💰 <b>Amount:</b> ₹${selectedPlan.price}\n📊 <b>Plan:</b> ${selectedPlan.data}\n📅 <b>Validity:</b> ${selectedPlan.validity}\n🏷️ <b>Type:</b> ${selectedPlan.type}\n🪙 <b>Tokens Deducted:</b> ${tokensNeeded} RUP\n👤 <b>User:</b> ${window.userData.name || 'User'}\n🆔 <b>UID:</b> ${window.userData.uid}\n\n⏰ <b>Time:</b> ${new Date().toLocaleString('en-IN')}`;
     
     await sendToTelegram(msg);
     
-    alert(`✅ Success!\n₹${selectedPlan.price} ${currentOperator} Recharge Request Sent\n\nAdmin 10 मिनट में कर देगा`);
+    // 🔥 ENGLISH SUCCESS ALERT
+    alert(`Success!\n₹${selectedPlan.price} ${currentOperator} Recharge Request Sent\n\nAdmin will complete it within 10 minutes`);
     history.back();
     
   } catch(error) {
