@@ -305,9 +305,9 @@
             userData.uid = child.key;
             allUsers.push(userData);
             
-            const bal = Number(userData.balance) || 0;
+            const bal = parseInt(userData.balance) || 0;
             totalTokens += bal;
-            totalRefs += Number(userData.totalReferrals) || 0;
+            totalRefs += parseInt(userData.totalReferrals) || 0;
             if (bal === 0) zeroCount++;
           });
 
@@ -331,11 +331,11 @@
       let displayUsers = users;
       
       if (showZeroOnly) {
-        displayUsers = users.filter(u => (Number(u.balance) || 0) === 0);
+        displayUsers = users.filter(u => (parseInt(u.balance) || 0) === 0);
       }
 
       const html = displayUsers.map(user => {
-        const bal = Number(user.balance) || 0;
+        const bal = parseInt(user.balance) || 0;
         const isZero = bal === 0;
         return `
         <div class="user-card ${isZero ? 'zero-balance' : ''}" data-uid="${user.uid}">
@@ -350,15 +350,15 @@
           <div class="user-stats">
             <div class="stat-box">
               <div class="stat-label">Balance</div>
-              <div class="stat-value ${isZero ? 'zero' : ''}">${bal}</div>
+              <div class="stat-value ${isZero ? 'zero' : ''}">${bal.toLocaleString()}</div>
             </div>
             <div class="stat-box">
               <div class="stat-label">Total Refs</div>
-              <div class="stat-value">${Number(user.totalReferrals) || 0}</div>
+              <div class="stat-value">${parseInt(user.totalReferrals) || 0}</div>
             </div>
             <div class="stat-box">
               <div class="stat-label">Active Refs</div>
-              <div class="stat-value">${Number(user.activeReferrals) || 0}</div>
+              <div class="stat-value">${parseInt(user.activeReferrals) || 0}</div>
             </div>
           </div>
 
@@ -402,10 +402,10 @@
     }
 
     window.bulkAddTokens = async function() {
-      const amount = Number(document.getElementById('bulkAmount').value) || 0;
+      const amount = parseInt(document.getElementById('bulkAmount').value) || 0;
       if (amount <= 0) return alert('Enter valid amount');
       
-      const zeroUsers = allUsers.filter(u => (Number(u.balance) || 0) === 0);
+      const zeroUsers = allUsers.filter(u => (parseInt(u.balance) || 0) === 0);
       if (zeroUsers.length === 0) return alert('No zero balance users found');
       
       if (!confirm(`Add ${amount} RUPY to ${zeroUsers.length} users?`)) return;
@@ -421,39 +421,37 @@
     }
 
     window.addTokens = async function(uid) {
-      const amount = Number(document.getElementById(`amount-${uid}`).value) || 0;
+      const amount = parseInt(document.getElementById(`amount-${uid}`).value) || 0;
       if (amount <= 0) return alert('Enter valid amount');
       
-      const user = allUsers.find(u => u.uid === uid);
-      const currentBal = Number(user.balance) || 0;
+      const userSnap = await get(ref(db, `users/${uid}/balance`));
+      const currentBal = parseInt(userSnap.val()) || 0;
       const newBalance = currentBal + amount;
       
       await set(ref(db, `users/${uid}/balance`), newBalance);
-      alert(`✅ Added ${amount} RUPY to ${user.name}. New Balance: ${newBalance}`);
+      alert(`✅ ADDED\n${currentBal} + ${amount} = ${newBalance}`);
       await loadAllUsers();
     }
 
     window.removeTokens = async function(uid) {
-      const amount = Number(document.getElementById(`amount-${uid}`).value) || 0;
+      const amount = parseInt(document.getElementById(`amount-${uid}`).value) || 0;
       if (amount <= 0) return alert('Enter valid amount');
       
-      const user = allUsers.find(u => u.uid === uid);
-      const currentBal = Number(user.balance) || 0;
+      const userSnap = await get(ref(db, `users/${uid}/balance`));
+      const currentBal = parseInt(userSnap.val()) || 0;
       const newBalance = Math.max(0, currentBal - amount);
       
       await set(ref(db, `users/${uid}/balance`), newBalance);
-      alert(`✅ Removed ${amount} RUPY from ${user.name}. New Balance: ${newBalance}`);
+      alert(`✅ REMOVED\n${currentBal} - ${amount} = ${newBalance}`);
       await loadAllUsers();
     }
 
     window.setTokens = async function(uid) {
-      const amount = Number(document.getElementById(`amount-${uid}`).value) || 0;
+      const amount = parseInt(document.getElementById(`amount-${uid}`).value) || 0;
       if (amount < 0) return alert('Enter valid amount');
       
-      const user = allUsers.find(u => u.uid === uid);
-      
       await set(ref(db, `users/${uid}/balance`), amount);
-      alert(`✅ Set ${user.name} balance to ${amount} RUPY`);
+      alert(`✅ SET Balance = ${amount}`);
       await loadAllUsers();
     }
   </script>
