@@ -251,7 +251,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, get, update, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -417,7 +417,7 @@
       
       await update(ref(db), updates);
       alert(`✅ Added ${amount} RUPY to ${zeroUsers.length} users`);
-      loadAllUsers();
+      await loadAllUsers();
     }
 
     window.addTokens = async function(uid) {
@@ -425,11 +425,12 @@
       if (amount <= 0) return alert('Enter valid amount');
       
       const user = allUsers.find(u => u.uid === uid);
-      const newBalance = (Number(user.balance) || 0) + amount;
+      const currentBal = Number(user.balance) || 0;
+      const newBalance = currentBal + amount;
       
-      await update(ref(db, `users/${uid}`), { balance: newBalance });
-      alert(`✅ Added ${amount} RUPY to ${user.name}`);
-      loadAllUsers();
+      await set(ref(db, `users/${uid}/balance`), newBalance);
+      alert(`✅ Added ${amount} RUPY to ${user.name}. New Balance: ${newBalance}`);
+      await loadAllUsers();
     }
 
     window.removeTokens = async function(uid) {
@@ -437,11 +438,12 @@
       if (amount <= 0) return alert('Enter valid amount');
       
       const user = allUsers.find(u => u.uid === uid);
-      const newBalance = Math.max(0, (Number(user.balance) || 0) - amount);
+      const currentBal = Number(user.balance) || 0;
+      const newBalance = Math.max(0, currentBal - amount);
       
-      await update(ref(db, `users/${uid}`), { balance: newBalance });
-      alert(`✅ Removed ${amount} RUPY from ${user.name}`);
-      loadAllUsers();
+      await set(ref(db, `users/${uid}/balance`), newBalance);
+      alert(`✅ Removed ${amount} RUPY from ${user.name}. New Balance: ${newBalance}`);
+      await loadAllUsers();
     }
 
     window.setTokens = async function(uid) {
@@ -450,9 +452,9 @@
       
       const user = allUsers.find(u => u.uid === uid);
       
-      await update(ref(db, `users/${uid}`), { balance: amount });
+      await set(ref(db, `users/${uid}/balance`), amount);
       alert(`✅ Set ${user.name} balance to ${amount} RUPY`);
-      loadAllUsers();
+      await loadAllUsers();
     }
   </script>
 
