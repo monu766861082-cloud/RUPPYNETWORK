@@ -43,8 +43,8 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .modal-title{font-size:20px;font-weight:700;margin-bottom:20px;text-align:center;background:linear-gradient(135deg, var(--gold), #FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .input-group{margin-bottom:16px}
 .input-group label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px;font-weight:500}
-.input-group input{width:100%;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:#fff;font-size:15px;transition:all 0.2s}
-.input-group input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(243,199,116,0.1)}
+.input-group input, .input-group select{width:100%;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:#fff;font-size:15px;transition:all 0.2s}
+.input-group input:focus, .input-group select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(243,199,116,0.1)}
 .file-input{display:none}
 .file-label{display:block;padding:14px;border:1px solid var(--border);border-radius:12px;text-align:center;cursor:pointer;transition:all 0.2s}
 .file-label:active{background:rgba(243,199,116,0.05)}
@@ -76,6 +76,49 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <div class="card">
 <div class="row" onclick="goPage('history.html')"><div class="l"><div class="icon">📊</div><div class="txt">Transaction History</div></div>›</div>
 <div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">Loading...</span>›</div>
+
+<!-- 🔥 MOBILE RECHARGE BOX - JIO/AIRTEL/VI/BSNL -->
+<div class="row" style="flex-direction:column; align-items:stretch; padding:20px 18px; cursor:default;">
+  <div class="l" style="margin-bottom:15px;">
+    <div class="icon">📱</div>
+    <div class="txt">Mobile Recharge</div>
+  </div>
+  
+  <input type="tel" id="rechargeMobile" placeholder="Mobile Number" maxlength="10" 
+         style="width:100%; padding:12px; margin-bottom:10px; background:var(--bg); border:1px solid var(--border); border-radius:12px; color:white; font-size:15px;">
+  
+  <select id="rechargeOperator" style="width:100%; padding:12px; margin-bottom:10px; background:var(--bg); border:1px solid var(--border); border-radius:12px; color:white; font-size:15px;">
+    <option value="">Select Operator</option>
+    <option value="Jio">Jio</option>
+    <option value="Airtel">Airtel</option>
+    <option value="Vi">Vi (Vodafone Idea)</option>
+    <option value="BSNL">BSNL</option>
+  </select>
+  
+  <select id="rechargeAmount" style="width:100%; padding:12px; margin-bottom:15px; background:var(--bg); border:1px solid var(--border); border-radius:12px; color:white; font-size:15px;">
+    <option value="">Select Plan</option>
+    <option value="10">10 Rs = 100 RUP</option>
+    <option value="20">20 Rs = 200 RUP</option>
+    <option value="50">50 Rs = 500 RUP</option>
+    <option value="100">100 Rs = 1000 RUP</option>
+    <option value="149">149 Rs = 1490 RUP</option>
+    <option value="199">199 Rs = 1990 RUP</option>
+    <option value="239">239 Rs = 2390 RUP</option>
+    <option value="299">299 Rs = 2990 RUP</option>
+    <option value="300">300 Rs = 7000 RUP</option>
+    <option value="399">399 Rs = 3990 RUP</option>
+    <option value="599">599 Rs = 5990 RUP</option>
+  </select>
+  
+  <button onclick="requestRecharge()" style="width:100%; padding:14px; background:linear-gradient(135deg,var(--gold),#FFA500); border:none; border-radius:12px; color:#000; font-weight:600; font-size:15px; cursor:pointer;">
+    Redeem Now
+  </button>
+  
+  <p style="font-size:11px; color:var(--muted); margin:10px 0 0 0; text-align:center;">
+    *Jio, Airtel, Vi, BSNL - 10 min में Recharge
+  </p>
+</div>
+
 <div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
 <div class="row" onclick="goPage('security.html')"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
 <div class="row" onclick="toggleNotification()"><div class="l"><div class="icon">🔔</div><div class="txt">Notifications</div></div><span class="val" id="notifStatus">Off</span>›</div>
@@ -329,6 +372,90 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
       notifEnabled = false;
       localStorage.setItem('notif_enabled', 'false');
       updateNotifStatus();
+    }
+  }
+
+  // 🔥 MOBILE RECHARGE - 7000 RUP = 300 Rs
+  window.requestRecharge = async function() {
+    if(!window.userData?.uid) {
+      return showToast('❌ Please login first', 'error');
+    }
+
+    const mobile = document.getElementById('rechargeMobile').value.trim();
+    const operator = document.getElementById('rechargeOperator').value;
+    const amount = Number(document.getElementById('rechargeAmount').value);
+    
+    // 300 Rs का Special Rate: 7000 RUP
+    let tokensNeeded;
+    if(amount === 300) {
+      tokensNeeded = 7000;
+    } else {
+      tokensNeeded = amount * 10; // बाकी: 1 Rs = 10 RUP
+    }
+
+    // Validation
+    if(mobile.length !== 10 || !/^[6-9]\d{9}$/.test(mobile)) {
+      return showToast('❌ Invalid mobile number', 'error');
+    }
+    if(!operator) {
+      return showToast('❌ Select operator', 'error');
+    }
+    if(!amount) {
+      return showToast('❌ Select plan', 'error');
+    }
+    if(window.userData.balance < tokensNeeded) {
+      return showToast(`❌ Need ${tokensNeeded} RUP`, 'error');
+    }
+
+    // Confirm
+    if(!confirm(`Recharge: ${mobile}\n${operator} - ${amount} Rs\nTokens: ${tokensNeeded} RUP\n\nConfirm?`)) {
+      return;
+    }
+
+    try {
+      // 1. Token काटो
+      window.userData.balance -= tokensNeeded;
+      await window.saveRuppyData(window.userData);
+
+      // 2. Firebase में Request
+      const { getDatabase, ref, push } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js");
+      const db = getDatabase();
+      
+      const requestRef = await push(ref(db, 'recharge_requests'), {
+        uid: window.userData.uid,
+        name: window.userData.name || 'User',
+        email: window.userData.email,
+        mobile: mobile,
+        operator: operator,
+        amount: amount,
+        tokens: tokensNeeded,
+        status: 'pending',
+        time: Date.now()
+      });
+
+      // 3. Telegram Bot - अपना Token/ID डाल
+      const BOT_TOKEN = 'PASTE_YOUR_BOT_TOKEN';
+      const CHAT_ID = 'PASTE_YOUR_CHAT_ID';
+      const message = `🔥 NEW RECHARGE\n\n👤 ${window.userData.name}\n📱 ${mobile}\n📡 ${operator}\n💰 ${amount} Rs\n🪙 ${tokensNeeded} RUP\n🆔 ${requestRef.key}`;
+      
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: CHAT_ID, text: message })
+      }).catch(err => console.log('Telegram:', err));
+
+      showToast(`✅ ${amount} Rs Recharge Requested!`, 'success');
+      
+      // Clear form
+      document.getElementById('rechargeMobile').value = '';
+      document.getElementById('rechargeOperator').value = '';
+      document.getElementById('rechargeAmount').value = '';
+
+    } catch(error) {
+      console.error('Recharge Error:', error);
+      window.userData.balance += tokensNeeded; // वापस कर दो
+      await window.saveRuppyData(window.userData);
+      showToast('❌ Error: ' + error.message, 'error');
     }
   }
 
