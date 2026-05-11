@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RUPPY Admin Panel</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: Arial; 
+      background: #0a0a0a; 
+      color: #fff; 
+      padding: 20px;
+    }
+    .admin-header {
+      background: #F3C774;
+      color: #000;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .admin-header h1 {
+      font-size: 28px;
+      font-weight: 900;
+    }
+    .search-box {
+      margin-bottom: 20px;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 14px;
+      background: #1a1a1a;
+      border: 2px solid #F3C774;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 16px;
+    }
+    .user-card {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .user-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .user-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #F3C774;
+    }
+    .user-email {
+      font-size: 12px;
+      color: #888;
+    }
+    .user-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .stat-box {
+      background: #0a0a0a;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: #888;
+    }
+    .stat-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #F3C774;
+    }
+    .action-row {
+      display: flex;
+      gap: 8px;
+    }
+    .action-row input {
+      flex: 1;
+      padding: 10px;
+      background: #0a0a0a;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 14px;
+    }
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn-add {
+      background: #4CAF50;
+      color: #fff;
+    }
+    .btn-remove {
+      background: #f44336;
+      color: #fff;
+    }
+    .btn-set {
+      background: #F3C774;
+      color: #000;
+    }
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #888;
+    }
+    .stats-header {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: #1a1a1a;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid #F3C774;
+    }
+    .stat-card-value {
+      font-size: 24px;
+      font-weight: 900;
+      color: #F3C774;
+    }
+    .stat-card-label {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-header">
+    <h1>🔥 RUPPY ADMIN PANEL</h1>
+    <div style="font-size:14px;margin-top:8px">Full Control - Add/Edit Tokens</div>
+  </div>
+
+  <div class="stats-header">
+    <div class="stat-card">
+      <div class="stat-card-value" id="totalUsers">0</div>
+      <div class="stat-card-label">Total Users</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-value" id="totalTokens">0</div>
+      <div class="stat-card-label">Total RUPY</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-value" id="totalReferrals">0</div>
+      <div class="stat-card-label">Total Referrals</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-value" id="activeUsers">0</div>
+      <div class="stat-card-label">Active Users</div>
+    </div>
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="searchUser" placeholder="🔍 Search by Name, Email, or Referral Code..." onkeyup="filterUsers()">
+  </div>
+
+  <div id="usersList" class="loading">Loading users...</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
+      authDomain: "ruppynetwork-50362.firebaseapp.com",
+      databaseURL: "https://ruppynetwork-50362-default-rtdb.firebaseio.com",
+      projectId: "ruppynetwork-50362",
+      storageBucket: "ruppynetwork-50362.appspot.com",
+      messagingSenderId: "132064610854",
+      appId: "1:132064610854:web:3c217eaf3618007f5934e7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    // ✅ ADMIN EMAIL SET - सिर्फ तू Access कर पाएगा
+    const ADMIN_EMAIL = "farmanking7867@gmail.com";
+
+    let allUsers = [];
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        alert("Login Required!");
+        window.location.href = "login.html";
+        return;
+      }
+      
+      if (user.email !== ADMIN_EMAIL) {
+        alert("❌ Access Denied! Admin Only");
+        window.location.href = "index.html";
+        return;
+      }
+
+      loadAllUsers();
+    });
+
+    async function loadAllUsers() {
+      try {
+        const usersRef = ref(db, 'users');
+        const snapshot = await get(usersRef);
+        
+        if (snapshot.exists()) {
+          allUsers = [];
+          let totalTokens = 0;
+          let totalRefs = 0;
+          let activeCount = 0;
+
+          snapshot.forEach((child) => {
+            const userData = child.val();
+            userData.uid = child.key;
+            allUsers.push(userData);
+            
+            totalTokens += Number(userData.balance) || 0;
+            totalRefs += Number(userData.totalReferrals) || 0;
+            if ((Number(userData.balance) || 0) > 0) activeCount++;
+          });
+
+          document.getElementById('totalUsers').textContent = allUsers.length;
+          document.getElementById('totalTokens').textContent = totalTokens.toLocaleString();
+          document.getElementById('totalReferrals').textContent = totalRefs;
+          document.getElementById('activeUsers').textContent = activeCount;
+
+          renderUsers(allUsers);
+        } else {
+          document.getElementById('usersList').innerHTML = '<div class="loading">No users found</div>';
+        }
+      } catch (error) {
+        console.error('Load Error:', error);
+        document.getElementById('usersList').innerHTML = '<div class="loading">Error loading users</div>';
+      }
+    }
+
+    function renderUsers(users) {
+      const html = users.map(user => `
+        <div class="user-card" data-uid="${user.uid}">
+          <div class="user-info">
+            <div>
+              <div class="user-name">${user.name || 'No Name'}</div>
+              <div class="user-email">${user.email || 'No Email'}</div>
+              <div class="user-email">Code: ${user.myReferralCode || 'N/A'}</div>
+            </div>
+          </div>
+          
+          <div class="user-stats">
+            <div class="stat-box">
+              <div class="stat-label">Balance</div>
+              <div class="stat-value">${Number(user.balance) || 0}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Total Refs</div>
+              <div class="stat-value">${Number(user.totalReferrals) || 0}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Active Refs</div>
+              <div class="stat-value">${Number(user.activeReferrals) || 0}</div>
+            </div>
+          </div>
+
+          <div class="action-row">
+            <input type="number" id="amount-${user.uid}" placeholder="Amount" value="100">
+            <button class="btn btn-add" onclick="addTokens('${user.uid}')">+ Add</button>
+            <button class="btn btn-remove" onclick="removeTokens('${user.uid}')">- Remove</button>
+            <button class="btn btn-set" onclick="setTokens('${user.uid}')">Set</button>
+          </div>
+        </div>
+      `).join('');
+      
+      document.getElementById('usersList').innerHTML = html;
+    }
+
+    window.filterUsers = function() {
+      const search = document.getElementById('searchUser').value.toLowerCase();
+      const filtered = allUsers.filter(u => 
+        (u.name || '').toLowerCase().includes(search) ||
+        (u.email || '').toLowerCase().includes(search) ||
+        (u.myReferralCode || '').toLowerCase().includes(search)
+      );
+      renderUsers(filtered);
+    }
+
+    window.addTokens = async function(uid) {
+      const amount = Number(document.getElementById(`amount-${uid}`).value) || 0;
+      if (amount <= 0) return alert('Enter valid amount');
+      
+      const user = allUsers.find(u => u.uid === uid);
+      const newBalance = (Number(user.balance) || 0) + amount;
+      
+      await update(ref(db, `users/${uid}`), { balance: newBalance });
+      alert(`✅ Added ${amount} RUPY to ${user.name}`);
+      loadAllUsers();
+    }
+
+    window.removeTokens = async function(uid) {
+      const amount = Number(document.getElementById(`amount-${uid}`).value) || 0;
+      if (amount <= 0) return alert('Enter valid amount');
+      
+      const user = allUsers.find(u => u.uid === uid);
+      const newBalance = Math.max(0, (Number(user.balance) || 0) - amount);
+      
+      await update(ref(db, `users/${uid}`), { balance: newBalance });
+      alert(`✅ Removed ${amount} RUPY from ${user.name}`);
+      loadAllUsers();
+    }
+
+    window.setTokens = async function(uid) {
+      const amount = Number(document.getElementById(`amount-${uid}`).value) || 0;
+      if (amount < 0) return alert('Enter valid amount');
+      
+      const user = allUsers.find(u => u.uid === uid);
+      
+      await update(ref(db, `users/${uid}`), { balance: amount });
+      alert(`✅ Set ${user.name} balance to ${amount} RUPY`);
+      loadAllUsers();
+    }
+  </script>
+
+</body>
+</html>
