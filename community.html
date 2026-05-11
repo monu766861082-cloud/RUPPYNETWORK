@@ -162,8 +162,9 @@ body{background:#0a0a0a;color:#fff;padding-bottom:70px;-webkit-tap-highlight-col
 <script type="module">
 import { getDatabase, ref, push, onValue, update, get, query, orderByChild, equalTo, limitToLast, runTransaction, endBefore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-const POST_REWARD = 5; // ✅ 40 से 5 कर दिया
+const POST_REWARD = 5;
 const DAILY_POST_LIMIT = 3;
+const POSTS_PER_PAGE = 10;
 
 function waitForConfig() {
   return new Promise(resolve => {
@@ -185,6 +186,9 @@ let currentUser = "Guest";
 let currentUserId = "";
 let allLoadedPosts = [];
 let claimedPosts = new Set();
+let lastPostKey = null;
+let isLoadingMore = false;
+let noMorePosts = false;
 
 async function initFeed() {
   await waitForConfig();
@@ -197,8 +201,9 @@ async function initFeed() {
   window.updateBalanceBox();
   window.loadProfileEverywhere();
 
-  listenToPosts();
+  loadPosts(true);
   setupEventListeners();
+  setupInfiniteScroll();
 }
 
 initFeed();
@@ -283,10 +288,6 @@ async function markPostClaimed(postId){
   return true;
 }
 
-function countWords(text){
-  return text.trim().split(/\s+/).filter(word => word.length > 0).length;
-}
-
 async function updateRewardBanner(){
   let bannerText = document.getElementById('limitText');
   let postBtn = document.getElementById('postBtn');
@@ -312,7 +313,7 @@ async function updateRewardBanner(){
   } else {
     bannerText.textContent = `🎁 +${POST_REWARD} RUP reward per post | ${limitCheck.left}/${DAILY_POST_LIMIT} left`;
     postBtn.textContent = `Post`;
-    postBtn.disabled =!text &&!selectedFile; // ✅ Word limit हटा दिया
+    postBtn.disabled =!text &&!selectedFile;
   }
 }
 
@@ -338,6 +339,16 @@ function setupEventListeners(){
       reader.readAsDataURL(selectedFile);
     }
   }
+}
+
+function setupInfiniteScroll(){
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting &&!isLoadingMore &&!noMorePosts) {
+      loadPosts(false);
+    }
+  }, { threshold: 0.1 });
+
+  observer.observe(document.getElementById('scrollTrigger'));
 }
 
 window.openCreate = function(){
@@ -382,7 +393,6 @@ window.createPost = async function(){
 
   let text = document.getElementById('postText').value.trim();
 
-  // ✅ 200 Words वाला Check हटा दिया
   if(!text &&!selectedFile){
     alert('Write something or add image');
     return;
@@ -465,6 +475,7 @@ window.createPost = async function(){
       media: mediaUrl,
       mediaType: mediaType,
       time: Date.now(),
+      createdAt: Date.now(),
       postDateKey: getTodayKey(),
       likes: 0,
       likedBy: {},
@@ -479,6 +490,8 @@ window.createPost = async function(){
     document.getElementById('fileInput').value = '';
     selectedFile = null;
 
+    loadPosts(true);
+
   } catch (error) {
     alert('Error: ' + error.message);
     console.error(error);
@@ -487,25 +500,66 @@ window.createPost = async function(){
   await updateRewardBanner();
 }
 
-function listenToPosts(){
-  const postsRef = ref(db, 'posts');
-  onValue(postsRef, (snapshot) => {
-    let posts = [];
+async function loadPosts(reset = false){
+  if(isLoadingMore) return;
+  isLoadingMore = true;
+
+  if(reset){
+    allLoadedPosts = [];
+    lastPostKey = null;
+    noMorePosts = false;
+    document.getElementById('feed').innerHTML = '<div class="loading">Loading posts...</div>';
+  }
+
+  try {
+    const postsRef = ref(db, 'posts');
+    let postsQuery;
+
+    if(lastPostKey){
+      postsQuery = query(postsRef, orderByChild('time'), endBefore(lastPostKey), limitToLast(POSTS_PER_PAGE));
+    } else {
+      postsQuery = query(postsRef, orderByChild('time'), limitToLast(POSTS_PER_PAGE));
+    }
+
+    const snapshot = await get(postsQuery);
+
     if(snapshot.exists()){
+      let newPosts = [];
       snapshot.forEach((childSnapshot) => {
         let post = { id: childSnapshot.key,...childSnapshot.val(), showAllComments: false };
         if((post.reports || 0) < 3) {
-          posts.push(post);
+          newPosts.push(post);
         }
       });
-      posts.sort((a,b) => b.time - a.time);
-      allLoadedPosts = posts;
-      renderFeed(allLoadedPosts);
+
+      newPosts.sort((a,b) => b.time - a.time);
+
+      if(newPosts.length > 0){
+        lastPostKey = newPosts[newPosts.length - 1].time;
+        allLoadedPosts = reset? newPosts : [...allLoadedPosts,...newPosts];
+        renderFeed(allLoadedPosts);
+      }
+
+      if(newPosts.length < POSTS_PER_PAGE){
+        noMorePosts = true;
+        if(allLoadedPosts.length > 0){
+          document.getElementById('feed').insertAdjacentHTML('beforeend', '<div class="end-message">No more posts</div>');
+        }
+      }
     } else {
-      renderFeed([]);
+      if(reset){
+        renderFeed([]);
+      }
+      noMorePosts = true;
     }
-    updateRewardBanner();
-  });
+
+  } catch(error){
+    console.error('Error loading posts:', error);
+    document.getElementById('feed').innerHTML = '<div class="end-message">Error loading posts</div>';
+  }
+
+  isLoadingMore = false;
+  updateRewardBanner();
 }
 
 function renderFeed(posts){
@@ -630,7 +684,6 @@ window.likePost = async function(id){
     if(likeCount) likeCount.textContent = post.likes;
   }
 
-  const postRef = ref(db, `posts/${id}`);
   let updates = {};
   if(isLiked){
     updates[`posts/${id}/likes`] = Math.max(0, (post.likes || 0) - 1);
@@ -675,6 +728,12 @@ window.addComment = async function(id){
   comments.push({user: currentUser, userDp: window.userData?.dp || null, userId: currentUserId, text: text, time: Date.now()});
   await update(postRef, { comments: comments });
   input.value = '';
+
+  const postIndex = allLoadedPosts.findIndex(p => p.id === id);
+  if(postIndex!== -1){
+    allLoadedPosts[postIndex].comments = comments;
+    renderFeed(allLoadedPosts);
+  }
 }
 
 window.sharePost = function(id){
