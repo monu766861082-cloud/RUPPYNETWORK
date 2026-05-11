@@ -24,8 +24,13 @@
       font-size: 28px;
       font-weight: 900;
     }
-    .search-box {
+    .filter-row {
+      display: flex;
+      gap: 10px;
       margin-bottom: 20px;
+    }
+    .search-box {
+      flex: 1;
     }
     .search-box input {
       width: 100%;
@@ -36,12 +41,64 @@
       color: #fff;
       font-size: 16px;
     }
+    .filter-btn {
+      padding: 14px 20px;
+      background: #1a1a1a;
+      border: 2px solid #F3C774;
+      border-radius: 8px;
+      color: #F3C774;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .filter-btn.active {
+      background: #F3C774;
+      color: #000;
+    }
+    .bulk-action {
+      background: #1a1a1a;
+      border: 2px solid #4CAF50;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .bulk-action.show {
+      display: block;
+    }
+    .bulk-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .bulk-row input {
+      flex: 1;
+      padding: 12px;
+      background: #0a0a0a;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 16px;
+    }
+    .bulk-btn {
+      padding: 12px 24px;
+      background: #4CAF50;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 16px;
+    }
     .user-card {
       background: #1a1a1a;
       border: 1px solid #333;
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 12px;
+    }
+    .user-card.zero-balance {
+      border: 1px solid #f44336;
     }
     .user-info {
       display: flex;
@@ -78,6 +135,9 @@
       font-size: 18px;
       font-weight: 700;
       color: #F3C774;
+    }
+    .stat-value.zero {
+      color: #f44336;
     }
     .action-row {
       display: flex;
@@ -140,6 +200,11 @@
       color: #888;
       margin-top: 4px;
     }
+    .selected-count {
+      color: #F3C774;
+      font-weight: 700;
+      margin-left: 10px;
+    }
   </style>
 </head>
 <body>
@@ -163,13 +228,23 @@
       <div class="stat-card-label">Total Referrals</div>
     </div>
     <div class="stat-card">
-      <div class="stat-card-value" id="activeUsers">0</div>
-      <div class="stat-card-label">Active Users</div>
+      <div class="stat-card-value" id="zeroBalanceCount">0</div>
+      <div class="stat-card-label">Zero Balance</div>
     </div>
   </div>
 
-  <div class="search-box">
-    <input type="text" id="searchUser" placeholder="🔍 Search by Name, Email, or Referral Code..." onkeyup="filterUsers()">
+  <div class="filter-row">
+    <div class="search-box">
+      <input type="text" id="searchUser" placeholder="🔍 Search by Name, Email, or Code..." onkeyup="filterUsers()">
+    </div>
+    <button class="filter-btn" id="filterZeroBtn" onclick="toggleZeroFilter()">💰 Show Zero Balance</button>
+  </div>
+
+  <div class="bulk-action" id="bulkActionBox">
+    <div class="bulk-row">
+      <input type="number" id="bulkAmount" placeholder="Amount to Add" value="100">
+      <button class="bulk-btn" onclick="bulkAddTokens()">⚡ Add to All Zero Balance Users <span class="selected-count" id="selectedCount">0</span></button>
+    </div>
   </div>
 
   <div id="usersList" class="loading">Loading users...</div>
@@ -193,10 +268,10 @@
     const db = getDatabase(app);
     const auth = getAuth(app);
 
-    // ✅ ADMIN EMAIL SET - सिर्फ तू Access कर पाएगा
     const ADMIN_EMAIL = "farmanking7867@gmail.com";
 
     let allUsers = [];
+    let showZeroOnly = false;
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -223,22 +298,24 @@
           allUsers = [];
           let totalTokens = 0;
           let totalRefs = 0;
-          let activeCount = 0;
+          let zeroCount = 0;
 
           snapshot.forEach((child) => {
             const userData = child.val();
             userData.uid = child.key;
             allUsers.push(userData);
             
-            totalTokens += Number(userData.balance) || 0;
+            const bal = Number(userData.balance) || 0;
+            totalTokens += bal;
             totalRefs += Number(userData.totalReferrals) || 0;
-            if ((Number(userData.balance) || 0) > 0) activeCount++;
+            if (bal === 0) zeroCount++;
           });
 
           document.getElementById('totalUsers').textContent = allUsers.length;
           document.getElementById('totalTokens').textContent = totalTokens.toLocaleString();
           document.getElementById('totalReferrals').textContent = totalRefs;
-          document.getElementById('activeUsers').textContent = activeCount;
+          document.getElementById('zeroBalanceCount').textContent = zeroCount;
+          document.getElementById('selectedCount').textContent = zeroCount;
 
           renderUsers(allUsers);
         } else {
@@ -251,8 +328,17 @@
     }
 
     function renderUsers(users) {
-      const html = users.map(user => `
-        <div class="user-card" data-uid="${user.uid}">
+      let displayUsers = users;
+      
+      if (showZeroOnly) {
+        displayUsers = users.filter(u => (Number(u.balance) || 0) === 0);
+      }
+
+      const html = displayUsers.map(user => {
+        const bal = Number(user.balance) || 0;
+        const isZero = bal === 0;
+        return `
+        <div class="user-card ${isZero ? 'zero-balance' : ''}" data-uid="${user.uid}">
           <div class="user-info">
             <div>
               <div class="user-name">${user.name || 'No Name'}</div>
@@ -264,7 +350,7 @@
           <div class="user-stats">
             <div class="stat-box">
               <div class="stat-label">Balance</div>
-              <div class="stat-value">${Number(user.balance) || 0}</div>
+              <div class="stat-value ${isZero ? 'zero' : ''}">${bal}</div>
             </div>
             <div class="stat-box">
               <div class="stat-label">Total Refs</div>
@@ -283,19 +369,55 @@
             <button class="btn btn-set" onclick="setTokens('${user.uid}')">Set</button>
           </div>
         </div>
-      `).join('');
+      `}).join('');
       
-      document.getElementById('usersList').innerHTML = html;
+      document.getElementById('usersList').innerHTML = html || '<div class="loading">No users found</div>';
     }
 
     window.filterUsers = function() {
       const search = document.getElementById('searchUser').value.toLowerCase();
-      const filtered = allUsers.filter(u => 
+      let filtered = allUsers.filter(u => 
         (u.name || '').toLowerCase().includes(search) ||
         (u.email || '').toLowerCase().includes(search) ||
         (u.myReferralCode || '').toLowerCase().includes(search)
       );
       renderUsers(filtered);
+    }
+
+    window.toggleZeroFilter = function() {
+      showZeroOnly = !showZeroOnly;
+      const btn = document.getElementById('filterZeroBtn');
+      const bulkBox = document.getElementById('bulkActionBox');
+      
+      if (showZeroOnly) {
+        btn.classList.add('active');
+        btn.textContent = '👥 Show All Users';
+        bulkBox.classList.add('show');
+      } else {
+        btn.classList.remove('active');
+        btn.textContent = '💰 Show Zero Balance';
+        bulkBox.classList.remove('show');
+      }
+      renderUsers(allUsers);
+    }
+
+    window.bulkAddTokens = async function() {
+      const amount = Number(document.getElementById('bulkAmount').value) || 0;
+      if (amount <= 0) return alert('Enter valid amount');
+      
+      const zeroUsers = allUsers.filter(u => (Number(u.balance) || 0) === 0);
+      if (zeroUsers.length === 0) return alert('No zero balance users found');
+      
+      if (!confirm(`Add ${amount} RUPY to ${zeroUsers.length} users?`)) return;
+      
+      const updates = {};
+      zeroUsers.forEach(user => {
+        updates[`users/${user.uid}/balance`] = amount;
+      });
+      
+      await update(ref(db), updates);
+      alert(`✅ Added ${amount} RUPY to ${zeroUsers.length} users`);
+      loadAllUsers();
     }
 
     window.addTokens = async function(uid) {
