@@ -22,7 +22,7 @@ const analytics = getAnalytics(app);
 
 const RUPPY_STORAGE_KEY = 'ruppy_user_cache';
 
-// 1. Default Data - RUP- Format के साथ
+// 1. Default Data - FIXED: totalReferrals + activeReferrals Added
 function getDefaultData() {
   return {
     name: 'Guest',
@@ -38,6 +38,8 @@ function getDefaultData() {
     teamCount: 0,
     teamRewardEarned: 0,
     referralCount: 0,
+    totalReferrals: 0,
+    activeReferrals: 0,
     weeklyPoints: 0,
     posts: [],
     lastMine: 0,
@@ -78,6 +80,8 @@ function getLocalData() {
       data.balance = Number(data.balance) || 0;
       data.taskBalance = Number(data.taskBalance) || 0;
       data.referralCount = Number(data.referralCount) || 0;
+      data.totalReferrals = Number(data.totalReferrals) || 0;
+      data.activeReferrals = Number(data.activeReferrals) || 0;
       return data;
     }
   } catch (e) {
@@ -115,7 +119,7 @@ window.loadProfileEverywhere = function(){
   if(nameEl) nameEl.textContent = 'Welcome back, ' + (window.userData.name || 'User');
 }
 
-// 5. 🔥 FIXED: LOGOUT/LOGIN + REFERRAL LOCK + BALANCE PROTECT
+// 5. LOGOUT/LOGIN + REFERRAL LOCK + BALANCE PROTECT
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     logEvent(analytics, 'login', { method: 'firebase' });
@@ -131,7 +135,6 @@ onAuthStateChanged(auth, async (user) => {
       if (snapshot.exists()) {
         data = snapshot.val();
       } else {
-        // 🔥 Email से पुराना Account ढूंढ - Same Gmail = Same Data
         const emailQuery = query(ref(db, 'users'), orderByChild('email'), equalTo(user.email));
         const emailSnapshot = await get(emailQuery);
         if (emailSnapshot.exists()) {
@@ -146,7 +149,6 @@ onAuthStateChanged(auth, async (user) => {
         window.userData.name = data.name || user.displayName || user.email.split('@')[0];
         window.userData.dp = data.dp || user.photoURL || null;
 
-        // 🔥 BUG 3 FIX: Balance कभी कम नहीं होगा - MAX लो
         const fbBalance = Number(data.balance) || 0;
         const localBalance = Number(window.userData.balance) || 0;
         window.userData.balance = Math.max(fbBalance, localBalance);
@@ -155,7 +157,6 @@ onAuthStateChanged(auth, async (user) => {
         const localTaskBalance = Number(window.userData.taskBalance) || 0;
         window.userData.taskBalance = Math.max(fbTaskBalance, localTaskBalance);
 
-        // 🔥 BUG 1 FIX: Referral Code Lock - RUP- वाला Change नहीं होगा
         if(data.myReferralCode && data.myReferralCode.startsWith('RUP-') && data.myReferralCode.length === 10) {
           window.userData.myReferralCode = data.myReferralCode;
         } else {
@@ -163,7 +164,6 @@ onAuthStateChanged(auth, async (user) => {
           await update(ref(db, `users/${actualUID}`), { myReferralCode: window.userData.myReferralCode });
         }
 
-        // बाकी Fields
         window.userData.posts = data.posts || [];
         window.userData.lastMine = Number(data.lastMine) || 0;
         window.userData.lastGift = Number(data.lastGift) || 0;
@@ -176,12 +176,13 @@ onAuthStateChanged(auth, async (user) => {
         window.userData.teamCount = Number(data.teamCount) || 0;
         window.userData.teamRewardEarned = Number(data.teamRewardEarned) || 0;
         window.userData.referralCount = Number(data.referralCount) || 0;
+        window.userData.totalReferrals = Number(data.totalReferrals) || 0;
+        window.userData.activeReferrals = Number(data.activeReferrals) || 0;
         window.userData.weeklyPoints = Number(data.weeklyPoints) || 0;
         window.userData.referredBy = data.referredBy || null;
         window.userData.referralClaimed = data.referralClaimed || false;
         window.userData.createdAt = data.createdAt || Date.now();
 
-        // Local ज्यादा है तो Firebase Update करो
         if(localBalance > fbBalance || localTaskBalance > fbTaskBalance) {
           await update(ref(db, `users/${actualUID}`), {
             balance: window.userData.balance,
@@ -217,7 +218,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-// 6. Save Function - Firebase + Local दोनों Update
+// 6. Save Function - FIXED: totalReferrals + activeReferrals Added
 window.saveRuppyData = async function(data){
   data.balance = Number(data.balance) || 0;
   data.taskBalance = Number(data.taskBalance) || 0;
@@ -242,6 +243,8 @@ window.saveRuppyData = async function(data){
       teamCount: data.teamCount || 0,
       teamRewardEarned: data.teamRewardEarned || 0,
       referralCount: data.referralCount || 0,
+      totalReferrals: data.totalReferrals || 0,
+      activeReferrals: data.activeReferrals || 0,
       weeklyPoints: data.weeklyPoints || 0,
       posts: data.posts || [],
       lastMine: data.lastMine || 0,
@@ -296,7 +299,7 @@ window.addEventListener('storage', (e) => {
   }
 });
 
-// 🔥 BUG 2 FIX: AUTO REFERRAL REWARD - New=100, Old=500
+// FIXED: AUTO REFERRAL REWARD - New=100, Old=500 + Counts
 async function checkAndApplyReferral() {
   const params = new URLSearchParams(window.location.search);
   const refCode = params.get('ref');
@@ -311,15 +314,14 @@ async function checkAndApplyReferral() {
       const referrerData = Object.values(snapshot.val())[0];
 
       if (referrerUID && referrerUID!== window.userData.uid) {
-        // New User को 100 RUP
         window.userData.balance = (Number(window.userData.balance) || 0) + 100;
         window.userData.referredBy = referrerUID;
         window.userData.referralClaimed = true;
 
-        // Old User को 500 RUP + Count + Points
         const updates = {};
         updates[`users/${referrerUID}/balance`] = (Number(referrerData.balance) || 0) + 500;
-        updates[`users/${referrerUID}/referralCount`] = (Number(referrerData.referralCount) || 0) + 1;
+        updates[`users/${referrerUID}/totalReferrals`] = (Number(referrerData.totalReferrals) || 0) + 1;
+        updates[`users/${referrerUID}/activeReferrals`] = (Number(referrerData.activeReferrals) || 0) + 1;
         updates[`users/${referrerUID}/teamRewardEarned`] = (Number(referrerData.teamRewardEarned) || 0) + 500;
         updates[`users/${referrerUID}/weeklyPoints`] = (Number(referrerData.weeklyPoints) || 0) + 10;
         updates[`users/${referrerUID}/team/${window.userData.uid}`] = {
@@ -329,7 +331,6 @@ async function checkAndApplyReferral() {
           lastMine: Date.now()
         };
 
-        // New User Update
         updates[`users/${window.userData.uid}/balance`] = window.userData.balance;
         updates[`users/${window.userData.uid}/referredBy`] = referrerUID;
         updates[`users/${window.userData.uid}/referralClaimed`] = true;
@@ -350,7 +351,7 @@ async function checkAndApplyReferral() {
   }
 }
 
-// ✅ MANUAL REFERRAL - 500 RUP + 10 POINTS + ANALYTICS
+// FIXED: MANUAL REFERRAL - 500 RUP + 10 POINTS + Counts
 window.applyReferralCodeManual = async function(code){
   if(!window.userData.uid){
     return {success: false, msg: 'Please login first'};
@@ -392,10 +393,9 @@ window.applyReferralCodeManual = async function(code){
     });
 
     const updates = {};
-    // ✅ REFERRER को Update - 500 RUP
     updates[`users/${referrerUID}/balance`] = (referrerData.balance || 0) + 500;
-    updates[`users/${referrerUID}/teamCount`] = (referrerData.teamCount || 0) + 1;
-    updates[`users/${referrerUID}/referralCount`] = (referrerData.referralCount || 0) + 1;
+    updates[`users/${referrerUID}/totalReferrals`] = (referrerData.totalReferrals || 0) + 1;
+    updates[`users/${referrerUID}/activeReferrals`] = (referrerData.activeReferrals || 0) + 1;
     updates[`users/${referrerUID}/teamRewardEarned`] = (referrerData.teamRewardEarned || 0) + 500;
     updates[`users/${referrerUID}/weeklyPoints`] = (referrerData.weeklyPoints || 0) + 10;
     updates[`users/${referrerUID}/team/${window.userData.uid}`] = {
@@ -405,7 +405,6 @@ window.applyReferralCodeManual = async function(code){
       lastMine: Date.now()
     };
 
-    // ✅ NEW USER को Update - 500 RUP
     updates[`users/${window.userData.uid}/balance`] = (window.userData.balance || 0) + 500;
     updates[`users/${window.userData.uid}/referredBy`] = referrerUID;
     updates[`users/${window.userData.uid}/referralClaimed`] = true;
@@ -431,7 +430,7 @@ window.applyReferralCodeManual = async function(code){
   }
 }
 
-// ✅ TRANSACTION HISTORY FUNCTIONS
+// TRANSACTION HISTORY FUNCTIONS
 window.addTransaction = async function(type, amount, note = ''){
   if(!window.userData.uid) return;
   try {
@@ -464,7 +463,6 @@ window.getTransactionHistory = async function(){
   }
 }
 
-// 🔥 ANALYTICS ADDED - Line 7: Mining Function Example - अपने Mine Button में ये Call कर
 window.logMineEvent = function(tokensEarned) {
   logEvent(analytics, 'mine_success', {
     tokens_earned: tokensEarned,
