@@ -30,6 +30,7 @@ function getDefaultData() {
     balance: 0,
     taskBalance: 0,
     uid: null,
+    email: null,
     myReferralCode: null,
     referredBy: null,
     referralClaimed: false,
@@ -45,6 +46,7 @@ function getDefaultData() {
     boostResetTime: Date.now(),
     firstRewardTime: 0,
     ultraRewardTime: 0,
+    lastSpinTime: 0,
     createdAt: Date.now()
   };
 }
@@ -113,7 +115,7 @@ window.loadProfileEverywhere = function(){
   if(nameEl) nameEl.textContent = 'Welcome back, ' + (window.userData.name || 'User');
 }
 
-// 5. LOGOUT/LOGIN + REFERRAL AUTO UPGRADE + ANALYTICS
+// 5. 🔥 FIXED: LOGOUT/LOGIN + REFERRAL LOCK + BALANCE PROTECT
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     logEvent(analytics, 'login', { method: 'firebase' });
@@ -122,15 +124,46 @@ onAuthStateChanged(auth, async (user) => {
     const userRef = ref(db, `users/${user.uid}`);
 
     try {
-      const snapshot = await get(userRef);
+      let snapshot = await get(userRef);
+      let data = null;
+      let actualUID = user.uid;
 
       if (snapshot.exists()) {
-        const data = snapshot.val();
-        window.userData.uid = user.uid;
+        data = snapshot.val();
+      } else {
+        // 🔥 Email से पुराना Account ढूंढ - Same Gmail = Same Data
+        const emailQuery = query(ref(db, 'users'), orderByChild('email'), equalTo(user.email));
+        const emailSnapshot = await get(emailQuery);
+        if (emailSnapshot.exists()) {
+          actualUID = Object.keys(emailSnapshot.val())[0];
+          data = Object.values(emailSnapshot.val())[0];
+        }
+      }
+
+      if (data) {
+        window.userData.uid = actualUID;
+        window.userData.email = user.email;
         window.userData.name = data.name || user.displayName || user.email.split('@')[0];
         window.userData.dp = data.dp || user.photoURL || null;
-        window.userData.balance = Number(data.balance) || 0;
-        window.userData.taskBalance = Number(data.taskBalance) || 0;
+
+        // 🔥 BUG 3 FIX: Balance कभी कम नहीं होगा - MAX लो
+        const fbBalance = Number(data.balance) || 0;
+        const localBalance = Number(window.userData.balance) || 0;
+        window.userData.balance = Math.max(fbBalance, localBalance);
+
+        const fbTaskBalance = Number(data.taskBalance) || 0;
+        const localTaskBalance = Number(window.userData.taskBalance) || 0;
+        window.userData.taskBalance = Math.max(fbTaskBalance, localTaskBalance);
+
+        // 🔥 BUG 1 FIX: Referral Code Lock - RUP- वाला Change नहीं होगा
+        if(data.myReferralCode && data.myReferralCode.startsWith('RUP-') && data.myReferralCode.length === 10) {
+          window.userData.myReferralCode = data.myReferralCode;
+        } else {
+          window.userData.myReferralCode = generateReferralCode();
+          await update(ref(db, `users/${actualUID}`), { myReferralCode: window.userData.myReferralCode });
+        }
+
+        // बाकी Fields
         window.userData.posts = data.posts || [];
         window.userData.lastMine = Number(data.lastMine) || 0;
         window.userData.lastGift = Number(data.lastGift) || 0;
@@ -138,6 +171,7 @@ onAuthStateChanged(auth, async (user) => {
         window.userData.boostResetTime = Number(data.boostResetTime) || Date.now();
         window.userData.firstRewardTime = Number(data.firstRewardTime) || 0;
         window.userData.ultraRewardTime = Number(data.ultraRewardTime) || 0;
+        window.userData.lastSpinTime = Number(data.lastSpinTime) || 0;
         window.userData.team = data.team || {};
         window.userData.teamCount = Number(data.teamCount) || 0;
         window.userData.teamRewardEarned = Number(data.teamRewardEarned) || 0;
@@ -147,28 +181,25 @@ onAuthStateChanged(auth, async (user) => {
         window.userData.referralClaimed = data.referralClaimed || false;
         window.userData.createdAt = data.createdAt || Date.now();
 
-        if(!isValidReferralCode(data.myReferralCode)) {
-          window.userData.myReferralCode = generateReferralCode();
-          await update(userRef, { myReferralCode: window.userData.myReferralCode });
-        } else {
-          window.userData.myReferralCode = data.myReferralCode;
-        }
-
-        if(data.referralCount === undefined) {
-          const teamSize = data.team? Object.keys(data.team).length : 0;
-          await update(userRef, { referralCount: teamSize });
-          window.userData.referralCount = teamSize;
+        // Local ज्यादा है तो Firebase Update करो
+        if(localBalance > fbBalance || localTaskBalance > fbTaskBalance) {
+          await update(ref(db, `users/${actualUID}`), {
+            balance: window.userData.balance,
+            taskBalance: window.userData.taskBalance
+          });
         }
 
       } else {
         logEvent(analytics, 'sign_up');
-
+        window.userData = getDefaultData();
         window.userData.uid = user.uid;
+        window.userData.email = user.email;
         window.userData.name = user.displayName || user.email.split('@')[0];
         window.userData.dp = user.photoURL || null;
         window.userData.myReferralCode = generateReferralCode();
-        window.userData.referralCount = 0;
+        window.userData.createdAt = Date.now();
         await set(userRef, window.userData);
+        await checkAndApplyReferral();
       }
     } catch (error) {
       console.error('Firebase Load Error:', error);
@@ -203,6 +234,7 @@ window.saveRuppyData = async function(data){
       taskBalance: data.taskBalance,
       name: data.name,
       dp: data.dp,
+      email: data.email,
       myReferralCode: data.myReferralCode,
       referredBy: data.referredBy,
       referralClaimed: data.referralClaimed,
@@ -217,7 +249,8 @@ window.saveRuppyData = async function(data){
       boostCount: data.boostCount || 0,
       boostResetTime: data.boostResetTime || Date.now(),
       firstRewardTime: data.firstRewardTime || 0,
-      ultraRewardTime: data.ultraRewardTime || 0
+      ultraRewardTime: data.ultraRewardTime || 0,
+      lastSpinTime: data.lastSpinTime || 0
     });
   } catch (error) {
     console.error('Firebase Save Error:', error);
@@ -263,7 +296,61 @@ window.addEventListener('storage', (e) => {
   }
 });
 
-// ✅ FIXED: REFERRAL CODE APPLY FUNCTION - 500 RUP + 10 POINTS + ANALYTICS
+// 🔥 BUG 2 FIX: AUTO REFERRAL REWARD - New=100, Old=500
+async function checkAndApplyReferral() {
+  const params = new URLSearchParams(window.location.search);
+  const refCode = params.get('ref');
+
+  if (refCode &&!window.userData.referralClaimed) {
+    const usersRef = ref(db, 'users');
+    const q = query(usersRef, orderByChild('myReferralCode'), equalTo(refCode));
+    const snapshot = await get(q);
+
+    if (snapshot.exists()) {
+      const referrerUID = Object.keys(snapshot.val())[0];
+      const referrerData = Object.values(snapshot.val())[0];
+
+      if (referrerUID && referrerUID!== window.userData.uid) {
+        // New User को 100 RUP
+        window.userData.balance = (Number(window.userData.balance) || 0) + 100;
+        window.userData.referredBy = referrerUID;
+        window.userData.referralClaimed = true;
+
+        // Old User को 500 RUP + Count + Points
+        const updates = {};
+        updates[`users/${referrerUID}/balance`] = (Number(referrerData.balance) || 0) + 500;
+        updates[`users/${referrerUID}/referralCount`] = (Number(referrerData.referralCount) || 0) + 1;
+        updates[`users/${referrerUID}/teamRewardEarned`] = (Number(referrerData.teamRewardEarned) || 0) + 500;
+        updates[`users/${referrerUID}/weeklyPoints`] = (Number(referrerData.weeklyPoints) || 0) + 10;
+        updates[`users/${referrerUID}/team/${window.userData.uid}`] = {
+          name: window.userData.name || 'User',
+          uid: window.userData.uid,
+          created_at: Date.now(),
+          lastMine: Date.now()
+        };
+
+        // New User Update
+        updates[`users/${window.userData.uid}/balance`] = window.userData.balance;
+        updates[`users/${window.userData.uid}/referredBy`] = referrerUID;
+        updates[`users/${window.userData.uid}/referralClaimed`] = true;
+
+        await update(ref(db), updates);
+
+        logEvent(analytics, 'referral_applied', {
+          bonus_earned: 100,
+          referrer_bonus: 500,
+          referrer_id: referrerUID
+        });
+
+        localStorage.setItem(RUPPY_STORAGE_KEY, JSON.stringify(window.userData));
+        showCustomAlert(`🎉 Welcome Bonus 100 RUP मिला!`);
+        updateBalanceBox();
+      }
+    }
+  }
+}
+
+// ✅ MANUAL REFERRAL - 500 RUP + 10 POINTS + ANALYTICS
 window.applyReferralCodeManual = async function(code){
   if(!window.userData.uid){
     return {success: false, msg: 'Please login first'};
