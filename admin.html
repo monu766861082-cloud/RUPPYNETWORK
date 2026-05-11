@@ -13,60 +13,26 @@
       padding: 20px;
     }
     #loginScreen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #0a0a0a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: #0a0a0a; display: flex; align-items: center; justify-content: center; z-index: 9999;
     }
     .login-box {
-      background: #1a1a1a;
-      border: 3px solid #F3C774;
-      border-radius: 16px;
-      padding: 40px;
-      text-align: center;
-      max-width: 400px;
+      background: #1a1a1a; border: 3px solid #F3C774; border-radius: 16px;
+      padding: 40px; text-align: center; max-width: 400px;
     }
-    .login-box h2 {
-      color: #F3C774;
-      font-size: 28px;
-      margin-bottom: 20px;
-    }
+    .login-box h2 { color: #F3C774; font-size: 28px; margin-bottom: 20px; }
     .login-btn {
-      background: #F3C774;
-      color: #000;
-      padding: 16px 40px;
-      border: none;
-      border-radius: 8px;
-      font-size: 18px;
-      font-weight: 900;
-      cursor: pointer;
-      margin-top: 20px;
+      background: #F3C774; color: #000; padding: 16px 40px; border: none;
+      border-radius: 8px; font-size: 18px; font-weight: 900; cursor: pointer; margin-top: 20px;
     }
     .admin-header {
-      background: #F3C774;
-      color: #000;
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      text-align: center;
-      display: none;
+      background: #F3C774; color: #000; padding: 20px; border-radius: 12px;
+      margin-bottom: 20px; text-align: center; display: none;
     }
     .admin-header h1 { font-size: 28px; font-weight: 900; }
     .logout-btn {
-      background: #f44336;
-      color: #fff;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 6px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 10px;
+      background: #f44336; color: #fff; padding: 8px 16px; border: none;
+      border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 10px;
     }
     .tabs { display: flex; gap: 10px; margin-bottom: 20px; display: none; }
     .tab-btn {
@@ -145,17 +111,16 @@
 </head>
 <body>
 
-  <!-- LOGIN SCREEN -->
   <div id="loginScreen">
     <div class="login-box">
       <h2>🔐 ADMIN LOGIN</h2>
       <p style="color:#888;margin-bottom:20px">RUPPY Network Admin Panel</p>
       <p style="color:#F3C774;font-size:14px">Only: farmanking7867@gmail.com</p>
       <button class="login-btn" onclick="doLogin()">🔑 Login with Google</button>
+      <p style="color:#888;font-size:12px;margin-top:15px">Mobile users: Will redirect to Google</p>
     </div>
   </div>
 
-  <!-- ADMIN PANEL -->
   <div id="adminPanel" style="display:none">
     <div class="admin-header" id="adminHeader">
       <h1>🔥 RUPPY ADMIN PANEL</h1>
@@ -169,7 +134,6 @@
       <div class="tab-btn" onclick="switchTab('mining')">⛏️ Mining Analytics</div>
     </div>
 
-    <!-- USERS TAB -->
     <div id="usersTab" class="tab-content active">
       <div class="stats-header">
         <div class="stat-card" onclick="showAllUsers()">
@@ -215,7 +179,6 @@
       <div id="usersList" class="loading">Loading users...</div>
     </div>
 
-    <!-- MINING TAB -->
     <div id="miningTab" class="tab-content">
       <div class="filter-row">
         <input type="date" class="date-input" id="miningDate" onchange="loadMiningData()">
@@ -249,7 +212,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, get, update, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
@@ -271,39 +234,53 @@
     let showZeroOnly = false;
     let showBulkAll = false;
 
-    // 🔥 हर बार Session Login - Browser बंद होते ही Logout
-    setPersistence(auth, browserSessionPersistence);
-
+    // 🔥 MOBILE FIX: Redirect Login
     window.doLogin = function() {
-      signInWithPopup(auth, provider).then((result) => {
-        if (result.user.email !== ADMIN_EMAIL) {
-          alert("❌ Access Denied! Admin Only");
-          signOut(auth);
-        } else {
-          document.getElementById('loginScreen').style.display = 'none';
-          document.getElementById('adminPanel').style.display = 'block';
-          document.getElementById('adminHeader').style.display = 'block';
-          document.getElementById('tabs').style.display = 'flex';
-          document.getElementById('adminEmail').textContent = result.user.email;
-          loadAllUsers();
-          document.getElementById('miningDate').valueAsDate = new Date();
-        }
-      }).catch(err => {
-        alert("Login Failed: " + err.message);
-      });
+      signInWithRedirect(auth, provider);
     }
 
     window.doLogout = function() {
-      signOut(auth).then(() => {
-        location.reload();
-      });
+      signOut(auth).then(() => location.reload());
     }
 
-    // बाकी Functions Same...
+    // Check Redirect Result
+    getRedirectResult(auth).then((result) => {
+      if (result) {
+        checkAdmin(result.user);
+      }
+    }).catch((error) => {
+      console.error('Login Error:', error);
+      alert('Login Failed: ' + error.message);
+    });
+
+    // Check Auth State
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        checkAdmin(user);
+      }
+    });
+
+    function checkAdmin(user) {
+      if (user.email !== ADMIN_EMAIL) {
+        alert("❌ Access Denied! Admin Only");
+        signOut(auth);
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('adminPanel').style.display = 'none';
+      } else {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        document.getElementById('adminHeader').style.display = 'block';
+        document.getElementById('tabs').style.display = 'flex';
+        document.getElementById('adminEmail').textContent = user.email;
+        loadAllUsers();
+        document.getElementById('miningDate').valueAsDate = new Date();
+      }
+    }
+
+    // बाकी Functions...
     window.switchTab = function(tab) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-      
       if (tab === 'users') {
         document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
         document.getElementById('usersTab').classList.add('active');
@@ -318,31 +295,24 @@
       try {
         const usersRef = ref(db, 'users');
         const snapshot = await get(usersRef);
-        
         if (snapshot.exists()) {
           allUsers = [];
-          let totalTokens = 0;
-          let totalRefs = 0;
-          let zeroCount = 0;
-
+          let totalTokens = 0, totalRefs = 0, zeroCount = 0;
           snapshot.forEach((child) => {
             const userData = child.val();
             userData.uid = child.key;
             allUsers.push(userData);
-            
             const bal = parseInt(userData.balance) || 0;
             totalTokens += bal;
             totalRefs += parseInt(userData.totalReferrals) || 0;
             if (bal === 0) zeroCount++;
           });
-
           document.getElementById('totalUsers').textContent = allUsers.length;
           document.getElementById('totalTokens').textContent = totalTokens.toLocaleString();
           document.getElementById('totalReferrals').textContent = totalRefs;
           document.getElementById('zeroBalanceCount').textContent = zeroCount;
           document.getElementById('selectedCount').textContent = zeroCount;
           document.getElementById('totalUserCount').textContent = allUsers.length;
-
           renderUsers(allUsers);
         } else {
           document.getElementById('usersList').innerHTML = '<div class="loading">No users found</div>';
@@ -355,16 +325,12 @@
 
     function renderUsers(users) {
       let displayUsers = users;
-      if (showZeroOnly) {
-        displayUsers = users.filter(u => (parseInt(u.balance) || 0) === 0);
-      }
-
+      if (showZeroOnly) displayUsers = users.filter(u => (parseInt(u.balance) || 0) === 0);
       const html = displayUsers.map(user => {
         const bal = parseInt(user.balance) || 0;
         const isZero = bal === 0;
         const joinDate = user.joinedAt ? new Date(user.joinedAt).toLocaleDateString() : 'N/A';
         const lastMining = user.lastMiningTime ? new Date(user.lastMiningTime).toLocaleString() : 'Never';
-        
         return `
         <div class="user-card ${isZero ? 'zero-balance' : ''}" data-uid="${user.uid}">
           <div class="user-info">
@@ -388,7 +354,6 @@
           </div>
         </div>
       `}).join('');
-      
       document.getElementById('usersList').innerHTML = html || '<div class="loading">No users found</div>';
     }
 
