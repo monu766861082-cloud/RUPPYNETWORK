@@ -115,16 +115,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
 <div class="sec-title">ACCOUNT SECURITY</div>
 <div class="card">
-  <div class="row">
-    <div class="l">
-      <div class="icon">✉️</div>
-      <div>
-        <div class="txt">Email Verification</div>
-        <div class="desc" id="emailStatus">Not verified</div>
-      </div>
-    </div>
-    <span class="val" id="emailVerified">❌</span>
-  </div>
   <div class="row disabled" onclick="showComingSoon()">
     <div class="l">
       <div class="icon">📞</div>
@@ -204,7 +194,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <div class="toast" id="toast"></div>
 
 <script type="module">
-  import { getAuth, signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getAuth, signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
   let attempts = 0;
   while(!window.userData?.uid && attempts < 50) {
@@ -214,20 +204,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
   const auth = getAuth();
   const userData = window.userData;
-
-  // Load Security Info
-  function loadSecurityInfo(){
-    if(auth.currentUser?.emailVerified){
-      document.getElementById('emailVerified').innerText = '✅';
-      document.getElementById('emailStatus').innerText = auth.currentUser.email;
-      document.getElementById('emailStatus').style.color = 'var(--green)';
-    } else {
-      document.getElementById('emailVerified').innerText = '❌';
-      document.getElementById('emailStatus').innerText = 'Not verified - Tap to verify';
-      document.getElementById('emailStatus').style.color = 'var(--red)';
-    }
-  }
-  loadSecurityInfo();
 
   window.showToast = function(msg, type = 'success'){
     let t = document.getElementById('toast');
@@ -297,18 +273,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
     btn.disabled = false;
     btn.textContent = 'Update';
-  }
-
-  // Email Verification
-  document.getElementById('emailStatus').parentElement.parentElement.onclick = async function(){
-    if(!auth.currentUser?.emailVerified){
-      try {
-        await sendEmailVerification(auth.currentUser);
-        showToast('Verification email sent! Check your inbox', 'success');
-      } catch(error){
-        showToast('Failed to send email: ' + error.message, 'error');
-      }
-    }
   }
 
   // Devices
