@@ -52,7 +52,7 @@
     .nav-item.active {color:#FFA500;}
     .nav-item.active::after {content:''; width:30px; height:2px; background:#FFA500; margin-top:2px;}
     .nav-item .icon {font-size:20px;}
-    #toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #FFA500; padding: 12px 20px; border-radius: 8px; border: 1px solid #FFA500; display: none; z-index: 1000; font-size: 14px; }
+    #toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #FFA500; padding: 12px 20px; border-radius: 8px; border:1px solid #FFA500; display: none; z-index: 1000; font-size: 14px; }
   </style>
   
 </head>
@@ -75,7 +75,7 @@
     <div class="mining-circle ready" id="miningCircle">
       <h3 id="miningText">CLAIM BONUS</h3>
     </div>
-    <p class="mining-text">Collect 20 RUPY BLOCK • Available every 3 hours</p>
+    <p class="mining-text">Collect 20 RUPY BLOCK • Available every 6 hours</p>
   </div>
 
   <div class="grid">
@@ -154,6 +154,7 @@
 <script type="module">
   let userData;
   const MINING_REWARD = 20;
+  const MINING_COOLDOWN = 21600000; // 6 hours in ms
   
   async function waitForUserData() {
     let attempts = 0;
@@ -171,10 +172,28 @@
     setTimeout(() => { toast.style.display = 'none'; }, 3000);
   }
 
+  function getNext8AMTimestamp() {
+    let now = new Date();
+    let next8AM = new Date(now);
+    next8AM.setHours(8, 0, 0, 0);
+    
+    if (now.getHours() >= 8) {
+      next8AM.setDate(next8AM.getDate() + 1);
+    }
+    return next8AM.getTime();
+  }
+
   function doMining() {
     let now = Date.now();
     let lastMine = Number(userData.lastMine) || 0;
-    if(now - lastMine < 10800000 && lastMine !== 0) return;
+    
+    // First time user - set next mining to next 8 AM
+    if (lastMine === 0) {
+      userData.lastMine = getNext8AMTimestamp() - MINING_COOLDOWN;
+      saveRuppyData(userData);
+    }
+    
+    if(now - lastMine < MINING_COOLDOWN) return;
     
     userData.balance = Number(userData.balance) || 0;
     userData.balance += MINING_REWARD;
@@ -274,7 +293,7 @@
 
   function openBoostModal() {
     if(userData.boostCount >= 3) {
-      showToast('You claimed 3 bonuses already. Try again after 3 hours.');
+      showToast('You claimed 3 bonuses already. Try again after 6 hours.');
       return;
     }
     document.getElementById('boostStep').innerText = userData.boostCount + 1;
@@ -294,16 +313,15 @@
     let now = Date.now();
     let lastMine = Number(userData.lastMine) || 0;
     let diff = now - lastMine;
-    let cooldown = 10800000;
     
     let circle = document.getElementById('miningCircle');
     let text = document.getElementById('miningText');
     
-    if(diff >= cooldown || lastMine === 0) {
+    if(diff >= MINING_COOLDOWN || lastMine === 0) {
       circle.className = 'mining-circle ready';
       text.innerText = 'CLAIM BONUS';
     } else {
-      let remaining = cooldown - diff;
+      let remaining = MINING_COOLDOWN - diff;
       let hrs = Math.floor(remaining / 3600000);
       let mins = Math.floor((remaining % 3600000) / 60000);
       let secs = Math.floor((remaining % 60000) / 1000);
@@ -318,7 +336,7 @@
     userData.boostResetTime = Number(userData.boostResetTime) || now;
     userData.boostCount = Number(userData.boostCount) || 0;
     
-    if(now - userData.boostResetTime > 10800000) {
+    if(now - userData.boostResetTime > MINING_COOLDOWN) {
       userData.boostCount = 0;
       userData.boostResetTime = now;
       saveRuppyData(userData);
@@ -327,7 +345,7 @@
     document.getElementById('boostBadge').innerText = userData.boostCount + '/3';
     
     if(userData.boostCount >= 3) {
-      let resetIn = 10800000 - (now - userData.boostResetTime);
+      let resetIn = MINING_COOLDOWN - (now - userData.boostResetTime);
       let h = Math.floor(resetIn / 3600000);
       let m = Math.floor((resetIn % 3600000) / 60000);
       let s = Math.floor((resetIn % 60000) / 1000);
@@ -420,9 +438,15 @@
   (async function() {
     await waitForUserData();
     
+    // Initialize mining cycle for new users
+    if (!userData.lastMine || userData.lastMine === 0) {
+      userData.lastMine = getNext8AMTimestamp() - MINING_COOLDOWN;
+      saveRuppyData(userData);
+    }
+    
     loadProfileEverywhere();
     
-    if(Date.now() - userData.boostResetTime > 10800000) {
+    if(Date.now() - userData.boostResetTime > MINING_COOLDOWN) {
       userData.boostCount = 0;
       userData.boostResetTime = Date.now();
       saveRuppyData(userData);
