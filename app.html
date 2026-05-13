@@ -74,7 +74,7 @@
     <div class="mining-circle ready" id="miningCircle">
       <h3 id="miningText">CLAIM BONUS</h3>
     </div>
-    <p class="mining-text">Collect 20 RUP POINTS • Available every 6 hours</p>
+    <p class="mining-text">Collect 20 RUP POINTS • Available every 4 hours</p>
   </div>
 
   <div class="grid">
@@ -153,7 +153,7 @@
 <script type="module">
   let userData;
   const MINING_REWARD = 20;
-  const MINING_COOLDOWN = 21600000; // 6 hours
+  const MINING_COOLDOWN = 14400000; // 4 hours - changed from 21600000
   
   async function waitForUserData() {
     let attempts = 0;
@@ -291,7 +291,7 @@
 
   function openBoostModal() {
     if(userData.boostCount >= 3) {
-      showToast('You claimed 3 bonuses already. Try again after 6 hours.');
+      showToast('You claimed 3 bonuses already. Try again after 4 hours.');
       return;
     }
     document.getElementById('boostStep').innerText = userData.boostCount + 1;
