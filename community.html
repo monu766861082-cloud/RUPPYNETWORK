@@ -746,20 +746,4 @@ window.sharePost = function(id){
     navigator.share(shareData).catch(err => console.log('Share failed'));
   } else {
     let whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareData.text + ' + shareData.url)}`;
-    window.open(whatsappUrl, '_blank');
-  }
-}
-
-window.reportPost = async function(id){
-  if(confirm('Report this post?')){
-    const postRef = ref(db, `posts/${id}`);
-    const snapshot = await get(postRef);
-    const post = snapshot.val();
-    await update(postRef, { reports: (post.reports || 0) + 1 });
-    alert('Reported');
-  }
-}
-</script>
-
-</body>
-</html>
+    window.open(whatsappUrl, '_blank
