@@ -5,10 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RUP POINTS Tasks</title>
 
-<!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
-
-<!-- ✅ FIX: config.js Add करा Balance Sync के लिए -->
 <script type="module" src="config.js"></script>
 
 <style>
@@ -19,10 +16,8 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .hdr small{color:#888}
 .tokenBal{background:#0d0d0d;border:1px solid #FFA500;border-radius:12px;padding:15px;margin:0 15px;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
 .tokenBal b{color:#FFA500;font-size:24px}
-
 .r-coin {width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;box-shadow:0 0 10px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500;position:relative;flex-shrink:0}
 .r-coin::after {content:'';position:absolute;inset:-2px;border-radius:50%;background:radial-gradient(circle,#FF6B00 0%,transparent 70%);opacity:0.4;filter:blur(3px);z-index:-1}
-
 .card{border:1px solid #333;border-radius:12px;padding:14px;margin:12px 15px;display:flex;align-items:center;background:#0d0d0d}
 .ic{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:20px}
 .tg{background:#0088cc}.fb{background:#1877f2}.x{background:#fff;color:#000}
@@ -32,39 +27,10 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .bt.claim{background:#FFA500;color:#000}
 .bt.done{background:#333;color:#666;border-color:#333;cursor:not-allowed}
 .bt.opened{background:#1a1a1a;color:#888;border-color:#444}
-
-.spin-card{
-  border:2px solid transparent;
-  border-radius:16px;
-  padding:18px;
-  margin:12px 15px;
-  background:linear-gradient(#0d0d0d,#0d0d0d) padding-box,
-             linear-gradient(135deg,#FFA500,#F3C774,#FFA500) border-box;
-  box-shadow:0 0 25px rgba(255,165,0,0.15);
-  position:relative;
-  overflow:hidden;
-}
-.spin-card::before{
-  content:'';
-  position:absolute;
-  top:-50%;left:-50%;
-  width:200%;height:200%;
-  background:radial-gradient(circle,rgba(255,165,0,0.08) 0%,transparent 70%);
-  animation:rotate 15s linear infinite;
-}
+.spin-card{border:2px solid transparent;border-radius:16px;padding:18px;margin:12px 15px;background:linear-gradient(#0d0d0d,#0d0d0d) padding-box,linear-gradient(135deg,#FFA500,#F3C774,#FFA500) border-box;box-shadow:0 0 25px rgba(255,165,0,0.15);position:relative;overflow:hidden}
+.spin-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,165,0,0.08) 0%,transparent 70%);animation:rotate 15s linear infinite}
 @keyframes rotate{100%{transform:rotate(360deg)}}
-.spin-card h3{
-  margin:0 0 12px;
-  color:#FFA500;
-  text-align:center;
-  font-size:20px;
-  font-weight:800;
-  letter-spacing:1px;
-  text-shadow:0 0 15px rgba(255,165,0,0.5);
-  position:relative;
-  z-index:1;
-}
-
+.spin-card h3{margin:0 0 12px;color:#FFA500;text-align:center;font-size:20px;font-weight:800;letter-spacing:1px;text-shadow:0 0 15px rgba(255,165,0,0.5);position:relative;z-index:1}
 .wheel-container{display:flex;flex-direction:column;align-items:center;gap:15px;margin:15px 0;position:relative;z-index:1}
 .wheel-wrapper{position:relative;width:280px;height:280px}
 .wheel{width:100%;height:100%;border-radius:50%;border:8px solid #2A2A2C;position:relative;overflow:hidden;transition:transform 4s cubic-bezier(0.17,0.67,0.12,0.99);box-shadow:0 0 30px rgba(243,199,116,0.3)}
@@ -77,7 +43,6 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .wheel-timer{font-size:14px;color:#F3C774;font-weight:700;background:rgba(243,199,116,0.1);padding:12px 24px;border-radius:12px;border:2px solid #F3C774;min-width:180px;text-align:center;box-shadow:0 0 15px rgba(243,199,116,0.2)}
 .wheel-timer.hide{display:none}
 .spin-info{font-size:12px;color:#F3C774;text-align:center;margin-top:12px;line-height:1.6;font-weight:600;position:relative;z-index:1}
-
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
 .nav-item.active{color:#FFA500}
@@ -96,7 +61,6 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 
 <div class="tokenBal">Your RUP POINTS: <div class="r-coin">R</div> <b id="bal">0</b> RUP POINTS</div>
 
-<!-- ✅ TASKS FIRST -->
 <div class="card">
   <div class="ic tg">✈️</div>
   <div class="txt"><b>Join Telegram</b><span>Reward: <div class="mini-coin">R</div> 20 RUP POINTS</span></div>
@@ -115,28 +79,44 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   <a class="bt" id="xBtn">FOLLOW</a>
 </div>
 
-<!-- ✅ NEW: Facebook Post Task Card -->
 <div class="card">
   <div class="ic fb">f</div>
   <div class="txt">
     <b>Post on Facebook</b>
     <span>Reward: <div class="mini-coin">R</div> 50 RUP POINTS</span>
-    <small style="color:#888;font-size:11px;display:block;margin-top:4px">
-      Min 50 words + 1 photo + #Ruppynetwork @Ruppyfoundatio
-    </small>
+    <small style="color:#888;font-size:11px;display:block;margin-top:4px">Min 50 words + 1 photo + #Ruppynetwork @Ruppyfoundatio</small>
   </div>
   <a class="bt" id="fbPostBtn">POST</a>
 </div>
 
-<!-- Hidden input for link submission -->
 <div id="fbPostClaimBox" style="display:none;margin:-5px 15px 12px 15px;">
-  <input type="text" id="fbPostLink" placeholder="Paste Facebook post link here" 
-    style="width:100%;padding:10px;border-radius:8px;border:1px solid #333;background:#0d0d0d;color:#fff;margin-bottom:8px;">
+  <input type="text" id="fbPostLink" placeholder="Paste Facebook post link here" style="width:100%;padding:10px;border-radius:8px;border:1px solid #333;background:#0d0d0d;color:#fff;margin-bottom:8px;">
   <button class="bt claim" style="width:100%" onclick="claimFbPost()">Submit & Claim 50</button>
   <p id="fbPostTimer" style="text-align:center;color:#FFA500;font-size:12px;margin-top:6px;"></p>
 </div>
 
-<!-- ✅ SPIN WHEEL CARD MOVED DOWN -->
+<div class="card">
+  <div class="ic" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);">📷</div>
+  <div class="txt">
+    <b>Post on Instagram</b>
+    <span>Reward: <div class="mini-coin">R</div> 50 RUP POINTS</span>
+    <small style="color:#888;font-size:11px;display:block;margin-top:4px">Min 50 words + 1 photo + #Ruppynetwork @ruppyfoundatio</small>
+  </div>
+  <a class="bt" id="igPostBtn">POST</a>
+</div>
+
+<div id="igPostClaimBox" style="display:none;margin:-5px 15px 12px 15px;">
+  <input type="text" id="igPostLink" placeholder="Paste Instagram post link here" style="width:100%;padding:10px;border-radius:8px;border:1px solid #333;background:#0d0d0d;color:#fff;margin-bottom:8px;">
+  <button class="bt claim" style="width:100%" onclick="claimIgPost()">Submit & Claim 50</button>
+  <p id="igPostTimer" style="text-align:center;color:#FFA500;font-size:12px;margin-top:6px;"></p>
+</div>
+
+<div class="card">
+  <div class="ic" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);">📷</div>
+  <div class="txt"><b>Follow on Instagram</b><span>Reward: <div class="mini-coin">R</div> 20 RUP POINTS</span></div>
+  <a class="bt" id="igBtn" style="background:#dc2743; border-color:#dc2743; color:#fff;">FOLLOW</a>
+</div>
+
 <div class="spin-card">
     <h3>🎡 Lucky Spin - Win Big!</h3>
     <div class="wheel-container">
@@ -153,37 +133,16 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
         </div>
         <div class="wheel-timer hide" id="wheelTimer"></div>
     </div>
-    <div class="spin-info">
-      🎯 Win 10 or 20 RUP POINTS • Opens 9AM & 9PM Daily<br>
-      ⏰ 2 Spins Every 24 Hours
-    </div>
+    <div class="spin-info">🎯 Win 10 or 20 RUP POINTS • Opens 9AM & 9PM Daily<br>⏰ 2 Spins Every 24 Hours</div>
 </div>
 
 <div class="nav">
-  <div class="nav-item" onclick="goPage('app.html')">
-    <div class="icon">🏠</div>
-    <span>Home</span>
-  </div>
-  <div class="nav-item active">
-    <div class="icon">📋</div>
-    <span>Tasks</span>
-  </div>
-  <div class="nav-item" onclick="goPage('referral.html')">
-    <div class="icon">👥</div>
-    <span>Referral</span>
-  </div>
-  <div class="nav-item" onclick="goPage('ranking.html')">
-    <div class="icon">🏆</div>
-    <span>Ranking</span>
-  </div>
-  <div class="nav-item" onclick="goPage('community.html')">
-    <div class="icon">📝</div>
-    <span>Feed</span>
-  </div>
-  <div class="nav-item" onclick="goPage('settings.html')">
-    <div class="icon">⚙️</div>
-    <span>Settings</span>
-  </div>
+  <div class="nav-item" onclick="goPage('app.html')"><div class="icon">🏠</div><span>Home</span></div>
+  <div class="nav-item active"><div class="icon">📋</div><span>Tasks</span></div>
+  <div class="nav-item" onclick="goPage('referral.html')"><div class="icon">👥</div><span>Referral</span></div>
+  <div class="nav-item" onclick="goPage('ranking.html')"><div class="icon">🏆</div><span>Ranking</span></div>
+  <div class="nav-item" onclick="goPage('community.html')"><div class="icon">📝</div><span>Feed</span></div>
+  <div class="nav-item" onclick="goPage('settings.html')"><div class="icon">⚙️</div><span>Settings</span></div>
 </div>
 
 <div class="toast" id="toast">Copied!</div>
@@ -193,15 +152,17 @@ var userData = window.userData;
 let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
 let openedTask = null;
 
-// ✅ SPIN VARIABLES
 var spinTimer = null;
 var currentRotation = 0;
 var isSpinning = false;
 
-// ✅ FB POST VARIABLES
 const FB_POST_TASK_ID = 'fbPost';
 const FB_POST_REWARD = 50;
 const FB_POST_COOLDOWN = 12 * 60 * 60 * 1000;
+
+const IG_POST_TASK_ID = 'igPost';
+const IG_POST_REWARD = 50;
+const IG_POST_COOLDOWN = 12 * 60 * 60 * 1000;
 
 async function init(){
   let attempts = 0;
@@ -221,6 +182,7 @@ async function init(){
   updateButtons();
   checkSpinStatus();
   initFbPostTask();
+  initIgPostTask();
 }
 
 init();
@@ -261,7 +223,8 @@ function updateButtons() {
   const tasks = [
     {id: 'tg', url: 'https://t.me/RUPPYfoundation', text: 'JOIN'},
     {id: 'fb', url: 'https://www.facebook.com/share/1PjMyFivNF/?mibextid=wwXIfr', text: 'FOLLOW'},
-    {id: 'x', url: 'https://x.com/rupfoundation?s=21', text: 'FOLLOW'}
+    {id: 'x', url: 'https://x.com/rupfoundation?s=21', text: 'FOLLOW'},
+    {id: 'ig', url: 'https://www.instagram.com/ruppynetwork4?igsh=dDM3NmM5bHdmZHdi&utm_source=qr', text: 'FOLLOW'}
   ];
 
   tasks.forEach(t => {
@@ -287,7 +250,6 @@ function updateButtons() {
   });
 }
 
-// ✅ FACEBOOK POST TASK FUNCTIONS
 function initFbPostTask() {
   if (!window.userData) return;
   let btn = document.getElementById('fbPostBtn');
@@ -320,11 +282,7 @@ function initFbPostTask() {
 
 function openFbPost() {
   let shareUrl = encodeURIComponent('https://ruppynetwork.com');
-  let quote = encodeURIComponent(
-    'मैं Ruppy Network इस्तेमाल कर रहा हूँ और फ्री टोकन कमा रहा हूँ!\n\n' +
-    '#Ruppynetwork @Ruppyfoundatio\n' +
-    'Download करो: https://ruppynetwork.com'
-  );
+  let quote = encodeURIComponent('मैं Ruppy Network इस्तेमाल कर रहा हूँ और फ्री टोकन कमा रहा हूँ!\n\n#Ruppynetwork @Ruppyfoundatio\nDownload करो: https://ruppynetwork.com');
   let fbShareLink = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${quote}`;
   
   window.open(fbShareLink, '_blank');
@@ -355,13 +313,7 @@ async function claimFbPost() {
     let res = await fetch('/api/verify-fb-post', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        link: link, 
-        userId: userData.uid,
-        requiredWords: 50,
-        requiredTag: '@Ruppyfoundatio',
-        requiredHashtag: '#Ruppynetwork'
-      })
+      body: JSON.stringify({link: link, userId: userData.uid, requiredWords: 50, requiredTag: '@Ruppyfoundatio', requiredHashtag: '#Ruppynetwork'})
     });
     let data = await res.json();
     
@@ -408,7 +360,116 @@ function updateFbPostTimer() {
   if(timerEl) timerEl.innerText = `Next post in: ${h}h ${m}m`;
 }
 
-// ✅ SPIN WHEEL FUNCTIONS
+function initIgPostTask() {
+  if (!window.userData) return;
+  let btn = document.getElementById('igPostBtn');
+  let claimBox = document.getElementById('igPostClaimBox');
+  if (!btn) return;
+  
+  let lastClaim = Number(taskState[IG_POST_TASK_ID + '_time']) || 0;
+  let now = Date.now();
+  
+  if (taskState[IG_POST_TASK_ID] === 'claimed' && (now - lastClaim) < IG_POST_COOLDOWN) {
+    btn.innerText = 'WAIT';
+    btn.className = 'bt done';
+    btn.onclick = null;
+    claimBox.style.display = 'block';
+    updateIgPostTimer();
+    setInterval(updateIgPostTimer, 60000);
+  } else if (taskState[IG_POST_TASK_ID] === 'opened') {
+    btn.innerText = 'SUBMIT';
+    btn.className = 'bt claim';
+    btn.onclick = () => {
+      claimBox.style.display = 'block';
+      claimBox.scrollIntoView({behavior: 'smooth'});
+    };
+  } else {
+    btn.innerText = 'POST';
+    btn.className = 'bt';
+    btn.onclick = () => openIgPost();
+  }
+}
+
+function openIgPost() {
+  let caption = encodeURIComponent('मैं Ruppy Network इस्तेमाल कर रहा हूँ और फ्री टोकन कमा रहा हूँ!\n\n#Ruppynetwork @ruppyfoundatio\nDownload करो: https://ruppynetwork.com');
+  
+  window.open('https://www.instagram.com/', '_blank');
+  alert('Instagram खुल गया है. ये caption copy करके post में paste कर दे:\n\n' + decodeURIComponent(caption));
+  
+  taskState[IG_POST_TASK_ID] = 'opened';
+  localStorage.setItem('taskState', JSON.stringify(taskState));
+  initIgPostTask();
+}
+
+async function claimIgPost() {
+  let link = document.getElementById('igPostLink').value.trim();
+  let now = Date.now();
+  let lastClaim = Number(taskState[IG_POST_TASK_ID + '_time']) || 0;
+  
+  if (now - lastClaim < IG_POST_COOLDOWN) {
+    showToast('12 घंटे बाद फिर से कर सकते हो', 'error');
+    return;
+  }
+  
+  if (!link.includes('instagram.com')) {
+    showToast('सही Instagram पोस्ट लिंक डालो', 'error');
+    return;
+  }
+  
+  document.getElementById('igPostBtn').innerText = 'VERIFYING...';
+  document.getElementById('igPostBtn').className = 'bt opened';
+  
+  try {
+    let res = await fetch('/api/verify-ig-post', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({link: link, userId: userData.uid, requiredWords: 50, requiredTag: '@ruppyfoundatio', requiredHashtag: '#Ruppynetwork'})
+    });
+    let data = await res.json();
+    
+    if (data.success) {
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += IG_POST_REWARD;
+      taskState[IG_POST_TASK_ID] = 'claimed';
+      taskState[IG_POST_TASK_ID + '_time'] = now;
+      localStorage.setItem('taskState', JSON.stringify(taskState));
+      
+      if (window.saveRuppyData) await window.saveRuppyData(userData);
+      
+      document.getElementById('bal').innerText = userData.balance;
+      document.getElementById('igPostLink').value = '';
+      initIgPostTask();
+      showToast(`+${IG_POST_REWARD} RUP POINTS Claimed!`);
+    } else {
+      showToast(data.message || 'Post में 50 शब्द, 1 photo, hashtag/tag नहीं मिला', 'error');
+      document.getElementById('igPostBtn').innerText = 'SUBMIT';
+      document.getElementById('igPostBtn').className = 'bt claim';
+    }
+  } catch(e) {
+    showToast('Server error, try again', 'error');
+    document.getElementById('igPostBtn').innerText = 'SUBMIT';
+    document.getElementById('igPostBtn').className = 'bt claim';
+  }
+}
+
+function updateIgPostTimer() {
+  let lastClaim = Number(taskState[IG_POST_TASK_ID + '_time']) || 0;
+  let now = Date.now();
+  let diff = IG_POST_COOLDOWN - (now - lastClaim);
+  
+  if (diff <= 0) {
+    let timerEl = document.getElementById('igPostTimer');
+    if(timerEl) timerEl.innerText = 'Ready to post again!';
+    initIgPostTask();
+    return;
+  }
+  
+  let h = Math.floor(diff / 3600000);
+  let m = Math.floor((diff % 3600000) / 60000);
+  let timerEl = document.getElementById('igPostTimer');
+  if(timerEl) timerEl.innerText = `Next post in: ${h}h ${m}m`;
+}
+
 function getNextSpinTime(){
     const now = new Date();
     const today9AM = new Date(now);
