@@ -16,7 +16,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .hdr small{color:#888}
 .tokenBal{background:#0d0d0d;border:1px solid #FFA500;border-radius:12px;padding:15px;margin:0 15px;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
 .tokenBal b{color:#FFA500;font-size:24px}
-.r-coin {width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;box-shadow:0 0 10px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500;position:relative;flex-shrink:0}
+.r-coin {width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;box-shadow:0 0 10px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500}
 .card{border:1px solid #333;border-radius:12px;padding:14px;margin:12px 15px;display:flex;align-items:center;background:#0d0d0d}
 .ic{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:20px}
 .tg{background:#0088cc}.fb{background:#1877f2}.x{background:#fff;color:#000}
@@ -195,7 +195,6 @@ document.addEventListener('visibilitychange', function() {
 
 function openLink(task, url) {
   window.location.href = url;
-
   openedTask = task;
   taskState[task] = 'opened';
   localStorage.setItem('taskState', JSON.stringify(taskState));
@@ -312,40 +311,19 @@ async function claimFbPost() {
     return;
   }
   
-  document.getElementById('fbPostBtn').innerText = 'VERIFYING...';
-  document.getElementById('fbPostBtn').className = 'bt opened';
+  // Direct claim - no server verification for now
+  userData.balance = Number(userData.balance) || 0;
+  userData.balance += FB_POST_REWARD;
+  taskState[FB_POST_TASK_ID] = 'claimed';
+  taskState[FB_POST_TASK_ID + '_time'] = now;
+  localStorage.setItem('taskState', JSON.stringify(taskState));
   
-  try {
-    let res = await fetch('/api/verify-fb-post', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({link: link, userId: userData.uid, requiredWords: 50, requiredTag: '@Ruppyfoundatio', requiredHashtag: '#Ruppynetwork'})
-    });
-    let data = await res.json();
-    
-    if (data.success) {
-      userData.balance = Number(userData.balance) || 0;
-      userData.balance += FB_POST_REWARD;
-      taskState[FB_POST_TASK_ID] = 'claimed';
-      taskState[FB_POST_TASK_ID + '_time'] = now;
-      localStorage.setItem('taskState', JSON.stringify(taskState));
-      
-      if (window.saveRuppyData) await window.saveRuppyData(userData);
-      
-      document.getElementById('bal').innerText = userData.balance;
-      document.getElementById('fbPostLink').value = '';
-      initFbPostTask();
-      showToast(`+${FB_POST_REWARD} RUP POINTS Claimed!`);
-    } else {
-      showToast(data.message || 'Post does not meet requirements', 'error');
-      document.getElementById('fbPostBtn').innerText = 'SUBMIT';
-      document.getElementById('fbPostBtn').className = 'bt claim';
-    }
-  } catch(e) {
-    showToast('Server error, try again', 'error');
-    document.getElementById('fbPostBtn').innerText = 'SUBMIT';
-    document.getElementById('fbPostBtn').className = 'bt claim';
-  }
+  if (window.saveRuppyData) await window.saveRuppyData(userData);
+  
+  document.getElementById('bal').innerText = userData.balance;
+  document.getElementById('fbPostLink').value = '';
+  initFbPostTask();
+  showToast(`+${FB_POST_REWARD} RUP POINTS Claimed!`);
 }
 
 function updateFbPostTimer() {
@@ -422,40 +400,19 @@ async function claimIgPost() {
     return;
   }
   
-  document.getElementById('igPostBtn').innerText = 'VERIFYING...';
-  document.getElementById('igPostBtn').className = 'bt opened';
+  // Direct claim - no server verification for now
+  userData.balance = Number(userData.balance) || 0;
+  userData.balance += IG_POST_REWARD;
+  taskState[IG_POST_TASK_ID] = 'claimed';
+  taskState[IG_POST_TASK_ID + '_time'] = now;
+  localStorage.setItem('taskState', JSON.stringify(taskState));
   
-  try {
-    let res = await fetch('/api/verify-ig-post', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({link: link, userId: userData.uid, requiredWords: 50, requiredTag: '@ruppyfoundatio', requiredHashtag: '#Ruppynetwork'})
-    });
-    let data = await res.json();
-    
-    if (data.success) {
-      userData.balance = Number(userData.balance) || 0;
-      userData.balance += IG_POST_REWARD;
-      taskState[IG_POST_TASK_ID] = 'claimed';
-      taskState[IG_POST_TASK_ID + '_time'] = now;
-      localStorage.setItem('taskState', JSON.stringify(taskState));
-      
-      if (window.saveRuppyData) await window.saveRuppyData(userData);
-      
-      document.getElementById('bal').innerText = userData.balance;
-      document.getElementById('igPostLink').value = '';
-      initIgPostTask();
-      showToast(`+${IG_POST_REWARD} RUP POINTS Claimed!`);
-    } else {
-      showToast(data.message || 'Post does not meet requirements', 'error');
-      document.getElementById('igPostBtn').innerText = 'SUBMIT';
-      document.getElementById('igPostBtn').className = 'bt claim';
-    }
-  } catch(e) {
-    showToast('Server error, try again', 'error');
-    document.getElementById('igPostBtn').innerText = 'SUBMIT';
-    document.getElementById('igPostBtn').className = 'bt claim';
-  }
+  if (window.saveRuppyData) await window.saveRuppyData(userData);
+  
+  document.getElementById('bal').innerText = userData.balance;
+  document.getElementById('igPostLink').value = '';
+  initIgPostTask();
+  showToast(`+${IG_POST_REWARD} RUP POINTS Claimed!`);
 }
 
 function updateIgPostTimer() {
