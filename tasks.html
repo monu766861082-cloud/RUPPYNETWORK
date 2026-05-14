@@ -96,29 +96,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 
 <div class="tokenBal">Your RUP POINTS: <div class="r-coin">R</div> <b id="bal">0</b> RUP POINTS</div>
 
-<!-- ✅ SPIN WHEEL CARD -->
-<div class="spin-card">
-    <h3>🎡 Lucky Spin - Win Big!</h3>
-    <div class="wheel-container">
-        <div class="wheel-wrapper">
-            <div class="wheel-pointer"></div>
-            <div class="wheel" id="wheel">
-                <div class="wheel-segment" style="background:#4CAF50;transform:rotate(0deg)"><span>100<br>RUP POINTS</span></div>
-                <div class="wheel-segment" style="background:#FFC107;transform:rotate(72deg)"><span>200<br>RUP POINTS</span></div>
-                <div class="wheel-segment" style="background:#F44336;transform:rotate(144deg)"><span>500<br>RUP POINTS</span></div>
-                <div class="wheel-segment" style="background:#2196F3;transform:rotate(216deg)"><span>10<br>RUP POINTS</span></div>
-                <div class="wheel-segment" style="background:#9C27B0;transform:rotate(288deg)"><span>20<br>RUP POINTS</span></div>
-            </div>
-            <div class="wheel-center" id="spinBtn" onclick="spinWheel()">Tap to<br>Spin</div>
-        </div>
-        <div class="wheel-timer hide" id="wheelTimer"></div>
-    </div>
-    <div class="spin-info">
-      🎯 Win 10 or 20 RUP POINTS • Opens 9AM & 9PM Daily<br>
-      ⏰ 2 Spins Every 24 Hours
-    </div>
-</div>
-
+<!-- ✅ TASKS FIRST -->
 <div class="card">
   <div class="ic tg">✈️</div>
   <div class="txt"><b>Join Telegram</b><span>Reward: <div class="mini-coin">R</div> 20 RUP POINTS</span></div>
@@ -156,6 +134,29 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
     style="width:100%;padding:10px;border-radius:8px;border:1px solid #333;background:#0d0d0d;color:#fff;margin-bottom:8px;">
   <button class="bt claim" style="width:100%" onclick="claimFbPost()">Submit & Claim 50</button>
   <p id="fbPostTimer" style="text-align:center;color:#FFA500;font-size:12px;margin-top:6px;"></p>
+</div>
+
+<!-- ✅ SPIN WHEEL CARD MOVED DOWN -->
+<div class="spin-card">
+    <h3>🎡 Lucky Spin - Win Big!</h3>
+    <div class="wheel-container">
+        <div class="wheel-wrapper">
+            <div class="wheel-pointer"></div>
+            <div class="wheel" id="wheel">
+                <div class="wheel-segment" style="background:#4CAF50;transform:rotate(0deg)"><span>100<br>RUP POINTS</span></div>
+                <div class="wheel-segment" style="background:#FFC107;transform:rotate(72deg)"><span>200<br>RUP POINTS</span></div>
+                <div class="wheel-segment" style="background:#F44336;transform:rotate(144deg)"><span>500<br>RUP POINTS</span></div>
+                <div class="wheel-segment" style="background:#2196F3;transform:rotate(216deg)"><span>10<br>RUP POINTS</span></div>
+                <div class="wheel-segment" style="background:#9C27B0;transform:rotate(288deg)"><span>20<br>RUP POINTS</span></div>
+            </div>
+            <div class="wheel-center" id="spinBtn" onclick="spinWheel()">Tap to<br>Spin</div>
+        </div>
+        <div class="wheel-timer hide" id="wheelTimer"></div>
+    </div>
+    <div class="spin-info">
+      🎯 Win 10 or 20 RUP POINTS • Opens 9AM & 9PM Daily<br>
+      ⏰ 2 Spins Every 24 Hours
+    </div>
 </div>
 
 <div class="nav">
@@ -219,7 +220,7 @@ async function init(){
   document.getElementById('bal').innerText = userData.balance || 0;
   updateButtons();
   checkSpinStatus();
-  initFbPostTask(); // ✅ Safe call
+  initFbPostTask();
 }
 
 init();
@@ -265,7 +266,7 @@ function updateButtons() {
 
   tasks.forEach(t => {
     let btn = document.getElementById(t.id + 'Btn');
-    if (!btn) return; // ✅ Safe check
+    if (!btn) return;
     if (taskState[t.id] === 'opened') {
       btn.innerText = 'OPENED';
       btn.className = 'bt opened';
@@ -288,7 +289,7 @@ function updateButtons() {
 
 // ✅ FACEBOOK POST TASK FUNCTIONS
 function initFbPostTask() {
-  if (!window.userData) return; // ✅ Prevent crash
+  if (!window.userData) return;
   let btn = document.getElementById('fbPostBtn');
   let claimBox = document.getElementById('fbPostClaimBox');
   if (!btn) return;
@@ -395,14 +396,16 @@ function updateFbPostTimer() {
   let diff = FB_POST_COOLDOWN - (now - lastClaim);
   
   if (diff <= 0) {
-    document.getElementById('fbPostTimer').innerText = 'Ready to post again!';
+    let timerEl = document.getElementById('fbPostTimer');
+    if(timerEl) timerEl.innerText = 'Ready to post again!';
     initFbPostTask();
     return;
   }
   
   let h = Math.floor(diff / 3600000);
   let m = Math.floor((diff % 3600000) / 60000);
-  document.getElementById('fbPostTimer').innerText = `Next post in: ${h}h ${m}m`;
+  let timerEl = document.getElementById('fbPostTimer');
+  if(timerEl) timerEl.innerText = `Next post in: ${h}h ${m}m`;
 }
 
 // ✅ SPIN WHEEL FUNCTIONS
