@@ -16,31 +16,35 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .hdr small{color:#888}
 .tokenBal{background:#0d0d0d;border:1px solid #FFA500;border-radius:12px;padding:15px;margin:0 15px;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
 .tokenBal b{color:#FFA500;font-size:24px}
-.r-coin {width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;box-shadow:0 0 10px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500}
+.r-coin {width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;box-shadow:0 0 10px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500;position:relative;flex-shrink:0}
 .card{border:1px solid #333;border-radius:12px;padding:14px;margin:12px 15px;display:flex;align-items:center;background:#0d0d0d}
 .ic{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:20px}
 .tg{background:#0088cc}.fb{background:#1877f2}.x{background:#fff;color:#000}
 .txt{flex:1}.txt b{display:block;font-size:15px}.txt span{color:#FFA500;font-size:12px;display:flex;align-items:center;gap:4px}
-.txt.mini-coin {width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:8px;color:#000}
+.txt .mini-coin {width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:8px;color:#000}
 .bt{border:1px solid #FFA500;color:#FFA500;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;min-width:70px;text-align:center;font-weight:600}
 .bt.claim{background:#FFA500;color:#000}
 .bt.done{background:#333;color:#666;border-color:#333;cursor:not-allowed}
 .bt.opened{background:#1a1a1a;color:#888;border-color:#444}
 .spin-card{border:2px solid transparent;border-radius:16px;padding:18px;margin:12px 15px;background:linear-gradient(#0d0d0d,#0d0d0d) padding-box,linear-gradient(135deg,#FFA500,#F3C774,#FFA500) border-box;box-shadow:0 0 25px rgba(255,165,0,0.15);position:relative;overflow:hidden}
-.spin-card h3{margin:0 0 12px;color:#FFA500;text-align:center;font-size:20px;font-weight:800}
-.wheel-container{display:flex;flex-direction:column;align-items:center;gap:15px;margin:15px 0}
+.spin-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,165,0,0.08) 0%,transparent 70%);animation:rotate 15s linear infinite}
+@keyframes rotate{100%{transform:rotate(360deg)}}
+.spin-card h3{margin:0 0 12px;color:#FFA500;text-align:center;font-size:20px;font-weight:800;letter-spacing:1px;text-shadow:0 0 15px rgba(255,165,0,0.5);position:relative;z-index:1}
+.wheel-container{display:flex;flex-direction:column;align-items:center;gap:15px;margin:15px 0;position:relative;z-index:1}
 .wheel-wrapper{position:relative;width:280px;height:280px}
-.wheel{width:100%;height:100%;border-radius:50%;border:8px solid #2A2A2C;position:relative;overflow:hidden;transition:transform 4s cubic-bezier(0.17,0.67,0.12,0.99)}
+.wheel{width:100%;height:100%;border-radius:50%;border:8px solid #2A2A2C;position:relative;overflow:hidden;transition:transform 4s cubic-bezier(0.17,0.67,0.12,0.99);box-shadow:0 0 30px rgba(243,199,116,0.3)}
 .wheel-segment{position:absolute;width:50%;height:50%;transform-origin:100% 100%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#000}
-.wheel-segment span{transform:rotate(-36deg);display:block;width:95px;text-align:center}
-.wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:75px;height:75px;background:#0B0B0C;border:4px solid #F3C774;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#F3C774;z-index:10;cursor:pointer}
+.wheel-segment span{transform:rotate(-36deg);display:block;width:95px;text-align:center;line-height:1.3}
+.wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:75px;height:75px;background:#0B0B0C;border:4px solid #F3C774;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#F3C774;z-index:10;cursor:pointer;text-align:center;line-height:1.2;box-shadow:0 0 20px rgba(243,199,116,0.4)}
 .wheel-center.disabled{background:#2a2a2a;border-color:#666;color:#666;cursor:not-allowed}
-.wheel-pointer{position:absolute;right:-15px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:15px solid transparent;border-bottom:15px solid transparent;border-left:25px solid #F3C774;z-index:5}
-.wheel-timer{font-size:14px;color:#F3C774;font-weight:700;background:rgba(243,199,116,0.1);padding:12px 24px;border-radius:12px;border:2px solid #F3C774;min-width:180px;text-align:center}
+.wheel-pointer{position:absolute;right:-15px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:15px solid transparent;border-bottom:15px solid transparent;border-left:25px solid #F3C774;z-index:5;filter:drop-shadow(0 0 8px #F3C774)}
+.wheel-timer{font-size:14px;color:#F3C774;font-weight:700;background:rgba(243,199,116,0.1);padding:12px 24px;border-radius:12px;border:2px solid #F3C774;min-width:180px;text-align:center;box-shadow:0 0 15px rgba(243,199,116,0.2)}
 .wheel-timer.hide{display:none}
+.spin-info{font-size:12px;color:#F3C774;text-align:center;margin-top:12px;line-height:1.6;font-weight:600;position:relative;z-index:1}
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
 .nav-item.active{color:#FFA500}
+.nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999}
 .toast.error{background:#5c1a1a;color:#ff4d4d}
 </style>
@@ -73,6 +77,38 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 </div>
 
 <div class="card">
+  <div class="ic fb">f</div>
+  <div class="txt">
+    <b>Post on Facebook</b>
+    <span>Reward: <div class="mini-coin">R</div> 50 RUP POINTS</span>
+    <small style="color:#888;font-size:11px;display:block;margin-top:4px">Min 50 words + 1 photo + #Ruppynetwork @Ruppyfoundatio</small>
+  </div>
+  <a class="bt" id="fbPostBtn">POST</a>
+</div>
+
+<div id="fbPostClaimBox" style="display:none;margin:-5px 15px 12px 15px;">
+  <input type="text" id="fbPostLink" placeholder="Paste Facebook post link here" style="width:100%;padding:10px;border-radius:8px;border:1px solid #333;background:#0d0d0d;color:#fff;margin-bottom:8px;">
+  <button class="bt claim" style="width:100%" onclick="claimFbPost()">Submit & Claim 50</button>
+  <p id="fbPostTimer" style="text-align:center;color:#FFA500;font-size:12px;margin-top:6px;"></p>
+</div>
+
+<div class="card">
+  <div class="ic" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);">📷</div>
+  <div class="txt">
+    <b>Post on Instagram</b>
+    <span>Reward: <div class="mini-coin">R</div> 50 RUP POINTS</span>
+    <small style="color:#888;font-size:11px;display:block;margin-top:4px">Min 50 words + 1 photo + #Ruppynetwork @ruppyfoundatio</small>
+  </div>
+  <a class="bt" id="igPostBtn">POST</a>
+</div>
+
+<div id="igPostClaimBox" style="display:none;margin:-5px 15px 12px 15px;">
+  <input type="text" id="igPostLink" placeholder="Paste Instagram post link here" style="width:100%;padding:10px;border-radius:8px;border:1px solid #333;background:#0d0d0d;color:#fff;margin-bottom:8px;">
+  <button class="bt claim" style="width:100%" onclick="claimIgPost()">Submit & Claim 50</button>
+  <p id="igPostTimer" style="text-align:center;color:#FFA500;font-size:12px;margin-top:6px;"></p>
+</div>
+
+<div class="card">
   <div class="ic" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);">📷</div>
   <div class="txt"><b>Follow on Instagram</b><span>Reward: <div class="mini-coin">R</div> 20 RUP POINTS</span></div>
   <a class="bt" id="igBtn" style="background:#dc2743; border-color:#dc2743; color:#fff;">FOLLOW</a>
@@ -94,6 +130,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
         </div>
         <div class="wheel-timer hide" id="wheelTimer"></div>
     </div>
+    <div class="spin-info">🎯 Win 10 or 20 RUP POINTS • Opens 9AM & 9PM Daily<br>⏰ 2 Spins Every 24 Hours</div>
 </div>
 
 <div class="nav">
@@ -116,6 +153,14 @@ var spinTimer = null;
 var currentRotation = 0;
 var isSpinning = false;
 
+const FB_POST_TASK_ID = 'fbPost';
+const FB_POST_REWARD = 50;
+const FB_POST_COOLDOWN = 12 * 60 * 60 * 1000;
+
+const IG_POST_TASK_ID = 'igPost';
+const IG_POST_REWARD = 50;
+const IG_POST_COOLDOWN = 12 * 60 * 60 * 1000;
+
 async function init(){
   let attempts = 0;
   while(!window.userData?.uid && attempts < 50) {
@@ -123,13 +168,18 @@ async function init(){
     attempts++;
   }
   userData = window.userData;
-
-  let displayId = userData.myReferralCode || 'RUP-' + userData.uid.substring(0,6).toUpperCase();
-  document.getElementById('userId').innerText = `ID: ${displayId}`;
+  
+  let displayId = userData.myReferralCode;
+  if(!displayId && userData.uid) {
+    displayId = 'RUP-' + userData.uid.substring(0,6).toUpperCase();
+  }
+  document.getElementById('userId').innerText = `ID: ${displayId || 'Loading...'}`;
+  
   document.getElementById('bal').innerText = userData.balance || 0;
-
   updateButtons();
   checkSpinStatus();
+  initFbPostTask();
+  initIgPostTask();
 }
 
 init();
@@ -145,12 +195,12 @@ document.addEventListener('visibilitychange', function() {
 
 function openLink(task, url) {
   window.location.href = url;
+
   openedTask = task;
   taskState[task] = 'opened';
   localStorage.setItem('taskState', JSON.stringify(taskState));
   updateButtons();
 
-  // Auto enable claim after 5 sec
   setTimeout(() => {
     if (taskState[task] === 'opened') {
       taskState[task] = 'ready_to_claim';
@@ -166,9 +216,9 @@ async function claimReward(task) {
     userData.balance += 20;
     taskState[task] = 'claimed';
     localStorage.setItem('taskState', JSON.stringify(taskState));
-
+    
     if(window.saveRuppyData) await window.saveRuppyData(userData);
-
+    
     document.getElementById('bal').innerText = userData.balance;
     updateButtons();
     showToast('+20 RUP POINTS Claimed!');
@@ -186,7 +236,6 @@ function updateButtons() {
   tasks.forEach(t => {
     let btn = document.getElementById(t.id + 'Btn');
     if (!btn) return;
-
     if (taskState[t.id] === 'opened') {
       btn.innerText = 'OPENED';
       btn.className = 'bt opened';
@@ -207,16 +256,239 @@ function updateButtons() {
   });
 }
 
+function initFbPostTask() {
+  if (!window.userData) return;
+  let btn = document.getElementById('fbPostBtn');
+  let claimBox = document.getElementById('fbPostClaimBox');
+  if (!btn) return;
+  
+  let lastClaim = Number(taskState[FB_POST_TASK_ID + '_time']) || 0;
+  let now = Date.now();
+  
+  if (taskState[FB_POST_TASK_ID] === 'claimed' && (now - lastClaim) < FB_POST_COOLDOWN) {
+    btn.innerText = 'WAIT';
+    btn.className = 'bt done';
+    btn.onclick = null;
+    claimBox.style.display = 'block';
+    updateFbPostTimer();
+    setInterval(updateFbPostTimer, 60000);
+  } else if (taskState[FB_POST_TASK_ID] === 'opened') {
+    btn.innerText = 'SUBMIT';
+    btn.className = 'bt claim';
+    btn.onclick = () => {
+      claimBox.style.display = 'block';
+      claimBox.scrollIntoView({behavior: 'smooth'});
+    };
+  } else {
+    btn.innerText = 'POST';
+    btn.className = 'bt';
+    btn.onclick = () => openFbPost();
+  }
+}
+
+function openFbPost() {
+  let shareUrl = encodeURIComponent('https://ruppynetwork.com');
+  let quote = encodeURIComponent('I am using Ruppy Network and earning free tokens!\n\n#Ruppynetwork @Ruppyfoundatio\nDownload now: https://ruppynetwork.com');
+  let fbShareLink = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${quote}`;
+  
+  window.location.href = fbShareLink;
+  taskState[FB_POST_TASK_ID] = 'opened';
+  localStorage.setItem('taskState', JSON.stringify(taskState));
+  initFbPostTask();
+}
+
+async function claimFbPost() {
+  let link = document.getElementById('fbPostLink').value.trim();
+  let now = Date.now();
+  let lastClaim = Number(taskState[FB_POST_TASK_ID + '_time']) || 0;
+  
+  if (now - lastClaim < FB_POST_COOLDOWN) {
+    showToast('You can post again after 12 hours', 'error');
+    return;
+  }
+  
+  if (!link.includes('facebook.com')) {
+    showToast('Please enter a valid Facebook post link', 'error');
+    return;
+  }
+  
+  document.getElementById('fbPostBtn').innerText = 'VERIFYING...';
+  document.getElementById('fbPostBtn').className = 'bt opened';
+  
+  try {
+    let res = await fetch('/api/verify-fb-post', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({link: link, userId: userData.uid, requiredWords: 50, requiredTag: '@Ruppyfoundatio', requiredHashtag: '#Ruppynetwork'})
+    });
+    let data = await res.json();
+    
+    if (data.success) {
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += FB_POST_REWARD;
+      taskState[FB_POST_TASK_ID] = 'claimed';
+      taskState[FB_POST_TASK_ID + '_time'] = now;
+      localStorage.setItem('taskState', JSON.stringify(taskState));
+      
+      if (window.saveRuppyData) await window.saveRuppyData(userData);
+      
+      document.getElementById('bal').innerText = userData.balance;
+      document.getElementById('fbPostLink').value = '';
+      initFbPostTask();
+      showToast(`+${FB_POST_REWARD} RUP POINTS Claimed!`);
+    } else {
+      showToast(data.message || 'Post does not meet requirements', 'error');
+      document.getElementById('fbPostBtn').innerText = 'SUBMIT';
+      document.getElementById('fbPostBtn').className = 'bt claim';
+    }
+  } catch(e) {
+    showToast('Server error, try again', 'error');
+    document.getElementById('fbPostBtn').innerText = 'SUBMIT';
+    document.getElementById('fbPostBtn').className = 'bt claim';
+  }
+}
+
+function updateFbPostTimer() {
+  let lastClaim = Number(taskState[FB_POST_TASK_ID + '_time']) || 0;
+  let now = Date.now();
+  let diff = FB_POST_COOLDOWN - (now - lastClaim);
+  
+  if (diff <= 0) {
+    let timerEl = document.getElementById('fbPostTimer');
+    if(timerEl) timerEl.innerText = 'Ready to post again!';
+    initFbPostTask();
+    return;
+  }
+  
+  let h = Math.floor(diff / 3600000);
+  let m = Math.floor((diff % 3600000) / 60000);
+  let timerEl = document.getElementById('fbPostTimer');
+  if(timerEl) timerEl.innerText = `Next post in: ${h}h ${m}m`;
+}
+
+function initIgPostTask() {
+  if (!window.userData) return;
+  let btn = document.getElementById('igPostBtn');
+  let claimBox = document.getElementById('igPostClaimBox');
+  if (!btn) return;
+  
+  let lastClaim = Number(taskState[IG_POST_TASK_ID + '_time']) || 0;
+  let now = Date.now();
+  
+  if (taskState[IG_POST_TASK_ID] === 'claimed' && (now - lastClaim) < IG_POST_COOLDOWN) {
+    btn.innerText = 'WAIT';
+    btn.className = 'bt done';
+    btn.onclick = null;
+    claimBox.style.display = 'block';
+    updateIgPostTimer();
+    setInterval(updateIgPostTimer, 60000);
+  } else if (taskState[IG_POST_TASK_ID] === 'opened') {
+    btn.innerText = 'SUBMIT';
+    btn.className = 'bt claim';
+    btn.onclick = () => {
+      claimBox.style.display = 'block';
+      claimBox.scrollIntoView({behavior: 'smooth'});
+    };
+  } else {
+    btn.innerText = 'POST';
+    btn.className = 'bt';
+    btn.onclick = () => openIgPost();
+  }
+}
+
+function openIgPost() {
+  let caption = encodeURIComponent('I am using Ruppy Network and earning free tokens!\n\n#Ruppynetwork @ruppyfoundatio\nDownload now: https://ruppynetwork.com');
+  
+  window.location.href = 'https://www.instagram.com/';
+  alert('Instagram opened. Copy this caption and paste it in your post:\n\n' + decodeURIComponent(caption));
+  
+  taskState[IG_POST_TASK_ID] = 'opened';
+  localStorage.setItem('taskState', JSON.stringify(taskState));
+  initIgPostTask();
+}
+
+async function claimIgPost() {
+  let link = document.getElementById('igPostLink').value.trim();
+  let now = Date.now();
+  let lastClaim = Number(taskState[IG_POST_TASK_ID + '_time']) || 0;
+  
+  if (now - lastClaim < IG_POST_COOLDOWN) {
+    showToast('You can post again after 12 hours', 'error');
+    return;
+  }
+  
+  if (!link.includes('instagram.com')) {
+    showToast('Please enter a valid Instagram post link', 'error');
+    return;
+  }
+  
+  document.getElementById('igPostBtn').innerText = 'VERIFYING...';
+  document.getElementById('igPostBtn').className = 'bt opened';
+  
+  try {
+    let res = await fetch('/api/verify-ig-post', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({link: link, userId: userData.uid, requiredWords: 50, requiredTag: '@ruppyfoundatio', requiredHashtag: '#Ruppynetwork'})
+    });
+    let data = await res.json();
+    
+    if (data.success) {
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += IG_POST_REWARD;
+      taskState[IG_POST_TASK_ID] = 'claimed';
+      taskState[IG_POST_TASK_ID + '_time'] = now;
+      localStorage.setItem('taskState', JSON.stringify(taskState));
+      
+      if (window.saveRuppyData) await window.saveRuppyData(userData);
+      
+      document.getElementById('bal').innerText = userData.balance;
+      document.getElementById('igPostLink').value = '';
+      initIgPostTask();
+      showToast(`+${IG_POST_REWARD} RUP POINTS Claimed!`);
+    } else {
+      showToast(data.message || 'Post does not meet requirements', 'error');
+      document.getElementById('igPostBtn').innerText = 'SUBMIT';
+      document.getElementById('igPostBtn').className = 'bt claim';
+    }
+  } catch(e) {
+    showToast('Server error, try again', 'error');
+    document.getElementById('igPostBtn').innerText = 'SUBMIT';
+    document.getElementById('igPostBtn').className = 'bt claim';
+  }
+}
+
+function updateIgPostTimer() {
+  let lastClaim = Number(taskState[IG_POST_TASK_ID + '_time']) || 0;
+  let now = Date.now();
+  let diff = IG_POST_COOLDOWN - (now - lastClaim);
+  
+  if (diff <= 0) {
+    let timerEl = document.getElementById('igPostTimer');
+    if(timerEl) timerEl.innerText = 'Ready to post again!';
+    initIgPostTask();
+    return;
+  }
+  
+  let h = Math.floor(diff / 3600000);
+  let m = Math.floor((diff % 3600000) / 60000);
+  let timerEl = document.getElementById('igPostTimer');
+  if(timerEl) timerEl.innerText = `Next post in: ${h}h ${m}m`;
+}
+
 function getNextSpinTime(){
     const now = new Date();
     const today9AM = new Date(now);
     today9AM.setHours(9, 0, 0, 0);
+    
     const today9PM = new Date(now);
     today9PM.setHours(21, 0, 0, 0);
-
-    if(now < today9AM) return today9AM;
-    else if(now < today9PM) return today9PM;
-    else {
+    
+    if(now < today9AM){
+        return today9AM;
+    } else if(now < today9PM){
+        return today9PM;
+    } else {
         const tomorrow9AM = new Date(now);
         tomorrow9AM.setDate(now.getDate() + 1);
         tomorrow9AM.setHours(9, 0, 0, 0);
@@ -254,6 +526,7 @@ function startSpinTimer(){
             spinBtn.classList.remove('disabled');
             spinBtn.innerHTML = 'Tap to<br>Spin';
             timerEl.classList.add('hide');
+            timerEl.innerText = '';
             showToast('Spin Ready! 🎉');
         } else {
             timerEl.innerText = 'Next Spin: ' + formatTime(diff);
@@ -263,8 +536,12 @@ function startSpinTimer(){
 
 function checkSpinStatus(){
     var nextTime = localStorage.getItem('spin_next_time');
-    if(nextTime && parseInt(nextTime) > Date.now()){
-        startSpinTimer();
+    if(nextTime){
+        if(parseInt(nextTime) > Date.now()){
+            startSpinTimer();
+        } else {
+            localStorage.removeItem('spin_next_time');
+        }
     }
 }
 
@@ -280,11 +557,19 @@ async function spinWheel() {
     isSpinning = true;
     var wheel = document.getElementById('wheel');
     var spinBtn = document.getElementById('spinBtn');
+
     spinBtn.innerHTML = 'Spinning...';
 
     var rand = Math.random();
-    var winAmount = rand < 0.7? 20 : 10;
-    var targetAngle = rand < 0.7? 288 : 216;
+    var winAmount, targetAngle;
+    
+    if(rand < 0.7){
+        winAmount = 20;
+        targetAngle = 288;
+    } else {
+        winAmount = 10;
+        targetAngle = 216;
+    }
 
     var extraSpins = Math.floor(Math.random() * 3) + 5;
     var totalRotation = extraSpins * 360 + targetAngle;
@@ -294,14 +579,16 @@ async function spinWheel() {
 
     setTimeout(async function(){
         isSpinning = false;
+
         userData.balance = Number(userData.balance) || 0;
         userData.balance += winAmount;
         if(window.saveRuppyData) await window.saveRuppyData(userData);
-
+        
         document.getElementById('bal').innerText = userData.balance;
 
         var nextSpinTime = getNextSpinTime();
         localStorage.setItem('spin_next_time', nextSpinTime.getTime());
+
         startSpinTimer();
         showToast('🎉 Congrats! You Won ' + winAmount + ' RUP POINTS!');
     }, 4000);
@@ -318,6 +605,19 @@ function showToast(msg, type = 'success'){
 function goPage(page) {
   window.location.href = page;
 }
+
+window.addEventListener('storage', function(e) {
+  if (e.key === 'ruppy_user_cache') {
+    userData = JSON.parse(e.newValue);
+    document.getElementById('bal').innerText = userData.balance;
+    
+    let displayId = userData.myReferralCode;
+    if(!displayId && userData.uid) {
+      displayId = 'RUP-' + userData.uid.substring(0,6).toUpperCase();
+    }
+    document.getElementById('userId').innerText = `ID: ${displayId || 'Loading...'}`;
+  }
+});
 </script>
 </body>
 </html>
