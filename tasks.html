@@ -21,10 +21,23 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .ic{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:20px}
 .tg{background:#0088cc}.fb{background:#1877f2}.x{background:#fff;color:#000}
 .txt{flex:1}.txt b{display:block;font-size:15px}.txt span{color:#FFA500;font-size:12px;display:flex;align-items:center;gap:4px}
+.txt.mini-coin {width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:8px;color:#000}
 .bt{border:1px solid #FFA500;color:#FFA500;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;min-width:70px;text-align:center;font-weight:600}
 .bt.claim{background:#FFA500;color:#000}
 .bt.done{background:#333;color:#666;border-color:#333;cursor:not-allowed}
 .bt.opened{background:#1a1a1a;color:#888;border-color:#444}
+.spin-card{border:2px solid transparent;border-radius:16px;padding:18px;margin:12px 15px;background:linear-gradient(#0d0d0d,#0d0d0d) padding-box,linear-gradient(135deg,#FFA500,#F3C774,#FFA500) border-box;box-shadow:0 0 25px rgba(255,165,0,0.15);position:relative;overflow:hidden}
+.spin-card h3{margin:0 0 12px;color:#FFA500;text-align:center;font-size:20px;font-weight:800}
+.wheel-container{display:flex;flex-direction:column;align-items:center;gap:15px;margin:15px 0}
+.wheel-wrapper{position:relative;width:280px;height:280px}
+.wheel{width:100%;height:100%;border-radius:50%;border:8px solid #2A2A2C;position:relative;overflow:hidden;transition:transform 4s cubic-bezier(0.17,0.67,0.12,0.99)}
+.wheel-segment{position:absolute;width:50%;height:50%;transform-origin:100% 100%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#000}
+.wheel-segment span{transform:rotate(-36deg);display:block;width:95px;text-align:center}
+.wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:75px;height:75px;background:#0B0B0C;border:4px solid #F3C774;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#F3C774;z-index:10;cursor:pointer}
+.wheel-center.disabled{background:#2a2a2a;border-color:#666;color:#666;cursor:not-allowed}
+.wheel-pointer{position:absolute;right:-15px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:15px solid transparent;border-bottom:15px solid transparent;border-left:25px solid #F3C774;z-index:5}
+.wheel-timer{font-size:14px;color:#F3C774;font-weight:700;background:rgba(243,199,116,0.1);padding:12px 24px;border-radius:12px;border:2px solid #F3C774;min-width:180px;text-align:center}
+.wheel-timer.hide{display:none}
 .nav{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%}
 .nav-item.active{color:#FFA500}
@@ -43,26 +56,44 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 
 <div class="card">
   <div class="ic tg">✈️</div>
-  <div class="txt"><b>Join Telegram</b><span>Reward: 20 RUP POINTS</span></div>
+  <div class="txt"><b>Join Telegram</b><span>Reward: <div class="mini-coin">R</div> 20 RUP POINTS</span></div>
   <a class="bt" id="tgBtn">JOIN</a>
 </div>
 
 <div class="card">
   <div class="ic fb">f</div>
-  <div class="txt"><b>Follow on Facebook</b><span>Reward: 20 RUP POINTS</span></div>
+  <div class="txt"><b>Follow on Facebook</b><span>Reward: <div class="mini-coin">R</div> 20 RUP POINTS</span></div>
   <a class="bt" id="fbBtn">FOLLOW</a>
 </div>
 
 <div class="card">
   <div class="ic x">X</div>
-  <div class="txt"><b>Follow on X</b><span>Reward: 20 RUP POINTS</span></div>
+  <div class="txt"><b>Follow on X</b><span>Reward: <div class="mini-coin">R</div> 20 RUP POINTS</span></div>
   <a class="bt" id="xBtn">FOLLOW</a>
 </div>
 
 <div class="card">
   <div class="ic" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);">📷</div>
-  <div class="txt"><b>Follow on Instagram</b><span>Reward: 20 RUP POINTS</span></div>
+  <div class="txt"><b>Follow on Instagram</b><span>Reward: <div class="mini-coin">R</div> 20 RUP POINTS</span></div>
   <a class="bt" id="igBtn" style="background:#dc2743; border-color:#dc2743; color:#fff;">FOLLOW</a>
+</div>
+
+<div class="spin-card">
+    <h3>🎡 Lucky Spin - Win Big!</h3>
+    <div class="wheel-container">
+        <div class="wheel-wrapper">
+            <div class="wheel-pointer"></div>
+            <div class="wheel" id="wheel">
+                <div class="wheel-segment" style="background:#4CAF50;transform:rotate(0deg)"><span>100<br>RUP POINTS</span></div>
+                <div class="wheel-segment" style="background:#FFC107;transform:rotate(72deg)"><span>200<br>RUP POINTS</span></div>
+                <div class="wheel-segment" style="background:#F44336;transform:rotate(144deg)"><span>500<br>RUP POINTS</span></div>
+                <div class="wheel-segment" style="background:#2196F3;transform:rotate(216deg)"><span>10<br>RUP POINTS</span></div>
+                <div class="wheel-segment" style="background:#9C27B0;transform:rotate(288deg)"><span>20<br>RUP POINTS</span></div>
+            </div>
+            <div class="wheel-center" id="spinBtn" onclick="spinWheel()">Tap to<br>Spin</div>
+        </div>
+        <div class="wheel-timer hide" id="wheelTimer"></div>
+    </div>
 </div>
 
 <div class="nav">
@@ -81,6 +112,10 @@ var userData = window.userData;
 let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
 let openedTask = null;
 
+var spinTimer = null;
+var currentRotation = 0;
+var isSpinning = false;
+
 async function init(){
   let attempts = 0;
   while(!window.userData?.uid && attempts < 50) {
@@ -94,6 +129,7 @@ async function init(){
   document.getElementById('bal').innerText = userData.balance || 0;
 
   updateButtons();
+  checkSpinStatus();
 }
 
 init();
@@ -114,6 +150,7 @@ function openLink(task, url) {
   localStorage.setItem('taskState', JSON.stringify(taskState));
   updateButtons();
 
+  // Auto enable claim after 5 sec
   setTimeout(() => {
     if (taskState[task] === 'opened') {
       taskState[task] = 'ready_to_claim';
@@ -140,8 +177,8 @@ async function claimReward(task) {
 
 function updateButtons() {
   const tasks = [
-    {id: 'tg', url: 'PASTE_NEW_TELEGRAM_LINK_HERE', text: 'JOIN'},
-    {id: 'fb', url: 'PASTE_NEW_FACEBOOK_LINK_HERE', text: 'FOLLOW'},
+    {id: 'tg', url: 'https://t.me/RUPPYfoundation', text: 'JOIN'},
+    {id: 'fb', url: 'https://www.facebook.com/Ruppynetworks', text: 'FOLLOW'},
     {id: 'x', url: 'https://x.com/rupfoundation?s=21', text: 'FOLLOW'},
     {id: 'ig', url: 'https://www.instagram.com/ruppynetwork4', text: 'FOLLOW'}
   ];
@@ -168,6 +205,106 @@ function updateButtons() {
       btn.onclick = () => openLink(t.id, t.url);
     }
   });
+}
+
+function getNextSpinTime(){
+    const now = new Date();
+    const today9AM = new Date(now);
+    today9AM.setHours(9, 0, 0, 0);
+    const today9PM = new Date(now);
+    today9PM.setHours(21, 0, 0, 0);
+
+    if(now < today9AM) return today9AM;
+    else if(now < today9PM) return today9PM;
+    else {
+        const tomorrow9AM = new Date(now);
+        tomorrow9AM.setDate(now.getDate() + 1);
+        tomorrow9AM.setHours(9, 0, 0, 0);
+        return tomorrow9AM;
+    }
+}
+
+function formatTime(ms){
+    var h = Math.floor(ms / 3600000);
+    var m = Math.floor((ms % 3600000) / 60000);
+    var s = Math.floor((ms % 60000) / 1000);
+    return (h<10?'0'+h:h) + ':' + (m<10?'0'+m:m) + ':' + (s<10?'0'+s:s);
+}
+
+function startSpinTimer(){
+    var endTime = parseInt(localStorage.getItem('spin_next_time'));
+    if(!endTime) return;
+
+    var timerEl = document.getElementById('wheelTimer');
+    var spinBtn = document.getElementById('spinBtn');
+
+    spinBtn.classList.add('disabled');
+    spinBtn.innerHTML = 'Locked';
+    timerEl.classList.remove('hide');
+
+    if(spinTimer) clearInterval(spinTimer);
+
+    spinTimer = setInterval(function(){
+        var now = Date.now();
+        var diff = endTime - now;
+
+        if(diff <= 0){
+            clearInterval(spinTimer);
+            localStorage.removeItem('spin_next_time');
+            spinBtn.classList.remove('disabled');
+            spinBtn.innerHTML = 'Tap to<br>Spin';
+            timerEl.classList.add('hide');
+            showToast('Spin Ready! 🎉');
+        } else {
+            timerEl.innerText = 'Next Spin: ' + formatTime(diff);
+        }
+    }, 1000);
+}
+
+function checkSpinStatus(){
+    var nextTime = localStorage.getItem('spin_next_time');
+    if(nextTime && parseInt(nextTime) > Date.now()){
+        startSpinTimer();
+    }
+}
+
+async function spinWheel() {
+    if(isSpinning) return;
+
+    var nextTime = localStorage.getItem('spin_next_time');
+    if(nextTime && parseInt(nextTime) > Date.now()){
+        showToast('Next spin at 9AM or 9PM!', 'error');
+        return;
+    }
+
+    isSpinning = true;
+    var wheel = document.getElementById('wheel');
+    var spinBtn = document.getElementById('spinBtn');
+    spinBtn.innerHTML = 'Spinning...';
+
+    var rand = Math.random();
+    var winAmount = rand < 0.7? 20 : 10;
+    var targetAngle = rand < 0.7? 288 : 216;
+
+    var extraSpins = Math.floor(Math.random() * 3) + 5;
+    var totalRotation = extraSpins * 360 + targetAngle;
+
+    currentRotation += totalRotation;
+    wheel.style.transform = 'rotate(' + currentRotation + 'deg)';
+
+    setTimeout(async function(){
+        isSpinning = false;
+        userData.balance = Number(userData.balance) || 0;
+        userData.balance += winAmount;
+        if(window.saveRuppyData) await window.saveRuppyData(userData);
+
+        document.getElementById('bal').innerText = userData.balance;
+
+        var nextSpinTime = getNextSpinTime();
+        localStorage.setItem('spin_next_time', nextSpinTime.getTime());
+        startSpinTimer();
+        showToast('🎉 Congrats! You Won ' + winAmount + ' RUP POINTS!');
+    }, 4000);
 }
 
 function showToast(msg, type = 'success'){
