@@ -17,7 +17,6 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .tokenBal{background:#0d0d0d;border:1px solid #FFA500;border-radius:12px;padding:15px;margin:0 15px;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
 .tokenBal b{color:#FFA500;font-size:24px}
 .r-coin {width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;box-shadow:0 0 10px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500;position:relative;flex-shrink:0}
-.r-coin::after {content:'';position:absolute;inset:-2px;border-radius:50%;background:radial-gradient(circle,#FF6B00 0%,transparent 70%);opacity:0.4;filter:blur(3px);z-index:-1}
 .card{border:1px solid #333;border-radius:12px;padding:14px;margin:12px 15px;display:flex;align-items:center;background:#0d0d0d}
 .ic{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:20px}
 .tg{background:#0088cc}.fb{background:#1877f2}.x{background:#fff;color:#000}
@@ -37,7 +36,6 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .wheel-segment{position:absolute;width:50%;height:50%;transform-origin:100% 100%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#000}
 .wheel-segment span{transform:rotate(-36deg);display:block;width:95px;text-align:center;line-height:1.3}
 .wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:75px;height:75px;background:#0B0B0C;border:4px solid #F3C774;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#F3C774;z-index:10;cursor:pointer;text-align:center;line-height:1.2;box-shadow:0 0 20px rgba(243,199,116,0.4)}
-.wheel-center:active{transform:translate(-50%,-50%) scale(0.95)}
 .wheel-center.disabled{background:#2a2a2a;border-color:#666;color:#666;cursor:not-allowed}
 .wheel-pointer{position:absolute;right:-15px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:15px solid transparent;border-bottom:15px solid transparent;border-left:25px solid #F3C774;z-index:5;filter:drop-shadow(0 0 8px #F3C774)}
 .wheel-timer{font-size:14px;color:#F3C774;font-weight:700;background:rgba(243,199,116,0.1);padding:12px 24px;border-radius:12px;border:2px solid #F3C774;min-width:180px;text-align:center;box-shadow:0 0 15px rgba(243,199,116,0.2)}
@@ -47,7 +45,6 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#666;text-decoration:none;font-size:11px;cursor:pointer;padding:5px 0;width:16.6%;position:relative}
 .nav-item.active{color:#FFA500}
 .nav-item.active::after{content:'';position:absolute;bottom:2px;width:30px;height:2px;background:#FFA500;border-radius:2px}
-.nav-item.icon{font-size:20px}
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5c1a;color:#4ade80;padding:12px 20px;border-radius:8px;font-size:14px;display:none;z-index:999}
 .toast.error{background:#5c1a1a;color:#ff4d4d}
 </style>
@@ -197,11 +194,20 @@ document.addEventListener('visibilitychange', function() {
 });
 
 function openLink(task, url) {
-  window.open(url, '_blank');
+  window.location.href = url;
+
   openedTask = task;
   taskState[task] = 'opened';
   localStorage.setItem('taskState', JSON.stringify(taskState));
   updateButtons();
+
+  setTimeout(() => {
+    if (taskState[task] === 'opened') {
+      taskState[task] = 'ready_to_claim';
+      localStorage.setItem('taskState', JSON.stringify(taskState));
+      updateButtons();
+    }
+  }, 5000);
 }
 
 async function claimReward(task) {
@@ -222,9 +228,9 @@ async function claimReward(task) {
 function updateButtons() {
   const tasks = [
     {id: 'tg', url: 'https://t.me/RUPPYfoundation', text: 'JOIN'},
-    {id: 'fb', url: 'https://www.facebook.com/share/1PjMyFivNF/?mibextid=wwXIfr', text: 'FOLLOW'},
+    {id: 'fb', url: 'https://www.facebook.com/Ruppynetworks', text: 'FOLLOW'},
     {id: 'x', url: 'https://x.com/rupfoundation?s=21', text: 'FOLLOW'},
-    {id: 'ig', url: 'https://www.instagram.com/ruppynetwork4?igsh=dDM3NmM5bHdmZHdi&utm_source=qr', text: 'FOLLOW'}
+    {id: 'ig', url: 'https://www.instagram.com/ruppynetwork4', text: 'FOLLOW'}
   ];
 
   tasks.forEach(t => {
@@ -282,10 +288,10 @@ function initFbPostTask() {
 
 function openFbPost() {
   let shareUrl = encodeURIComponent('https://ruppynetwork.com');
-  let quote = encodeURIComponent('मैं Ruppy Network इस्तेमाल कर रहा हूँ और फ्री टोकन कमा रहा हूँ!\n\n#Ruppynetwork @Ruppyfoundatio\nDownload करो: https://ruppynetwork.com');
+  let quote = encodeURIComponent('I am using Ruppy Network and earning free tokens!\n\n#Ruppynetwork @Ruppyfoundatio\nDownload now: https://ruppynetwork.com');
   let fbShareLink = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${quote}`;
   
-  window.open(fbShareLink, '_blank');
+  window.location.href = fbShareLink;
   taskState[FB_POST_TASK_ID] = 'opened';
   localStorage.setItem('taskState', JSON.stringify(taskState));
   initFbPostTask();
@@ -297,12 +303,12 @@ async function claimFbPost() {
   let lastClaim = Number(taskState[FB_POST_TASK_ID + '_time']) || 0;
   
   if (now - lastClaim < FB_POST_COOLDOWN) {
-    showToast('12 घंटे बाद फिर से कर सकते हो', 'error');
+    showToast('You can post again after 12 hours', 'error');
     return;
   }
   
   if (!link.includes('facebook.com')) {
-    showToast('सही Facebook पोस्ट लिंक डालो', 'error');
+    showToast('Please enter a valid Facebook post link', 'error');
     return;
   }
   
@@ -331,7 +337,7 @@ async function claimFbPost() {
       initFbPostTask();
       showToast(`+${FB_POST_REWARD} RUP POINTS Claimed!`);
     } else {
-      showToast(data.message || 'Post में 50 शब्द, 1 photo, hashtag/tag नहीं मिला', 'error');
+      showToast(data.message || 'Post does not meet requirements', 'error');
       document.getElementById('fbPostBtn').innerText = 'SUBMIT';
       document.getElementById('fbPostBtn').className = 'bt claim';
     }
@@ -391,10 +397,10 @@ function initIgPostTask() {
 }
 
 function openIgPost() {
-  let caption = encodeURIComponent('मैं Ruppy Network इस्तेमाल कर रहा हूँ और फ्री टोकन कमा रहा हूँ!\n\n#Ruppynetwork @ruppyfoundatio\nDownload करो: https://ruppynetwork.com');
+  let caption = encodeURIComponent('I am using Ruppy Network and earning free tokens!\n\n#Ruppynetwork @ruppyfoundatio\nDownload now: https://ruppynetwork.com');
   
-  window.open('https://www.instagram.com/', '_blank');
-  alert('Instagram खुल गया है. ये caption copy करके post में paste कर दे:\n\n' + decodeURIComponent(caption));
+  window.location.href = 'https://www.instagram.com/';
+  alert('Instagram opened. Copy this caption and paste it in your post:\n\n' + decodeURIComponent(caption));
   
   taskState[IG_POST_TASK_ID] = 'opened';
   localStorage.setItem('taskState', JSON.stringify(taskState));
@@ -407,12 +413,12 @@ async function claimIgPost() {
   let lastClaim = Number(taskState[IG_POST_TASK_ID + '_time']) || 0;
   
   if (now - lastClaim < IG_POST_COOLDOWN) {
-    showToast('12 घंटे बाद फिर से कर सकते हो', 'error');
+    showToast('You can post again after 12 hours', 'error');
     return;
   }
   
   if (!link.includes('instagram.com')) {
-    showToast('सही Instagram पोस्ट लिंक डालो', 'error');
+    showToast('Please enter a valid Instagram post link', 'error');
     return;
   }
   
@@ -441,7 +447,7 @@ async function claimIgPost() {
       initIgPostTask();
       showToast(`+${IG_POST_REWARD} RUP POINTS Claimed!`);
     } else {
-      showToast(data.message || 'Post में 50 शब्द, 1 photo, hashtag/tag नहीं मिला', 'error');
+      showToast(data.message || 'Post does not meet requirements', 'error');
       document.getElementById('igPostBtn').innerText = 'SUBMIT';
       document.getElementById('igPostBtn').className = 'bt claim';
     }
