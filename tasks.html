@@ -194,7 +194,7 @@ document.addEventListener('visibilitychange', function() {
 });
 
 function openLink(task, url) {
-  window.location.href = url;
+  window.open(url, '_blank');
   openedTask = task;
   taskState[task] = 'opened';
   localStorage.setItem('taskState', JSON.stringify(taskState));
@@ -227,9 +227,9 @@ async function claimReward(task) {
 function updateButtons() {
   const tasks = [
     {id: 'tg', url: 'https://t.me/RUPPYfoundation', text: 'JOIN'},
-    {id: 'fb', url: 'https://www.facebook.com/ruppynetwork', text: 'FOLLOW'},
+    {id: 'fb', url: 'https://www.facebook.com/share/1KjGA6dgtY/?mibextid=wwXIfr', text: 'FOLLOW'},
     {id: 'x', url: 'https://x.com/rupfoundation?s=21', text: 'FOLLOW'},
-    {id: 'ig', url: 'https://www.instagram.com/ruppynetwork4', text: 'FOLLOW'}
+    {id: 'ig', url: 'https://www.instagram.com/ruppynetwork4?igsh=MTJqY3ExczJzdzhqMQ==', text: 'FOLLOW'}
   ];
 
   tasks.forEach(t => {
@@ -290,7 +290,7 @@ function openFbPost() {
   let quote = encodeURIComponent('I am using Ruppy Network and earning free tokens!\n\n#Ruppynetwork @Ruppyfoundatio\nDownload now: https://ruppynetwork.com');
   let fbShareLink = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${quote}`;
   
-  window.location.href = fbShareLink;
+  window.open(fbShareLink, '_blank');
   taskState[FB_POST_TASK_ID] = 'opened';
   localStorage.setItem('taskState', JSON.stringify(taskState));
   initFbPostTask();
@@ -311,7 +311,6 @@ async function claimFbPost() {
     return;
   }
   
-  // Direct claim - no server verification for now
   userData.balance = Number(userData.balance) || 0;
   userData.balance += FB_POST_REWARD;
   taskState[FB_POST_TASK_ID] = 'claimed';
@@ -377,7 +376,7 @@ function initIgPostTask() {
 function openIgPost() {
   let caption = encodeURIComponent('I am using Ruppy Network and earning free tokens!\n\n#Ruppynetwork @ruppyfoundatio\nDownload now: https://ruppynetwork.com');
   
-  window.location.href = 'https://www.instagram.com/';
+  window.open('https://www.instagram.com/', '_blank');
   alert('Instagram opened. Copy this caption and paste it in your post:\n\n' + decodeURIComponent(caption));
   
   taskState[IG_POST_TASK_ID] = 'opened';
@@ -400,7 +399,6 @@ async function claimIgPost() {
     return;
   }
   
-  // Direct claim - no server verification for now
   userData.balance = Number(userData.balance) || 0;
   userData.balance += IG_POST_REWARD;
   taskState[IG_POST_TASK_ID] = 'claimed';
