@@ -81,7 +81,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   <div class="txt">
     <b>Post on Facebook</b>
     <span>Reward: <div class="mini-coin">R</div> 50 RUP POINTS</span>
-    <small style="color:#888;font-size:11px;display:block;margin-top:4px">Min 50 words + 1 photo + #Ruppynetwork @Ruppynetworks</small>
+    <small style="color:#888;font-size:11px;display:block;margin-top:4px">Min 50 words + 1 photo + #Ruppynetwork @rupnetwork</small>
   </div>
   <a class="bt" id="fbPostBtn">POST</a>
 </div>
@@ -97,7 +97,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   <div class="txt">
     <b>Post on Instagram</b>
     <span>Reward: <div class="mini-coin">R</div> 50 RUP POINTS</span>
-    <small style="color:#888;font-size:11px;display:block;margin-top:4px">Min 50 words + 1 photo + #Ruppynetwork @ruppynetwork4</small>
+    <small style="color:#888;font-size:11px;display:block;margin-top:4px">Min 50 words + 1 photo + #Ruppynetwork @rupnetwork</small>
   </div>
   <a class="bt" id="igPostBtn">POST</a>
 </div>
@@ -229,7 +229,7 @@ function updateButtons() {
     {id: 'tg', url: 'https://t.me/RUPPYfoundation', text: 'JOIN'},
     {id: 'fb', url: 'https://www.facebook.com/share/1KjGA6dgtY/?mibextid=wwXIfr', text: 'FOLLOW'},
     {id: 'x', url: 'https://x.com/rupfoundation?s=21', text: 'FOLLOW'},
-    {id: 'ig', url: 'https://www.instagram.com/ruppynetwork4?igsh=MTJqY3ExczJzdzhqMQ==', text: 'FOLLOW'}
+    {id: 'ig', url: 'https://www.instagram.com/rupnetwork?igsh=dDM3NmM5bHdmZHdi&utm_source=qr', text: 'FOLLOW'}
   ];
 
   tasks.forEach(t => {
@@ -255,6 +255,7 @@ function updateButtons() {
   });
 }
 
+// ... baki ka JS code same rahega ...
 function initFbPostTask() {
   if (!window.userData) return;
   let btn = document.getElementById('fbPostBtn');
@@ -287,7 +288,7 @@ function initFbPostTask() {
 
 function openFbPost() {
   let shareUrl = encodeURIComponent('https://ruppynetwork.com');
-  let quote = encodeURIComponent('I am using Ruppy Network and earning free tokens!\n\n#Ruppynetwork @Ruppyfoundatio\nDownload now: https://ruppynetwork.com');
+  let quote = encodeURIComponent('I am using Ruppy Network and earning free tokens!\n\n#Ruppynetwork @rupnetwork\nDownload now: https://ruppynetwork.com');
   let fbShareLink = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${quote}`;
   
   window.open(fbShareLink, '_blank');
@@ -374,7 +375,7 @@ function initIgPostTask() {
 }
 
 function openIgPost() {
-  let caption = encodeURIComponent('I am using Ruppy Network and earning free tokens!\n\n#Ruppynetwork @ruppyfoundatio\nDownload now: https://ruppynetwork.com');
+  let caption = encodeURIComponent('I am using Ruppy Network and earning free tokens!\n\n#Ruppynetwork @rupnetwork\nDownload now: https://ruppynetwork.com');
   
   window.open('https://www.instagram.com/', '_blank');
   alert('Instagram opened. Copy this caption and paste it in your post:\n\n' + decodeURIComponent(caption));
