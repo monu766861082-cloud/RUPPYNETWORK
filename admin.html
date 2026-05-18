@@ -33,7 +33,6 @@
     .bulk-btn.all { background: #2196F3; }
     .user-card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
     .user-card.zero-balance { border: 1px solid #f44336; }
-    .user-card.new-user { border: 2px solid #4CAF50; box-shadow: 0 0 10px #4CAF50; }
     .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .user-name { font-size: 18px; font-weight: 700; color: #F3C774; }
     .user-email { font-size: 12px; color: #888; }
@@ -62,15 +61,6 @@
     .progress-bar { width: 100%; height: 20px; background: #0a0a0a; border-radius: 10px; overflow: hidden; margin-top: 5px; }
     .progress-fill { height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); transition: 0.3s; }
     #debug { position: fixed; bottom: 10px; left: 10px; background: #333; color: #F3C774; padding: 10px; border-radius: 8px; font-size: 12px; display: none; max-width: 300px; }
-    
-    /* NEW BOXES CSS */
-    .dashboard-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-    .box-card { background: #1a1a1a; border: 2px solid #F3C774; border-radius: 12px; padding: 16px; cursor: pointer; }
-    .box-card h3 { color: #F3C774; font-size: 16px; margin-bottom: 8px; }
-    .box-card .count { font-size: 28px; font-weight: 900; color: #4CAF50; }
-    .box-card .count.red { color: #f44336; }
-    .new-badge { background: #4CAF50; color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin-left: 8px; }
-    @media (max-width: 600px) { .dashboard-boxes { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -120,18 +110,6 @@
         </div>
       </div>
 
-      <!-- NEW 2 BOXES ADDED HERE -->
-      <div class="dashboard-boxes">
-        <div class="box-card" onclick="showNewUsers24h()">
-          <h3>🆕 New Users (24h)</h3>
-          <div class="count" id="newUsersCount">0</div>
-        </div>
-        <div class="box-card" onclick="showTodayReferrals()">
-          <h3>🎯 Today's Referrals</h3>
-          <div class="count red" id="todayReferralsCount">0</div>
-        </div>
-      </div>
-
       <div class="filter-row">
         <div class="search-box">
           <input type="text" id="searchUser" placeholder="🔍 Search by Name, Email, or Code..." onkeyup="filterUsers()">
@@ -154,7 +132,6 @@
         </div>
       </div>
 
-      <div id="specialListBox" style="display:none;"></div>
       <div id="usersList" class="loading">Loading users...</div>
     </div>
 
@@ -304,21 +281,6 @@
           document.getElementById('zeroBalanceCount').textContent = zeroCount;
           document.getElementById('selectedCount').textContent = zeroCount;
           document.getElementById('totalUserCount').textContent = allUsers.length;
-          
-          // UPDATE NEW BOXES
-          const dayAgo = Date.now() - 86400000;
-          const newUsers24h = allUsers.filter(u => u.joinedAt && u.joinedAt >= dayAgo);
-          document.getElementById('newUsersCount').textContent = newUsers24h.length;
-          
-          const today = new Date();
-          today.setHours(0,0,0,0);
-          const todayTime = today.getTime();
-          const todayRefs = allUsers.filter(u => {
-            if (!u.referralHistory) return false;
-            return Object.keys(u.referralHistory).some(ts => parseInt(ts) >= todayTime);
-          });
-          document.getElementById('todayReferralsCount').textContent = todayRefs.length;
-          
           renderUsers(allUsers);
           showDebug('Loaded ' + allUsers.length + ' users');
         } else {
@@ -347,7 +309,6 @@
               <div class="user-name">${user.name || 'No Name'}</div>
               <div class="user-email">${user.email || 'No Email'}</div>
               <div class="user-email">Code: ${user.myReferralCode || 'N/A'} | Joined: ${joinDate}</div>
-              <div class="user-email">Referred by: ${user.referredBy || 'None'}</div>
             </div>
           </div>
           <div class="user-stats">
@@ -365,65 +326,6 @@
         </div>
       `}).join('');
       document.getElementById('usersList').innerHTML = html || '<div class="loading">No users found</div>';
-    }
-
-    // NEW FUNCTIONS FOR 2 BOXES
-    window.showNewUsers24h = function() {
-      const now = Date.now();
-      const dayAgo = now - 86400000;
-      const newUsers = allUsers.filter(u => u.joinedAt && u.joinedAt >= dayAgo);
-      
-      const html = newUsers.length === 0 ? '<div class="loading">No new users in 24h</div>' :
-        newUsers.map(u => `
-          <div class="user-card new-user">
-            <div class="user-name">${u.name || 'No Name'} <span class="new-badge">NEW</span></div>
-            <div class="user-email">${u.email}</div>
-            <div class="user-email">Referred by: ${u.referredBy || 'None'}</div>
-            <div class="user-email">Joined: ${new Date(u.joinedAt).toLocaleString()}</div>
-          </div>
-        `).join('');
-      
-      document.getElementById('specialListBox').innerHTML = html;
-      document.getElementById('specialListBox').style.display = 'block';
-      document.getElementById('usersList').style.display = 'none';
-    }
-
-    window.showTodayReferrals = function() {
-      const today = new Date();
-      today.setHours(0,0,0,0);
-      const todayTime = today.getTime();
-      
-      const todayRefs = allUsers.filter(u => {
-        if (!u.referralHistory) return false;
-        return Object.keys(u.referralHistory).some(ts => parseInt(ts) >= todayTime);
-      });
-      
-      const html = todayRefs.length === 0 ? '<div class="loading">No referrals today</div>' :
-        todayRefs.map(u => `
-          <div class="user-card">
-            <div class="user-name">${u.name || 'No Name'}</div>
-            <div class="user-email">${u.email}</div>
-            <div class="user-email">Referred by: ${u.referredBy || 'None'}</div>
-            <div class="user-email">🎯 Got referrals today</div>
-          </div>
-        `).join('');
-      
-      document.getElementById('specialListBox').innerHTML = html;
-      document.getElementById('specialListBox').style.display = 'block';
-      document.getElementById('usersList').style.display = 'none';
-    }
-
-    window.showAllUsers = function() {
-      showZeroOnly = false;
-      showBulkAll = false;
-      document.getElementById('specialListBox').style.display = 'none';
-      document.getElementById('usersList').style.display = 'block';
-      document.getElementById('filterZeroBtn').classList.remove('active');
-      document.getElementById('filterZeroBtn').textContent = '💰 Show Zero Balance';
-      document.getElementById('bulkActionBox').classList.remove('show');
-      document.getElementById('bulkAllBox').classList.remove('show');
-      document.getElementById('bulkAllBtn').classList.remove('active');
-      renderUsers(allUsers);
     }
 
     window.loadTodayMining = function() {
@@ -576,8 +478,6 @@
     window.showZeroBalanceUsers = function() {
       showZeroOnly = true;
       showBulkAll = false;
-      document.getElementById('specialListBox').style.display = 'none';
-      document.getElementById('usersList').style.display = 'block';
       document.getElementById('filterZeroBtn').classList.add('active');
       document.getElementById('filterZeroBtn').textContent = '👥 Show All Users';
       document.getElementById('bulkActionBox').classList.add('show');
@@ -586,11 +486,88 @@
       renderUsers(allUsers);
     }
 
+    window.showAllUsers = function() {
+      showZeroOnly = false;
+      showBulkAll = false;
+      document.getElementById('filterZeroBtn').classList.remove('active');
+      document.getElementById('filterZeroBtn').textContent = '💰 Show Zero Balance';
+      document.getElementById('bulkActionBox').classList.remove('show');
+      document.getElementById('bulkAllBox').classList.remove('show');
+      document.getElementById('bulkAllBtn').classList.remove('active');
+      renderUsers(allUsers);
+    }
+
     window.showReferralUsers = function() {
       showZeroOnly = false;
       showBulkAll = false;
-      document.getElementById('specialListBox').style.display = 'none';
-      document.getElementById('usersList').style.display = 'block';
       const refUsers = allUsers.filter(u => (parseInt(u.totalReferrals) || 0) > 0);
       document.getElementById('filterZeroBtn').classList.remove('active');
-      document.getElementBy
+      document.getElementById('filterZeroBtn').textContent = '💰 Show Zero Balance';
+      document.getElementById('bulkActionBox').classList.remove('show');
+      document.getElementById('bulkAllBox').classList.remove('show');
+      document.getElementById('bulkAllBtn').classList.remove('active');
+      renderUsers(refUsers);
+    }
+
+    window.bulkAddTokens = async function() {
+      const amount = parseInt(document.getElementById('bulkAmount').value) || 0;
+      if (amount <= 0) return alert('Enter valid amount');
+      const zeroUsers = allUsers.filter(u => (parseInt(u.balance) || 0) === 0);
+      if (zeroUsers.length === 0) return alert('No zero balance users found');
+      if (!confirm(`Add ${amount} RUPY to ${zeroUsers.length} zero balance users?`)) return;
+      const updates = {};
+      zeroUsers.forEach(user => {
+        updates[`users/${user.uid}/balance`] = amount;
+      });
+      await update(ref(db), updates);
+      alert(`✅ Added ${amount} RUPY to ${zeroUsers.length} users`);
+      await loadAllUsers();
+    }
+
+    window.bulkAddToAllUsers = async function() {
+      const amount = parseInt(document.getElementById('bulkAllAmount').value) || 0;
+      if (amount <= 0) return alert('Enter valid amount');
+      if (!confirm(`⚠️ WARNING\nAdd ${amount} RUPY to ALL ${allUsers.length} users?\nTotal: ${(amount * allUsers.length).toLocaleString()} RUPY`)) return;
+      const updates = {};
+      allUsers.forEach(user => {
+        const currentBal = parseInt(user.balance) || 0;
+        updates[`users/${user.uid}/balance`] = currentBal + amount;
+      });
+      await update(ref(db), updates);
+      alert(`✅ Added ${amount} RUPY to ALL ${allUsers.length} users\nTotal Distributed: ${(amount * allUsers.length).toLocaleString()} RUPY`);
+      await loadAllUsers();
+    }
+
+    window.addTokens = async function(uid) {
+      const amount = parseInt(document.getElementById(`amount-${uid}`).value) || 0;
+      if (amount <= 0) return alert('Enter valid amount');
+      const userSnap = await get(ref(db, `users/${uid}/balance`));
+      const currentBal = parseInt(userSnap.val()) || 0;
+      const newBalance = currentBal + amount;
+      await set(ref(db, `users/${uid}/balance`), newBalance);
+      alert(`✅ ADDED\n${currentBal.toLocaleString()} + ${amount} = ${newBalance.toLocaleString()}`);
+      await loadAllUsers();
+    }
+
+    window.removeTokens = async function(uid) {
+      const amount = parseInt(document.getElementById(`amount-${uid}`).value) || 0;
+      if (amount <= 0) return alert('Enter valid amount');
+      const userSnap = await get(ref(db, `users/${uid}/balance`));
+      const currentBal = parseInt(userSnap.val()) || 0;
+      const newBalance = Math.max(0, currentBal - amount);
+      await set(ref(db, `users/${uid}/balance`), newBalance);
+      alert(`✅ REMOVED\n${currentBal.toLocaleString()} - ${amount} = ${newBalance.toLocaleString()}`);
+      await loadAllUsers();
+    }
+
+    window.setTokens = async function(uid) {
+      const amount = parseInt(document.getElementById(`amount-${uid}`).value) || 0;
+      if (amount < 0) return alert('Enter valid amount');
+      await set(ref(db, `users/${uid}/balance`), amount);
+      alert(`✅ SET Balance = ${amount.toLocaleString()}`);
+      await loadAllUsers();
+    }
+  </script>
+
+</body>
+</html>
