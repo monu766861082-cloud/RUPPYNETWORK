@@ -33,6 +33,7 @@
     .bulk-btn.all { background: #2196F3; }
     .user-card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
     .user-card.zero-balance { border: 1px solid #f44336; }
+    .user-card.new-user { border: 2px solid #4CAF50; box-shadow: 0 0 10px #4CAF50; }
     .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .user-name { font-size: 18px; font-weight: 700; color: #F3C774; }
     .user-email { font-size: 12px; color: #888; }
@@ -61,6 +62,47 @@
     .progress-bar { width: 100%; height: 20px; background: #0a0a0a; border-radius: 10px; overflow: hidden; margin-top: 5px; }
     .progress-fill { height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); transition: 0.3s; }
     #debug { position: fixed; bottom: 10px; left: 10px; background: #333; color: #F3C774; padding: 10px; border-radius: 8px; font-size: 12px; display: none; max-width: 300px; }
+    
+    /* ADDED: 2 New Boxes CSS */
+    .dashboard-boxes { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: 12px; 
+      margin-bottom: 20px; 
+    }
+    .box-card { 
+      background: #1a1a1a; 
+      border: 2px solid #F3C774; 
+      border-radius: 12px; 
+      padding: 16px; 
+      cursor: pointer; 
+      transition: 0.2s; 
+    }
+    .box-card:hover { 
+      background: #2a2a2a; 
+      transform: scale(1.02); 
+    }
+    .box-card h3 { 
+      color: #F3C774; 
+      font-size: 16px; 
+      margin-bottom: 8px; 
+    }
+    .box-card .count { 
+      font-size: 28px; 
+      font-weight: 900; 
+      color: #4CAF50; 
+    }
+    .new-badge { 
+      background: #4CAF50; 
+      color: #fff; 
+      padding: 2px 8px; 
+      border-radius: 12px; 
+      font-size: 11px; 
+      margin-left: 8px; 
+    }
+    @media (max-width: 600px) { 
+      .dashboard-boxes { grid-template-columns: 1fr; } 
+    }
   </style>
 </head>
 <body>
@@ -109,6 +151,21 @@
           <div class="stat-card-label">Zero Balance</div>
         </div>
       </div>
+
+      <!-- ADDED: 2 New Boxes -->
+      <div class="dashboard-boxes">
+        <div class="box-card" onclick="showNewUsers24h()">
+          <h3>🆕 New Users (24h)</h3>
+          <div class="count" id="newUsersCount">0</div>
+        </div>
+        <div class="box-card" onclick="showTodayReferrals()">
+          <h3>🎯 Today's Referrals</h3>
+          <div class="count" id="todayReferralsCount">0</div>
+        </div>
+      </div>
+
+      <!-- ADDED: Special List Box -->
+      <div id="specialListBox" style="display:none;"></div>
 
       <div class="filter-row">
         <div class="search-box">
@@ -281,6 +338,13 @@
           document.getElementById('zeroBalanceCount').textContent = zeroCount;
           document.getElementById('selectedCount').textContent = zeroCount;
           document.getElementById('totalUserCount').textContent = allUsers.length;
+          
+          // ADDED: Update 2 new box counts
+          const dayAgo = Date.now() - 86400000;
+          document.getElementById('newUsersCount').textContent = allUsers.filter(u => u.joinedAt && u.joinedAt >= dayAgo).length;
+          const today = new Date().setHours(0,0,0,0);
+          document.getElementById('todayReferralsCount').textContent = allUsers.filter(u => u.referralHistory && Object.keys(u.referralHistory).some(ts => ts >= today)).length;
+          
           renderUsers(allUsers);
           showDebug('Loaded ' + allUsers.length + ' users');
         } else {
@@ -494,6 +558,8 @@
       document.getElementById('bulkActionBox').classList.remove('show');
       document.getElementById('bulkAllBox').classList.remove('show');
       document.getElementById('bulkAllBtn').classList.remove('active');
+      document.getElementById('specialListBox').style.display = 'none';
+      document.getElementById('usersList').style.display = 'block';
       renderUsers(allUsers);
     }
 
@@ -543,31 +609,4 @@
       if (amount <= 0) return alert('Enter valid amount');
       const userSnap = await get(ref(db, `users/${uid}/balance`));
       const currentBal = parseInt(userSnap.val()) || 0;
-      const newBalance = currentBal + amount;
-      await set(ref(db, `users/${uid}/balance`), newBalance);
-      alert(`✅ ADDED\n${currentBal.toLocaleString()} + ${amount} = ${newBalance.toLocaleString()}`);
-      await loadAllUsers();
-    }
-
-    window.removeTokens = async function(uid) {
-      const amount = parseInt(document.getElementById(`amount-${uid}`).value) || 0;
-      if (amount <= 0) return alert('Enter valid amount');
-      const userSnap = await get(ref(db, `users/${uid}/balance`));
-      const currentBal = parseInt(userSnap.val()) || 0;
-      const newBalance = Math.max(0, currentBal - amount);
-      await set(ref(db, `users/${uid}/balance`), newBalance);
-      alert(`✅ REMOVED\n${currentBal.toLocaleString()} - ${amount} = ${newBalance.toLocaleString()}`);
-      await loadAllUsers();
-    }
-
-    window.setTokens = async function(uid) {
-      const amount = parseInt(document.getElementById(`amount-${uid}`).value) || 0;
-      if (amount < 0) return alert('Enter valid amount');
-      await set(ref(db, `users/${uid}/balance`), amount);
-      alert(`✅ SET Balance = ${amount.toLocaleString()}`);
-      await loadAllUsers();
-    }
-  </script>
-
-</body>
-</html>
+      const new
