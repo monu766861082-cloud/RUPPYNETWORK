@@ -21,7 +21,6 @@
     .tab-content.active { display: block; }
     .user-card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
     .user-card.new-user { border: 2px solid #4CAF50; box-shadow: 0 0 10px #4CAF50; }
-    .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .user-name { font-size: 18px; font-weight: 700; color: #F3C774; }
     .user-email { font-size: 12px; color: #888; }
     .referrer-info { font-size: 13px; color: #4CAF50; margin-top: 4px; }
@@ -36,6 +35,7 @@
   <div id="loginScreen">
     <div class="login-box">
       <h2>🔐 ADMIN LOGIN</h2>
+      <p style="color:#888;margin-bottom:20px">RUPPY Network Admin Panel</p>
       <button class="login-btn" onclick="doLogin()">🔑 Login with Google</button>
     </div>
   </div>
@@ -69,7 +69,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, get, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, signInWithRedirect, GoogleAuthProvider, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
@@ -90,16 +90,40 @@
     let allUsers = [];
     let newUsers = [];
 
+    function showDebug(msg) {
+      const debug = document.getElementById('debug');
+      debug.style.display = 'block';
+      debug.textContent = msg;
+      setTimeout(() => debug.style.display = 'none', 3000);
+    }
+
+    // FIXED LOGIN - No popup, uses redirect
     window.doLogin = function() {
-      signInWithPopup(auth, provider).then((result) => checkAdmin(result.user));
+      showDebug('Redirecting to Google...');
+      signInWithRedirect(auth, provider);
     }
 
     window.doLogout = function() {
       signOut(auth).then(() => location.reload());
     }
 
+    // Check if coming back from Google login
+    getRedirectResult(auth).then((result) => {
+      if (result && result.user) {
+        checkAdmin(result.user);
+      }
+    }).catch((error) => {
+      console.error('Login Error:', error);
+      alert('Login Failed: ' + error.message);
+    });
+
     onAuthStateChanged(auth, (user) => {
-      if (user) checkAdmin(user);
+      if (user) {
+        checkAdmin(user);
+      } else {
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('adminPanel').style.display = 'none';
+      }
     });
 
     function checkAdmin(user) {
@@ -107,6 +131,7 @@
         alert("❌ Access Denied!");
         signOut(auth);
       } else {
+        showDebug('Admin Verified');
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
         document.getElementById('adminHeader').style.display = 'block';
@@ -151,7 +176,7 @@
         snapshot.forEach((child) => {
           const userData = child.val();
           userData.uid = child.key;
-          newUsers.unshift(userData); // Newest first
+          newUsers.unshift(userData);
         });
         renderNewUsers(newUsers);
       }
