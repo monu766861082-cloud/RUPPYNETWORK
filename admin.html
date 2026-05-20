@@ -8,64 +8,64 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial; background: #0a0a0a; color: #fff; padding: 20px; }
     #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; display: flex; align-items: center; justify-content: center; z-index: 9999; }
-   .login-box { background: #1a1a1a; border: 3px solid #F3C774; border-radius: 16px; padding: 40px; text-align: center; max-width: 400px; }
-   .login-box h2 { color: #F3C774; font-size: 28px; margin-bottom: 20px; }
-   .login-btn { background: #F3C774; color: #000; padding: 16px 40px; border: none; border-radius: 8px; font-size: 18px; font-weight: 900; cursor: pointer; margin-top: 20px; }
-   .admin-header { background: #F3C774; color: #000; padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center; display: none; }
-   .admin-header h1 { font-size: 28px; font-weight: 900; }
-   .logout-btn { background: #f44336; color: #fff; padding: 8px 16px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 10px; }
-   .tabs { display: flex; gap: 10px; margin-bottom: 20px; display: none; }
-   .tab-btn { flex: 1; padding: 14px; background: #1a1a1a; border: 2px solid #F3C774; border-radius: 8px; color: #F3C774; font-weight: 700; cursor: pointer; text-align: center; }
-   .tab-btn.active { background: #F3C774; color: #000; }
-   .tab-content { display: none; }
-   .tab-content.active { display: block; }
-   .filter-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-   .search-box { flex: 1; min-width: 200px; }
-   .search-box input,.date-input { width: 100%; padding: 14px; background: #1a1a1a; border: 2px solid #F3C774; border-radius: 8px; color: #fff; font-size: 16px; }
-   .filter-btn { padding: 14px 20px; background: #1a1a1a; border: 2px solid #F3C774; border-radius: 8px; color: #F3C774; font-weight: 700; cursor: pointer; white-space: nowrap; }
-   .filter-btn.active { background: #F3C774; color: #000; }
-   .bulk-action { background: #1a1a1a; border: 2px solid #4CAF50; border-radius: 12px; padding: 16px; margin-bottom: 12px; display: none; }
-   .bulk-action.show { display: block; }
-   .bulk-action.all-users { border: 2px solid #2196F3; }
-   .bulk-row { display: flex; gap: 10px; align-items: center; }
-   .bulk-row input { flex: 1; padding: 12px; background: #0a0a0a; border: 1px solid #333; border-radius: 6px; color: #fff; font-size: 16px; }
-   .bulk-btn { padding: 12px 24px; background: #4CAF50; border: none; border-radius: 6px; color: #fff; font-weight: 700; cursor: pointer; font-size: 16px; }
-   .bulk-btn.all { background: #2196F3; }
-   .user-card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
-   .user-card.zero-balance { border: 1px solid #f44336; }
-   .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-   .user-name { font-size: 18px; font-weight: 700; color: #F3C774; }
-   .user-email { font-size: 12px; color: #888; }
-   .user-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
-   .stat-box { background: #0a0a0a; padding: 10px; border-radius: 8px; text-align: center; }
-   .stat-label { font-size: 11px; color: #888; }
-   .stat-value { font-size: 18px; font-weight: 700; color: #F3C774; }
-   .stat-value.zero { color: #f44336; }
-   .action-row { display: flex; gap: 8px; }
-   .action-row input { flex: 1; padding: 10px; background: #0a0a0a; border: 1px solid #333; border-radius: 6px; color: #fff; font-size: 14px; }
-   .btn { padding: 10px 16px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 14px; }
-   .btn-add { background: #4CAF50; color: #fff; }
-   .btn-remove { background: #f44336; color: #fff; }
-   .btn-set { background: #F3C774; color: #000; }
-   .loading { text-align: center; padding: 40px; color: #888; }
-   .stats-header { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 20px; }
-   .stat-card { background: #1a1a1a; padding: 16px; border-radius: 12px; text-align: center; border: 1px solid #F3C774; cursor: pointer; transition: 0.2s; }
-   .stat-card:hover { background: #2a2a2a; transform: scale(1.02); }
-   .stat-card-value { font-size: 24px; font-weight: 900; color: #F3C774; }
-   .stat-card-label { font-size: 12px; color: #888; margin-top: 4px; }
-   .selected-count { color: #F3C774; font-weight: 700; margin-left: 10px; }
-   .mining-table { width: 100%; background: #1a1a1a; border-radius: 12px; overflow: hidden; margin-top: 20px; }
-   .mining-table th { background: #F3C774; color: #000; padding: 12px; text-align: left; font-weight: 900; }
-   .mining-table td { padding: 12px; border-bottom: 1px solid #333; }
-   .mining-table tr:hover { background: #222; }
-   .progress-bar { width: 100%; height: 20px; background: #0a0a0a; border-radius: 10px; overflow: hidden; margin-top: 5px; }
-   .progress-fill { height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); transition: 0.3s; }
+  .login-box { background: #1a1a1a; border: 3px solid #F3C774; border-radius: 16px; padding: 40px; text-align: center; max-width: 400px; }
+  .login-box h2 { color: #F3C774; font-size: 28px; margin-bottom: 20px; }
+  .login-btn { background: #F3C774; color: #000; padding: 16px 40px; border: none; border-radius: 8px; font-size: 18px; font-weight: 900; cursor: pointer; margin-top: 20px; }
+  .admin-header { background: #F3C774; color: #000; padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center; display: none; }
+  .admin-header h1 { font-size: 28px; font-weight: 900; }
+  .logout-btn { background: #f44336; color: #fff; padding: 8px 16px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+  .tabs { display: flex; gap: 10px; margin-bottom: 20px; display: none; }
+  .tab-btn { flex: 1; padding: 14px; background: #1a1a1a; border: 2px solid #F3C774; border-radius: 8px; color: #F3C774; font-weight: 700; cursor: pointer; text-align: center; }
+  .tab-btn.active { background: #F3C774; color: #000; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .filter-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .search-box { flex: 1; min-width: 200px; }
+  .search-box input,.date-input { width: 100%; padding: 14px; background: #1a1a1a; border: 2px solid #F3C774; border-radius: 8px; color: #fff; font-size: 16px; }
+  .filter-btn { padding: 14px 20px; background: #1a1a1a; border: 2px solid #F3C774; border-radius: 8px; color: #F3C774; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .filter-btn.active { background: #F3C774; color: #000; }
+  .bulk-action { background: #1a1a1a; border: 2px solid #4CAF50; border-radius: 12px; padding: 16px; margin-bottom: 12px; display: none; }
+  .bulk-action.show { display: block; }
+  .bulk-action.all-users { border: 2px solid #2196F3; }
+  .bulk-row { display: flex; gap: 10px; align-items: center; }
+  .bulk-row input { flex: 1; padding: 12px; background: #0a0a0a; border: 1px solid #333; border-radius: 6px; color: #fff; font-size: 16px; }
+  .bulk-btn { padding: 12px 24px; background: #4CAF50; border: none; border-radius: 6px; color: #fff; font-weight: 700; cursor: pointer; font-size: 16px; }
+  .bulk-btn.all { background: #2196F3; }
+  .user-card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+  .user-card.zero-balance { border: 1px solid #f44336; }
+  .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .user-name { font-size: 18px; font-weight: 700; color: #F3C774; }
+  .user-email { font-size: 12px; color: #888; }
+  .user-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+  .stat-box { background: #0a0a0a; padding: 10px; border-radius: 8px; text-align: center; }
+  .stat-label { font-size: 11px; color: #888; }
+  .stat-value { font-size: 18px; font-weight: 700; color: #F3C774; }
+  .stat-value.zero { color: #f44336; }
+  .action-row { display: flex; gap: 8px; }
+  .action-row input { flex: 1; padding: 10px; background: #0a0a0a; border: 1px solid #333; border-radius: 6px; color: #fff; font-size: 14px; }
+  .btn { padding: 10px 16px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 14px; }
+  .btn-add { background: #4CAF50; color: #fff; }
+  .btn-remove { background: #f44336; color: #fff; }
+  .btn-set { background: #F3C774; color: #000; }
+  .loading { text-align: center; padding: 40px; color: #888; }
+  .stats-header { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 20px; }
+  .stat-card { background: #1a1a1a; padding: 16px; border-radius: 12px; text-align: center; border: 1px solid #F3C774; cursor: pointer; transition: 0.2s; }
+  .stat-card:hover { background: #2a2a2a; transform: scale(1.02); }
+  .stat-card-value { font-size: 24px; font-weight: 900; color: #F3C774; }
+  .stat-card-label { font-size: 12px; color: #888; margin-top: 4px; }
+  .selected-count { color: #F3C774; font-weight: 700; margin-left: 10px; }
+  .mining-table { width: 100%; background: #1a1a1a; border-radius: 12px; overflow: hidden; margin-top: 20px; }
+  .mining-table th { background: #F3C774; color: #000; padding: 12px; text-align: left; font-weight: 900; }
+  .mining-table td { padding: 12px; border-bottom: 1px solid #333; }
+  .mining-table tr:hover { background: #222; }
+  .progress-bar { width: 100%; height: 20px; background: #0a0a0a; border-radius: 10px; overflow: hidden; margin-top: 5px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); transition: 0.3s; }
     #debug { position: fixed; bottom: 10px; left: 10px; background: #333; color: #F3C774; padding: 10px; border-radius: 8px; font-size: 12px; display: none; max-width: 300px; }
     @media(max-width: 900px){
-     .stats-header { grid-template-columns: repeat(3, 1fr); }
+    .stats-header { grid-template-columns: repeat(3, 1fr); }
     }
     @media(max-width: 600px){
-     .stats-header { grid-template-columns: repeat(2, 1fr); }
+    .stats-header { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
@@ -114,12 +114,10 @@
           <div class="stat-card-value" id="zeroBalanceCount">0</div>
           <div class="stat-card-label">Zero Balance</div>
         </div>
-        <!-- NEW BOX 1: New users in 24h -->
         <div class="stat-card" onclick="showNew24hUsers()">
           <div class="stat-card-value" id="new24hCount">0</div>
           <div class="stat-card-label">New 24h</div>
         </div>
-        <!-- NEW BOX 2: New users with referral -->
         <div class="stat-card" onclick="showNewWithRefUsers()">
           <div class="stat-card-value" id="newWithRefCount">0</div>
           <div class="stat-card-label">New with Ref</div>
@@ -296,7 +294,6 @@
             totalRefs += parseInt(userData.totalReferrals) || 0;
             if (bal === 0) zeroCount++;
 
-            // NEW LOGIC: Check joinedAt for 24h
             const joinedAt = parseInt(userData.joinedAt) || 0;
             if (joinedAt > 0 && joinedAt >= dayAgo) {
               new24hCount++;
@@ -328,7 +325,6 @@
       }
     }
 
-    // NEW FUNCTION: Show users joined in last 24h
     window.showNew24hUsers = function() {
       const now = Date.now();
       const dayAgo = now - 24 * 60 * 60 * 1000;
@@ -339,7 +335,6 @@
       renderUsers(newUsers);
     }
 
-    // NEW FUNCTION: Show new users who came via referral
     window.showNewWithRefUsers = function() {
       const now = Date.now();
       const dayAgo = now - 24 * 60 * 60 * 1000;
@@ -606,4 +601,16 @@
       await loadAllUsers();
     }
 
-    window.removeTokens = async
+    window.removeTokens = async function(uid) {
+      const amount = parseInt(document.getElementById(`amount-${uid}`).value) || 0;
+      if (amount <= 0) return alert('Enter valid amount');
+      const userSnap = await get(ref(db, `users/${uid}/balance`));
+      const currentBal = parseInt(userSnap.val()) || 0;
+      const newBalance = Math.max(0, currentBal - amount);
+      await set(ref(db, `users/${uid}/balance`), newBalance);
+      alert(`✅ REMOVED\n${currentBal.toLocaleString()} - ${amount} = ${newBalance.toLocaleString()}`);
+      await loadAllUsers();
+    }
+
+    window.setTokens = async function(uid) {
+      const amount = parseInt(document.getElementById(`amount-${
