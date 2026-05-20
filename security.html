@@ -143,7 +143,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
 <button class="danger-btn" onclick="confirmDeleteAccount()">Delete Account</button>
 
-<!-- Disclaimer Box Added Here -->
+<!-- Disclaimer Box -->
 <div class="disclaimer-box">
   <strong>Disclaimer:</strong> RUP Points are virtual activity points for tracking only. 
   They have <strong>no monetary value</strong> and cannot be exchanged, redeemed, or transferred for cash, crypto, or any other asset. 
@@ -244,7 +244,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
   window.goPage = function(page){ window.location.href = page; }
 
-  // Change Password
   window.openChangePassword = function(){
     document.getElementById('passwordModal').classList.add('active');
   }
@@ -300,7 +299,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     btn.textContent = 'Update';
   }
 
-  // Devices
   window.openDevices = function(){
     const devicesList = document.getElementById('devicesList');
     const userAgent = navigator.userAgent;
