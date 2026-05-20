@@ -76,7 +76,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   <a class="bt" id="xBtn">FOLLOW</a>
 </div>
 
-<!-- YOUTUBE TASK ADD KIYA HAI -->
+<!-- YOUTUBE TASK -->
 <div class="card">
   <div class="ic yt">▶️</div>
   <div class="txt">
@@ -241,7 +241,7 @@ function updateButtons() {
     {id: 'fb', url: 'https://www.facebook.com/share/1KjGA6dgtY/?mibextid=wwXIfr', text: 'FOLLOW'},
     {id: 'x', url: 'https://x.com/rupfoundation?s=21', text: 'FOLLOW'},
     {id: 'ig', url: 'https://www.instagram.com/rupnetwork?igsh=dDM3NmM5bHdmZHdi&utm_source=qr', text: 'FOLLOW'},
-    {id: 'yt', url: 'https://youtube.com/@cryptoking31288?si=wmqn42D5fV4T19ko', text: 'SUBSCRIBE'} // YOUTUBE ADD KIYA
+    {id: 'yt', url: 'https://youtube.com/@freecryptoairdrop89?si=uafCC8TzVOEq4mp4', text: 'SUBSCRIBE'} // Naya link lag gaya
   ];
 
   tasks.forEach(t => {
@@ -497,95 +497,4 @@ function startSpinTimer(){
             timerEl.innerText = '';
             showToast('Spin Ready! 🎉');
         } else {
-            timerEl.innerText = 'Next Spin: ' + formatTime(diff);
-        }
-    }, 1000);
-}
-
-function checkSpinStatus(){
-    var nextTime = localStorage.getItem('spin_next_time');
-    if(nextTime){
-        if(parseInt(nextTime) > Date.now()){
-            startSpinTimer();
-        } else {
-            localStorage.removeItem('spin_next_time');
-        }
-    }
-}
-
-async function spinWheel() {
-    if(isSpinning) return;
-
-    var nextTime = localStorage.getItem('spin_next_time');
-    if(nextTime && parseInt(nextTime) > Date.now()){
-        showToast('Next spin at 9AM or 9PM!', 'error');
-        return;
-    }
-
-    isSpinning = true;
-    var wheel = document.getElementById('wheel');
-    var spinBtn = document.getElementById('spinBtn');
-
-    spinBtn.innerHTML = 'Spinning...';
-
-    var rand = Math.random();
-    var winAmount, targetAngle;
-    
-    if(rand < 0.7){
-        winAmount = 20;
-        targetAngle = 288;
-    } else {
-        winAmount = 10;
-        targetAngle = 216;
-    }
-
-    var extraSpins = Math.floor(Math.random() * 3) + 5;
-    var totalRotation = extraSpins * 360 + targetAngle;
-
-    currentRotation += totalRotation;
-    wheel.style.transform = 'rotate(' + currentRotation + 'deg)';
-
-    setTimeout(async function(){
-        isSpinning = false;
-
-        userData.balance = Number(userData.balance) || 0;
-        userData.balance += winAmount;
-        if(window.saveRuppyData) await window.saveRuppyData(userData);
-        
-        document.getElementById('bal').innerText = userData.balance;
-
-        var nextSpinTime = getNextSpinTime();
-        localStorage.setItem('spin_next_time', nextSpinTime.getTime());
-
-        startSpinTimer();
-        showToast('🎉 Congrats! You Won ' + winAmount + ' RUP POINTS!');
-    }, 4000);
-}
-
-function showToast(msg, type = 'success'){
-  let t = document.getElementById('toast');
-  t.innerText = msg;
-  t.className = 'toast ' + type;
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 2500);
-}
-
-function goPage(page) {
-  window.location.href = page;
-}
-
-window.addEventListener('storage', function(e) {
-  if (e.key === 'ruppy_user_cache') {
-    userData = JSON.parse(e.newValue);
-    document.getElementById('bal').innerText = userData.balance;
-    
-    let displayId = userData.myReferralCode;
-    if(!displayId && userData.uid) {
-      displayId = 'RUP-' + userData.uid.substring(0,6).toUpperCase();
-    }
-    document.getElementById('userId').innerText = `ID: ${displayId || 'Loading...'}`;
-  }
-});
-</script>
-</body>
-</html>
+            timerEl.innerText = 'Next Spin: ' + format
