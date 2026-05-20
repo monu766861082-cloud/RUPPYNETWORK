@@ -19,7 +19,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 .r-coin {width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774,#D4A017);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;box-shadow:0 0 10px rgba(243,199,116,0.6),inset 0 2px 4px rgba(255,255,255,0.3);border:1px solid #FFA500}
 .card{border:1px solid #333;border-radius:12px;padding:14px;margin:12px 15px;display:flex;align-items:center;background:#0d0d0d}
 .ic{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:20px}
-.tg{background:#0088cc}.fb{background:#1877f2}.x{background:#fff;color:#000}
+.tg{background:#0088cc}.fb{background:#1877f2}.x{background:#fff;color:#000}.yt{background:#FF0000}
 .txt{flex:1}.txt b{display:block;font-size:15px}.txt span{color:#FFA500;font-size:12px;display:flex;align-items:center;gap:4px}
 .txt .mini-coin {width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFB84D,#F3C774);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:8px;color:#000}
 .bt{border:1px solid #FFA500;color:#FFA500;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;min-width:70px;text-align:center;font-weight:600}
@@ -74,6 +74,17 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   <div class="ic x">X</div>
   <div class="txt"><b>Follow on X</b><span>Reward: <div class="mini-coin">R</div> 20 RUP POINTS</span></div>
   <a class="bt" id="xBtn">FOLLOW</a>
+</div>
+
+<!-- YOUTUBE TASK ADD KIYA HAI -->
+<div class="card">
+  <div class="ic yt">▶️</div>
+  <div class="txt">
+    <b>Subscribe on YouTube</b>
+    <span>Reward: <div class="mini-coin">R</div> 20 RUP POINTS</span>
+    <small style="color:#888;font-size:11px;display:block;margin-top:4px">India Support 🇮🇳</small>
+  </div>
+  <a class="bt" id="ytBtn">SUBSCRIBE</a>
 </div>
 
 <div class="card">
@@ -229,7 +240,8 @@ function updateButtons() {
     {id: 'tg', url: 'https://t.me/RUPPYfoundation', text: 'JOIN'},
     {id: 'fb', url: 'https://www.facebook.com/share/1KjGA6dgtY/?mibextid=wwXIfr', text: 'FOLLOW'},
     {id: 'x', url: 'https://x.com/rupfoundation?s=21', text: 'FOLLOW'},
-    {id: 'ig', url: 'https://www.instagram.com/rupnetwork?igsh=dDM3NmM5bHdmZHdi&utm_source=qr', text: 'FOLLOW'}
+    {id: 'ig', url: 'https://www.instagram.com/rupnetwork?igsh=dDM3NmM5bHdmZHdi&utm_source=qr', text: 'FOLLOW'},
+    {id: 'yt', url: 'https://youtube.com/@cryptoking31288?si=wmqn42D5fV4T19ko', text: 'SUBSCRIBE'} // YOUTUBE ADD KIYA
   ];
 
   tasks.forEach(t => {
