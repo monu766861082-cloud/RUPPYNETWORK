@@ -61,6 +61,21 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .toast.success{background:#1a5c1a;color:#4ade80}
 .toast.error{background:#5c1a1a;color:#f87171}
 .toast.info{background:#1a3c5c;color:#60a5fa}
+
+/* Disclaimer Box Added */
+.disclaimer-box{
+  background:rgba(243,199,116,0.08);
+  border:1px solid rgba(243,199,116,0.3);
+  border-radius:16px;
+  padding:16px;
+  margin:20px 0;
+  font-size:13px;
+  line-height:1.6;
+  color:#ccc;
+}
+.disclaimer-box strong{color:#F3C774}
+.disclaimer-box a{color:#F3C774;text-decoration:none}
+.disclaimer-box a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -87,6 +102,16 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 </div>
 
 <button class="logout" onclick="logout()">Logout</button>
+
+<!-- Disclaimer Box Added Here -->
+<div class="disclaimer-box">
+  <strong>Disclaimer:</strong> RUP Points are virtual activity points for tracking only.
+  They have <strong>no monetary value</strong> and cannot be exchanged, redeemed, or transferred for cash, crypto, or any other asset.
+  <br><br>
+  <a href="disclaimer.html">Read full disclaimer</a> •
+  <a href="privacy-policy.html">Privacy Policy</a> •
+  <a href="terms.html">Terms & Conditions</a>
+</div>
 
 <div class="ft-links">
   <a href="about.html">About</a> •
