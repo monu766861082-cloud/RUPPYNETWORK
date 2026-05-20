@@ -76,7 +76,6 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
   <a class="bt" id="xBtn">FOLLOW</a>
 </div>
 
-<!-- YOUTUBE TASK -->
 <div class="card">
   <div class="ic yt">▶️</div>
   <div class="txt">
@@ -172,25 +171,35 @@ const IG_POST_TASK_ID = 'igPost';
 const IG_POST_REWARD = 50;
 const IG_POST_COOLDOWN = 12 * 60 * 60 * 1000;
 
+// Reset taskState agar error aaye
+if(!taskState || typeof taskState !== 'object'){
+  taskState = {};
+  localStorage.setItem('taskState', JSON.stringify(taskState));
+}
+
 async function init(){
-  let attempts = 0;
-  while(!window.userData?.uid && attempts < 50) {
-    await new Promise(r => setTimeout(r, 100));
-    attempts++;
+  try{
+    let attempts = 0;
+    while(!window.userData?.uid && attempts < 50) {
+      await new Promise(r => setTimeout(r, 100));
+      attempts++;
+    }
+    userData = window.userData;
+    
+    let displayId = userData?.myReferralCode;
+    if(!displayId && userData?.uid) {
+      displayId = 'RUP-' + userData.uid.substring(0,6).toUpperCase();
+    }
+    document.getElementById('userId').innerText = `ID: ${displayId || 'Loading...'}`;
+    
+    document.getElementById('bal').innerText = userData?.balance || 0;
+    updateButtons();
+    checkSpinStatus();
+    initFbPostTask();
+    initIgPostTask();
+  }catch(e){
+    console.error('Init error:', e);
   }
-  userData = window.userData;
-  
-  let displayId = userData.myReferralCode;
-  if(!displayId && userData.uid) {
-    displayId = 'RUP-' + userData.uid.substring(0,6).toUpperCase();
-  }
-  document.getElementById('userId').innerText = `ID: ${displayId || 'Loading...'}`;
-  
-  document.getElementById('bal').innerText = userData.balance || 0;
-  updateButtons();
-  checkSpinStatus();
-  initFbPostTask();
-  initIgPostTask();
 }
 
 init();
@@ -205,69 +214,82 @@ document.addEventListener('visibilitychange', function() {
 });
 
 function openLink(task, url) {
-  window.open(url, '_blank');
-  openedTask = task;
-  taskState[task] = 'opened';
-  localStorage.setItem('taskState', JSON.stringify(taskState));
-  updateButtons();
+  try{
+    window.open(url, '_blank');
+    openedTask = task;
+    taskState[task] = 'opened';
+    localStorage.setItem('taskState', JSON.stringify(taskState));
+    updateButtons();
 
-  setTimeout(() => {
-    if (taskState[task] === 'opened') {
-      taskState[task] = 'ready_to_claim';
-      localStorage.setItem('taskState', JSON.stringify(taskState));
-      updateButtons();
-    }
-  }, 5000);
+    setTimeout(() => {
+      if (taskState[task] === 'opened') {
+        taskState[task] = 'ready_to_claim';
+        localStorage.setItem('taskState', JSON.stringify(taskState));
+        updateButtons();
+      }
+    }, 5000);
+  }catch(e){
+    console.error('openLink error:', e);
+  }
 }
 
 async function claimReward(task) {
-  if (taskState[task] === 'ready_to_claim') {
-    userData.balance = Number(userData.balance) || 0;
-    userData.balance += 20;
-    taskState[task] = 'claimed';
-    localStorage.setItem('taskState', JSON.stringify(taskState));
-    
-    if(window.saveRuppyData) await window.saveRuppyData(userData);
-    
-    document.getElementById('bal').innerText = userData.balance;
-    updateButtons();
-    showToast('+20 RUP POINTS Claimed!');
+  try{
+    if (taskState[task] === 'ready_to_claim') {
+      userData.balance = Number(userData.balance) || 0;
+      userData.balance += 20;
+      taskState[task] = 'claimed';
+      localStorage.setItem('taskState', JSON.stringify(taskState));
+      
+      if(window.saveRuppyData) await window.saveRuppyData(userData);
+      
+      document.getElementById('bal').innerText = userData.balance;
+      updateButtons();
+      showToast('+20 RUP POINTS Claimed!');
+    }
+  }catch(e){
+    console.error('claimReward error:', e);
   }
 }
 
 function updateButtons() {
-  const tasks = [
-    {id: 'tg', url: 'https://t.me/RUPPYfoundation', text: 'JOIN'},
-    {id: 'fb', url: 'https://www.facebook.com/share/1KjGA6dgtY/?mibextid=wwXIfr', text: 'FOLLOW'},
-    {id: 'x', url: 'https://x.com/rupfoundation?s=21', text: 'FOLLOW'},
-    {id: 'ig', url: 'https://www.instagram.com/rupnetwork?igsh=dDM3NmM5bHdmZHdi&utm_source=qr', text: 'FOLLOW'},
-    {id: 'yt', url: 'https://youtube.com/@freecryptoairdrop89?si=uafCC8TzVOEq4mp4', text: 'SUBSCRIBE'} // Naya link lag gaya
-  ];
+  try{
+    const tasks = [
+      {id: 'tg', url: 'https://t.me/RUPPYfoundation', text: 'JOIN'},
+      {id: 'fb', url: 'https://www.facebook.com/share/1KjGA6dgtY/?mibextid=wwXIfr', text: 'FOLLOW'},
+      {id: 'x', url: 'https://x.com/rupfoundation?s=21', text: 'FOLLOW'},
+      {id: 'ig', url: 'https://www.instagram.com/rupnetwork?igsh=dDM3NmM5bHdmZHdi&utm_source=qr', text: 'FOLLOW'},
+      {id: 'yt', url: 'https://youtube.com/@freecryptoairdrop89?si=uafCC8TzVOEq4mp4', text: 'SUBSCRIBE'}
+    ];
 
-  tasks.forEach(t => {
-    let btn = document.getElementById(t.id + 'Btn');
-    if (!btn) return;
-    if (taskState[t.id] === 'opened') {
-      btn.innerText = 'OPENED';
-      btn.className = 'bt opened';
-      btn.onclick = null;
-    } else if (taskState[t.id] === 'ready_to_claim') {
-      btn.innerText = 'CLAIM';
-      btn.className = 'bt claim';
-      btn.onclick = () => claimReward(t.id);
-    } else if (taskState[t.id] === 'claimed') {
-      btn.innerText = 'DONE';
-      btn.className = 'bt done';
-      btn.onclick = null;
-    } else {
-      btn.innerText = t.text;
-      btn.className = 'bt';
-      btn.onclick = () => openLink(t.id, t.url);
-    }
-  });
+    tasks.forEach(t => {
+      let btn = document.getElementById(t.id + 'Btn');
+      if (!btn) return;
+      
+      if (taskState[t.id] === 'opened') {
+        btn.innerText = 'OPENED';
+        btn.className = 'bt opened';
+        btn.onclick = null;
+      } else if (taskState[t.id] === 'ready_to_claim') {
+        btn.innerText = 'CLAIM';
+        btn.className = 'bt claim';
+        btn.onclick = () => claimReward(t.id);
+      } else if (taskState[t.id] === 'claimed') {
+        btn.innerText = 'DONE';
+        btn.className = 'bt done';
+        btn.onclick = null;
+      } else {
+        btn.innerText = t.text;
+        btn.className = 'bt';
+        btn.onclick = () => openLink(t.id, t.url);
+      }
+    });
+  }catch(e){
+    console.error('updateButtons error:', e);
+  }
 }
 
-// ... baki ka JS code same rahega ...
+// ... baki ka JS same rahega ...
 function initFbPostTask() {
   if (!window.userData) return;
   let btn = document.getElementById('fbPostBtn');
@@ -497,4 +519,95 @@ function startSpinTimer(){
             timerEl.innerText = '';
             showToast('Spin Ready! 🎉');
         } else {
-            timerEl.innerText = 'Next Spin: ' + format
+            timerEl.innerText = 'Next Spin: ' + formatTime(diff);
+        }
+    }, 1000);
+}
+
+function checkSpinStatus(){
+    var nextTime = localStorage.getItem('spin_next_time');
+    if(nextTime){
+        if(parseInt(nextTime) > Date.now()){
+            startSpinTimer();
+        } else {
+            localStorage.removeItem('spin_next_time');
+        }
+    }
+}
+
+async function spinWheel() {
+    if(isSpinning) return;
+
+    var nextTime = localStorage.getItem('spin_next_time');
+    if(nextTime && parseInt(nextTime) > Date.now()){
+        showToast('Next spin at 9AM or 9PM!', 'error');
+        return;
+    }
+
+    isSpinning = true;
+    var wheel = document.getElementById('wheel');
+    var spinBtn = document.getElementById('spinBtn');
+
+    spinBtn.innerHTML = 'Spinning...';
+
+    var rand = Math.random();
+    var winAmount, targetAngle;
+    
+    if(rand < 0.7){
+        winAmount = 20;
+        targetAngle = 288;
+    } else {
+        winAmount = 10;
+        targetAngle = 216;
+    }
+
+    var extraSpins = Math.floor(Math.random() * 3) + 5;
+    var totalRotation = extraSpins * 360 + targetAngle;
+
+    currentRotation += totalRotation;
+    wheel.style.transform = 'rotate(' + currentRotation + 'deg)';
+
+    setTimeout(async function(){
+        isSpinning = false;
+
+        userData.balance = Number(userData.balance) || 0;
+        userData.balance += winAmount;
+        if(window.saveRuppyData) await window.saveRuppyData(userData);
+        
+        document.getElementById('bal').innerText = userData.balance;
+
+        var nextSpinTime = getNextSpinTime();
+        localStorage.setItem('spin_next_time', nextSpinTime.getTime());
+
+        startSpinTimer();
+        showToast('🎉 Congrats! You Won ' + winAmount + ' RUP POINTS!');
+    }, 4000);
+}
+
+function showToast(msg, type = 'success'){
+  let t = document.getElementById('toast');
+  t.innerText = msg;
+  t.className = 'toast ' + type;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2500);
+}
+
+function goPage(page) {
+  window.location.href = page;
+}
+
+window.addEventListener('storage', function(e) {
+  if (e.key === 'ruppy_user_cache') {
+    userData = JSON.parse(e.newValue);
+    document.getElementById('bal').innerText = userData.balance;
+    
+    let displayId = userData.myReferralCode;
+    if(!displayId && userData.uid) {
+      displayId = 'RUP-' + userData.uid.substring(0,6).toUpperCase();
+    }
+    document.getElementById('userId').innerText = `ID: ${displayId || 'Loading...'}`;
+  }
+});
+</script>
+</body>
+</html>
