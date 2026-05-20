@@ -155,7 +155,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;padding-bottom:80px}
 <div class="toast" id="toast">Copied!</div>
 
 <script>
-var userData = window.userData;
+var userData = window.userData || {};
 let taskState = JSON.parse(localStorage.getItem('taskState')) || {};
 let openedTask = null;
 
@@ -171,10 +171,20 @@ const IG_POST_TASK_ID = 'igPost';
 const IG_POST_REWARD = 50;
 const IG_POST_COOLDOWN = 12 * 60 * 60 * 1000;
 
-// Reset taskState agar error aaye
-if(!taskState || typeof taskState !== 'object'){
-  taskState = {};
-  localStorage.setItem('taskState', JSON.stringify(taskState));
+// Safe save function - agar saveRuppyData na ho to localStorage me save karega
+async function saveData(){
+  try{
+    if(window.saveRuppyData && userData.uid){
+      await window.saveRuppyData(userData);
+      console.log('Saved to server. Balance:', userData.balance);
+    }else{
+      localStorage.setItem('ruppy_user_cache', JSON.stringify(userData));
+      console.log('Saved to localStorage. Balance:', userData.balance);
+    }
+  }catch(e){
+    console.error('Save error:', e);
+    localStorage.setItem('ruppy_user_cache', JSON.stringify(userData));
+  }
 }
 
 async function init(){
@@ -184,15 +194,16 @@ async function init(){
       await new Promise(r => setTimeout(r, 100));
       attempts++;
     }
-    userData = window.userData;
     
-    let displayId = userData?.myReferralCode;
-    if(!displayId && userData?.uid) {
+    userData = window.userData || JSON.parse(localStorage.getItem('ruppy_user_cache')) || {balance:0, uid:'guest'};
+    
+    let displayId = userData.myReferralCode;
+    if(!displayId && userData.uid) {
       displayId = 'RUP-' + userData.uid.substring(0,6).toUpperCase();
     }
-    document.getElementById('userId').innerText = `ID: ${displayId || 'Loading...'}`;
+    document.getElementById('userId').innerText = `ID: ${displayId || 'Guest'}`;
     
-    document.getElementById('bal').innerText = userData?.balance || 0;
+    document.getElementById('bal').innerText = userData.balance || 0;
     updateButtons();
     checkSpinStatus();
     initFbPostTask();
@@ -235,20 +246,21 @@ function openLink(task, url) {
 
 async function claimReward(task) {
   try{
-    if (taskState[task] === 'ready_to_claim') {
-      userData.balance = Number(userData.balance) || 0;
-      userData.balance += 20;
-      taskState[task] = 'claimed';
-      localStorage.setItem('taskState', JSON.stringify(taskState));
-      
-      if(window.saveRuppyData) await window.saveRuppyData(userData);
-      
-      document.getElementById('bal').innerText = userData.balance;
-      updateButtons();
-      showToast('+20 RUP POINTS Claimed!');
-    }
+    if (taskState[task] !== 'ready_to_claim') return;
+
+    userData.balance = Number(userData.balance) || 0;
+    userData.balance += 20;
+    taskState[task] = 'claimed';
+    localStorage.setItem('taskState', JSON.stringify(taskState));
+    
+    await saveData();
+    
+    document.getElementById('bal').innerText = userData.balance;
+    updateButtons();
+    showToast('+20 RUP POINTS Claimed!');
   }catch(e){
     console.error('claimReward error:', e);
+    showToast('Error claiming reward', 'error');
   }
 }
 
@@ -289,9 +301,8 @@ function updateButtons() {
   }
 }
 
-// ... baki ka JS same rahega ...
 function initFbPostTask() {
-  if (!window.userData) return;
+  if (!userData) return;
   let btn = document.getElementById('fbPostBtn');
   let claimBox = document.getElementById('fbPostClaimBox');
   if (!btn) return;
@@ -352,7 +363,7 @@ async function claimFbPost() {
   taskState[FB_POST_TASK_ID + '_time'] = now;
   localStorage.setItem('taskState', JSON.stringify(taskState));
   
-  if (window.saveRuppyData) await window.saveRuppyData(userData);
+  await saveData();
   
   document.getElementById('bal').innerText = userData.balance;
   document.getElementById('fbPostLink').value = '';
@@ -379,7 +390,7 @@ function updateFbPostTimer() {
 }
 
 function initIgPostTask() {
-  if (!window.userData) return;
+  if (!userData) return;
   let btn = document.getElementById('igPostBtn');
   let claimBox = document.getElementById('igPostClaimBox');
   if (!btn) return;
@@ -440,7 +451,7 @@ async function claimIgPost() {
   taskState[IG_POST_TASK_ID + '_time'] = now;
   localStorage.setItem('taskState', JSON.stringify(taskState));
   
-  if (window.saveRuppyData) await window.saveRuppyData(userData);
+  await saveData();
   
   document.getElementById('bal').innerText = userData.balance;
   document.getElementById('igPostLink').value = '';
@@ -572,7 +583,7 @@ async function spinWheel() {
 
         userData.balance = Number(userData.balance) || 0;
         userData.balance += winAmount;
-        if(window.saveRuppyData) await window.saveRuppyData(userData);
+        await saveData();
         
         document.getElementById('bal').innerText = userData.balance;
 
