@@ -60,6 +60,21 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .device-meta{font-size:12px;color:var(--muted)}
 .current-badge{font-size:11px;color:var(--green);background:rgba(36,196,100,0.1);padding:2px 8px;border-radius:6px}
 .sp{height:96px}
+
+/* Disclaimer Box */
+.disclaimer-box{
+  background:rgba(243,199,116,0.08);
+  border:1px solid rgba(243,199,116,0.3);
+  border-radius:16px;
+  padding:16px;
+  margin-top:20px;
+  font-size:13px;
+  line-height:1.6;
+  color:#ccc;
+}
+.disclaimer-box strong{color:#F3C774}
+.disclaimer-box a{color:#F3C774;text-decoration:none}
+.disclaimer-box a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -127,6 +142,16 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 </div>
 
 <button class="danger-btn" onclick="confirmDeleteAccount()">Delete Account</button>
+
+<!-- Disclaimer Box Added Here -->
+<div class="disclaimer-box">
+  <strong>Disclaimer:</strong> RUP Points are virtual activity points for tracking only. 
+  They have <strong>no monetary value</strong> and cannot be exchanged, redeemed, or transferred for cash, crypto, or any other asset. 
+  <br><br>
+  <a href="disclaimer.html">Read full disclaimer</a> • 
+  <a href="privacy-policy.html">Privacy Policy</a> • 
+  <a href="terms.html">Terms & Conditions</a>
+</div>
 
 <div class="sp"></div>
 
@@ -312,7 +337,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   }
 
   window.confirmDeleteAccount = function(){
-    if(confirm('⚠️ WARNING: This will permanently delete your account and all data. This action cannot be undone. Are you sure?')){
+    if(confirm('⚠️ Request account deletion? This will remove your account data. Contact support for details.')){
       if(confirm('Last chance! Type DELETE to confirm:')){
         const input = prompt('Type DELETE to confirm account deletion:');
         if(input === 'DELETE'){
