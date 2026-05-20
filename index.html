@@ -30,8 +30,9 @@ h1{color:#f9a825;margin:0 0 20px;font-size:36px;font-weight:900;letter-spacing:6
 .btn-google{background:#fff;color:#000;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:18px;font-weight:700;height:60px}
 .toggle{color:#aaa;font-size:15px;margin-top:16px;cursor:pointer}
 .toggle span{color:#f9a825;text-decoration:underline;font-weight:700}
-.ft{font-size:11px;color:#666;margin-top:20px;line-height:1.6}
-a{color:#aaa;text-decoration:none}
+.ft{font-size:11px;color:#666;margin-top:20px;line-height:1.6;position:relative;z-index:10000;text-align:center}
+.ft a{color:#aaa;text-decoration:none;position:relative;z-index:10001;cursor:pointer}
+.ft a:hover{color:#f9a825}
 .error{color:#f33;font-size:14px;margin-top:10px;display:none;font-weight:600}
 .success{color:#4caf50;font-size:14px;margin-top:10px;display:none;font-weight:600}
 .referral-info{background:#111;border:1px solid #333;border-radius:12px;padding:12px;margin:14px 0;font-size:13px;color:#aaa}
@@ -40,11 +41,7 @@ a{color:#aaa;text-decoration:none}
 .content-section h2{color:#f9a825;font-size:22px;margin:30px 0 15px}
 .content-section h3{color:#f9a825;font-size:18px;margin:25px 0 10px}
 .content-section a{color:#4a90e2;text-decoration:underline}
-.ad-container{margin: 25px 0; padding: 10px; background: #0a0a0a; border-radius: 12px; border: 1px solid #222;}
 </style>
-
-<!-- Google AdSense - तेरे ID के साथ ✅ -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2718847163624444" crossorigin="anonymous"></script>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -114,6 +111,7 @@ a{color:#aaa;text-decoration:none}
   <div class="toggle">Already have account? <span onclick="showLogin()">Login</span></div>
 </div>
 
+<!-- Footer yahan rakha hai taaki click ho -->
 <div class="ft">
 <a href="about.html">About</a> • <a href="blog.html">Blog</a> • <a href="contact.html">Contact</a> • <a href="privacy-policy.html">Privacy</a> • <a href="terms.html">Terms</a><br>
 By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Terms</a> & <a href="privacy-policy.html" style="color:#f9a825;">Privacy Policy</a>.
@@ -121,35 +119,9 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
 </div>
 </div>
 
-<!-- ✅ Ad Unit 1: Login के नीचे - Safe Placement -->
-<div class="ad-container" style="max-width:480px; margin: 20px auto;">
-  <ins class="adsbygoogle"
-       style="display:block"
-       data-ad-client="ca-pub-2718847163624444"
-       data-ad-slot="XXXXXXXXXX"
-       data-ad-format="auto"
-       data-full-width-responsive="true"></ins>
-  <script>
-       (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
-</div>
-
 <section class="content-section">
   <h2>What is RUP game points Task Hub?</h2>
   <p>RUP game points Task Hub is a free productivity and activity tracking platform launched in 2026. Our mission is to help users build positive daily habits through simple activity check-ins. No payment or purchase is ever required. Users collect activity rewards called "RUP game points" by logging in daily, completing checklists, and inviting friends. The platform uses secure Google Firebase Authentication. All activity rewards have no monetary value and cannot be exchanged. We never share personal data with third parties.</p>
-
-  <!-- ✅ Ad Unit 2: Content के बीच में - Best CTR -->
-  <div class="ad-container">
-    <ins class="adsbygoogle"
-         style="display:block; text-align:center;"
-         data-ad-layout="in-article"
-         data-ad-format="fluid"
-         data-ad-client="ca-pub-2718847163624444"
-         data-ad-slot="XXXXXXXXXX"></ins>
-    <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-  </div>
 
   <h3>How Does RUP game points Task Hub Work?</h3>
   <p>Members collect "RUP game points" through our daily check-in system. After login, tap "Start Session" to activate your daily activity cycle. The base rate is 10 RUP game points per session. You can increase your collection through four methods: maintaining a daily login streak for bonus multipliers, inviting friends with your unique code for permanent speed boosts, completing sponsored tasks in our Activity Center, and viewing optional content for extra RUP game points. Every new user who joins using your invite code grants both you and them 20 welcome RUP game points.</p>
@@ -167,7 +139,6 @@ By continuing, you agree to our <a href="terms.html" style="color:#f9a825;">Term
 </section>
 
 <script>
-// Firebase + बाकी JS Code Same है ⬅️ बस "R" को "RUP game points" में बदल दिया
   const firebaseConfig = {
     apiKey: "AIzaSyDQC0WsVPr63y2xvFMSifnkjAB3TTVcIxU",
     authDomain: "ruppynetwork-50362.firebaseapp.com",
