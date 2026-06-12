@@ -82,8 +82,8 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 <div class="card">
 <div class="row" onclick="goPage('history.html')"><div class="l"><div class="icon">📊</div><div class="txt">Transaction History</div></div>›</div>
 
-<!-- Withdrawal Row Added -->
-<div class="row" onclick="openWithdrawal()"><div class="l"><div class="icon">💳</div><div class="txt">Withdrawal</div></div><span class="val" id="balance">₹0</span>›</div>
+<!-- Withdrawal Row -->
+<div class="row" onclick="openWithdrawal()"><div class="l"><div class="icon">💳</div><div class="txt">Withdrawal</div></div><span class="val" id="balance">0 RUP</span>›</div>
 
 <div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">Loading...</span>›</div>
 <div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
@@ -141,41 +141,38 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
   </div>
 </div>
 
-<!-- Withdrawal Modal Added -->
+<!-- Withdrawal Modal - Updated -->
 <div class="modal" id="withdrawModal">
   <div class="modal-content">
     <div class="modal-title">Withdrawal Request</div>
 
     <div class="balance-info">
-      Available Balance: <span id="availBalance">₹0</span>
+      Available Balance: <span id="availBalance">0 RUP</span>
     </div>
 
     <div class="input-group">
       <label>Amount</label>
-      <input type="number" id="withdrawAmount" placeholder="Min ₹100" min="100">
+      <input type="number" id="withdrawAmount" placeholder="Min 100 RUP" min="100">
     </div>
 
     <div class="input-group">
       <label>Payment Method</label>
       <select id="paymentMethod">
         <option value="">Select Method</option>
-        <option value="upi">UPI</option>
-        <option value="bank">Bank Transfer</option>
-        <option value="paytm">Paytm</option>
         <option value="metamask">MetaMask [USDT/USDC]</option>
         <option value="binance">Binance Pay ID</option>
       </select>
     </div>
 
     <div class="input-group">
-      <label id="accountLabel">UPI ID / Account Number</label>
-      <input type="text" id="accountDetails" placeholder="Enter details">
+      <label id="accountLabel">Wallet Address / Binance Pay ID</label>
+      <input type="text" id="accountDetails" placeholder="0x... or Pay ID">
     </div>
 
-    <div class="input-group" id="networkGroup" style="display:none">
+    <div class="input-group">
       <label>Network</label>
       <select id="network">
-        <option value="BSC">BSC BEP-20</option>
+        <option value="BSC">BSC BEP-20 [Recommended - Low Fee]</option>
         <option value="ETH">Ethereum ERC-20</option>
         <option value="TRX">Tron TRC-20</option>
       </select>
@@ -248,8 +245,8 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     document.getElementById('userName').innerText = userData.name || 'User';
     document.getElementById('userId').innerText = 'ID: ' + shortId;
     document.getElementById('refCode').innerText = code;
-    document.getElementById('balance').innerText = '₹' + balance;
-    document.getElementById('availBalance').innerText = '₹' + balance;
+    document.getElementById('balance').innerText = balance + ' RUP';
+    document.getElementById('availBalance').innerText = balance + ' RUP';
   }
 
   loadProfile();
@@ -370,40 +367,12 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     document.getElementById('withdrawModal').classList.add('active');
     document.getElementById('withdrawAmount').value = '';
     document.getElementById('accountDetails').value = '';
-    document.getElementById('paymentMethod').value = '';
-    document.getElementById('networkGroup').style.display = 'none';
+    document.getElementById('paymentMethod').value = 'metamask';
   }
 
   window.closeWithdrawal = function(){
     document.getElementById('withdrawModal').classList.remove('active');
   }
-
-  document.addEventListener('change', function(e){
-    if(e.target.id === 'paymentMethod'){
-      const method = e.target.value;
-      const label = document.getElementById('accountLabel');
-      const input = document.getElementById('accountDetails');
-      const networkGroup = document.getElementById('networkGroup');
-
-      if(method === 'upi'){
-        label.textContent = 'UPI ID';
-        input.placeholder = 'example@upi';
-        networkGroup.style.display = 'none';
-      } else if(method === 'bank'){
-        label.textContent = 'Account Number';
-        input.placeholder = 'Enter account number';
-        networkGroup.style.display = 'none';
-      } else if(method === 'paytm'){
-        label.textContent = 'Paytm Number';
-        input.placeholder = 'Enter mobile number';
-        networkGroup.style.display = 'none';
-      } else if(method === 'metamask' || method === 'binance'){
-        label.textContent = 'Wallet Address / Binance Pay ID';
-        input.placeholder = '0x... or Pay ID';
-        networkGroup.style.display = 'block';
-      }
-    }
-  });
 
   window.requestWithdrawal = async function(){
     const amount = parseFloat(document.getElementById('withdrawAmount').value);
@@ -414,12 +383,12 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     const balance = window.userData?.balance || 0;
 
     if(!amount || amount < 100){
-      showToast('Minimum withdrawal ₹100', 'error');
+      showToast('Minimum withdrawal 100 RUP', 'error');
       return;
     }
 
     if(amount > balance){
-      showToast('Insufficient balance', 'error');
+      showToast('Insufficient RUP points', 'error');
       return;
     }
 
@@ -429,7 +398,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     }
 
     if(!details){
-      showToast('Enter wallet/address details', 'error');
+      showToast('Enter wallet address / Pay ID', 'error');
       return;
     }
 
@@ -445,7 +414,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
           amount: amount,
           method: method,
           address: details,
-          network: (method === 'metamask' || method === 'binance')? network : null
+          network: network
         })
       });
 
