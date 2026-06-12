@@ -43,8 +43,8 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .modal-title{font-size:20px;font-weight:700;margin-bottom:20px;text-align:center;background:linear-gradient(135deg, var(--gold), #FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .input-group{margin-bottom:16px}
 .input-group label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px;font-weight:500}
-.input-group input{width:100%;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:#fff;font-size:15px;transition:all 0.2s}
-.input-group input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(243,199,116,0.1)}
+.input-group input,.input-group select{width:100%;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:#fff;font-size:15px;transition:all 0.2s}
+.input-group input:focus,.input-group select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(243,199,116,0.1)}
 .file-input{display:none}
 .file-label{display:block;padding:14px;border:1px solid var(--border);border-radius:12px;text-align:center;cursor:pointer;transition:all 0.2s}
 .file-label:active{background:rgba(243,199,116,0.05)}
@@ -54,6 +54,8 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .btn-cancel{background:transparent;border:1px solid var(--border);color:var(--muted)}
 .btn-save{background:linear-gradient(135deg, var(--gold), #FFA500);color:#000;box-shadow:0 4px 15px rgba(243,199,116,0.3)}
 .btn-save:disabled{opacity:0.5;cursor:not-allowed}
+.balance-info{background:rgba(243,199,116,0.1);border:1px solid rgba(243,199,116,0.3);border-radius:12px;padding:12px;margin-bottom:16px;text-align:center}
+.balance-info span{color:var(--gold);font-weight:600;font-size:18px}
 .sp{height:96px}
 .ft-links{font-size:11px;color:#666;text-align:center;margin-top:30px;padding-bottom:20px}
 .ft-links a{color:#aaa;text-decoration:none}
@@ -61,18 +63,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 .toast.success{background:#1a5c1a;color:#4ade80}
 .toast.error{background:#5c1a1a;color:#f87171}
 .toast.info{background:#1a3c5c;color:#60a5fa}
-
-/* Disclaimer Box Added */
-.disclaimer-box{
-  background:rgba(243,199,116,0.08);
-  border:1px solid rgba(243,199,116,0.3);
-  border-radius:16px;
-  padding:16px;
-  margin:20px 0;
-  font-size:13px;
-  line-height:1.6;
-  color:#ccc;
-}
+.disclaimer-box{background:rgba(243,199,116,0.08);border:1px solid rgba(243,199,116,0.3);border-radius:16px;padding:16px;margin:20px 0;font-size:13px;line-height:1.6;color:#ccc}
 .disclaimer-box strong{color:#F3C774}
 .disclaimer-box a{color:#F3C774;text-decoration:none}
 .disclaimer-box a:hover{text-decoration:underline}
@@ -90,6 +81,10 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
 <div class="card">
 <div class="row" onclick="goPage('history.html')"><div class="l"><div class="icon">📊</div><div class="txt">Transaction History</div></div>›</div>
+
+<!-- Withdrawal Row Added -->
+<div class="row" onclick="openWithdrawal()"><div class="l"><div class="icon">💳</div><div class="txt">Withdrawal</div></div><span class="val" id="balance">₹0</span>›</div>
+
 <div class="row" onclick="copyRefCode()"><div class="l"><div class="icon">🔗</div><div class="txt">My Referral Code</div></div><span class="val" id="refCode">Loading...</span>›</div>
 <div class="row" onclick="openEditProfile()"><div class="l"><div class="icon">👤</div><div class="txt">Edit Profile</div></div>›</div>
 <div class="row" onclick="goPage('security.html')"><div class="l"><div class="icon">🛡</div><div class="txt">Security</div></div>›</div>
@@ -103,7 +98,6 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
 <button class="logout" onclick="logout()">Logout</button>
 
-<!-- Disclaimer Box Added Here -->
 <div class="disclaimer-box">
   <strong>Disclaimer:</strong> RUP Points are virtual activity points for tracking only.
   They have <strong>no monetary value</strong> and cannot be exchanged, redeemed, or transferred for cash, crypto, or any other asset.
@@ -143,6 +137,53 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     <div class="btn-group">
       <button class="btn btn-cancel" onclick="closeEditProfile()">Cancel</button>
       <button class="btn btn-save" id="saveBtn" onclick="saveProfile()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Withdrawal Modal Added -->
+<div class="modal" id="withdrawModal">
+  <div class="modal-content">
+    <div class="modal-title">Withdrawal Request</div>
+
+    <div class="balance-info">
+      Available Balance: <span id="availBalance">₹0</span>
+    </div>
+
+    <div class="input-group">
+      <label>Amount</label>
+      <input type="number" id="withdrawAmount" placeholder="Min ₹100" min="100">
+    </div>
+
+    <div class="input-group">
+      <label>Payment Method</label>
+      <select id="paymentMethod">
+        <option value="">Select Method</option>
+        <option value="upi">UPI</option>
+        <option value="bank">Bank Transfer</option>
+        <option value="paytm">Paytm</option>
+        <option value="metamask">MetaMask [USDT/USDC]</option>
+        <option value="binance">Binance Pay ID</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label id="accountLabel">UPI ID / Account Number</label>
+      <input type="text" id="accountDetails" placeholder="Enter details">
+    </div>
+
+    <div class="input-group" id="networkGroup" style="display:none">
+      <label>Network</label>
+      <select id="network">
+        <option value="BSC">BSC BEP-20</option>
+        <option value="ETH">Ethereum ERC-20</option>
+        <option value="TRX">Tron TRC-20</option>
+      </select>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-cancel" onclick="closeWithdrawal()">Cancel</button>
+      <button class="btn btn-save" id="withdrawBtn" onclick="requestWithdrawal()">Request Withdrawal</button>
     </div>
   </div>
 </div>
@@ -197,6 +238,7 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
 
     const code = userData.myReferralCode || 'NOT-FOUND';
     const shortId = `RUP-${userData.uid.substring(0,4).toUpperCase()}`;
+    const balance = userData.balance || 0;
 
     if (userData.dp) {
       document.getElementById('avatarBox').innerHTML = `<img src="${userData.dp}" alt="Profile">`;
@@ -206,6 +248,8 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
     document.getElementById('userName').innerText = userData.name || 'User';
     document.getElementById('userId').innerText = 'ID: ' + shortId;
     document.getElementById('refCode').innerText = code;
+    document.getElementById('balance').innerText = '₹' + balance;
+    document.getElementById('availBalance').innerText = '₹' + balance;
   }
 
   loadProfile();
@@ -319,6 +363,107 @@ body{background:var(--bg);color:#fff;padding:22px;padding-bottom:90px}
       }
       reader.onerror = reject;
     });
+  }
+
+  // Withdrawal Functions
+  window.openWithdrawal = function(){
+    document.getElementById('withdrawModal').classList.add('active');
+    document.getElementById('withdrawAmount').value = '';
+    document.getElementById('accountDetails').value = '';
+    document.getElementById('paymentMethod').value = '';
+    document.getElementById('networkGroup').style.display = 'none';
+  }
+
+  window.closeWithdrawal = function(){
+    document.getElementById('withdrawModal').classList.remove('active');
+  }
+
+  document.addEventListener('change', function(e){
+    if(e.target.id === 'paymentMethod'){
+      const method = e.target.value;
+      const label = document.getElementById('accountLabel');
+      const input = document.getElementById('accountDetails');
+      const networkGroup = document.getElementById('networkGroup');
+
+      if(method === 'upi'){
+        label.textContent = 'UPI ID';
+        input.placeholder = 'example@upi';
+        networkGroup.style.display = 'none';
+      } else if(method === 'bank'){
+        label.textContent = 'Account Number';
+        input.placeholder = 'Enter account number';
+        networkGroup.style.display = 'none';
+      } else if(method === 'paytm'){
+        label.textContent = 'Paytm Number';
+        input.placeholder = 'Enter mobile number';
+        networkGroup.style.display = 'none';
+      } else if(method === 'metamask' || method === 'binance'){
+        label.textContent = 'Wallet Address / Binance Pay ID';
+        input.placeholder = '0x... or Pay ID';
+        networkGroup.style.display = 'block';
+      }
+    }
+  });
+
+  window.requestWithdrawal = async function(){
+    const amount = parseFloat(document.getElementById('withdrawAmount').value);
+    const method = document.getElementById('paymentMethod').value;
+    const details = document.getElementById('accountDetails').value;
+    const network = document.getElementById('network').value;
+    const btn = document.getElementById('withdrawBtn');
+    const balance = window.userData?.balance || 0;
+
+    if(!amount || amount < 100){
+      showToast('Minimum withdrawal ₹100', 'error');
+      return;
+    }
+
+    if(amount > balance){
+      showToast('Insufficient balance', 'error');
+      return;
+    }
+
+    if(!method){
+      showToast('Select payment method', 'error');
+      return;
+    }
+
+    if(!details){
+      showToast('Enter wallet/address details', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Processing...';
+
+    try {
+      const res = await fetch('/api/withdraw', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          uid: window.userData.uid,
+          amount: amount,
+          method: method,
+          address: details,
+          network: (method === 'metamask' || method === 'binance')? network : null
+        })
+      });
+
+      const data = await res.json();
+
+      if(data.success){
+        showToast('Withdrawal request submitted!', 'success');
+        closeWithdrawal();
+      } else {
+        showToast(data.message || 'Withdrawal failed', 'error');
+      }
+
+    } catch(error){
+      showToast('Failed: ' + error.message, 'error');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Request Withdrawal';
   }
 
   window.logout = async function(){
